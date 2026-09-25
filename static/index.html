@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#12151c">
+  <title>Remote PC Keyboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Top Status Bar & Controls -->
+    <header class="top-bar">
+      <div class="left-controls">
+        <span class="logo">⌨️ PC Remote</span>
+        <span id="connection-status" class="status-badge disconnected">
+          <span class="dot"></span> <span id="status-text">Menghubungkan...</span>
+        </span>
+        <span id="ping-badge" class="ping-badge">-- ms</span>
+      </div>
+
+      <div class="right-controls">
+        <button id="btn-toggle-fn" class="tool-btn" title="Tampilkan Tombol F1-F12">Fn</button>
+        <button id="btn-toggle-nav" class="tool-btn" title="Tampilkan Tombol Navigasi (Home, End, PgUp, PgDn, Ins, Del)">Nav</button>
+        <button id="btn-toggle-numpad" class="tool-btn" title="Tampilkan Numpad PC">123</button>
+        <button id="btn-toggle-shortcuts" class="tool-btn" title="Tampilkan Shortcut Cepat">⚡</button>
+        <button id="btn-latch-mode" class="tool-btn active" title="Mode Sticky/Latch Modifier (Ctrl, Shift, Alt terkunci setelah ditekan)">Latch</button>
+        <button id="btn-haptic" class="tool-btn active" title="Getar / Haptic Feedback">📳</button>
+        <button id="btn-fullscreen" class="tool-btn" title="Layar Penuh">⛶</button>
+      </div>
+    </header>
+
+    <!-- Active Modifiers Indicator Bar -->
+    <div id="modifier-indicator" class="modifier-indicator">
+      <span class="mod-tag" id="tag-ctrl">CTRL</span>
+      <span class="mod-tag" id="tag-alt">ALT</span>
+      <span class="mod-tag" id="tag-shift">SHIFT</span>
+      <span class="mod-tag" id="tag-win">WIN</span>
+      <span class="mod-tag" id="tag-caps">CAPS</span>
+    </div>
+
+    <!-- Quick Shortcuts Bar (Optional / Collapsible) -->
+    <div id="shortcuts-bar" class="collapsible-panel shortcuts-bar hidden">
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,c">Ctrl+C</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,v">Ctrl+V</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,x">Ctrl+X</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,z">Ctrl+Z</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,y">Ctrl+Y</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,a">Ctrl+A</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,s">Ctrl+S</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="alt,tab">Alt+Tab</button>
+      <button class="shortcut-btn" data-action="combo" data-keys="cmd,d">Win+D</button>
+      <button class="shortcut-btn danger" data-action="combo" data-keys="ctrl,alt,delete">Ctrl+Alt+Del</button>
+    </div>
+
+    <!-- Function Keys Row (F1-F12) -->
+    <div id="fn-row" class="collapsible-panel fn-row hidden">
+      <button class="key key-fn" data-code="Escape" data-key="esc">Esc</button>
+      <button class="key key-fn" data-code="F1" data-key="f1">F1</button>
+      <button class="key key-fn" data-code="F2" data-key="f2">F2</button>
+      <button class="key key-fn" data-code="F3" data-key="f3">F3</button>
+      <button class="key key-fn" data-code="F4" data-key="f4">F4</button>
+      <button class="key key-fn" data-code="F5" data-key="f5">F5</button>
+      <button class="key key-fn" data-code="F6" data-key="f6">F6</button>
+      <button class="key key-fn" data-code="F7" data-key="f7">F7</button>
+      <button class="key key-fn" data-code="F8" data-key="f8">F8</button>
+      <button class="key key-fn" data-code="F9" data-key="f9">F9</button>
+      <button class="key key-fn" data-code="F10" data-key="f10">F10</button>
+      <button class="key key-fn" data-code="F11" data-key="f11">F11</button>
+      <button class="key key-fn" data-code="F12" data-key="f12">F12</button>
+    </div>
+
+    <!-- Navigation Keys Cluster -->
+    <div id="nav-row" class="collapsible-panel nav-row hidden">
+      <button class="key key-nav" data-code="PrintScreen" data-key="print_screen">PrtSc</button>
+      <button class="key key-nav" data-code="ScrollLock" data-key="scroll_lock">ScrLk</button>
+      <button class="key key-nav" data-code="Pause" data-key="pause">Pause</button>
+      <button class="key key-nav" data-code="Insert" data-key="insert">Ins</button>
+      <button class="key key-nav" data-code="Delete" data-key="delete">Del</button>
+      <button class="key key-nav" data-code="Home" data-key="home">Home</button>
+      <button class="key key-nav" data-code="End" data-key="end">End</button>
+      <button class="key key-nav" data-code="PageUp" data-key="page_up">PgUp</button>
+      <button class="key key-nav" data-code="PageDown" data-key="page_down">PgDn</button>
+    </div>
+
+    <!-- Keyboard Workspace (Main Keyboard + Numpad side-by-side or stacked) -->
+    <main class="keyboard-container">
+      <!-- Standard Main PC Keyboard Layout -->
+      <section class="keyboard-main" id="main-keyboard">
+        <!-- Row 1: Number Row -->
+        <div class="kb-row">
+          <button class="key key-tilde" data-code="Backquote" data-char="`" data-shift="~">
+            <span class="sub">~</span><span class="main">`</span>
+          </button>
+          <button class="key" data-code="Digit1" data-char="1" data-shift="!">
+            <span class="sub">!</span><span class="main">1</span>
+          </button>
+          <button class="key" data-code="Digit2" data-char="2" data-shift="@">
+            <span class="sub">@</span><span class="main">2</span>
+          </button>
+          <button class="key" data-code="Digit3" data-char="3" data-shift="#">
+            <span class="sub">#</span><span class="main">3</span>
+          </button>
+          <button class="key" data-code="Digit4" data-char="4" data-shift="$">
+            <span class="sub">$</span><span class="main">4</span>
+          </button>
+          <button class="key" data-code="Digit5" data-char="5" data-shift="%">
+            <span class="sub">%</span><span class="main">5</span>
+          </button>
+          <button class="key" data-code="Digit6" data-char="6" data-shift="^">
+            <span class="sub">^</span><span class="main">6</span>
+          </button>
+          <button class="key" data-code="Digit7" data-char="7" data-shift="&">
+            <span class="sub">&</span><span class="main">7</span>
+          </button>
+          <button class="key" data-code="Digit8" data-char="8" data-shift="*">
+            <span class="sub">*</span><span class="main">8</span>
+          </button>
+          <button class="key" data-code="Digit9" data-char="9" data-shift="(">
+            <span class="sub">(</span><span class="main">9</span>
+          </button>
+          <button class="key" data-code="Digit0" data-char="0" data-shift=")">
+            <span class="sub">)</span><span class="main">0</span>
+          </button>
+          <button class="key" data-code="Minus" data-char="-" data-shift="_">
+            <span class="sub">_</span><span class="main">-</span>
+          </button>
+          <button class="key" data-code="Equal" data-char="=" data-shift="+">
+            <span class="sub">+</span><span class="main">=</span>
+          </button>
+          <button class="key key-backspace" data-code="Backspace" data-key="backspace" title="Backspace">
+            <span>⌫ Backspace</span>
+          </button>
+        </div>
+
+        <!-- Row 2: Tab + QWERTY -->
+        <div class="kb-row">
+          <button class="key key-tab" data-code="Tab" data-key="tab">
+            <span>Tab ⇥</span>
+          </button>
+          <button class="key" data-code="KeyQ" data-char="q" data-shift="Q"><span class="main">Q</span></button>
+          <button class="key" data-code="KeyW" data-char="w" data-shift="W"><span class="main">W</span></button>
+          <button class="key" data-code="KeyE" data-char="e" data-shift="E"><span class="main">E</span></button>
+          <button class="key" data-code="KeyR" data-char="r" data-shift="R"><span class="main">R</span></button>
+          <button class="key" data-code="KeyT" data-char="t" data-shift="T"><span class="main">T</span></button>
+          <button class="key" data-code="KeyY" data-char="y" data-shift="Y"><span class="main">Y</span></button>
+          <button class="key" data-code="KeyU" data-char="u" data-shift="U"><span class="main">U</span></button>
+          <button class="key" data-code="KeyI" data-char="i" data-shift="I"><span class="main">I</span></button>
+          <button class="key" data-code="KeyO" data-char="o" data-shift="O"><span class="main">O</span></button>
+          <button class="key" data-code="KeyP" data-char="p" data-shift="P"><span class="main">P</span></button>
+          <button class="key" data-code="BracketLeft" data-char="[" data-shift="{">
+            <span class="sub">{</span><span class="main">[</span>
+          </button>
+          <button class="key" data-code="BracketRight" data-char="]" data-shift="}">
+            <span class="sub">}</span><span class="main">]</span>
+          </button>
+          <button class="key key-backslash" data-code="Backslash" data-char="\" data-shift="|">
+            <span class="sub">|</span><span class="main">\</span>
+          </button>
+        </div>
+
+        <!-- Row 3: Caps + ASDF -->
+        <div class="kb-row">
+          <button class="key key-caps" id="key-caps" data-code="CapsLock" data-key="caps_lock">
+            <span>Caps Lock ⇪</span>
+          </button>
+          <button class="key" data-code="KeyA" data-char="a" data-shift="A"><span class="main">A</span></button>
+          <button class="key" data-code="KeyS" data-char="s" data-shift="S"><span class="main">S</span></button>
+          <button class="key" data-code="KeyD" data-char="d" data-shift="D"><span class="main">D</span></button>
+          <button class="key" data-code="KeyF" data-char="f" data-shift="F"><span class="main">F</span></button>
+          <button class="key" data-code="KeyG" data-char="g" data-shift="G"><span class="main">G</span></button>
+          <button class="key" data-code="KeyH" data-char="h" data-shift="H"><span class="main">H</span></button>
+          <button class="key" data-code="KeyJ" data-char="j" data-shift="J"><span class="main">J</span></button>
+          <button class="key" data-code="KeyK" data-char="k" data-shift="K"><span class="main">K</span></button>
+          <button class="key" data-code="KeyL" data-char="l" data-shift="L"><span class="main">L</span></button>
+          <button class="key" data-code="Semicolon" data-char=";" data-shift=":">
+            <span class="sub">:</span><span class="main">;</span>
+          </button>
+          <button class="key" data-code="Quote" data-char="'" data-shift='"'>
+            <span class="sub">"</span><span class="main">'</span>
+          </button>
+          <button class="key key-enter" data-code="Enter" data-key="enter">
+            <span>Enter ↵</span>
+          </button>
+        </div>
+
+        <!-- Row 4: Shift + ZXCV + Up Arrow -->
+        <div class="kb-row">
+          <button class="key key-shift" id="key-shift-left" data-code="ShiftLeft" data-key="shift">
+            <span>⇧ Shift</span>
+          </button>
+          <button class="key" data-code="KeyZ" data-char="z" data-shift="Z"><span class="main">Z</span></button>
+          <button class="key" data-code="KeyX" data-char="x" data-shift="X"><span class="main">X</span></button>
+          <button class="key" data-code="KeyC" data-char="c" data-shift="C"><span class="main">C</span></button>
+          <button class="key" data-code="KeyV" data-char="v" data-shift="V"><span class="main">V</span></button>
+          <button class="key" data-code="KeyB" data-char="b" data-shift="B"><span class="main">B</span></button>
+          <button class="key" data-code="KeyN" data-char="n" data-shift="N"><span class="main">N</span></button>
+          <button class="key" data-code="KeyM" data-char="m" data-shift="M"><span class="main">M</span></button>
+          <button class="key" data-code="Comma" data-char="," data-shift="<">
+            <span class="sub">&lt;</span><span class="main">,</span>
+          </button>
+          <button class="key" data-code="Period" data-char="." data-shift=">">
+            <span class="sub">&gt;</span><span class="main">.</span>
+          </button>
+          <button class="key" data-code="Slash" data-char="/" data-shift="?">
+            <span class="sub">?</span><span class="main">/</span>
+          </button>
+          <button class="key key-shift" id="key-shift-right" data-code="ShiftRight" data-key="shift">
+            <span>⇧ Shift</span>
+          </button>
+          <button class="key key-arrow" data-code="ArrowUp" data-key="up">
+            <span>▲</span>
+          </button>
+        </div>
+
+        <!-- Row 5: Modifiers, Space, Left/Down/Right Arrows -->
+        <div class="kb-row">
+          <button class="key key-ctrl" id="key-ctrl-left" data-code="ControlLeft" data-key="ctrl">
+            <span>Ctrl</span>
+          </button>
+          <button class="key key-win" id="key-win" data-code="MetaLeft" data-key="cmd" title="Windows / Super Key">
+            <span>⊞ Win</span>
+          </button>
+          <button class="key key-alt" id="key-alt-left" data-code="AltLeft" data-key="alt">
+            <span>Alt</span>
+          </button>
+          <button class="key key-space" data-code="Space" data-key="space">
+            <span>Space Bar</span>
+          </button>
+          <button class="key key-alt" id="key-alt-right" data-code="AltRight" data-key="alt">
+            <span>Alt</span>
+          </button>
+          <button class="key key-ctrl" id="key-ctrl-right" data-code="ControlRight" data-key="ctrl">
+            <span>Ctrl</span>
+          </button>
+          <button class="key key-arrow" data-code="ArrowLeft" data-key="left">
+            <span>◀</span>
+          </button>
+          <button class="key key-arrow" data-code="ArrowDown" data-key="down">
+            <span>▼</span>
+          </button>
+          <button class="key key-arrow" data-code="ArrowRight" data-key="right">
+            <span>▶</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- PC Numpad Layout (Collapsible / Toggleable) -->
+      <section class="keyboard-numpad collapsible-panel hidden" id="numpad">
+        <div class="numpad-grid">
+          <button class="key key-num" data-code="NumLock" data-key="num_lock"><span>Num</span></button>
+          <button class="key key-num" data-char="/"><span>/</span></button>
+          <button class="key key-num" data-char="*"><span>*</span></button>
+          <button class="key key-num" data-char="-"><span>-</span></button>
+
+          <button class="key key-num" data-char="7"><span>7</span></button>
+          <button class="key key-num" data-char="8"><span>8</span></button>
+          <button class="key key-num" data-char="9"><span>9</span></button>
+          <button class="key key-num num-tall" data-char="+"><span>+</span></button>
+
+          <button class="key key-num" data-char="4"><span>4</span></button>
+          <button class="key key-num" data-char="5"><span>5</span></button>
+          <button class="key key-num" data-char="6"><span>6</span></button>
+
+          <button class="key key-num" data-char="1"><span>1</span></button>
+          <button class="key key-num" data-char="2"><span>2</span></button>
+          <button class="key key-num" data-char="3"><span>3</span></button>
+          <button class="key key-num num-tall key-enter" data-code="NumpadEnter" data-key="enter"><span>↵</span></button>
+
+          <button class="key key-num num-wide" data-char="0"><span>0</span></button>
+          <button class="key key-num" data-char="."><span>.</span></button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer info / Tips -->
+    <footer class="bottom-bar">
+      <span>Tip: Aktifkan <b>Latch</b> untuk menekan kombinasi (misal Ctrl lalu C). Putar layar ke <b>Lanskap</b> untuk kenyamanan maksimal.</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

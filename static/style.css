@@ -1,0 +1,408 @@
+:root {
+  --bg-color: #0d1117;
+  --header-bg: #161b22;
+  --panel-bg: #1c2128;
+  --key-bg: #21262d;
+  --key-active: #388bfd;
+  --key-active-bg: #1f6feb;
+  --key-shadow: #111418;
+  --key-border: #30363d;
+  --key-special-bg: #1b2028;
+  --key-mod-active: #238636;
+  --key-danger: #da3633;
+  --text-main: #f0f6fc;
+  --text-sub: #8b949e;
+  --accent-cyan: #58a6ff;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  touch-action: manipulation;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Header & Controls */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--key-border);
+  padding: 6px 12px;
+  height: 44px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.left-controls, .right-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  color: var(--accent-cyan);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--key-border);
+}
+
+.status-badge .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f85149;
+}
+
+.status-badge.connected .dot {
+  background: #3fb950;
+  box-shadow: 0 0 6px #3fb950;
+}
+
+.status-badge.disconnected .dot {
+  background: #f85149;
+}
+
+.ping-badge {
+  font-size: 10px;
+  color: var(--text-sub);
+  font-family: monospace;
+}
+
+.tool-btn {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  color: var(--text-main);
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.tool-btn.active {
+  background: var(--key-active-bg);
+  border-color: var(--key-active);
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(56, 139, 253, 0.4);
+}
+
+.tool-btn:active {
+  transform: scale(0.95);
+}
+
+/* Modifier Indicator Strip */
+.modifier-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #111419;
+  padding: 2px 0;
+  font-size: 10px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
+.mod-tag {
+  color: #484f58;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+}
+
+.mod-tag.active {
+  color: #ffffff;
+  background: var(--key-mod-active);
+  box-shadow: 0 0 6px rgba(35, 134, 54, 0.6);
+}
+
+/* Collapsible Panels */
+.collapsible-panel {
+  display: flex;
+  background: var(--panel-bg);
+  padding: 4px 8px;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--key-border);
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.collapsible-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.collapsible-panel.hidden {
+  display: none !important;
+}
+
+/* Quick Shortcuts */
+.shortcuts-bar .shortcut-btn {
+  background: #252c37;
+  border: 1px solid var(--key-border);
+  color: var(--accent-cyan);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.shortcuts-bar .shortcut-btn:active {
+  background: var(--key-active-bg);
+  color: #fff;
+}
+.shortcuts-bar .shortcut-btn.danger {
+  color: #ff7b72;
+}
+
+/* Function row */
+.fn-row {
+  justify-content: space-between;
+}
+.fn-row .key-fn {
+  flex: 1;
+  min-width: 28px;
+  height: 32px;
+  font-size: 11px;
+}
+
+/* Nav row */
+.nav-row {
+  justify-content: center;
+}
+.nav-row .key-nav {
+  min-width: 44px;
+  height: 34px;
+  font-size: 11px;
+}
+
+/* Main Keyboard Workspace */
+.keyboard-container {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  padding: 6px;
+  gap: 8px;
+  background: #0d1117;
+  overflow: auto;
+}
+
+.keyboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.kb-row {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  flex: 1;
+}
+
+/* Standard Key Styling */
+.key {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--key-bg);
+  color: var(--text-main);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  box-shadow: 0 3px 0 var(--key-shadow), 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-size: clamp(12px, 1.8vw, 16px);
+  font-weight: 600;
+  touch-action: none;
+  cursor: pointer;
+  transition: transform 0.05s ease, background-color 0.1s ease, box-shadow 0.05s ease;
+  min-height: 36px;
+}
+
+.key span.main {
+  line-height: 1;
+}
+
+.key span.sub {
+  font-size: 10px;
+  color: var(--accent-cyan);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+/* Special Key widths */
+.key-tilde {
+  flex: 1;
+}
+.key-backspace {
+  flex: 2;
+  background: var(--key-special-bg);
+  font-size: clamp(11px, 1.4vw, 13px);
+}
+.key-tab {
+  flex: 1.5;
+  background: var(--key-special-bg);
+  font-size: clamp(11px, 1.4vw, 13px);
+}
+.key-backslash {
+  flex: 1.2;
+}
+.key-caps {
+  flex: 1.8;
+  background: var(--key-special-bg);
+  font-size: clamp(10px, 1.3vw, 12px);
+}
+.key-enter {
+  flex: 2.2;
+  background: #1f4068;
+  border-color: #2a5286;
+  font-size: clamp(12px, 1.4vw, 14px);
+}
+.key-shift {
+  flex: 2.2;
+  background: var(--key-special-bg);
+  font-size: clamp(11px, 1.3vw, 13px);
+}
+.key-ctrl, .key-alt, .key-win {
+  flex: 1.3;
+  background: var(--key-special-bg);
+  font-size: clamp(11px, 1.3vw, 13px);
+}
+.key-space {
+  flex: 6;
+  background: #2a313c;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+.key-arrow {
+  flex: 1.1;
+  background: #1c222b;
+  font-size: 14px;
+  color: var(--accent-cyan);
+}
+
+/* Active / Pressed Key State */
+.key.pressed, .key:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--key-shadow);
+  background: var(--key-active-bg) !important;
+  border-color: var(--key-active) !important;
+  color: #ffffff !important;
+}
+
+/* Locked / Latched Modifier State */
+.key.latched {
+  background: var(--key-mod-active) !important;
+  border-color: #3fb950 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(63, 185, 80, 0.6) !important;
+}
+
+/* Numpad Styling */
+.keyboard-numpad {
+  background: var(--panel-bg);
+  border-radius: 8px;
+  padding: 6px;
+  border: 1px solid var(--key-border);
+  display: flex;
+}
+
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 46px);
+  grid-auto-rows: 44px;
+  gap: 4px;
+}
+
+.num-tall {
+  grid-row: span 2;
+  height: 100%;
+}
+.num-wide {
+  grid-column: span 2;
+  width: 100%;
+}
+
+/* Footer info */
+.bottom-bar {
+  background: var(--header-bg);
+  border-top: 1px solid var(--key-border);
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text-sub);
+  text-align: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive considerations for portrait mode */
+@media (max-width: 768px) and (orientation: portrait) {
+  .keyboard-container {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  .keyboard-main {
+    min-width: 620px; /* guarantees standard layout does not distort in portrait */
+  }
+  .key {
+    min-height: 48px; /* taller keys in portrait for thumb reach */
+  }
+}
+
+@media (orientation: landscape) {
+  .key {
+    min-height: 38px;
+  }
+}
