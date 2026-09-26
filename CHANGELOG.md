@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.7.0] - 2026-09-26
+- Pindahkan slider sensitivitas kursor trackpad ke dalam modal Pengaturan
+
 ### [1.6.0] - 2026-09-26
 - Menambahkan pengaturan efek getar haptic feedback dan pilihan intensitas di modal Settings
 
@@ -102,6 +105,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.7.0] - 2026-09-26
+- Release v1.7.0 updates
 
 ### [1.6.0] - 2026-09-26
 - Release v1.6.0 updates

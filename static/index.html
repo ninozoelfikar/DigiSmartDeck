@@ -896,12 +896,7 @@ html, body {
       </div>
     </div>
 
-    <div class="palm-rest palm-right">
-      <div class="palm-settings">
-        <label for="tp-speed" class="palm-label">Sensitivitas: <span id="tp-speed-val">1.2x</span></label>
-        <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="palm-slider">
-      </div>
-    </div>
+    <div class="palm-rest palm-right"></div>
   </section>
 
   <!-- KEYBOARD + NUMPAD -->
@@ -1122,9 +1117,13 @@ html, body {
             <button class="size-preset-btn tp-preset-btn" data-tpsize="large">Besar</button>
             <button class="size-preset-btn tp-preset-btn" data-tpsize="xl">Ekstra</button>
           </div>
-          <div class="setting-slider-row">
+          <div class="setting-slider-row" style="margin-bottom:10px;">
             <span class="setting-slider-label">Tinggi Trackpad: <b id="lbl-tp-scale">100%</b></span>
             <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
+          </div>
+          <div class="setting-slider-row">
+            <span class="setting-slider-label">Sensitivitas Kursor: <b id="tp-speed-val">1.2x</b></span>
+            <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="custom-slider">
           </div>
         </div>
 
@@ -1495,13 +1494,16 @@ document.querySelectorAll('.sc-btn').forEach(btn => {
 });
 
 // ── Laptop Trackpad Controller ──
-let tpSpeed = 1.2;
+let tpSpeed = parseFloat(localStorage.getItem('digi_tp_speed')) || 1.2;
 const tpSpeedSlider = $('tp-speed');
 const tpSpeedVal = $('tp-speed-val');
 if (tpSpeedSlider) {
+  tpSpeedSlider.value = tpSpeed;
+  if (tpSpeedVal) tpSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
   tpSpeedSlider.addEventListener('input', (e) => {
     tpSpeed = parseFloat(e.target.value);
     if (tpSpeedVal) tpSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+    localStorage.setItem('digi_tp_speed', tpSpeed);
   });
 }
 
