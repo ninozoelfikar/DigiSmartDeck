@@ -94,6 +94,18 @@ body.theme-ubuntu {
   --key-font: "Ubuntu", "Ubuntu Light", "Cantarell", -apple-system, BlinkMacSystemFont, sans-serif;
   --key-letter-spacing: 0.2px;
 }
+body.os-win.theme-dark, body.os-win:not([class*="theme-"]) {
+  --key-font: "Segoe UI", "Segoe UI Variable", -apple-system, BlinkMacSystemFont, sans-serif;
+  --key-letter-spacing: 0.1px;
+}
+body.os-mac.theme-dark, body.os-mac:not([class*="theme-"]) {
+  --key-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Helvetica Neue", Arial, sans-serif;
+  --key-letter-spacing: -0.1px;
+}
+body.os-ubuntu.theme-dark, body.os-ubuntu:not([class*="theme-"]) {
+  --key-font: "Ubuntu", "Ubuntu Light", "Cantarell", -apple-system, BlinkMacSystemFont, sans-serif;
+  --key-letter-spacing: 0.2px;
+}
 body.theme-retro {
   --bg: #2d3032;
   --header-bg: #3c4043;
@@ -806,6 +818,54 @@ html, body {
   color: var(--text);
   letter-spacing: 0.3px;
 }
+.os-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.os-card {
+  background: var(--panel-bg);
+  border: 2px solid var(--key-border);
+  border-radius: 8px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+.os-card:hover {
+  border-color: var(--accent);
+}
+.os-card.active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.15);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+.os-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.os-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.os-name {
+  font-weight: 700;
+  font-size: 11.5px;
+  color: var(--text);
+}
+.os-sub {
+  font-size: 8.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
 .theme-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -839,6 +899,7 @@ html, body {
   height: 26px;
   border-radius: 4px;
 }
+.tp-os-native { background: linear-gradient(135deg, #0078d4 33%, #409cff 33% 66%, #e95420 66%); border: 1px solid #555; }
 .tp-dark { background: linear-gradient(135deg, #0d1117 50%, #21262d 50%); border: 1px solid #30363d; }
 .tp-win { background: linear-gradient(135deg, #202020 50%, #0078d4 50%); border: 1px solid #3e3e3e; }
 .tp-mac { background: linear-gradient(135deg, #161618 50%, #0a84ff 50%); border: 1px solid #444448; }
@@ -1136,39 +1197,59 @@ html, body {
       </div>
 
       <div class="modal-body">
+        <!-- TARGET OS SELECTION SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">💻 Sistem Operasi (Target OS)</div>
+          <div class="os-grid">
+            <button class="os-card active" data-os="win" type="button">
+              <div class="os-icon">🪟</div>
+              <div class="os-text">
+                <span class="os-name">Windows</span>
+                <span class="os-sub">Ctrl • ⊞ Win • Alt</span>
+              </div>
+            </button>
+            <button class="os-card" data-os="mac" type="button">
+              <div class="os-icon">🍎</div>
+              <div class="os-text">
+                <span class="os-name">macOS</span>
+                <span class="os-sub">control • ⌥ opt • ⌘ cmd</span>
+              </div>
+            </button>
+            <button class="os-card" data-os="ubuntu" type="button">
+              <div class="os-icon">🐧</div>
+              <div class="os-text">
+                <span class="os-name">Ubuntu / Linux</span>
+                <span class="os-sub">Ctrl • ❖ Super • Alt</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <!-- THEME / SKIN SECTION -->
         <div class="setting-group">
           <div class="setting-title">🎨 Tema / Skin Keyboard</div>
           <div class="theme-grid">
-            <button class="theme-card active" data-theme="dark">
+            <button class="theme-card active" data-theme="os-native" type="button">
+              <div class="theme-preview tp-os-native"></div>
+              <span>Sesuai OS</span>
+            </button>
+            <button class="theme-card" data-theme="dark" type="button">
               <div class="theme-preview tp-dark"></div>
               <span>Dark Modern</span>
             </button>
-            <button class="theme-card" data-theme="win">
-              <div class="theme-preview tp-win"></div>
-              <span>Windows 11</span>
-            </button>
-            <button class="theme-card" data-theme="mac">
-              <div class="theme-preview tp-mac"></div>
-              <span>macOS</span>
-            </button>
-            <button class="theme-card" data-theme="ubuntu">
-              <div class="theme-preview tp-ubuntu"></div>
-              <span>Ubuntu Yaru</span>
-            </button>
-            <button class="theme-card" data-theme="retro">
+            <button class="theme-card" data-theme="retro" type="button">
               <div class="theme-preview tp-retro"></div>
               <span>Retro 90s</span>
             </button>
-            <button class="theme-card" data-theme="cyberpunk">
+            <button class="theme-card" data-theme="cyberpunk" type="button">
               <div class="theme-preview tp-cyberpunk"></div>
               <span>Cyberpunk</span>
             </button>
-            <button class="theme-card" data-theme="stealth">
+            <button class="theme-card" data-theme="stealth" type="button">
               <div class="theme-preview tp-stealth"></div>
               <span>Stealth</span>
             </button>
-            <button class="theme-card" data-theme="nord">
+            <button class="theme-card" data-theme="nord" type="button">
               <div class="theme-preview tp-nord"></div>
               <span>Nord Arctic</span>
             </button>
@@ -1655,15 +1736,18 @@ window.addEventListener('mouseup', () => {
   if (mouseEl) { releaseKey(mouseEl); mouseEl = null; }
 });
 
-// ── Shortcut Buttons ──
-document.querySelectorAll('.sc-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+// ── Shortcut Buttons (Event Delegation) ──
+const scBar = $('sc-bar');
+if (scBar) {
+  scBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.sc-btn');
+    if (!btn) return;
     vibe(20);
     playClickSound();
     const keys = (btn.dataset.combo || '').split(',');
     if (keys.length) send({ type: 'combo', keys });
   });
-});
+}
 
 // ── Laptop Trackpad Controller ──
 let tpSpeed = parseFloat(localStorage.getItem('digi_tp_speed')) || 1.2;
@@ -1921,28 +2005,135 @@ if (settingsModal) {
   });
 }
 
-// Themes
+// ─── Target OS & Layout Manager ───
+let currentOS = localStorage.getItem('digi_os');
+const osCards = document.querySelectorAll('.os-card');
+
+const SHORTCUT_CONFIGS = {
+  win: [
+    { label: 'Ctrl+C', combo: 'ctrl,c' },
+    { label: 'Ctrl+V', combo: 'ctrl,v' },
+    { label: 'Ctrl+X', combo: 'ctrl,x' },
+    { label: 'Ctrl+Z', combo: 'ctrl,z' },
+    { label: 'Ctrl+Y', combo: 'ctrl,y' },
+    { label: 'Ctrl+A', combo: 'ctrl,a' },
+    { label: 'Ctrl+S', combo: 'ctrl,s' },
+    { label: 'Ctrl+F', combo: 'ctrl,f' },
+    { label: 'Alt+Tab', combo: 'alt,tab' },
+    { label: 'Win+D', combo: 'cmd,d' },
+    { label: 'Ctrl+Alt+Del', combo: 'ctrl,alt,delete', danger: true }
+  ],
+  ubuntu: [
+    { label: 'Ctrl+C', combo: 'ctrl,c' },
+    { label: 'Ctrl+V', combo: 'ctrl,v' },
+    { label: 'Ctrl+X', combo: 'ctrl,x' },
+    { label: 'Ctrl+Z', combo: 'ctrl,z' },
+    { label: 'Ctrl+Y', combo: 'ctrl,y' },
+    { label: 'Ctrl+A', combo: 'ctrl,a' },
+    { label: 'Ctrl+S', combo: 'ctrl,s' },
+    { label: 'Ctrl+F', combo: 'ctrl,f' },
+    { label: 'Alt+Tab', combo: 'alt,tab' },
+    { label: 'Super+D', combo: 'cmd,d' },
+    { label: 'Ctrl+Alt+T', combo: 'ctrl,alt,t', danger: true }
+  ],
+  mac: [
+    { label: '⌘+C', combo: 'cmd,c' },
+    { label: '⌘+V', combo: 'cmd,v' },
+    { label: '⌘+X', combo: 'cmd,x' },
+    { label: '⌘+Z', combo: 'cmd,z' },
+    { label: '⌘+Shift+Z', combo: 'cmd,shift,z' },
+    { label: '⌘+A', combo: 'cmd,a' },
+    { label: '⌘+S', combo: 'cmd,s' },
+    { label: '⌘+F', combo: 'cmd,f' },
+    { label: '⌘+Tab', combo: 'cmd,tab' },
+    { label: '⌘+Space', combo: 'cmd,space' },
+    { label: '⌥+⌘+Esc', combo: 'alt,cmd,esc', danger: true }
+  ]
+};
+
+function renderShortcuts(os) {
+  const scBar = $('sc-bar');
+  if (!scBar) return;
+  const list = SHORTCUT_CONFIGS[os] || SHORTCUT_CONFIGS.win;
+  scBar.innerHTML = list.map(item =>
+    `<button class="sc-btn${item.danger ? ' danger' : ''}" data-combo="${item.combo}">${item.label}</button>`
+  ).join('');
+}
+
+function applyOS(os) {
+  currentOS = os || 'win';
+  localStorage.setItem('digi_os', currentOS);
+
+  // Update OS cards active state
+  osCards.forEach(card => {
+    card.classList.toggle('active', card.dataset.os === currentOS);
+  });
+
+  // Update body class for OS
+  document.body.classList.remove('os-win', 'os-mac', 'os-ubuntu');
+  document.body.classList.add('os-' + currentOS);
+
+  // Update modifier keys
+  const modL1 = $('key-ctrl-l');
+  const modL2 = $('key-win');
+  const modL3 = $('key-alt-l');
+  const modR1 = $('key-alt-r');
+  const modR2 = $('key-ctrl-r');
+
+  if (currentOS === 'mac') {
+    if (modL1) { modL1.textContent = 'control ⌃'; modL1.dataset.key = 'ctrl'; }
+    if (modL2) { modL2.textContent = 'option ⌥'; modL2.dataset.key = 'alt'; }
+    if (modL3) { modL3.textContent = '⌘ cmd'; modL3.dataset.key = 'cmd'; }
+    if (modR1) { modR1.textContent = '⌘ cmd'; modR1.dataset.key = 'cmd'; }
+    if (modR2) { modR2.textContent = 'option ⌥'; modR2.dataset.key = 'alt'; }
+  } else if (currentOS === 'ubuntu') {
+    if (modL1) { modL1.textContent = 'Ctrl'; modL1.dataset.key = 'ctrl'; }
+    if (modL2) { modL2.textContent = '❖ Super'; modL2.dataset.key = 'cmd'; }
+    if (modL3) { modL3.textContent = 'Alt'; modL3.dataset.key = 'alt'; }
+    if (modR1) { modR1.textContent = 'Alt'; modR1.dataset.key = 'alt'; }
+    if (modR2) { modR2.textContent = 'Ctrl'; modR2.dataset.key = 'ctrl'; }
+  } else {
+    // Windows default
+    if (modL1) { modL1.textContent = 'Ctrl'; modL1.dataset.key = 'ctrl'; }
+    if (modL2) { modL2.textContent = '⊞ Win'; modL2.dataset.key = 'cmd'; }
+    if (modL3) { modL3.textContent = 'Alt'; modL3.dataset.key = 'alt'; }
+    if (modR1) { modR1.textContent = 'Alt'; modR1.dataset.key = 'alt'; }
+    if (modR2) { modR2.textContent = 'Ctrl'; modR2.dataset.key = 'ctrl'; }
+  }
+
+  refreshMods();
+  renderShortcuts(currentOS);
+
+  // Jika tema saat ini adalah 'os-native', perbarui tema agar warna & font mengikuti OS baru
+  const activeTheme = localStorage.getItem('digi_theme') || 'os-native';
+  if (activeTheme === 'os-native') {
+    applyTheme('os-native');
+  }
+}
+
+osCards.forEach(card => {
+  card.addEventListener('click', () => {
+    applyOS(card.dataset.os);
+    vibe(20);
+  });
+});
+
+// ─── Theme Manager ───
 const themeCards = document.querySelectorAll('.theme-card');
 function applyTheme(theme) {
-  document.body.classList.remove('theme-win', 'theme-mac', 'theme-ubuntu', 'theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord');
-  if (theme && theme !== 'dark') {
+  theme = theme || 'os-native';
+  document.body.classList.remove('theme-os-native', 'theme-win', 'theme-mac', 'theme-ubuntu', 'theme-dark', 'theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord');
+
+  if (theme === 'os-native') {
+    document.body.classList.add('theme-os-native');
+    document.body.classList.add('theme-' + currentOS);
+  } else if (theme) {
     document.body.classList.add('theme-' + theme);
   }
+
   themeCards.forEach(card => {
     card.classList.toggle('active', card.dataset.theme === theme);
   });
-
-  // Adaptasi simbol tombol modifier Windows / Mac / Ubuntu
-  const winBtn = $('key-win');
-  if (winBtn) {
-    if (theme === 'mac') {
-      winBtn.textContent = '⌘ cmd';
-    } else if (theme === 'ubuntu') {
-      winBtn.textContent = '❖ Super';
-    } else {
-      winBtn.textContent = '⊞ Win';
-    }
-  }
 
   localStorage.setItem('digi_theme', theme);
 }
@@ -1953,7 +2144,19 @@ themeCards.forEach(card => {
     vibe(20);
   });
 });
-const savedTheme = localStorage.getItem('digi_theme') || 'dark';
+
+// Migration from legacy theme-as-os or defaults
+let savedTheme = localStorage.getItem('digi_theme') || 'os-native';
+let savedOS = localStorage.getItem('digi_os');
+if (!savedOS) {
+  if (savedTheme === 'win' || savedTheme === 'mac' || savedTheme === 'ubuntu') {
+    savedOS = savedTheme;
+    savedTheme = 'os-native';
+  } else {
+    savedOS = 'win';
+  }
+}
+applyOS(savedOS);
 applyTheme(savedTheme);
 
 // Keyboard Sizing (Presets & Granular Height)

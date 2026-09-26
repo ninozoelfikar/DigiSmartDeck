@@ -45,8 +45,9 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Nav Bar:** `Insert`, `Delete`, `Home`, `End`, `Page Up`, `Page Down`, `Print Screen`.
    - **PC Numpad:** Blok 17 tombol kalkulator angka lengkap.
    - **Shortcut Cepat:** Tombol 1-tap untuk `Ctrl+C`, `Ctrl+V`, `Ctrl+Z`, `Ctrl+A`, `Alt+Tab`, `Win+D`.
-5. **Kustomisasi & Estetika (Menu Pengaturan ⚙️):**
-   - **8 Pilihan Tema & Tipografi Khusus:** Dark Modern, Windows 11 Fluent (`Segoe UI`), macOS Chiclet (`SF Pro`), Ubuntu Yaru (`Ubuntu Font`), Retro 90s (`Courier New`), Cyberpunk (`Orbitron`), Stealth Matte (`JetBrains Mono`), dan Nord Arctic (`Inter`). Label tombol modifier OS secara cerdas berganti (`⊞ Win`, `⌘ cmd`, `❖ Super`) mengikuti tema aktif.
+5. **Kustomisasi Sistem Operasi & Tema (Menu Pengaturan ⚙️):**
+   - **Pemilih Sistem Operasi Terpisah (Target OS):** Pilihan profil OS tersendiri (**Windows**, **macOS**, **Ubuntu / Linux**). Mengubah susunan tuts modifier (misal `control ⌃`, `option ⌥`, `⌘ cmd` pada Mac vs `Ctrl`, `⊞ Win`, `Alt` pada Windows/Ubuntu), font default OS, serta bilah pintasan cepat secara otomatis (`⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc` untuk Mac; `Ctrl+Alt+T` untuk Ubuntu).
+   - **Koleksi Tema Visual & Tipografi Khusus:** Tema Sesuai OS (Native), Dark Modern, Retro 90s (`Courier New`), Cyberpunk (`Orbitron`), Stealth Matte (`JetBrains Mono`), dan Nord Arctic (`Inter`).
    - **Ukuran Tinggi Tombol:** Preset (Kecil, Normal, Besar, Ekstra) dan slider ketinggian tombol (30px - 60px).
    - **Fullscreen & Tip Toggle:** Tombol manual fullscreen (`⛶`) dan opsi sembunyikan baris tip.
 6. **Smart LAN Detection & QR Code:**
@@ -134,7 +135,8 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 - **True 1:1 PC Keyboard Canvas:** Number row, full QWERTY, navigation keys, latching modifiers, and Numpad without mobile OS keyboard popup.
 - **Laptop Trackpad / Mouse Control Deck:** Smooth multi-touch trackpad with 1-finger left click tap, 2-finger right click tap, 2-finger vertical scroll, physical left/right buttons, position toggle (top/bottom), and sizing/sensitivity controls.
 - **Tactile & Audio Feedback:** Web Vibration API haptics (Soft, Normal, Strong) and synthesized mechanical switch sound with custom volume slider (10%-100%) and quick presets.
-- **Theme & Ergonomics Studio:** 8 visual themes (Dark Modern, Windows 11, macOS, Ubuntu Yaru, Retro 90s, Cyberpunk, Stealth, Nord) with custom typography per theme (Segoe UI, SF Pro, Ubuntu, Orbitron, JetBrains Mono, Courier) and granular key height scaling. Dynamic OS modifier key labels (`⊞ Win`, `⌘ cmd`, `❖ Super`).
+- **Target OS Profile & Layout Selector:** Dedicated OS selector (**Windows**, **macOS**, **Ubuntu / Linux**). Automatically configures physical modifier keys (`control ⌃`, `option ⌥`, `⌘ cmd` on Mac vs `Ctrl`, `⊞ Win`, `Alt` on Windows/Ubuntu), native OS typography, and OS-tailored shortcut bars (`⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc` on Mac; `Ctrl+Alt+T` on Ubuntu).
+- **Theme & Ergonomics Studio:** Independent visual themes (Native OS, Dark Modern, Retro 90s, Cyberpunk, Stealth, Nord) with custom typography per theme (Segoe UI, SF Pro, Ubuntu, Orbitron, JetBrains Mono, Courier) and granular key height scaling.
 - **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
 ---

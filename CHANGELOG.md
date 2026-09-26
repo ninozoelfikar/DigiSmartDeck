@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.11.1] - 2026-09-26
+- Pemisahan menu profil sistem operasi (Target OS) dan tema visual keyboard tersendiri
+
 ### [1.11.0] - 2026-09-26
 - Penyesuaian font keyboard per tema dan penambahan tema Windows, Mac, dan Ubuntu
 
@@ -120,6 +123,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.11.1] - 2026-09-26
+- Release v1.11.1 updates
 
 ### [1.11.0] - 2026-09-26
 - Release v1.11.0 updates

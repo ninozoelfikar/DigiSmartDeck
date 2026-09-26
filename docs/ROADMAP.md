@@ -38,15 +38,18 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
 ---
 
 ### 📌 Fase 1: Estetika Mekanikal, Audio Taktil & Optimasi Tampilan (Selesai di v1.9.0)
-- [x] **Aesthetic & OS Themes (Keycap Studio):**
-  - **Windows 11 Fluent:** Desain dark modern dengan font Segoe UI dan simbol tombol ⊞ Win.
-  - **macOS Chiclet:** Desain Apple Keyboard minimalis dengan font SF Pro dan simbol tombol ⌘ cmd.
-  - **Ubuntu Yaru:** Nuansa ungu Canonical Aubergine & Warm Orange dengan font Ubuntu dan simbol tombol ❖ Super.
-  - **Retro IBM 1990s Beige:** Warna klasik abu-abu/krem komputer legendaris dengan font Courier New.
+- [x] **Pemilih Sistem Operasi Terpisah (Target OS Architecture):**
+  - **Windows:** Layout tombol `Ctrl` • `⊞ Win` • `Alt`, font Segoe UI, pintasan `Win+D`, `Alt+Tab`, `Ctrl+Alt+Del`.
+  - **macOS:** Layout tombol Apple `control ⌃` • `option ⌥` • `⌘ cmd`, font SF Pro, pintasan Mac `⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc`.
+  - **Ubuntu / Linux:** Layout tombol `Ctrl` • `❖ Super` • `Alt`, font Ubuntu, pintasan `Super+D`, `Ctrl+Alt+T`.
+- [x] **Aesthetic Keycap Theme Studio:**
+  - **Sesuai OS (Native):** Otomatis menggunakan warna & estetika visual khas OS yang dipilih (Windows 11 Fluent, macOS Chiclet, Ubuntu Yaru Aubergine).
+  - **Dark Modern:** Tampilan gelap netral GitHub style.
+  - **Retro IBM 1990s Beige:** Warna klasik komputer legendaris dengan font Courier New.
   - **Cyberpunk Neon RGB:** Aksen cyan & magenta tajam dengan font futuristik Orbitron.
-  - **Stealth Matte Black:** Nuansa minimalis hitam monokromatik dengan font JetBrains Mono.
+  - **Stealth Matte Black:** Nuansa minimalis monokromatik dengan font JetBrains Mono.
   - **Nord Frost:** Palet biru beku Skandinavia dengan font Inter.
-- [x] **Tipografi Khusus Tiap Tema:** Setiap tema keyboard memiliki font dan letter-spacing tersendiri yang disesuaikan secara dinamis.
+- [x] **Tipografi Khusus Tiap Tema & OS:** Font dan letter-spacing disesuaikan secara dinamis.
 - [x] **Synthesized Switch Sound Effect (Audio Taktil) & Pengontrol Volume:**
   - Sintetis suara saklar mekanikal renyah via Web Audio API tanpa file eksternal.
   - Pengontrol volume granular (10% s/d 100%) dan 3 preset volume instan (Pelan, Sedang, Keras).
