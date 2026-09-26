@@ -349,16 +349,26 @@ html, body {
 }
 
 /* Otomatis sembunyikan tip di mode fullscreen agar ruang keyboard maksimal */
-:fullscreen .footer,
-:-webkit-full-screen .footer,
-:-moz-full-screen .footer,
-:-ms-fullscreen .footer,
 .is-fullscreen .footer,
+.is-fullscreen .palm-tip,
+.is-fullscreen #footer-tip {
+  display: none !important;
+}
+
+:fullscreen .footer,
 :fullscreen .palm-tip,
+:fullscreen #footer-tip {
+  display: none !important;
+}
+
+:-webkit-full-screen .footer,
 :-webkit-full-screen .palm-tip,
-:-moz-full-screen .palm-tip,
-:-ms-fullscreen .palm-tip,
-.is-fullscreen .palm-tip {
+:-webkit-full-screen #footer-tip {
+  display: none !important;
+}
+
+.footer.hidden,
+#footer-tip.hidden {
   display: none !important;
 }
 
@@ -1041,8 +1051,9 @@ html, body {
     </section>
   </main>
 
-  <footer class="footer">
-    <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di atas keyboard.
+  <footer class="footer" id="footer-tip">
+    <span><b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di atas keyboard.</span>
+    <button id="btn-close-tip" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:12px;margin-left:12px;padding:0 4px;" title="Tutup Tip">✕</button>
   </footer>
 
   <!-- SETTINGS MODAL -->
@@ -1116,10 +1127,19 @@ html, body {
             <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
           </div>
         </div>
+
+        <!-- DISPLAY OPTIONS -->
+        <div class="setting-group">
+          <div class="setting-title">ℹ️ Opsi Tampilan</div>
+          <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;">
+            <input type="checkbox" id="chk-show-tip" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+            <span>Tampilkan baris teks petunjuk (Tip) di bawah</span>
+          </label>
+        </div>
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiKeyboard v1.4.1</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiKeyboard v1.5.0</span>
         <button class="btn-primary" id="btn-save-settings">Selesai</button>
       </div>
     </div>
@@ -1181,7 +1201,12 @@ document.addEventListener('mozfullscreenchange', updateFsState);
 document.addEventListener('MSFullscreenChange', updateFsState);
 
 $('btn-fs').onclick = () => {
-  if (!isFs()) {
+  const willBeFs = !isFs();
+  document.body.classList.toggle('is-fullscreen', willBeFs);
+  const btn = $('btn-fs');
+  if (btn) btn.classList.toggle('on', willBeFs);
+
+  if (willBeFs) {
     const el = document.documentElement;
     const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (req) req.call(el).catch(() => {});
@@ -1818,6 +1843,33 @@ if (sliderTpScale) {
 
 const savedTpScale = parseInt(localStorage.getItem('digi_tp_scale'), 10) || 100;
 applyTpScale(savedTpScale);
+
+// ── Tip Visibility ──
+const footerTip = $('footer-tip');
+const btnCloseTip = $('btn-close-tip');
+const chkShowTip = $('chk-show-tip');
+
+function setTipVisibility(show) {
+  if (footerTip) footerTip.classList.toggle('hidden', !show);
+  if (chkShowTip) chkShowTip.checked = show;
+  localStorage.setItem('digi_show_tip', show ? 'true' : 'false');
+}
+
+if (btnCloseTip) {
+  btnCloseTip.addEventListener('click', () => {
+    setTipVisibility(false);
+    vibe(15);
+  });
+}
+
+if (chkShowTip) {
+  chkShowTip.addEventListener('change', (e) => {
+    setTipVisibility(e.target.checked);
+  });
+}
+
+const savedShowTip = localStorage.getItem('digi_show_tip') !== 'false';
+setTipVisibility(savedShowTip);
 
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());

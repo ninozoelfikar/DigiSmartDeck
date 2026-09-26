@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.5.2] - 2026-09-26
+- Perbaikan isolasi CSS fullscreen tip dan tombol tutup tip langsung
+
 ### [1.5.1] - 2026-09-26
 - Hilangkan modifier strip atas dan sembunyikan tip otomatis saat fullscreen
 
@@ -96,6 +99,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.5.2] - 2026-09-26
+- Release v1.5.2 updates
 
 ### [1.5.1] - 2026-09-26
 - Release v1.5.1 updates
