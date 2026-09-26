@@ -9,6 +9,25 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.4.0] - 2026-09-26
+#### ✨ Fitur Baru (Added)
+- **Modal Pengaturan Tema & Skin Keyboard:** Menambahkan tombol pengaturan `⚙️` pada toolbar atas dengan 5 tema visual kustom:
+  - *Dark Modern*: Tema bawaan bernuansa GitHub Dark / VS Code yang nyaman di mata.
+  - *Retro 90s*: Tampilan klasik beige gading khas keyboard IBM Model M tahun 1990-an.
+  - *Cyberpunk*: Aksen neon ungu elektrik, garis tepi cyan, dan enter magenta cerah.
+  - *Stealth*: Matte black monokrom super gelap dan minimalis untuk pencahayaan rendah.
+  - *Nord Arctic*: Palet warna biru beku Arktik Nord yang elegan dan sejuk.
+- **Pengatur Ukuran & Skalabilitas Tombol:** Pengguna dapat menyesuaikan tinggi tombol keyboard sesuai kenyamanan jari:
+  - Tersedia 4 preset cepat: *Kecil* (32px), *Normal* (38px), *Besar* (46px), dan *Ekstra* (54px).
+  - Slider interaktif granular dari `30px` hingga `60px` dengan penskalaan ukuran huruf secara otomatis dan proporsional.
+- **Penyimpanan Preferensi (Persistence):** Semua pilihan tema, ukuran tombol, dan orientasi trackpad tersimpan otomatis di *localStorage* browser.
+
+#### 🛠️ Perbaikan & Tata Letak (Fixed & Changed)
+- **Kuncian Posisi Baris Fn di Atas Angka:** Memindahkan baris Fn (`Esc`, `F1-F12`) dan baris Navigasi langsung ke dalam kontainer utama keyboard (`.kb-main`), sehingga saat diaktifkan, baris Fn **selalu berada tepat di atas baris angka**, baik ketika trackpad ditaruh di posisi atas maupun di bawah.
+- **Sinkronisasi Sakelar Posisi Trackpad:** Opsi pemindahan posisi trackpad di dalam modal pengaturan tersinkronisasi dua arah dengan tombol sakelar di sandaran tangan.
+
+---
+
 ### [1.3.0] - 2026-09-26
 #### ✨ Fitur Baru (Added)
 - **Continuous Key Auto-Repeat:** Menahan tombol keyboard (seperti `Backspace`, `Delete`, panah `▲ ◀ ▼ ▶`, `Space`, huruf/angka) sekarang menghasilkan input berulang otomatis (~22 karakter/detik setelah jeda awal 350ms), persis seperti keyboard fisik PC.
@@ -64,6 +83,25 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.4.0] - 2026-09-26
+#### Added
+- **Settings Modal & Keyboard Themes:** Added a settings button `⚙️` to the header toolbar featuring 5 bespoke visual themes:
+  - *Dark Modern*: Default GitHub Dark / VS Code aesthetic.
+  - *Retro 90s*: Classic 1990s beige aesthetic inspired by IBM Model M mechanical keyboards.
+  - *Cyberpunk*: High-contrast neon purple, cyan glow borders, and hot magenta accents.
+  - *Stealth*: Pure matte black and charcoal minimalist style for dark environments.
+  - *Nord Arctic*: Frosty Arctic Nord blue palette.
+- **Custom Key Sizing & Dynamic Scaling:** Flexible keyboard button height control:
+  - 4 one-touch presets: *Compact* (32px), *Normal* (38px), *Large* (46px), and *XL* (54px).
+  - Granular slider ranging from `30px` to `60px` with proportional font-size recalculation.
+- **Full Client Persistence:** All custom themes, button heights, and trackpad positions persist automatically in browser `localStorage`.
+
+#### Fixed & Changed
+- **Locked Fn Bar Placement Above Numbers:** Relocated `#fn-row` (`Esc`, `F1-F12`) and `#nav-row` into `.kb-main` directly above Row 1 numbers, ensuring the Fn row is permanently anchored on top of the number keys regardless of trackpad deck orientation (top or bottom).
+- **Two-Way Trackpad Position Sync:** Trackpad orientation controls inside the settings dialog stay seamlessly synced with the deck palm rest toggle.
+
+---
 
 ### [1.3.0] - 2026-09-26
 #### Added

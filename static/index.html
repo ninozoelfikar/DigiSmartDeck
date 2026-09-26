@@ -25,7 +25,85 @@
   --danger: #da3633;
   --enter-bg: #1f4068;
   --enter-border: #2a5286;
+  --key-min-height: 38px;
+  --key-font-size: 11px;
+  --tp-scale: 1;
 }
+
+/* ─── THEMES / SKINS ─── */
+body.theme-retro {
+  --bg: #2d3032;
+  --header-bg: #3c4043;
+  --panel-bg: #494d50;
+  --key-bg: #e2ded5;
+  --key-active-bg: #a89f91;
+  --key-active-border: #7d7568;
+  --key-shadow: #1b1d1e;
+  --key-border: #bbb4a8;
+  --key-special: #c8c2b7;
+  --key-mod-active: #4a7c59;
+  --accent: #d9534f;
+  --text: #212529;
+  --text-dim: #5c636a;
+  --danger: #d9534f;
+  --enter-bg: #3d6888;
+  --enter-border: #284b63;
+}
+body.theme-cyberpunk {
+  --bg: #0b0716;
+  --header-bg: #150d2a;
+  --panel-bg: #221245;
+  --key-bg: #1b0c38;
+  --key-active-bg: #ff007f;
+  --key-active-border: #00f0ff;
+  --key-shadow: #050010;
+  --key-border: #00f0ff;
+  --key-special: #291452;
+  --key-mod-active: #00ff66;
+  --accent: #00f0ff;
+  --text: #00f0ff;
+  --text-dim: #b388ff;
+  --danger: #ff0055;
+  --enter-bg: #7900ff;
+  --enter-border: #ff007f;
+}
+body.theme-stealth {
+  --bg: #000000;
+  --header-bg: #0c0c0c;
+  --panel-bg: #141414;
+  --key-bg: #171717;
+  --key-active-bg: #383838;
+  --key-active-border: #666666;
+  --key-shadow: #000000;
+  --key-border: #262626;
+  --key-special: #101010;
+  --key-mod-active: #2e7d32;
+  --accent: #ffffff;
+  --text: #e0e0e0;
+  --text-dim: #737373;
+  --danger: #b71c1c;
+  --enter-bg: #212121;
+  --enter-border: #424242;
+}
+body.theme-nord {
+  --bg: #242933;
+  --header-bg: #2e3440;
+  --panel-bg: #3b4252;
+  --key-bg: #434c5e;
+  --key-active-bg: #88c0d0;
+  --key-active-border: #8fbcbb;
+  --key-shadow: #1e222a;
+  --key-border: #4c566a;
+  --key-special: #3b4252;
+  --key-mod-active: #a3be8c;
+  --accent: #88c0d0;
+  --text: #eceff4;
+  --text-dim: #d8dee9;
+  --danger: #bf616a;
+  --enter-bg: #5e81ac;
+  --enter-border: #81a1c1;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -164,12 +242,21 @@ html, body {
 .sc-btn:active { background: var(--key-active-bg); color: #fff; }
 .sc-btn.danger { color: #ff7b72; }
 
-/* ─── FN / NAV ROW KEYS ─── */
+/* ─── FN / NAV ROW (SELALU DI ATAS NUMBER ROW) ─── */
+.panel-fn, .panel-nav {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+  flex: 1;
+}
+.panel-fn.hidden, .panel-nav.hidden {
+  display: none !important;
+}
 .fn-key, .nav-key {
   flex: 1;
-  min-width: 28px;
-  height: 34px;
-  font-size: 11px;
+  min-width: 24px;
+  min-height: calc(var(--key-min-height, 38px) - 6px);
+  font-size: calc(var(--key-font-size, 11px) - 1px);
 }
 
 /* ─── KEYBOARD CONTAINER ─── */
@@ -211,11 +298,11 @@ html, body {
   border: 1px solid var(--key-border);
   border-radius: 6px;
   box-shadow: 0 3px 0 var(--key-shadow), 0 2px 4px rgba(0,0,0,.4);
-  font-size: clamp(11px, 1.7vw, 15px);
+  font-size: clamp(var(--key-font-size, 11px), 1.7vw, calc(var(--key-font-size, 11px) + 4px));
   font-weight: 600;
   cursor: pointer;
   transition: transform .05s, background .08s, box-shadow .05s;
-  min-height: 38px;
+  min-height: var(--key-min-height, 38px);
   line-height: 1.2;
   -webkit-touch-callout: none;
 }
@@ -577,6 +664,169 @@ html, body {
   .kb-main { min-width: 640px; }
   .k { min-height: 46px; }
 }
+
+/* ─── SETTINGS MODAL ─── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+.modal-backdrop.hidden {
+  display: none !important;
+}
+.modal-dialog {
+  background: var(--header-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 14px;
+  width: min(500px, 92vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  color: var(--text);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--key-border);
+}
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.setting-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+}
+.theme-card {
+  background: var(--panel-bg);
+  border: 2px solid var(--key-border);
+  border-radius: 8px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.theme-card:hover {
+  border-color: var(--accent);
+}
+.theme-card.active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.15);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+.theme-preview {
+  width: 100%;
+  height: 26px;
+  border-radius: 4px;
+}
+.tp-dark { background: linear-gradient(135deg, #0d1117 50%, #21262d 50%); border: 1px solid #30363d; }
+.tp-retro { background: linear-gradient(135deg, #2d3032 50%, #e2ded5 50%); border: 1px solid #bbb4a8; }
+.tp-cyberpunk { background: linear-gradient(135deg, #0b0716 50%, #00f0ff 50%); border: 1px solid #ff007f; }
+.tp-stealth { background: linear-gradient(135deg, #000000 50%, #171717 50%); border: 1px solid #333333; }
+.tp-nord { background: linear-gradient(135deg, #242933 50%, #88c0d0 50%); border: 1px solid #4c566a; }
+
+.size-presets, .trackpad-pos-buttons {
+  display: flex;
+  gap: 6px;
+}
+.size-preset-btn, .pos-option-btn {
+  flex: 1;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  color: var(--text);
+  padding: 7px 4px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.size-preset-btn.active, .pos-option-btn.active {
+  background: var(--key-active-bg);
+  border-color: var(--key-active-border);
+  color: #fff;
+}
+.setting-slider-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+.setting-slider-label {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.custom-slider {
+  flex: 1;
+  max-width: 180px;
+  height: 5px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.modal-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--key-border);
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-primary {
+  background: var(--key-active-bg);
+  border: 1px solid var(--key-active-border);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
   </style>
 </head>
 <body>
@@ -600,6 +850,7 @@ html, body {
       <button class="tbtn on" id="btn-tp" title="Toggle Trackpad Laptop">🖱️ Pad</button>
       <button class="tbtn on" id="btn-latch" title="Sticky modifier – Ctrl/Shift/Alt terkunci sampai tombol berikutnya">Latch</button>
       <button class="tbtn on" id="btn-haptic" title="Haptic feedback">📳</button>
+      <button class="tbtn" id="btn-settings" title="Pengaturan Tema & Ukuran">⚙️</button>
       <button class="tbtn" id="btn-fs">⛶</button>
     </div>
   </header>
@@ -626,36 +877,6 @@ html, body {
     <button class="sc-btn" data-combo="alt,tab">Alt+Tab</button>
     <button class="sc-btn" data-combo="cmd,d">Win+D</button>
     <button class="sc-btn danger" data-combo="ctrl,alt,delete">Ctrl+Alt+Del</button>
-  </div>
-
-  <!-- FN ROW -->
-  <div class="panel hidden" id="fn-row">
-    <button class="k fn-key sp" data-key="esc">Esc</button>
-    <button class="k fn-key sp" data-key="f1">F1</button>
-    <button class="k fn-key sp" data-key="f2">F2</button>
-    <button class="k fn-key sp" data-key="f3">F3</button>
-    <button class="k fn-key sp" data-key="f4">F4</button>
-    <button class="k fn-key sp" data-key="f5">F5</button>
-    <button class="k fn-key sp" data-key="f6">F6</button>
-    <button class="k fn-key sp" data-key="f7">F7</button>
-    <button class="k fn-key sp" data-key="f8">F8</button>
-    <button class="k fn-key sp" data-key="f9">F9</button>
-    <button class="k fn-key sp" data-key="f10">F10</button>
-    <button class="k fn-key sp" data-key="f11">F11</button>
-    <button class="k fn-key sp" data-key="f12">F12</button>
-  </div>
-
-  <!-- NAV ROW -->
-  <div class="panel hidden" id="nav-row">
-    <button class="k nav-key sp" data-key="print_screen">PrtSc</button>
-    <button class="k nav-key sp" data-key="scroll_lock">ScrLk</button>
-    <button class="k nav-key sp" data-key="pause">Pause</button>
-    <button class="k nav-key sp" data-key="insert">Ins</button>
-    <button class="k nav-key sp" data-key="delete">Del</button>
-    <button class="k nav-key sp" data-key="home">Home</button>
-    <button class="k nav-key sp" data-key="end">End</button>
-    <button class="k nav-key sp" data-key="page_up">PgUp</button>
-    <button class="k nav-key sp" data-key="page_down">PgDn</button>
   </div>
 
   <!-- LAPTOP TRACKPAD DECK (ATAS / TOP POSITION) -->
@@ -696,6 +917,36 @@ html, body {
   <!-- KEYBOARD + NUMPAD -->
   <main class="kb-wrap">
     <section class="kb-main">
+
+      <!-- FN ROW: SELALU TEPAT DI ATAS NUMBER ROW (WALAUPUN TRACKPAD DI ATAS) -->
+      <div class="kb-row panel-fn hidden" id="fn-row">
+        <button class="k fn-key sp" data-key="esc">Esc</button>
+        <button class="k fn-key sp" data-key="f1">F1</button>
+        <button class="k fn-key sp" data-key="f2">F2</button>
+        <button class="k fn-key sp" data-key="f3">F3</button>
+        <button class="k fn-key sp" data-key="f4">F4</button>
+        <button class="k fn-key sp" data-key="f5">F5</button>
+        <button class="k fn-key sp" data-key="f6">F6</button>
+        <button class="k fn-key sp" data-key="f7">F7</button>
+        <button class="k fn-key sp" data-key="f8">F8</button>
+        <button class="k fn-key sp" data-key="f9">F9</button>
+        <button class="k fn-key sp" data-key="f10">F10</button>
+        <button class="k fn-key sp" data-key="f11">F11</button>
+        <button class="k fn-key sp" data-key="f12">F12</button>
+      </div>
+
+      <!-- NAV ROW -->
+      <div class="kb-row panel-nav hidden" id="nav-row">
+        <button class="k nav-key sp" data-key="print_screen">PrtSc</button>
+        <button class="k nav-key sp" data-key="scroll_lock">ScrLk</button>
+        <button class="k nav-key sp" data-key="pause">Pause</button>
+        <button class="k nav-key sp" data-key="insert">Ins</button>
+        <button class="k nav-key sp" data-key="delete">Del</button>
+        <button class="k nav-key sp" data-key="home">Home</button>
+        <button class="k nav-key sp" data-key="end">End</button>
+        <button class="k nav-key sp" data-key="page_up">PgUp</button>
+        <button class="k nav-key sp" data-key="page_down">PgDn</button>
+      </div>
 
       <!-- ROW 1: Number row -->
       <div class="kb-row">
@@ -813,6 +1064,73 @@ html, body {
   <footer class="footer">
     <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di atas keyboard.
   </footer>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-backdrop hidden" id="settings-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ Pengaturan Tampilan</div>
+        <button class="modal-close" id="btn-close-settings">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- THEME / SKIN SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">🎨 Tema / Skin Keyboard</div>
+          <div class="theme-grid">
+            <button class="theme-card active" data-theme="dark">
+              <div class="theme-preview tp-dark"></div>
+              <span>Dark Modern</span>
+            </button>
+            <button class="theme-card" data-theme="retro">
+              <div class="theme-preview tp-retro"></div>
+              <span>Retro 90s</span>
+            </button>
+            <button class="theme-card" data-theme="cyberpunk">
+              <div class="theme-preview tp-cyberpunk"></div>
+              <span>Cyberpunk</span>
+            </button>
+            <button class="theme-card" data-theme="stealth">
+              <div class="theme-preview tp-stealth"></div>
+              <span>Stealth</span>
+            </button>
+            <button class="theme-card" data-theme="nord">
+              <div class="theme-preview tp-nord"></div>
+              <span>Nord Arctic</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KEYBOARD SIZE SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">📏 Ukuran Tombol Keyboard</div>
+          <div class="size-presets">
+            <button class="size-preset-btn" data-size="compact">Kecil</button>
+            <button class="size-preset-btn active" data-size="normal">Normal</button>
+            <button class="size-preset-btn" data-size="large">Besar</button>
+            <button class="size-preset-btn" data-size="xl">Ekstra</button>
+          </div>
+          <div class="setting-slider-row">
+            <span class="setting-slider-label">Tinggi Tombol: <b id="lbl-key-h">38px</b></span>
+            <input type="range" id="slider-key-h" min="30" max="60" step="2" value="38" class="custom-slider">
+          </div>
+        </div>
+
+        <!-- TRACKPAD POSITION & SIZE -->
+        <div class="setting-group">
+          <div class="setting-title">🖱️ Posisi Trackpad</div>
+          <div class="trackpad-pos-buttons">
+            <button class="pos-option-btn active" id="opt-tp-top">▲ Posisi: Di Atas</button>
+            <button class="pos-option-btn" id="opt-tp-bottom">▼ Posisi: Di Bawah</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-primary" id="btn-save-settings">Selesai</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1063,8 +1381,8 @@ function releaseKey(el) {
 const touches = new Map();
 
 document.getElementById('app').addEventListener('touchstart', (e) => {
-  // Allow toolbar buttons, shortcuts, and laptop trackpad deck to handle their own events
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck')) return;
+  // Allow toolbar buttons, shortcuts, laptop trackpad deck, and modal dialogs to handle their own events
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -1073,7 +1391,7 @@ document.getElementById('app').addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 document.getElementById('app').addEventListener('touchend', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     releaseKey(touches.get(t.identifier));
@@ -1094,7 +1412,7 @@ window.addEventListener('blur', clearAllRepeats);
 // ── Mouse Fallback (Desktop Testing) ──
 let mouseEl = null;
 document.getElementById('app').addEventListener('mousedown', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog')) return;
   mouseEl = e.target;
   pressKey(e.target);
 });
@@ -1133,25 +1451,43 @@ if (btnTpToggle) {
 
 // Position switcher: Atas vs Bawah
 const btnTpPos = $('btn-tp-pos');
+const optTpTop = $('opt-tp-top');
+const optTpBottom = $('opt-tp-bottom');
 let tpPos = localStorage.getItem('digi_tp_pos') || 'top';
 
 function applyTpPosition(pos) {
+  tpPos = pos;
   const deck = $('laptop-deck');
-  if (!deck) return;
-  if (pos === 'bottom') {
-    deck.classList.add('pos-bottom');
-    if (btnTpPos) btnTpPos.textContent = '⇅ Posisi: Bawah';
-  } else {
-    deck.classList.remove('pos-bottom');
-    if (btnTpPos) btnTpPos.textContent = '⇅ Posisi: Atas';
+  if (deck) {
+    if (pos === 'bottom') {
+      deck.classList.add('pos-bottom');
+    } else {
+      deck.classList.remove('pos-bottom');
+    }
   }
+  if (btnTpPos) {
+    btnTpPos.textContent = pos === 'bottom' ? '⇅ Posisi: Bawah' : '⇅ Posisi: Atas';
+  }
+  if (optTpTop) optTpTop.classList.toggle('active', pos === 'top');
+  if (optTpBottom) optTpBottom.classList.toggle('active', pos === 'bottom');
+  localStorage.setItem('digi_tp_pos', pos);
 }
 
 if (btnTpPos) {
   btnTpPos.addEventListener('click', () => {
-    tpPos = tpPos === 'top' ? 'bottom' : 'top';
-    localStorage.setItem('digi_tp_pos', tpPos);
-    applyTpPosition(tpPos);
+    applyTpPosition(tpPos === 'top' ? 'bottom' : 'top');
+    vibe(20);
+  });
+}
+if (optTpTop) {
+  optTpTop.addEventListener('click', () => {
+    applyTpPosition('top');
+    vibe(20);
+  });
+}
+if (optTpBottom) {
+  optTpBottom.addEventListener('click', () => {
+    applyTpPosition('bottom');
     vibe(20);
   });
 }
@@ -1311,7 +1647,108 @@ if (tpBtnRight) {
   };
   tpBtnRight.addEventListener('touchstart', onRightClick, { passive: false });
   tpBtnRight.addEventListener('mousedown', onRightClick);
+// ── Settings Modal & Customization (Theme & Sizing) ──
+const settingsModal = $('settings-modal');
+const btnSettings = $('btn-settings');
+const btnCloseSettings = $('btn-close-settings');
+const btnSaveSettings = $('btn-save-settings');
+
+function openSettings() {
+  if (settingsModal) {
+    settingsModal.classList.remove('hidden');
+    vibe(15);
+  }
 }
+
+function closeSettings() {
+  if (settingsModal) {
+    settingsModal.classList.add('hidden');
+    vibe(10);
+  }
+}
+
+if (btnSettings) btnSettings.onclick = openSettings;
+if (btnCloseSettings) btnCloseSettings.onclick = closeSettings;
+if (btnSaveSettings) btnSaveSettings.onclick = closeSettings;
+if (settingsModal) {
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) closeSettings();
+  });
+}
+
+// Themes
+const themeCards = document.querySelectorAll('.theme-card');
+function applyTheme(theme) {
+  document.body.classList.remove('theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord');
+  if (theme && theme !== 'dark') {
+    document.body.classList.add('theme-' + theme);
+  }
+  themeCards.forEach(card => {
+    card.classList.toggle('active', card.dataset.theme === theme);
+  });
+  localStorage.setItem('digi_theme', theme);
+}
+
+themeCards.forEach(card => {
+  card.addEventListener('click', () => {
+    applyTheme(card.dataset.theme);
+    vibe(20);
+  });
+});
+const savedTheme = localStorage.getItem('digi_theme') || 'dark';
+applyTheme(savedTheme);
+
+// Keyboard Sizing (Presets & Granular Height)
+const sizePresetBtns = document.querySelectorAll('.size-preset-btn');
+const sliderKeyH = $('slider-key-h');
+const lblKeyH = $('lbl-key-h');
+
+const SIZE_PRESETS = {
+  compact: 32,
+  normal: 38,
+  large: 46,
+  xl: 54
+};
+
+function applyKeyHeight(h, presetName) {
+  h = parseInt(h, 10) || 38;
+  const f = Math.round(10 + ((h - 30) / 30) * 6);
+
+  document.documentElement.style.setProperty('--key-min-height', h + 'px');
+  document.documentElement.style.setProperty('--key-font-size', f + 'px');
+
+  if (lblKeyH) lblKeyH.textContent = h + 'px';
+  if (sliderKeyH) sliderKeyH.value = h;
+
+  sizePresetBtns.forEach(btn => {
+    if (presetName) {
+      btn.classList.toggle('active', btn.dataset.size === presetName);
+    } else {
+      btn.classList.toggle('active', SIZE_PRESETS[btn.dataset.size] === h);
+    }
+  });
+
+  localStorage.setItem('digi_key_h', h);
+}
+
+sizePresetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const s = btn.dataset.size;
+    if (SIZE_PRESETS[s] !== undefined) {
+      applyKeyHeight(SIZE_PRESETS[s], s);
+      vibe(15);
+    }
+  });
+});
+
+if (sliderKeyH) {
+  sliderKeyH.addEventListener('input', (e) => {
+    applyKeyHeight(e.target.value);
+  });
+}
+
+const savedH = parseInt(localStorage.getItem('digi_key_h'), 10) || 38;
+applyKeyHeight(savedH);
 
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());
