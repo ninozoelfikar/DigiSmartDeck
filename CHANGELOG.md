@@ -20,8 +20,7 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 - **Pengatur Ukuran & Skalabilitas Tombol:** Pengguna dapat menyesuaikan tinggi tombol keyboard sesuai kenyamanan jari:
   - Tersedia 4 preset cepat: *Kecil* (32px), *Normal* (38px), *Besar* (46px), dan *Ekstra* (54px).
   - Slider interaktif granular dari `30px` hingga `60px` dengan penskalaan ukuran huruf secara otomatis dan proporsional.
-- **Otomatis Layar Penuh (Auto-Fullscreen):** Saat aplikasi terbuka dan terhubung ke WebSocket, layar otomatis beralih ke mode Fullscreen. Dilengkapi *fallback* ramah kebijakan keamanan browser tablet/HP (pemicu sentuhan pertama yang mulus) serta toggle opsi di dialog Pengaturan.
-- **Penyimpanan Preferensi (Persistence):** Semua pilihan tema, ukuran tombol, orientasi trackpad, dan opsi auto-fullscreen tersimpan otomatis di *localStorage* browser.
+- **Penyimpanan Preferensi (Persistence):** Semua pilihan tema, ukuran tombol, dan orientasi trackpad tersimpan otomatis di *localStorage* browser.
 
 #### 🛠️ Perbaikan & Tata Letak (Fixed & Changed)
 - **Kuncian Posisi Baris Fn di Atas Angka:** Memindahkan baris Fn (`Esc`, `F1-F12`) dan baris Navigasi langsung ke dalam kontainer utama keyboard (`.kb-main`), sehingga saat diaktifkan, baris Fn **selalu berada tepat di atas baris angka**, baik ketika trackpad ditaruh di posisi atas maupun di bawah.
@@ -96,8 +95,7 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 - **Custom Key Sizing & Dynamic Scaling:** Flexible keyboard button height control:
   - 4 one-touch presets: *Compact* (32px), *Normal* (38px), *Large* (46px), and *XL* (54px).
   - Granular slider ranging from `30px` to `60px` with proportional font-size recalculation.
-- **Automatic Fullscreen on Connect:** Automatically requests full screen mode upon WebSocket connection with graceful first-interaction fallback adhering to mobile/tablet browser security policies, plus a toggle switch in Settings.
-- **Full Client Persistence:** All custom themes, button heights, trackpad positions, and auto-fullscreen preferences persist automatically in browser `localStorage`.
+- **Full Client Persistence:** All custom themes, button heights, and trackpad positions persist automatically in browser `localStorage`.
 
 #### Fixed & Changed
 - **Locked Fn Bar Placement Above Numbers:** Relocated `#fn-row` (`Esc`, `F1-F12`) and `#nav-row` into `.kb-main` directly above Row 1 numbers, ensuring the Fn row is permanently anchored on top of the number keys regardless of trackpad deck orientation (top or bottom).
