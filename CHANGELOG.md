@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.11.0] - 2026-09-26
+- Penyesuaian font keyboard per tema dan penambahan tema Windows, Mac, dan Ubuntu
+
 ### [1.10.0] - 2026-09-26
 - Dukungan Linux kernel uinput untuk pengetikan pada Layar Login Ubuntu (GDM) dan Lock Screen
 
@@ -117,6 +120,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.11.0] - 2026-09-26
+- Release v1.11.0 updates
 
 ### [1.10.0] - 2026-09-26
 - Release v1.10.0 updates

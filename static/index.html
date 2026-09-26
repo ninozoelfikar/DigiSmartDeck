@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#0d1117">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@500;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <title>DigiKeyboard - Remote PC Keyboard</title>
   <style>
 :root {
@@ -28,9 +29,71 @@
   --key-min-height: 38px;
   --key-font-size: 11px;
   --tp-scale: 1;
+  --key-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --key-letter-spacing: normal;
 }
 
-/* ─── THEMES / SKINS ─── */
+/* ─── THEMES / SKINS (DILENGKAPI FONT KHUSUS) ─── */
+body.theme-win {
+  --bg: #202020;
+  --header-bg: #2b2b2b;
+  --panel-bg: #323232;
+  --key-bg: #2d2d2d;
+  --key-active-bg: #0078d4;
+  --key-active-border: #60cdff;
+  --key-shadow: #121212;
+  --key-border: #3e3e3e;
+  --key-special: #262626;
+  --key-mod-active: #107c41;
+  --accent: #60cdff;
+  --text: #ffffff;
+  --text-dim: #a0a0a0;
+  --danger: #e81123;
+  --enter-bg: #005a9e;
+  --enter-border: #0078d4;
+  --key-font: "Segoe UI", "Segoe UI Variable", -apple-system, BlinkMacSystemFont, sans-serif;
+  --key-letter-spacing: 0.1px;
+}
+body.theme-mac {
+  --bg: #161618;
+  --header-bg: #212124;
+  --panel-bg: #2c2c2e;
+  --key-bg: #323236;
+  --key-active-bg: #0a84ff;
+  --key-active-border: #409cff;
+  --key-shadow: #0a0a0c;
+  --key-border: #444448;
+  --key-special: #262629;
+  --key-mod-active: #30d158;
+  --accent: #0a84ff;
+  --text: #f5f5f7;
+  --text-dim: #8e8e93;
+  --danger: #ff453a;
+  --enter-bg: #242426;
+  --enter-border: #0a84ff;
+  --key-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Helvetica Neue", Arial, sans-serif;
+  --key-letter-spacing: -0.1px;
+}
+body.theme-ubuntu {
+  --bg: #2c001e;
+  --header-bg: #380c2a;
+  --panel-bg: #431333;
+  --key-bg: #4d1a3c;
+  --key-active-bg: #e95420;
+  --key-active-border: #ff7844;
+  --key-shadow: #190011;
+  --key-border: #66244f;
+  --key-special: #3a112d;
+  --key-mod-active: #38b44a;
+  --accent: #e95420;
+  --text: #ffffff;
+  --text-dim: #dfdbd2;
+  --danger: #df382c;
+  --enter-bg: #77216f;
+  --enter-border: #e95420;
+  --key-font: "Ubuntu", "Ubuntu Light", "Cantarell", -apple-system, BlinkMacSystemFont, sans-serif;
+  --key-letter-spacing: 0.2px;
+}
 body.theme-retro {
   --bg: #2d3032;
   --header-bg: #3c4043;
@@ -48,6 +111,8 @@ body.theme-retro {
   --danger: #d9534f;
   --enter-bg: #3d6888;
   --enter-border: #284b63;
+  --key-font: "Courier New", Courier, "Lucida Console", "Cascadia Code", monospace;
+  --key-letter-spacing: -0.5px;
 }
 body.theme-cyberpunk {
   --bg: #0b0716;
@@ -66,6 +131,8 @@ body.theme-cyberpunk {
   --danger: #ff0055;
   --enter-bg: #7900ff;
   --enter-border: #ff007f;
+  --key-font: "Orbitron", "Rajdhani", "Chakra Petch", "Consolas", monospace, sans-serif;
+  --key-letter-spacing: 0.8px;
 }
 body.theme-stealth {
   --bg: #000000;
@@ -84,6 +151,8 @@ body.theme-stealth {
   --danger: #b71c1c;
   --enter-bg: #212121;
   --enter-border: #424242;
+  --key-font: "JetBrains Mono", "SF Mono", "Fira Code", "Roboto Mono", Consolas, monospace;
+  --key-letter-spacing: 0px;
 }
 body.theme-nord {
   --bg: #242933;
@@ -102,6 +171,8 @@ body.theme-nord {
   --danger: #bf616a;
   --enter-bg: #5e81ac;
   --enter-border: #81a1c1;
+  --key-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --key-letter-spacing: 0px;
 }
 
 *, *::before, *::after {
@@ -120,7 +191,7 @@ html, body {
   overflow: hidden;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, monospace;
+  font-family: var(--key-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
 }
 #app {
   display: flex;
@@ -274,6 +345,8 @@ html, body {
   border: 1px solid var(--key-border);
   border-radius: 6px;
   box-shadow: 0 3px 0 var(--key-shadow), 0 2px 4px rgba(0,0,0,.4);
+  font-family: var(--key-font);
+  letter-spacing: var(--key-letter-spacing, normal);
   font-size: clamp(var(--key-font-size, 11px), 1.7vw, calc(var(--key-font-size, 11px) + 4px));
   font-weight: 600;
   cursor: pointer;
@@ -767,6 +840,9 @@ html, body {
   border-radius: 4px;
 }
 .tp-dark { background: linear-gradient(135deg, #0d1117 50%, #21262d 50%); border: 1px solid #30363d; }
+.tp-win { background: linear-gradient(135deg, #202020 50%, #0078d4 50%); border: 1px solid #3e3e3e; }
+.tp-mac { background: linear-gradient(135deg, #161618 50%, #0a84ff 50%); border: 1px solid #444448; }
+.tp-ubuntu { background: linear-gradient(135deg, #2c001e 50%, #e95420 50%); border: 1px solid #66244f; }
 .tp-retro { background: linear-gradient(135deg, #2d3032 50%, #e2ded5 50%); border: 1px solid #bbb4a8; }
 .tp-cyberpunk { background: linear-gradient(135deg, #0b0716 50%, #00f0ff 50%); border: 1px solid #ff007f; }
 .tp-stealth { background: linear-gradient(135deg, #000000 50%, #171717 50%); border: 1px solid #333333; }
@@ -1067,6 +1143,18 @@ html, body {
             <button class="theme-card active" data-theme="dark">
               <div class="theme-preview tp-dark"></div>
               <span>Dark Modern</span>
+            </button>
+            <button class="theme-card" data-theme="win">
+              <div class="theme-preview tp-win"></div>
+              <span>Windows 11</span>
+            </button>
+            <button class="theme-card" data-theme="mac">
+              <div class="theme-preview tp-mac"></div>
+              <span>macOS</span>
+            </button>
+            <button class="theme-card" data-theme="ubuntu">
+              <div class="theme-preview tp-ubuntu"></div>
+              <span>Ubuntu Yaru</span>
             </button>
             <button class="theme-card" data-theme="retro">
               <div class="theme-preview tp-retro"></div>
@@ -1836,13 +1924,26 @@ if (settingsModal) {
 // Themes
 const themeCards = document.querySelectorAll('.theme-card');
 function applyTheme(theme) {
-  document.body.classList.remove('theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord');
+  document.body.classList.remove('theme-win', 'theme-mac', 'theme-ubuntu', 'theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord');
   if (theme && theme !== 'dark') {
     document.body.classList.add('theme-' + theme);
   }
   themeCards.forEach(card => {
     card.classList.toggle('active', card.dataset.theme === theme);
   });
+
+  // Adaptasi simbol tombol modifier Windows / Mac / Ubuntu
+  const winBtn = $('key-win');
+  if (winBtn) {
+    if (theme === 'mac') {
+      winBtn.textContent = '⌘ cmd';
+    } else if (theme === 'ubuntu') {
+      winBtn.textContent = '❖ Super';
+    } else {
+      winBtn.textContent = '⊞ Win';
+    }
+  }
+
   localStorage.setItem('digi_theme', theme);
 }
 
