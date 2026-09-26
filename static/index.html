@@ -286,19 +286,50 @@ html, body {
 }
 
 /* ─── LAPTOP TRACKPAD DECK ─── */
+.top-bar { order: 1; }
+.mod-strip { order: 2; }
+.panel { order: 3; }
 .laptop-deck {
+  order: 4; /* Default: ATAS (Top) */
   display: flex;
   align-items: stretch;
   justify-content: space-between;
   background: linear-gradient(180deg, #13171e 0%, #0d1015 100%);
-  border-top: 1px solid #283140;
-  box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
+  border-bottom: 1px solid #283140;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
   padding: 6px 12px;
   gap: 12px;
   flex-shrink: 0;
   min-height: 110px;
   max-height: 180px;
   height: clamp(110px, 20vh, 180px);
+}
+.laptop-deck.pos-bottom {
+  order: 6; /* Posisi Bawah */
+  border-top: 1px solid #283140;
+  border-bottom: none;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
+}
+.kb-wrap {
+  order: 5;
+}
+.footer {
+  order: 7;
+}
+.deck-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #303947;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.deck-btn:hover {
+  background: rgba(88,166,255,0.15);
+  color: #fff;
 }
 .laptop-deck.hidden {
   display: none;
@@ -627,6 +658,41 @@ html, body {
     <button class="k nav-key sp" data-key="page_down">PgDn</button>
   </div>
 
+  <!-- LAPTOP TRACKPAD DECK (ATAS / TOP POSITION) -->
+  <section class="laptop-deck" id="laptop-deck">
+    <div class="palm-rest palm-left">
+      <div class="palm-badge">LAPTOP DECK</div>
+      <button class="deck-btn" id="btn-tp-pos" title="Tukar Posisi Trackpad (Atas / Bawah)">⇅ Posisi: Atas</button>
+    </div>
+
+    <div class="trackpad-container">
+      <div class="trackpad-surface" id="trackpad-surface">
+        <div class="tp-guide-content">
+          <div class="tp-icon">🖱️</div>
+          <div class="tp-label">Trackpad Multi-Touch</div>
+          <div class="tp-instructions">1 Jari: Kursor &amp; Klik • 2 Jari: Scroll &amp; Klik Kanan</div>
+        </div>
+        <div class="tp-pointer-glow" id="tp-glow"></div>
+      </div>
+      <div class="trackpad-buttons">
+        <button class="tp-btn tp-left" id="tp-btn-left">
+          <span>⯇ Klik Kiri</span>
+        </button>
+        <div class="tp-btn-divider"></div>
+        <button class="tp-btn tp-right" id="tp-btn-right">
+          <span>Klik Kanan ⯈</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="palm-rest palm-right">
+      <div class="palm-settings">
+        <label for="tp-speed" class="palm-label">Sensitivitas: <span id="tp-speed-val">1.2x</span></label>
+        <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="palm-slider">
+      </div>
+    </div>
+  </section>
+
   <!-- KEYBOARD + NUMPAD -->
   <main class="kb-wrap">
     <section class="kb-main">
@@ -744,43 +810,8 @@ html, body {
     </section>
   </main>
 
-  <!-- LAPTOP TRACKPAD DECK (TABLET / LAPTOP LAYOUT) -->
-  <section class="laptop-deck" id="laptop-deck">
-    <div class="palm-rest palm-left">
-      <div class="palm-badge">LAPTOP DECK</div>
-      <div class="palm-tip">Layout fisik laptop dengan trackpad di bawah keyboard</div>
-    </div>
-
-    <div class="trackpad-container">
-      <div class="trackpad-surface" id="trackpad-surface">
-        <div class="tp-guide-content">
-          <div class="tp-icon">🖱️</div>
-          <div class="tp-label">Trackpad Multi-Touch</div>
-          <div class="tp-instructions">1 Jari: Kursor &amp; Klik • 2 Jari: Scroll &amp; Klik Kanan</div>
-        </div>
-        <div class="tp-pointer-glow" id="tp-glow"></div>
-      </div>
-      <div class="trackpad-buttons">
-        <button class="tp-btn tp-left" id="tp-btn-left">
-          <span>⯇ Klik Kiri</span>
-        </button>
-        <div class="tp-btn-divider"></div>
-        <button class="tp-btn tp-right" id="tp-btn-right">
-          <span>Klik Kanan ⯈</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="palm-rest palm-right">
-      <div class="palm-settings">
-        <label for="tp-speed" class="palm-label">Sensitivitas: <span id="tp-speed-val">1.2x</span></label>
-        <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="palm-slider">
-      </div>
-    </div>
-  </section>
-
   <footer class="footer">
-    <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di bawah spacebar layaknya laptop.
+    <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di atas keyboard.
   </footer>
 </div>
 
@@ -1042,6 +1073,32 @@ if (btnTpToggle) {
     btnTpToggle.classList.toggle('on', !deck.classList.contains('hidden'));
   });
 }
+
+// Position switcher: Atas vs Bawah
+const btnTpPos = $('btn-tp-pos');
+let tpPos = localStorage.getItem('digi_tp_pos') || 'top';
+
+function applyTpPosition(pos) {
+  const deck = $('laptop-deck');
+  if (!deck) return;
+  if (pos === 'bottom') {
+    deck.classList.add('pos-bottom');
+    if (btnTpPos) btnTpPos.textContent = '⇅ Posisi: Bawah';
+  } else {
+    deck.classList.remove('pos-bottom');
+    if (btnTpPos) btnTpPos.textContent = '⇅ Posisi: Atas';
+  }
+}
+
+if (btnTpPos) {
+  btnTpPos.addEventListener('click', () => {
+    tpPos = tpPos === 'top' ? 'bottom' : 'top';
+    localStorage.setItem('digi_tp_pos', tpPos);
+    applyTpPosition(tpPos);
+    vibe(20);
+  });
+}
+applyTpPosition(tpPos);
 
 const tpSurface = $('trackpad-surface');
 const tpGlow = $('tp-glow');
