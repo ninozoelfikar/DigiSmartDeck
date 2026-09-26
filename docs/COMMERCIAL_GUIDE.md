@@ -29,10 +29,18 @@ Untuk pasar komersial, nama produk harus mencerminkan nilai fungsional, modern, 
 | Produk | Harga | Kelebihan | Kelemahan / Celah Pasar yang Bisa Anda Rebut |
 | :--- | :--- | :--- | :--- |
 | **Elgato Stream Deck Mobile** | Langganan ~$2.99/bln atau $49.99 lifetime | Fitur integrasi OBS/Twitch sangat matang | Mahal (model langganan dibenci banyak pengguna); tidak fokus ke keyboard PC standar |
-| **Unified Remote** | Freemium ($4.99 full unlock) | Mendukung banyak plugin aplikasi | Tampilan UI terasa usang (era 2014); setup awal membingungkan |
-| **Touch Portal** | Freemium ($13.99 Pro) | Fitur macro sangat kaya | Sangat berat; kurva belajar rumit untuk pengguna awam |
-| **KDE Connect** | Gratis (Open Source) | Fitur lengkap (clipboard, SMS, remote) | Bukan berorientasi komersial; layout keyboard HP tetap memicu Gboard bawaan HP |
-| **Produk Anda (AirDeck / DigiKeyboard)** | **One-time purchase / Freemium** | **Bebas instalasi di HP (Web/PWA), layout fisik 100% PC asli, latensi super rendah, tanpa langganan bulanan** | Produk baru; perlu membangun kredibilitas dan integrasi plugin |
+| **Unified Remote** | Freemium ($4.99 full unlock) | Mendukung banyak plugin aplikasi | Tampilan UI terasa usang (era 2014); input teks memicu Gboard HP yang menutupi setengah layar |
+| **Touch Portal** | Freemium ($13.99 Pro) | Fitur macro sangat kaya | Sangat berat; kurva belajar rumit untuk pengguna awam; bukan keyboard QWERTY |
+| **KDE Connect** | Gratis (Open Source) | Fitur lengkap (clipboard, SMS, remote) | Bukan berorientasi komersial; keyboard HP tetap memicu Gboard bawaan HP |
+| **Produk Anda (AirDeck / DigiKeyboard)** | **One-time purchase / Freemium** | **Satu-satunya yang menggambar layout keyboard PC 1:1 di kanvas, BEBAS keyboard virtual HP (zero Gboard popup), PWA zero-install, latensi ultra-rendah** | Produk baru; perlu membangun kredibilitas dan integrasi plugin |
+
+---
+
+### 💡 Keunggulan Visual Unik (The Visual White Space Advantage)
+Tidak ada produk remote PC komersial terkemuka yang menyajikan **kanvas fisik keyboard mekanik PC 1:1 tanpa memicu keyboard bawaan smartphone**. Celah pasar ini memberikan 3 daya tarik penjualan instan:
+1. **Daya Tarik Estetika Keyboard Mekanikal:** Komunitas pecinta custom mechanical keyboard sangat besar. Menjual tema visual (Retro Beige, Cyberpunk RGB, GMK minimalis) dan suara switch audio taktil (Clicky/Thoccy) memiliki konversi penjualan impulsif yang tinggi.
+2. **Kebutuhan Pengguna Tablet (10-12"):** Mengubah iPad/Tablet bekas menjadi pengganti keyboard fisik meja yang fungsional tanpa membeli hardware seharga Rp 1–3 juta.
+3. **Penyelamat Programmer & Sysadmin:** Mengendalikan terminal, Vim, SSH, atau script kompilasi dari jarak jauh tanpa frustrasi mencari karakter simbol khusus (`|`, `~`, `Esc`, `Ctrl+C`).
 
 ---
 
