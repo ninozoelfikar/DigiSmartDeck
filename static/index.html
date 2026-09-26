@@ -300,9 +300,9 @@ html, body {
   padding: 6px 12px;
   gap: 12px;
   flex-shrink: 0;
-  min-height: 110px;
-  max-height: 180px;
-  height: clamp(110px, 20vh, 180px);
+  min-height: 75px;
+  max-height: 125px;
+  height: clamp(75px, 14vh, 125px);
 }
 .laptop-deck.pos-bottom {
   order: 6; /* Posisi Bawah */
@@ -491,75 +491,75 @@ html, body {
 /* ─── Tablet Specific Layout (iPad / Android Tablet) ─── */
 @media (min-width: 768px) and (min-height: 500px) {
   .laptop-deck {
-    min-height: 200px;
-    max-height: 380px;
-    height: clamp(200px, 32vh, 360px);
-    padding: 10px 24px;
-    gap: 20px;
+    min-height: 140px;
+    max-height: 260px;
+    height: clamp(140px, 22vh, 250px);
+    padding: 8px 20px;
+    gap: 16px;
   }
   .trackpad-container {
-    flex: 0 1 580px;
-    width: min(600px, 62vw);
-    border-radius: 16px;
+    flex: 0 1 540px;
+    width: min(560px, 60vw);
+    border-radius: 14px;
   }
   .trackpad-surface {
-    min-height: 150px;
+    min-height: 100px;
   }
   .trackpad-buttons {
-    height: 46px;
+    height: 38px;
   }
   .tp-btn {
-    font-size: 13px;
-    gap: 8px;
+    font-size: 12px;
+    gap: 6px;
   }
   .tp-icon {
-    font-size: 22px;
+    font-size: 18px;
   }
   .tp-label {
-    font-size: 13px;
+    font-size: 12px;
   }
   .tp-instructions {
-    font-size: 11px;
+    font-size: 10px;
   }
   .palm-badge {
     font-size: 11px;
-    padding: 3px 10px;
+    padding: 3px 8px;
   }
   .palm-tip {
     font-size: 11px;
-    max-width: 220px;
+    max-width: 200px;
   }
   .palm-label {
     font-size: 11px;
   }
   .palm-slider {
-    width: 120px;
-    height: 6px;
+    width: 110px;
+    height: 5px;
   }
 }
 
 /* ─── Large Tablet & Desktop View (iPad Pro 11"/12.9", 1080p+ Tablet) ─── */
 @media (min-width: 960px) and (min-height: 680px) {
   .laptop-deck {
-    min-height: 250px;
-    max-height: 440px;
-    height: clamp(250px, 36vh, 440px);
-    padding: 14px 36px;
+    min-height: 175px;
+    max-height: 300px;
+    height: clamp(175px, 25vh, 290px);
+    padding: 10px 28px;
   }
   .trackpad-container {
-    flex: 0 1 660px;
-    width: min(680px, 65vw);
-    border-radius: 18px;
+    flex: 0 1 620px;
+    width: min(640px, 62vw);
+    border-radius: 16px;
   }
   .trackpad-surface {
-    min-height: 190px;
+    min-height: 125px;
   }
   .trackpad-buttons {
-    height: 52px;
+    height: 42px;
   }
   .tp-btn {
-    font-size: 14px;
-    gap: 10px;
+    font-size: 13px;
+    gap: 8px;
   }
   .palm-badge {
     font-size: 12px;
@@ -937,8 +937,58 @@ function refreshMods() {
   });
 }
 
-// ── Key Press Logic ──
+// ── Key Press & Auto-Repeat Logic ──
 const MOD_KEYS = new Set(['ctrl','alt','shift','cmd','caps_lock']);
+const activeRepeats = new Map(); // btn -> { delayTimer, intervalTimer }
+
+function stopRepeat(btn) {
+  if (!btn) return;
+  const timerData = activeRepeats.get(btn);
+  if (timerData) {
+    if (timerData.delayTimer) clearTimeout(timerData.delayTimer);
+    if (timerData.intervalTimer) clearInterval(timerData.intervalTimer);
+    activeRepeats.delete(btn);
+  }
+}
+
+function clearAllRepeats() {
+  activeRepeats.forEach(t => {
+    if (t.delayTimer) clearTimeout(t.delayTimer);
+    if (t.intervalTimer) clearInterval(t.intervalTimer);
+  });
+  activeRepeats.clear();
+}
+
+function startRepeat(btn, key, char, shiftChar) {
+  if (!btn || (key && MOD_KEYS.has(key))) return;
+  stopRepeat(btn);
+
+  function sendRepeat() {
+    let sendChar = char;
+    if (char) {
+      if (mods.shift && shiftChar) {
+        sendChar = shiftChar;
+      } else if (mods.shift || mods.caps_lock) {
+        sendChar = char.toUpperCase();
+      }
+    }
+    send({
+      type: 'keypress',
+      key: key || null,
+      char: sendChar || null,
+      modifiers: { ctrl: mods.ctrl, alt: mods.alt, shift: mods.shift, cmd: mods.cmd }
+    });
+    vibe(6);
+  }
+
+  // Standar PC keyboard repeat: 350ms delay, kemudian interval 45ms (~22 keypress/detik)
+  const delayTimer = setTimeout(() => {
+    const intervalTimer = setInterval(sendRepeat, 45);
+    activeRepeats.set(btn, { delayTimer: null, intervalTimer });
+  }, 350);
+
+  activeRepeats.set(btn, { delayTimer, intervalTimer: null });
+}
 
 function pressKey(el) {
   if (!el) return;
@@ -982,6 +1032,9 @@ function pressKey(el) {
     modifiers: { ctrl: mods.ctrl, alt: mods.alt, shift: mods.shift, cmd: mods.cmd }
   });
 
+  // Start auto-repeat if user keeps holding the key (e.g. Backspace, Delete, Arrows, Letters)
+  startRepeat(btn, key, char, shiftChar);
+
   // Release latched modifiers (except caps_lock)
   if (latch) {
     let changed = false;
@@ -996,6 +1049,7 @@ function releaseKey(el) {
   if (!el) return;
   const btn = el.closest('.k');
   if (!btn) return;
+  stopRepeat(btn);
   btn.classList.remove('pressed');
   const key = btn.dataset.key || null;
   if (!latch && key && MOD_KEYS.has(key)) {
@@ -1032,7 +1086,10 @@ document.getElementById('app').addEventListener('touchcancel', (e) => {
     releaseKey(touches.get(t.identifier));
     touches.delete(t.identifier);
   }
+  clearAllRepeats();
 }, { passive: false });
+
+window.addEventListener('blur', clearAllRepeats);
 
 // ── Mouse Fallback (Desktop Testing) ──
 let mouseEl = null;
