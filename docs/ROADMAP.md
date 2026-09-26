@@ -37,36 +37,41 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
 
 ---
 
-### 📌 Fase 1: PWA, Estetika Mekanikal & Optimasi Tablet (Q1 2026)
+### 📌 Fase 1: Estetika Mekanikal, Audio Taktil & Optimasi Tampilan (Selesai di v1.9.0)
+- [x] **Aesthetic Themes (Mechanical Keycap Studio):**
+  - **Retro IBM 1990s Beige:** Warna klasik abu-abu/krem komputer legendaris.
+  - **Cyberpunk Neon RGB:** Aksen cyan & magenta tajam dengan kontras tinggi.
+  - **Stealth Matte Black:** Nuansa minimalis hitam monokromatik elegan.
+  - **Nord Frost:** Palet biru beku Skandinavia yang menenangkan.
+- [x] **Synthesized Switch Sound Effect (Audio Taktil) & Pengontrol Volume:**
+  - Sintetis suara saklar mekanikal renyah via Web Audio API tanpa file eksternal.
+  - Pengontrol volume granular (10% s/d 100%) dan 3 preset volume instan (Pelan, Sedang, Keras).
+  - Tombol uji audio langsung di modal pengaturan.
+- [x] **Haptic Feedback Controller:**
+  - Pilihan preset getaran: Lembut (15ms), Normal (30ms), Kuat (50ms).
+- [x] **Edge-to-Edge & Fullscreen Experience:**
+  - Tombol manual fullscreen (`⛶`) di toolbar atas dan opsi sembunyikan baris tip.
 - [ ] **PWA (Progressive Web App):**
   - Web App Manifest & Service Worker untuk opsi *"Add to Home Screen"*.
-  - Menghilangkan address bar & navigasi browser 100% (true edge-to-edge native look).
-- [ ] **Aesthetic Themes (Mechanical Keycap Studio):**
-  - **Retro IBM 1990s Beige:** Warna klasik abu-abu/krem komputer legendaris.
-  - **Cyberpunk Neon RGB:** Efek cahaya backlit RGB responsif saat tombol ditekan.
-  - **Stealth Matte Black:** Nuansa minimalis hitam matte elegan.
-  - **GMK Botanical / Pastel:** Tema estetika minimalis modern.
-- [ ] **Synthesized Switch Sound Effect (Audio Taktil):**
-  - Pilihan efek suara klik sakelar mekanikal (Cherry MX Blue Clicky, Brown Tactile, Red Linear, Thoccy).
-- [ ] **Optimasi Tablet 10–12 Inci (Full 100% Layout):**
-  - Rasio jarak tombol proporsional untuk pengetikan 10 jari di iPad / Android Tablet.
 - [ ] **Split Ergonomic Mode (Khusus HP):**
   - Membelah keyboard menjadi dua sisi (kiri & kanan) agar jempol tangan kiri dan kanan dapat mengetik santai tanpa menjangkau area tengah layar yang jauh.
 
 ---
 
-### 📌 Fase 2: Virtual Trackpad & Developer Toolset (Q2 2026)
-- [ ] **Side Mini-Trackpad Companion:**
-  - Area trackpad mini di sisi kanan atau atas keyboard tanpa perlu berganti tab halaman.
-- [ ] **Gesture Multi-Touch Penuh:**
-  - 1 Jari: Menggerakkan kursor mouse PC secara kinetik.
-  - 1 Tap: Klik kiri | 2 Tap: Klik kanan.
-  - 2 Jari Geser: Scroll dokumen & web (vertikal / horizontal).
-  - Pinch-to-zoom: Zoom in / zoom out dokumen.
+### 📌 Fase 2: Virtual Trackpad & Developer Toolset (Sebagian Selesai di v1.9.0)
+- [x] **Laptop Trackpad Companion:**
+  - Area trackpad laptop virtual di sisi **Atas** atau **Bawah** keyboard tanpa perlu berganti tab.
+  - Pengaturan ukuran trackpad fleksibel (Kecil, Normal, Besar, Ekstra, dan slider 60%-180%).
+  - Pengatur sensitivitas gerak kursor (0.5x s/d 3.0x).
+- [x] **Gesture Multi-Touch Penuh:**
+  - 1 Jari: Menggerakkan kursor mouse PC secara kinetik (throttled ~120fps).
+  - 1-Finger Tap: Klik kiri | 2-Finger Tap: Klik kanan.
+  - 2 Jari Geser: Scroll vertikal dokumen & web.
+  - Tombol Fisik: Tombol klik kiri & kanan laptop deck dengan status visual responsif.
 - [ ] **Developer & Sysadmin Power Bar:**
   - Tombol 1-tap khusus karakter terminal yang sering hilang di HP: `|` (pipe), `~` (tilde), `\`, `sudo `, `git `, `$`, `{ }`, `->`.
   - Mode Vim/Nano lock (Esc, Ctrl+C, Ctrl+Z, Tab, Arrow keys selalu siaga).
-- [ ] **Panel Media PC:** Slider pengatur master volume, mute mic/speaker, dan playback controller.
+- [ ] **Panel Media PC:** Slider pengatur master volume PC, mute mic/speaker, dan playback controller.
 
 ---
 

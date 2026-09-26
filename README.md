@@ -30,16 +30,26 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Baris 3:** Caps Lock ⇪, ASDFGHJKL, tanda baca, dan Enter ↵.
    - **Baris 4:** Shift ⇧ (Kiri & Kanan), ZXCVBNM, tanda baca, dan panah ▲.
    - **Baris 5:** Ctrl, Win/Super ⊞, Alt, Space Bar panjang, serta panah ◀ ▼ ▶.
-2. **Panel Ekstensi (Bisa di-toggle):**
+2. **Laptop Trackpad / Mouse Control Deck:**
+   - Permukaan multitouch trackpad laptop virtual responsif dengan efek visual glow dinamis.
+   - **Gesture Multi-Touch:** Geser 1 jari untuk kursor mouse, 1-finger tap untuk Klik Kiri, 2-finger tap untuk Klik Kanan, 2-finger scroll untuk menggulir halaman.
+   - **Tombol Fisik Klik:** Tombol Klik Kiri dan Klik Kanan terdedikasi di bawah trackpad.
+   - **Posisi Fleksibel:** Bisa dipasang di **Atas** keyboard atau di **Bawah** keyboard sesuai kenyamanan jari.
+   - **Kustomisasi Ukuran & Sensitivitas:** Preset ukuran (Kecil 70%, Normal 100%, Besar 130%, Ekstra 160%), slider skala granular (60% - 180%), dan pengatur sensitivitas kursor (0.5x - 3.0x).
+3. **Umpan Balik Taktil (Haptic & Audio):**
+   - **Haptic Vibration (Getar):** Pilihan preset Lembut (15ms), Normal (30ms), Kuat (50ms), serta tombol uji coba langsung.
+   - **Suara Klik Mekanikal Sintetis:** Menghasilkan klik switch mekanik renyah via Web Audio API, terdengar jelas di speaker kecil HP, tablet, maupun PC.
+   - **Pengontrol Volume Suara:** Slider granular (10% - 100%), preset Pelan (30%), Sedang (70%), Keras (100%), dan tombol uji suara (`🧪 Uji Suara Klik`).
+4. **Panel Ekstensi (Bisa di-toggle):**
    - **Fn Bar:** Tombol `Esc`, `F1` s/d `F12`.
    - **Nav Bar:** `Insert`, `Delete`, `Home`, `End`, `Page Up`, `Page Down`, `Print Screen`.
    - **PC Numpad:** Blok 17 tombol kalkulator angka lengkap.
    - **Shortcut Cepat:** Tombol 1-tap untuk `Ctrl+C`, `Ctrl+V`, `Ctrl+Z`, `Ctrl+A`, `Alt+Tab`, `Win+D`.
-3. **Mekanisme Khusus Layar Sentuh:**
-   - **Latch / Sticky Modifier:** Ketuk `Ctrl`, `Alt`, atau `Shift` satu kali untuk mengunci status, tekan karakter berikutnya, lalu modifier otomatis terlepas.
-   - **Multi-Touch:** Mendukung penekanan tombol kombinasi dengan multi-jari simultan.
-   - **Haptic Feedback:** Getaran lembut saat tombol virtual ditekan (bisa diaktifkan/dinonaktifkan).
-4. **Smart LAN Detection & QR Code:**
+5. **Kustomisasi & Estetika (Menu Pengaturan ⚙️):**
+   - **5 Pilihan Tema:** Dark (Default), Cyberpunk, Retro Terminal, Stealth Matte, dan Nord Frost.
+   - **Ukuran Tinggi Tombol:** Preset (Kecil, Normal, Besar, Ekstra) dan slider ketinggian tombol (30px - 60px).
+   - **Fullscreen & Tip Toggle:** Tombol manual fullscreen (`⛶`) dan opsi sembunyikan baris tip.
+6. **Smart LAN Detection & QR Code:**
    - Secara otomatis mendeteksi alamat IP Wi-Fi lokal fisik Anda (mengabaikan interface VPN/Docker seperti Cloudflare WARP), dan menampilkan QR code di terminal PC untuk koneksi instan.
 
 ---
@@ -119,6 +129,13 @@ run.bat
 Most remote keyboard applications rely on native text inputs that trigger clumsy mobile virtual keyboards (Gboard/SwiftKey), concealing essential PC keys such as **Esc, Tab, Function keys (F1-F12), Alt, Windows/Super, and Arrows**.
 
 **DigiKeyboard** solves this by projecting an authentic, full-fidelity mechanical PC keyboard layout directly onto your mobile browser canvas via low-latency WebSocket communication (1-5 ms).
+
+### ✨ Key Features
+- **True 1:1 PC Keyboard Canvas:** Number row, full QWERTY, navigation keys, latching modifiers, and Numpad without mobile OS keyboard popup.
+- **Laptop Trackpad / Mouse Control Deck:** Smooth multi-touch trackpad with 1-finger left click tap, 2-finger right click tap, 2-finger vertical scroll, physical left/right buttons, position toggle (top/bottom), and sizing/sensitivity controls.
+- **Tactile & Audio Feedback:** Web Vibration API haptics (Soft, Normal, Strong) and synthesized mechanical switch sound with custom volume slider (10%-100%) and quick presets.
+- **Theme & Ergonomics Studio:** 5 visual themes (Dark, Retro, Cyberpunk, Stealth, Nord) and granular key height scaling.
+- **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
 ---
 

@@ -13,10 +13,14 @@ Dokumen ini menjelaskan desain arsitektur internal, alur data, protokol komunika
 ```mermaid
 flowchart TD
     subgraph MobileDevice["📱 Perangkat Mobile (Browser HP / Tablet)"]
-        UI["Virtual PC Keyboard UI (HTML/CSS)"]
-        TouchLogic["Touch & Multi-touch Engine (app.js)"]
+        UI["Virtual PC Keyboard & Laptop Trackpad UI"]
+        TouchLogic["Touch, Gesture & Multi-touch Engine"]
+        AudioHaptic["Web Audio API & Vibration Engine"]
         WSClient["WebSocket Client"]
-        UI --> TouchLogic --> WSClient
+        
+        UI --> TouchLogic
+        TouchLogic --> AudioHaptic
+        TouchLogic --> WSClient
     end
 
     subgraph LocalNetwork["📶 Jaringan Wi-Fi Lokal"]
@@ -26,51 +30,86 @@ flowchart TD
     subgraph HostPC["💻 Host PC (Linux / Windows / macOS)"]
         WSServer["HTTP & WebSocket Server (aiohttp)"]
         IPEngine["Smart Network Detector (psutil / socket)"]
-        KeyTranslator["Keycode Translator (server.py)"]
-        Pynput["pynput Virtual Controller"]
-        OSInput["OS Input Pipeline (X11 / Wayland / Win32)"]
+        KeyTranslator["Keycode Translator"]
+        MouseHandler["Mouse & Scroll Handler"]
+        PynputKB["pynput.keyboard.Controller"]
+        PynputMouse["pynput.mouse.Controller"]
+        OSInput["OS Input Pipeline (X11 / Wayland / Win32 / Cocoa)"]
 
         IPEngine --> WSServer
-        WSServer --> KeyTranslator
-        KeyTranslator --> Pynput
-        Pynput --> OSInput
+        WSServer -->|Keyboard Payloads| KeyTranslator --> PynputKB --> OSInput
+        WSServer -->|Mouse/Trackpad Payloads| MouseHandler --> PynputMouse --> OSInput
     end
 ```
 
-### 2. Alur Kerja Komunikasi (End-to-End Flow)
-1. **Inisialisasi Server:**
+### 2. Alur Kerja Komunikasi & Subsistem
+
+1. **Inisialisasi Server & Jaringan Cerdas:**
    - Server menjalankan `server.py` menggunakan framework asinkron `aiohttp`.
    - Modul `get_local_ip_addresses()` secara cerdas memindai antarmuka jaringan fisik (Wi-Fi/LAN `192.168.x.x` atau `10.x.x.x`) dan memfilter interface virtual/VPN (seperti Cloudflare WARP, Docker, virbr).
    - Menghasilkan QR Code terminal dan URL HTTP untuk koneksi instan.
 2. **Koneksi Klien (HP/Tablet):**
    - Browser mobile memuat antarmuka web responsif dari route `/` (`index.html`).
-   - Klien membuka koneksi WebSocket persisten dua arah ke `/ws`.
-3. **Penanganan Sentuhan & Multi-Touch:**
+   - Klien membuka koneksi WebSocket persisten dua arah ke `/ws` dengan monitor ping/pong real-time (latensi 1-5 ms).
+3. **Penanganan Multi-Touch & Gesture Trackpad:**
    - Komponen sentuh dioptimalkan dengan `touch-action: none` dan `preventDefault()` untuk mencegah zoom ganda, scroll bawaan browser, atau kemunculan keyboard virtual Android/iOS (Gboard dsb).
-   - Mendukung penekanan kombinasi multi-jari simultan (contoh: menahan `Ctrl` dengan jempol kiri dan menekan `C` dengan jempol kanan).
-   - **Mode Sticky / Latch Modifier:** Mengetuk `Ctrl`, `Alt`, atau `Shift` satu kali akan mengunci status tombol tersebut hingga karakter berikutnya ditekan, lalu melepasnya secara otomatis.
-4. **Eksekusi Input pada PC:**
-   - Paket JSON dikirim melalui WebSocket ke server.
-   - Server menerjemahkan string kode tombol ke objek `pynput.keyboard.Key` atau karakter literal.
-   - Pynput menyuntikkan keystroke ke display server OS (X11/Win32/macOS).
+   - **Keyboard Multi-Touch & Sticky Latch:** Mendukung penekanan kombinasi multi-jari simultan, serta mode Latch untuk mengunci modifier satu per satu.
+   - **Trackpad Gestures:**
+     - 1 Jari: Menggerakkan kursor mouse PC secara kinetik (throttled ~120fps).
+     - 1-Finger Tap: Mengirim klik kiri instan (`mouseclick: left`).
+     - 2-Finger Tap: Mengirim klik kanan instan (`mouseclick: right`).
+     - 2-Finger Vertical Swipe: Mengirim perintah scroll mousewheel PC (`mousescroll`).
+     - Dedicated Buttons: Tombol fisik klik kiri & kanan laptop deck dengan status visual `.active`.
+4. **Engine Umpan Balik Taktil (Haptic & Web Audio API):**
+   - **Haptic:** `navigator.vibrate` untuk motor getar ponsel cerdas (preset: 15ms, 30ms, 50ms).
+   - **Mechanical Click Synthesizer:** Dua osilator Web Audio API (`triangle` 1500Hz→350Hz untuk ketajaman speaker kecil HP + `sine` 300Hz→90Hz untuk resonansi bodi di tablet/laptop).
+   - **Audio Context Unlocker:** Memastikan `audioCtx` langsung aktif (*resumed*) pada sentuhan layar pertama pengguna, melewati limitasi autoplay browser seluler.
+   - **Volume Controller:** Mengatur gain audio secara presisi (10% s/d 100%) dengan isolasi memori lokal (`localStorage`).
 
 ### 3. Spesifikasi Protokol WebSocket
 
 #### Payload Format (Client ke Server):
+
+1. **Keyboard Events:**
 ```json
+// Penekanan tombol normal (dengan auto-repeat):
 {
-  "type": "down" | "up" | "tap",
-  "key": "a" | "enter" | "ctrl" | "f5" | "backspace",
-  "modifiers": ["ctrl", "shift"]
+  "type": "keypress",
+  "key": "a" | "enter" | "backspace" | null,
+  "char": "a" | "A" | null,
+  "modifiers": { "ctrl": false, "alt": false, "shift": false, "cmd": false }
 }
+
+// Penekanan & pelepasan modifier / manual:
+{ "type": "keydown", "key": "ctrl" }
+{ "type": "keyup", "key": "ctrl" }
+
+// Shortcut / kombinasi simultan (1-tap):
+{ "type": "combo", "keys": ["ctrl", "c"] }
 ```
 
-* **`type`**:
-  * `"down"`: Tombol fisik virtual mulai ditekan.
-  * `"up"`: Tombol fisik virtual dilepas.
-  * `"tap"`: Penekanan instan (otomatis down diikuti up, ideal untuk tombol shortcut/macro).
-* **`key`**: Pengenal tombol yang cocok dengan kamus `KEY_MAPPINGS` di server.
-* **`modifiers`**: Daftar tombol pengubah yang sedang aktif saat event dikirim.
+2. **Trackpad & Mouse Events:**
+```json
+// Gerakan kursor:
+{ "type": "mousemove", "dx": 12.5, "dy": -4.2 }
+
+// Klik tombol:
+{ "type": "mouseclick", "button": "left" | "right" }
+{ "type": "mousedown", "button": "left" | "right" }
+{ "type": "mouseup", "button": "left" | "right" }
+
+// Menggulir (Scroll):
+{ "type": "mousescroll", "dx": 0, "dy": -3 }
+```
+
+3. **Keepalive (Ping / Pong):**
+```json
+// Client:
+{ "type": "ping" }
+
+// Server Response:
+{ "type": "pong" }
+```
 
 ---
 
