@@ -70,6 +70,7 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
   - Area trackpad laptop virtual di sisi **Atas** atau **Bawah** keyboard tanpa perlu berganti tab.
   - Pengaturan ukuran trackpad fleksibel (Kecil, Normal, Besar, Ekstra, dan slider 60%-180%).
   - Pengatur sensitivitas gerak kursor (0.5x s/d 3.0x).
+  - **Opsi Matikan/Sembunyikan Trackpad (On/Off Toggle):** Dukungan penonaktifan dek trackpad secara penuh dari menu pengaturan, toolbar atas, dan tombol palm rest dengan penyimpanan status permanen.
 - [x] **Gesture Multi-Touch Penuh:**
   - 1 Jari: Menggerakkan kursor mouse PC secara kinetik (throttled ~120fps).
   - 1-Finger Tap: Klik kiri | 2-Finger Tap: Klik kanan.

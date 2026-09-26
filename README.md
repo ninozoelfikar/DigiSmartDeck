@@ -35,6 +35,7 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Gesture Multi-Touch:** Geser 1 jari untuk kursor mouse, 1-finger tap untuk Klik Kiri, 2-finger tap untuk Klik Kanan, 2-finger scroll untuk menggulir halaman.
    - **Tombol Fisik Klik:** Tombol Klik Kiri dan Klik Kanan terdedikasi di bawah trackpad.
    - **Posisi Fleksibel:** Bisa dipasang di **Atas** keyboard atau di **Bawah** keyboard sesuai kenyamanan jari.
+   - **Opsi Nyala/Mati (On/Off Toggle):** Trackpad dapat dinonaktifkan sepenuhnya jika tidak dibutuhkan, baik melalui tombol cepat toolbar (`🖱️ Pad`), tombol palm rest (`✕ Matikan Pad`), maupun menu Pengaturan (`🟢 Aktif` / `⚪ Nonaktif`). Status tersimpan permanen.
    - **Kustomisasi Ukuran & Sensitivitas:** Preset ukuran (Kecil 70%, Normal 100%, Besar 130%, Ekstra 160%), slider skala granular (60% - 180%), dan pengatur sensitivitas kursor (0.5x - 3.0x).
 3. **Umpan Balik Taktil (Haptic & Audio):**
    - **Haptic Vibration (Getar):** Pilihan preset Lembut (15ms), Normal (30ms), Kuat (50ms), serta tombol uji coba langsung.
@@ -139,7 +140,7 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 
 ### ✨ Key Features
 - **True 1:1 PC Keyboard Canvas:** Number row, full QWERTY, navigation keys, latching modifiers, and Numpad without mobile OS keyboard popup.
-- **Laptop Trackpad / Mouse Control Deck:** Smooth multi-touch trackpad with 1-finger left click tap, 2-finger right click tap, 2-finger vertical scroll, physical left/right buttons, position toggle (top/bottom), and sizing/sensitivity controls.
+- **Laptop Trackpad / Mouse Control Deck:** Smooth multi-touch trackpad with 1-finger left click tap, 2-finger right click tap, 2-finger vertical scroll, physical left/right buttons, position toggle (top/bottom), sizing/sensitivity controls, and persistent On/Off option (via toolbar, palm rest button, or Settings).
 - **Tactile & Audio Feedback:** Web Vibration API haptics (Soft, Normal, Strong) and synthesized mechanical switch sound with custom volume slider (10%-100%) and quick presets.
 - **Target OS Profile & Layout Selector:** Dedicated OS selector (**Windows**, **macOS**, **Ubuntu / Linux**). Automatically configures physical modifier keys (`control ⌃`, `option ⌥`, `⌘ cmd` on Mac vs `Ctrl`, `⊞ Win`, `Alt` on Windows/Ubuntu), native OS typography, and OS-tailored shortcut bars (`⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc` on Mac; `Ctrl+Alt+T` on Ubuntu).
 - **Theme & Ergonomics Studio:** Independent visual themes (Native OS, Dark Modern, Retro 90s, Cyberpunk, Stealth, Nord) and granular key height scaling.

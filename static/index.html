@@ -1090,7 +1090,9 @@ html, body {
       </div>
     </div>
 
-    <div class="palm-rest palm-right"></div>
+    <div class="palm-rest palm-right">
+      <button class="deck-btn" id="btn-tp-hide" title="Matikan / Sembunyikan Trackpad">✕ Matikan Pad</button>
+    </div>
   </section>
 
   <!-- KEYBOARD + NUMPAD -->
@@ -1387,26 +1389,33 @@ html, body {
 
         <!-- TRACKPAD POSITION & SIZE -->
         <div class="setting-group">
-          <div class="setting-title">🖱️ Pengaturan Trackpad</div>
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Posisi Dek:</div>
+          <div class="setting-title">🖱️ Pengaturan Trackpad Laptop</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Status Dek Trackpad:</div>
           <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
-            <button class="pos-option-btn active" id="opt-tp-top">▲ Posisi: Di Atas</button>
-            <button class="pos-option-btn" id="opt-tp-bottom">▼ Posisi: Di Bawah</button>
+            <button class="pos-option-btn active" id="opt-tp-on" type="button">🟢 Aktif (Tampilkan)</button>
+            <button class="pos-option-btn" id="opt-tp-off" type="button">⚪ Nonaktif (Matikan)</button>
           </div>
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Ukuran / Skala Trackpad:</div>
-          <div class="size-presets" id="tp-size-presets">
-            <button class="size-preset-btn tp-preset-btn" data-tpsize="compact">Kecil</button>
-            <button class="size-preset-btn tp-preset-btn active" data-tpsize="normal">Normal</button>
-            <button class="size-preset-btn tp-preset-btn" data-tpsize="large">Besar</button>
-            <button class="size-preset-btn tp-preset-btn" data-tpsize="xl">Ekstra</button>
-          </div>
-          <div class="setting-slider-row" style="margin-bottom:10px;">
-            <span class="setting-slider-label">Tinggi Trackpad: <b id="lbl-tp-scale">100%</b></span>
-            <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
-          </div>
-          <div class="setting-slider-row">
-            <span class="setting-slider-label">Sensitivitas Kursor: <b id="tp-speed-val">1.2x</b></span>
-            <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="custom-slider">
+          <div id="tp-config-controls" style="transition: opacity 0.2s ease;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Posisi Dek:</div>
+            <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
+              <button class="pos-option-btn active" id="opt-tp-top">▲ Posisi: Di Atas</button>
+              <button class="pos-option-btn" id="opt-tp-bottom">▼ Posisi: Di Bawah</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Ukuran / Skala Trackpad:</div>
+            <div class="size-presets" id="tp-size-presets">
+              <button class="size-preset-btn tp-preset-btn" data-tpsize="compact">Kecil</button>
+              <button class="size-preset-btn tp-preset-btn active" data-tpsize="normal">Normal</button>
+              <button class="size-preset-btn tp-preset-btn" data-tpsize="large">Besar</button>
+              <button class="size-preset-btn tp-preset-btn" data-tpsize="xl">Ekstra</button>
+            </div>
+            <div class="setting-slider-row" style="margin-bottom:10px;">
+              <span class="setting-slider-label">Tinggi Trackpad: <b id="lbl-tp-scale">100%</b></span>
+              <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
+            </div>
+            <div class="setting-slider-row">
+              <span class="setting-slider-label">Sensitivitas Kursor: <b id="tp-speed-val">1.2x</b></span>
+              <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="custom-slider">
+            </div>
           </div>
         </div>
 
@@ -1883,14 +1892,63 @@ if (tpSpeedSlider) {
   });
 }
 
+// ── Trackpad Enabled / Disabled (On / Off) Controller ──
+let tpEnabled = localStorage.getItem('digi_tp_enabled') !== 'false';
+const optTpOn = $('opt-tp-on');
+const optTpOff = $('opt-tp-off');
+const tpConfigControls = $('tp-config-controls');
 const btnTpToggle = $('btn-tp');
+const btnTpHide = $('btn-tp-hide');
+
+function setTpEnabled(enabled) {
+  tpEnabled = !!enabled;
+  const deck = $('laptop-deck');
+  if (deck) {
+    deck.classList.toggle('hidden', !tpEnabled);
+  }
+  if (btnTpToggle) {
+    btnTpToggle.classList.toggle('on', tpEnabled);
+  }
+  if (optTpOn) optTpOn.classList.toggle('active', tpEnabled);
+  if (optTpOff) optTpOff.classList.toggle('active', !tpEnabled);
+
+  if (tpConfigControls) {
+    tpConfigControls.style.opacity = tpEnabled ? '1' : '0.45';
+    tpConfigControls.style.pointerEvents = tpEnabled ? 'auto' : 'none';
+  }
+
+  localStorage.setItem('digi_tp_enabled', tpEnabled ? 'true' : 'false');
+}
+
 if (btnTpToggle) {
   btnTpToggle.addEventListener('click', () => {
-    const deck = $('laptop-deck');
-    deck.classList.toggle('hidden');
-    btnTpToggle.classList.toggle('on', !deck.classList.contains('hidden'));
+    setTpEnabled(!tpEnabled);
+    vibe(20);
   });
 }
+
+if (btnTpHide) {
+  btnTpHide.addEventListener('click', () => {
+    setTpEnabled(false);
+    vibe(20);
+  });
+}
+
+if (optTpOn) {
+  optTpOn.addEventListener('click', () => {
+    setTpEnabled(true);
+    vibe(20);
+  });
+}
+
+if (optTpOff) {
+  optTpOff.addEventListener('click', () => {
+    setTpEnabled(false);
+    vibe(20);
+  });
+}
+
+setTpEnabled(tpEnabled);
 
 // Position switcher: Atas vs Bawah
 const btnTpPos = $('btn-tp-pos');
