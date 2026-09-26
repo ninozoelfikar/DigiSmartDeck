@@ -17,64 +17,82 @@ echo -e "${BLUE}============================================================${NC
 echo -e "${BLUE}  ⌨️  DigiKeyboard - Setup Akses Layar Login Ubuntu (uinput)${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo ""
-echo -e "${YELLOW}Penjelasan:${NC}"
-echo "Layar Login dan Lock Screen Ubuntu (GDM) secara bawaan memblokir simulasi"
-echo "keyboard software (XTest) demi alasan keamanan. Agar DigiKeyboard dapat"
-echo "mengetik password di layar login, DigiKeyboard harus didaftarkan sebagai"
-echo "Keyboard USB Fisik di level kernel Linux menggunakan modul 'uinput'."
-echo ""
-echo "Skrip ini membutuhkan akses sudo untuk:"
-echo " 1. Membuat aturan udev /etc/udev/rules.d/99-uinput.rules"
-echo " 2. Menambahkan user '$USER' ke grup 'input'"
-echo " 3. Memberikan izin baca/tulis ke /dev/uinput"
-echo " 4. Mengaktifkan lingering (agar service tetap jalan sebelum login)"
-echo ""
 
-# 1. Pastikan modul uinput aktif
-sudo modprobe uinput 2>/dev/null || true
+# 1. Pastikan modul uinput dimuat sekarang dan otomatis saat boot
+modprobe uinput 2>/dev/null || true
+echo "uinput" | tee /etc/modules-load.d/uinput.conf >/dev/null 2>&1 || true
+echo -e "${GREEN}[✓] Modul kernel uinput berhasil dimuat dan dikonfigurasi auto-load.${NC}"
 
 # 2. Buat grup input jika belum ada
-sudo groupadd -f input
+groupadd -f input
 
-# 3. Tambahkan aturan udev
-echo 'KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"' | sudo tee /etc/udev/rules.d/99-uinput.rules > /dev/null
+# 3. Buat aturan udev permanen (mode 0666 dan group input)
+cat << 'EOF' > /etc/udev/rules.d/99-uinput.rules
+KERNEL=="uinput", MODE="0666", GROUP="input", OPTIONS+="static_node=uinput"
+SUBSYSTEM=="misc", KERNEL=="uinput", MODE="0666", GROUP="input"
+EOF
 echo -e "${GREEN}[✓] Aturan udev /etc/udev/rules.d/99-uinput.rules berhasil dibuat.${NC}"
 
+# Reload udev
+udevadm control --reload-rules 2>/dev/null || true
+udevadm trigger /dev/uinput 2>/dev/null || true
+
 # 4. Tambahkan user ke grup input
-sudo usermod -aG input "$USER"
-echo -e "${GREEN}[✓] User '$USER' berhasil ditambahkan ke grup 'input'.${NC}"
+TARGET_USER="${SUDO_USER:-nino}"
+usermod -aG input "$TARGET_USER" 2>/dev/null || true
+echo -e "${GREEN}[✓] User '$TARGET_USER' berhasil ditambahkan ke grup 'input'.${NC}"
 
 # 5. Atur izin langsung pada /dev/uinput yang sedang berjalan
 if [ -e /dev/uinput ]; then
-    sudo chmod 660 /dev/uinput
-    sudo chgrp input /dev/uinput
-    # Izin rw untuk user saat ini di sesi ini
-    sudo chmod 666 /dev/uinput
-    echo -e "${GREEN}[✓] Izin /dev/uinput berhasil dikonfigurasi.${NC}"
+    chmod 666 /dev/uinput
+    chgrp input /dev/uinput 2>/dev/null || true
+    echo -e "${GREEN}[✓] Izin /dev/uinput berhasil diubah menjadi rw-rw-rw- (0666).${NC}"
 fi
 
 # 6. Aktifkan lingering systemd agar background service tetap aktif saat logout/lock
-loginctl enable-linger "$USER" 2>/dev/null || true
-echo -e "${GREEN}[✓] Systemd linger diaktifkan untuk user '$USER'.${NC}"
+loginctl enable-linger "$TARGET_USER" 2>/dev/null || true
+echo -e "${GREEN}[✓] Systemd linger diaktifkan untuk user '$TARGET_USER'.${NC}"
 
-# 7. Restart PM2 jika ada
+# 7. Konfigurasi dan aktifkan systemd service
+SERVICE_SRC="/home/$TARGET_USER/digikeyboard/digikeyboard.service"
+SERVICE_DST="/etc/systemd/system/digikeyboard.service"
+
+if [ -f "$SERVICE_SRC" ]; then
+    cat << EOF > "$SERVICE_DST"
+[Unit]
+Description=DigiKeyboard Remote PC Keyboard Server (Kernel uinput)
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=$TARGET_USER
+Group=input
+SupplementaryGroups=input
+WorkingDirectory=/home/$TARGET_USER/digikeyboard
+ExecStart=/usr/bin/python3 /home/$TARGET_USER/digikeyboard/server.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+Environment=HOME=/home/$TARGET_USER
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemctl daemon-reload
+    systemctl enable digikeyboard.service
+    systemctl restart digikeyboard.service
+    echo -e "${GREEN}[✓] Systemd service 'digikeyboard' berhasil dipasang dan dijalankan.${NC}"
+fi
+
+# 8. Bersihkan instance PM2 jika ada agar tidak bentrok port 8080
 if command -v pm2 >/dev/null 2>&1; then
-    if pm2 describe digikeyboard >/dev/null 2>&1; then
-        pm2 restart digikeyboard >/dev/null 2>&1 || true
-        echo -e "${GREEN}[✓] Service PM2 'digikeyboard' berhasil direstart.${NC}"
-    fi
+    pm2 delete digikeyboard >/dev/null 2>&1 || true
 fi
 
 echo ""
 echo -e "${BLUE}============================================================${NC}"
 echo -e "${GREEN}🎉 SUKSES! Driver Kernel Virtual USB DigiKeyboard telah aktif!${NC}"
 echo -e "${BLUE}============================================================${NC}"
-echo "Sekarang DigiKeyboard dapat mengisi password pada:"
-echo " - Layar Login Pengguna Ubuntu (GDM)"
-echo " - Layar Kunci (Lock Screen)"
-echo " - Sesi Wayland & X11"
-echo " - Terminal sudo / root password"
-echo ""
-echo "Catatan: Agar keanggotaan grup 'input' permanen di semua terminal,"
-echo "Anda disarankan melakukan Logout & Login kembali sekali saja."
-echo "============================================================"
+echo "Status service:"
+systemctl status digikeyboard.service --no-pager -n 5 || true

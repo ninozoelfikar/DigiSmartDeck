@@ -49,7 +49,7 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
   - **Cyberpunk Neon RGB:** Aksen cyan & magenta tajam dengan font futuristik Orbitron.
   - **Stealth Matte Black:** Nuansa minimalis monokromatik dengan font JetBrains Mono.
   - **Nord Frost:** Palet biru beku Skandinavia dengan font Inter.
-- [x] **Tipografi Khusus Tiap Tema & OS:** Font dan letter-spacing disesuaikan secara dinamis.
+- [x] **Studio Tipografi & Pemilih Font Mandiri (Custom Key Fonts):** Pilihan 10 jenis font (Bawaan Tema/Auto, Ubuntu, Segoe UI, SF Pro, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, Sistem UI) yang dapat dipilih bebas terpisah dari tema aktif.
 - [x] **Synthesized Switch Sound Effect (Audio Taktil) & Pengontrol Volume:**
   - Sintetis suara saklar mekanikal renyah via Web Audio API tanpa file eksternal.
   - Pengontrol volume granular (10% s/d 100%) dan 3 preset volume instan (Pelan, Sedang, Keras).

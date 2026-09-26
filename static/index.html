@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@500;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@500;700;800&family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <title>DigiKeyboard - Remote PC Keyboard</title>
   <style>
 :root {
@@ -909,6 +909,50 @@ html, body {
 .tp-stealth { background: linear-gradient(135deg, #000000 50%, #171717 50%); border: 1px solid #333333; }
 .tp-nord { background: linear-gradient(135deg, #242933 50%, #88c0d0 50%); border: 1px solid #4c566a; }
 
+.font-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+  gap: 8px;
+}
+.font-card {
+  background: var(--panel-bg);
+  border: 2px solid var(--key-border);
+  border-radius: 8px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+.font-card:hover {
+  border-color: var(--accent);
+}
+.font-card.active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.15);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+}
+.font-preview {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.font-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+}
+.font-sub {
+  font-size: 8.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
 .size-presets, .trackpad-pos-buttons {
   display: flex;
   gap: 6px;
@@ -1252,6 +1296,63 @@ html, body {
             <button class="theme-card" data-theme="nord" type="button">
               <div class="theme-preview tp-nord"></div>
               <span>Nord Arctic</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- FONT / TYPOGRAPHY SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">🔤 Font / Tipografi Tombol</div>
+          <div class="font-grid">
+            <button class="font-card active" data-font="default" type="button">
+              <span class="font-preview" style="font-family: inherit;">Aa 123</span>
+              <span class="font-name">Bawaan Tema</span>
+              <span class="font-sub">Otomatis tema/OS</span>
+            </button>
+            <button class="font-card" data-font="ubuntu" type="button">
+              <span class="font-preview" style="font-family: 'Ubuntu', sans-serif;">Aa 123</span>
+              <span class="font-name">Ubuntu</span>
+              <span class="font-sub">Canonical style</span>
+            </button>
+            <button class="font-card" data-font="segoe" type="button">
+              <span class="font-preview" style="font-family: 'Segoe UI', sans-serif;">Aa 123</span>
+              <span class="font-name">Segoe UI</span>
+              <span class="font-sub">Windows Fluent</span>
+            </button>
+            <button class="font-card" data-font="apple" type="button">
+              <span class="font-preview" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">Aa 123</span>
+              <span class="font-name">SF Pro</span>
+              <span class="font-sub">Apple Cupertino</span>
+            </button>
+            <button class="font-card" data-font="jetbrains" type="button">
+              <span class="font-preview" style="font-family: 'JetBrains Mono', monospace;">Aa 123</span>
+              <span class="font-name">JetBrains Mono</span>
+              <span class="font-sub">Coding Mono</span>
+            </button>
+            <button class="font-card" data-font="inter" type="button">
+              <span class="font-preview" style="font-family: 'Inter', sans-serif;">Aa 123</span>
+              <span class="font-name">Inter</span>
+              <span class="font-sub">Clean Geometric</span>
+            </button>
+            <button class="font-card" data-font="fira" type="button">
+              <span class="font-preview" style="font-family: 'Fira Code', monospace;">Aa 123</span>
+              <span class="font-name">Fira Code</span>
+              <span class="font-sub">Ligature Mono</span>
+            </button>
+            <button class="font-card" data-font="orbitron" type="button">
+              <span class="font-preview" style="font-family: 'Orbitron', monospace;">Aa 123</span>
+              <span class="font-name">Orbitron</span>
+              <span class="font-sub">Sci-Fi Gaming</span>
+            </button>
+            <button class="font-card" data-font="courier" type="button">
+              <span class="font-preview" style="font-family: 'Courier New', monospace;">Aa 123</span>
+              <span class="font-name">Courier</span>
+              <span class="font-sub">Retro Typewriter</span>
+            </button>
+            <button class="font-card" data-font="system" type="button">
+              <span class="font-preview" style="font-family: sans-serif;">Aa 123</span>
+              <span class="font-name">Sistem UI</span>
+              <span class="font-sub">Default Sans-Serif</span>
             </button>
           </div>
         </div>
@@ -2136,11 +2237,85 @@ function applyTheme(theme) {
   });
 
   localStorage.setItem('digi_theme', theme);
+  const activeFont = localStorage.getItem('digi_font') || 'default';
+  applyFont(activeFont);
 }
 
 themeCards.forEach(card => {
   card.addEventListener('click', () => {
     applyTheme(card.dataset.theme);
+    vibe(20);
+  });
+});
+
+// ─── Font / Typography Manager ───
+const FONT_PRESETS = {
+  default: {
+    font: null,
+    spacing: null
+  },
+  ubuntu: {
+    font: '"Ubuntu", "Ubuntu Light", "Cantarell", sans-serif',
+    spacing: '0.2px'
+  },
+  segoe: {
+    font: '"Segoe UI", "Segoe UI Variable", -apple-system, BlinkMacSystemFont, sans-serif',
+    spacing: '0.1px'
+  },
+  apple: {
+    font: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Helvetica Neue", Arial, sans-serif',
+    spacing: '-0.1px'
+  },
+  jetbrains: {
+    font: '"JetBrains Mono", "SF Mono", "Fira Code", monospace',
+    spacing: '0px'
+  },
+  inter: {
+    font: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+    spacing: '0px'
+  },
+  fira: {
+    font: '"Fira Code", monospace',
+    spacing: '0px'
+  },
+  orbitron: {
+    font: '"Orbitron", "Rajdhani", monospace, sans-serif',
+    spacing: '0.8px'
+  },
+  courier: {
+    font: '"Courier New", Courier, monospace',
+    spacing: '-0.5px'
+  },
+  system: {
+    font: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    spacing: 'normal'
+  }
+};
+
+const fontCards = document.querySelectorAll('.font-card');
+
+function applyFont(fontKey) {
+  fontKey = fontKey || 'default';
+  const preset = FONT_PRESETS[fontKey] || FONT_PRESETS.default;
+
+  fontCards.forEach(card => {
+    card.classList.toggle('active', card.dataset.font === fontKey);
+  });
+
+  if (!preset.font) {
+    document.body.style.removeProperty('--key-font');
+    document.body.style.removeProperty('--key-letter-spacing');
+  } else {
+    document.body.style.setProperty('--key-font', preset.font);
+    document.body.style.setProperty('--key-letter-spacing', preset.spacing || 'normal');
+  }
+
+  localStorage.setItem('digi_font', fontKey);
+}
+
+fontCards.forEach(card => {
+  card.addEventListener('click', () => {
+    applyFont(card.dataset.font);
     vibe(20);
   });
 });
@@ -2158,6 +2333,7 @@ if (!savedOS) {
 }
 applyOS(savedOS);
 applyTheme(savedTheme);
+applyFont(localStorage.getItem('digi_font') || 'default');
 
 // Keyboard Sizing (Presets & Granular Height)
 const keyPresetBtns = document.querySelectorAll('.key-preset-btn');

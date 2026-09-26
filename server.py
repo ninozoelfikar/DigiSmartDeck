@@ -9,6 +9,7 @@ import os
 import socket
 import json
 import asyncio
+import time
 from aiohttp import web
 
 def load_version():
@@ -90,7 +91,11 @@ if sys.platform.startswith('linux'):
             KEY_NAME_TO_EVDEV = {
                 'esc': e.KEY_ESC, 'tab': e.KEY_TAB, 'caps_lock': e.KEY_CAPSLOCK,
                 'shift': e.KEY_LEFTSHIFT, 'ctrl': e.KEY_LEFTCTRL, 'alt': e.KEY_LEFTALT,
-                'cmd': e.KEY_LEFTMETA, 'enter': e.KEY_ENTER, 'backspace': e.KEY_BACKSPACE,
+                'cmd': e.KEY_LEFTMETA, 'win': e.KEY_LEFTMETA, 'super': e.KEY_LEFTMETA, 'meta': e.KEY_LEFTMETA,
+                'shift_l': e.KEY_LEFTSHIFT, 'shift_r': e.KEY_RIGHTSHIFT,
+                'ctrl_l': e.KEY_LEFTCTRL, 'ctrl_r': e.KEY_RIGHTCTRL,
+                'alt_l': e.KEY_LEFTALT, 'alt_r': e.KEY_RIGHTALT,
+                'enter': e.KEY_ENTER, 'backspace': e.KEY_BACKSPACE,
                 'delete': e.KEY_DELETE, 'space': e.KEY_SPACE, 'up': e.KEY_UP,
                 'down': e.KEY_DOWN, 'left': e.KEY_LEFT, 'right': e.KEY_RIGHT,
                 'home': e.KEY_HOME, 'end': e.KEY_END, 'page_up': e.KEY_PAGEUP,
@@ -124,6 +129,8 @@ if sys.platform.startswith('linux'):
                 '%': (e.KEY_5, True),  '^': (e.KEY_6, True),  '&': (e.KEY_7, True),  '*': (e.KEY_8, True),
                 '(': (e.KEY_9, True),  ')': (e.KEY_0, True),
                 ' ': (e.KEY_SPACE, False),
+                '\n': (e.KEY_ENTER, False), '\r': (e.KEY_ENTER, False),
+                '\t': (e.KEY_TAB, False),
                 '-': (e.KEY_MINUS, False),      '_': (e.KEY_MINUS, True),
                 '=': (e.KEY_EQUAL, False),      '+': (e.KEY_EQUAL, True),
                 '[': (e.KEY_LEFTBRACE, False),  '{': (e.KEY_LEFTBRACE, True),
@@ -223,6 +230,8 @@ def get_evdev_code_for_key(k):
     if not k:
         return None
     s = str(k).lower()
+    if s.startswith('key.'):
+        s = s[4:]
     if s in KEY_NAME_TO_EVDEV:
         return KEY_NAME_TO_EVDEV[s]
     if hasattr(k, 'name') and k.name.lower() in KEY_NAME_TO_EVDEV:
@@ -304,9 +313,11 @@ def simulate_tap(k):
                     uinput_device.syn()
                 uinput_device.write(e.EV_KEY, code, 1)
                 uinput_device.syn()
+                time.sleep(0.005)
                 uinput_device.write(e.EV_KEY, code, 0)
                 uinput_device.syn()
                 if need_shift:
+                    time.sleep(0.002)
                     uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 0)
                     uinput_device.syn()
                 return
@@ -315,6 +326,7 @@ def simulate_tap(k):
             if ev_code:
                 uinput_device.write(e.EV_KEY, ev_code, 1)
                 uinput_device.syn()
+                time.sleep(0.005)
                 uinput_device.write(e.EV_KEY, ev_code, 0)
                 uinput_device.syn()
                 return
