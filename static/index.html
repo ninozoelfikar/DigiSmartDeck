@@ -456,6 +456,91 @@ html, body {
   .palm-rest { display: none; }
   .trackpad-container { flex: 1; width: 100%; }
 }
+
+/* ─── Tablet Specific Layout (iPad / Android Tablet) ─── */
+@media (min-width: 768px) and (min-height: 500px) {
+  .laptop-deck {
+    min-height: 200px;
+    max-height: 380px;
+    height: clamp(200px, 32vh, 360px);
+    padding: 10px 24px;
+    gap: 20px;
+  }
+  .trackpad-container {
+    flex: 0 1 580px;
+    width: min(600px, 62vw);
+    border-radius: 16px;
+  }
+  .trackpad-surface {
+    min-height: 150px;
+  }
+  .trackpad-buttons {
+    height: 46px;
+  }
+  .tp-btn {
+    font-size: 13px;
+    gap: 8px;
+  }
+  .tp-icon {
+    font-size: 22px;
+  }
+  .tp-label {
+    font-size: 13px;
+  }
+  .tp-instructions {
+    font-size: 11px;
+  }
+  .palm-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+  .palm-tip {
+    font-size: 11px;
+    max-width: 220px;
+  }
+  .palm-label {
+    font-size: 11px;
+  }
+  .palm-slider {
+    width: 120px;
+    height: 6px;
+  }
+}
+
+/* ─── Large Tablet & Desktop View (iPad Pro 11"/12.9", 1080p+ Tablet) ─── */
+@media (min-width: 960px) and (min-height: 680px) {
+  .laptop-deck {
+    min-height: 250px;
+    max-height: 440px;
+    height: clamp(250px, 36vh, 440px);
+    padding: 14px 36px;
+  }
+  .trackpad-container {
+    flex: 0 1 660px;
+    width: min(680px, 65vw);
+    border-radius: 18px;
+  }
+  .trackpad-surface {
+    min-height: 190px;
+  }
+  .trackpad-buttons {
+    height: 52px;
+  }
+  .tp-btn {
+    font-size: 14px;
+    gap: 10px;
+  }
+  .palm-badge {
+    font-size: 12px;
+  }
+  .palm-tip {
+    font-size: 12px;
+  }
+  .palm-label {
+    font-size: 12px;
+  }
+}
+
 @media (orientation: portrait) {
   .kb-wrap { justify-content: flex-start; overflow-x: auto; }
   .kb-main { min-width: 640px; }
