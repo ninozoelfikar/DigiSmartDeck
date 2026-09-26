@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.15.0] - 2026-09-26
+- Sistem pemulihan mandiri koneksi Wi-Fi (watchdog 5.5s, auto-reconnect backoff, dan pemindai subnet deteksi IP baru PC)
+
 ### [1.14.0] - 2026-09-26
 - Implementasi Progressive Web App (PWA) dengan manifest.json, sw.js, dan icon HD untuk mode fullscreen bebas popup Chrome
 
@@ -135,6 +138,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.15.0] - 2026-09-26
+- Release v1.15.0 updates
 
 ### [1.14.0] - 2026-09-26
 - Release v1.14.0 updates

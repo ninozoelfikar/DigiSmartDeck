@@ -53,7 +53,11 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Ukuran Tinggi Tombol:** Preset (Kecil, Normal, Besar, Ekstra) dan slider ketinggian tombol (30px - 60px).
    - **Fullscreen & Tip Toggle:** Tombol manual fullscreen (`⛶`) dan opsi sembunyikan baris tip.
    - **Dukungan PWA (Progressive Web App):** Dilengkapi Web App Manifest (`manifest.json`), Service Worker (`sw.js`), dan opsi instalasi ke Layar Utama (*Home Screen*). Membuka aplikasi secara mandiri (*standalone/fullscreen*) tanpa bilah URL browser dan tanpa popup peringatan fullscreen Chrome.
-6. **Smart LAN Detection & QR Code:**
+6. **Sistem Pemulihan Mandiri Koneksi Wi-Fi (Self-Healing Network & Auto-Reconnect):**
+   - **Watchdog Heartbeat & Dead Socket Destroyer:** Menghancurkan socket TCP zombie secara otomatis dalam 5.5 detik saat router Wi-Fi di-restart (mencegah koneksi gantung/hang).
+   - **Reconnection Loop Cerdas:** Algoritma exponential backoff dengan jitter acak serta responsivitas instan saat sinyal Wi-Fi terhubung kembali (`online`) dan saat HP dinyalakan dari mode tidur (`visibilitychange`).
+   - **Asisten Pemulihan & Pemindai Subnet Otomatis (DHCP IP Change Discovery):** Memindai seluruh subnet lokal pada port 8080 secara paralel dan resolusi nama mDNS (`Jarvis.local`) untuk mendeteksi otomatis jika router memberikan IP baru ke PC setelah reboot.
+7. **Smart LAN Detection & QR Code:**
    - Secara otomatis mendeteksi alamat IP Wi-Fi lokal fisik Anda (mengabaikan interface VPN/Docker seperti Cloudflare WARP), dan menampilkan QR code di terminal PC untuk koneksi instan.
 
 ---
@@ -147,6 +151,7 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 - **Theme & Ergonomics Studio:** Independent visual themes (Native OS, Dark Modern, Retro 90s, Cyberpunk, Stealth, Nord) and granular key height scaling.
 - **Independent Font & Typography Studio:** Custom font selector offering 10 distinct font families if you prefer a different look from the theme default (Theme Default/Auto, Ubuntu, Segoe UI, SF Pro Apple, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, System UI).
 - **Progressive Web App (PWA) & Zero-Popup Fullscreen:** Add to Home Screen support with Web App Manifest (`manifest.json`), Service Worker (`sw.js`), and high-res app icons for a native full-screen experience with no browser URL bar and no Chrome fullscreen popups.
+- **Self-Healing Wi-Fi Connection & Dynamic IP Discovery:** Heartbeat watchdog destroying zombie sockets in 5.5s upon router reboot, jittered exponential backoff auto-reconnect, network & screen-wake event listeners, and parallel subnet scanner on port 8080 to auto-locate newly assigned PC IP addresses.
 - **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
 ---

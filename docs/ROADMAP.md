@@ -83,13 +83,20 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
 
 ---
 
-### 📌 Fase 3: Keamanan & Pairing Cerdas (Q3 2026)
+### 📌 Fase 3: Keamanan & Pemulihan Koneksi Cerdas (Sebagian Selesai di v1.15.0)
+- [x] **Sistem Pemulihan Mandiri Koneksi Wi-Fi (Self-Healing Network Recovery):**
+  - Pemutus socket zombie otomatis (heartbeat ping/pong dengan watchdog 5.5s timeout) saat router Wi-Fi me-reboot tanpa sinyal TCP RST.
+  - Reconnection loop dengan exponential backoff dan jitter acak.
+  - Event listener `online`, `offline`, dan `visibilitychange` (bangun dari layar mati / latar belakang).
+  - Floating Reconnection Assistant banner saat gagal terhubung >3 kali.
+  - Pindai Subnet Otomatis (`scanSubnet`) paralel pada port 8080 untuk mendeteksi IP baru PC jika DHCP router mengalihkan IP setelah reboot, didukung resolusi mDNS (`Jarvis.local`).
+  - Modal pengalihan IP/hostname manual.
 - [ ] **4-Digit Pairing PIN:**
   - Layar PC memunculkan 4 angka acak yang wajib dimasukkan pada HP sebelum koneksi diizinkan. Ini mencegah serangan iseng/injeksi tombol pada Wi-Fi publik (kafe/kampus/kantor).
 - [ ] **Device Whitelist & Session Tokens:**
   - Menyimpan token HP yang telah terverifikasi agar koneksi berikutnya otomatis terhubung tanpa perlu memasukkan PIN berulang.
-- [ ] **mDNS / Zero-Config Local Domain:**
-  - Akses langsung via `http://digikeyboard.local:8080` tanpa perlu mengingat deretan angka IP.
+- [x] **mDNS / Zero-Config Local Domain:**
+  - Dukungan resolusi domain mDNS (`Jarvis.local:8080`) dan fallback scanner otomatis.
 
 ---
 
@@ -110,21 +117,22 @@ Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward nati
 
 ### 📌 Phase 1: Progressive Web App & Mechanical Aesthetics
 - [x] **PWA & Edge-to-Edge Experience:** Zero-browser address bar and zero Chrome fullscreen popups when launched from the home screen via Web App Manifest & Service Worker.
-- [ ] **Mechanical Keycap Theme Engine:** Retro 1990s Beige, Cyberpunk Neon RGB, and Stealth Matte Dark.
-- [ ] **Acoustic Switch Feedback:** Optional synthesized mechanical switch click sounds (Clicky Blue, Tactile Brown, Thoccy Linear).
+- [x] **Mechanical Keycap Theme Engine:** Native OS, Retro 1990s Beige, Cyberpunk Neon RGB, Stealth Matte Dark, and Nord Arctic.
+- [x] **Acoustic Switch Feedback:** Synthesized mechanical switch click sounds via Web Audio API with granular volume controls and test audio button.
+- [x] **Custom Font Studio:** Independent typography selector with 10 font choices.
 - [ ] **Dedicated Tablet 10–12" Layout:** Optimized key pitch for 10-finger typing on iPads and Android tablets.
 - [ ] **Ergonomic Split Thumb Mode:** Split-half layout for handheld smartphone typing.
 
 ### 📌 Phase 2: Integrated Touchpad & Sysadmin Toolset
-- [ ] **Side Mini-Trackpad:** Compact trackpad area alongside the keyboard for simultaneous pointer & typing control.
-- [ ] **Multi-Touch Gestures:** Kinetic mouse movement, tap-to-click, and smooth dual-axis scrolling.
+- [x] **Integrated Trackpad Companion:** Multi-touch laptop trackpad deck with kinetic pointer tracking, tap-to-click, 2-finger scroll, physical buttons, sensitivity/size scaling, and full On/Off toggle.
 - [ ] **Terminal & Sysadmin Bar:** One-tap keys for `|`, `~`, `\`, `sudo`, `git`, `$`, `Esc`, and `Ctrl+C`.
 - [ ] **Media & Master Volume Controller:** Slider for audio control and playback buttons.
 
 ### 📌 Phase 3: Pairing Security & Local Networking
+- [x] **Self-Healing Wi-Fi Reconnection:** 5.5s ping/pong watchdog to terminate zombie sockets, jittered exponential backoff auto-reconnect, screen-wake listeners, and parallel subnet port 8080 scanner to recover dynamically changed PC IP addresses upon router reboot.
 - [ ] **One-Time Pairing PIN:** 4-digit terminal code required to authenticate mobile clients on shared Wi-Fi networks.
 - [ ] **Trusted Device Sessions:** Cryptographic tokens to auto-reconnect trusted mobile devices.
-- [ ] **Zero-Config mDNS:** Broadcast URL as `http://digikeyboard.local:8080`.
+- [x] **Zero-Config mDNS:** Support for hostname broadcast and resolution via `.local:8080`.
 
 ### 📌 Phase 4: Creator Macro Pad & Production Packaging
 - [ ] **Interactive Macro Grid:** Custom 3x4 / 4x4 tile layout for streaming (OBS), podcasting, and editing suites.

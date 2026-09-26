@@ -525,7 +525,7 @@ def get_host_os():
 
 # --- WebSocket Handler ---
 async def websocket_handler(request):
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0)
     await ws.prepare(request)
     client_ip = request.remote
     ua = request.headers.get('User-Agent', 'Unknown')
@@ -553,7 +553,10 @@ async def websocket_handler(request):
                 msg_type = data.get('type')
 
                 if msg_type == 'ping':
-                    await ws.send_str(json.dumps({'type': 'pong'}))
+                    pong_payload = {'type': 'pong'}
+                    if 't' in data:
+                        pong_payload['t'] = data['t']
+                    await ws.send_str(json.dumps(pong_payload))
 
                 elif msg_type == 'keypress':
                     key_name = data.get('key')
@@ -685,16 +688,28 @@ def print_banner(port, ips):
 
 
 async def api_version_handler(request):
-    return web.json_response({'version': __version__, 'name': 'DigiKeyboard'})
+    return web.json_response(
+        {'version': __version__, 'name': 'DigiKeyboard', 'hostname': socket.gethostname()},
+        headers={'Access-Control-Allow-Origin': '*'}
+    )
 
 
 async def api_info_handler(request):
     return web.json_response({
         'version': __version__,
         'name': 'DigiKeyboard',
+        'hostname': socket.gethostname(),
         'host_os': get_host_os(),
         'platform': sys.platform,
         'uinput_active': UINPUT_AVAILABLE
+    }, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def options_handler(request):
+    return web.Response(headers={
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': '*'
     })
 
 
@@ -705,7 +720,9 @@ def create_app():
     app.router.add_get('/', index_handler)
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/api/version', api_version_handler)
+    app.router.add_options('/api/version', options_handler)
     app.router.add_get('/api/info', api_info_handler)
+    app.router.add_options('/api/info', options_handler)
     app.router.add_static('/static/', path=static_dir, name='static')
     # Juga route langsung untuk style.css, app.js, manifest.json, sw.js, dan favicon jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))
