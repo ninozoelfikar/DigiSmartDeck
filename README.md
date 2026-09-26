@@ -141,6 +141,7 @@ Seluruh dokumentasi teknis, roadmap produk, dan panduan komersialisasi tersedia 
 * 📐 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md):** Arsitektur sistem internal, diagram Mermaid, protokol payload WebSocket, dan smart network discovery logic.
 * 🗺️ **[docs/ROADMAP.md](docs/ROADMAP.md):** Rencana rilis fitur masa depan (PWA, Virtual Touchpad, 4-digit PIN Pairing, Macro Deck).
 * 💼 **[docs/COMMERCIAL_GUIDE.md](docs/COMMERCIAL_GUIDE.md):** Analisis pasar, alternatif branding (*AirDeck*, *DeskPilot*, *TapDeck*), strategi monetisasi (SaaS/Freemium vs Hardware Dongle), dan model penetapan harga.
+* 📝 **[CHANGELOG.md](CHANGELOG.md):** Riwayat catatan rilis dan log perubahan lengkap aplikasi.
 
 ---
 
