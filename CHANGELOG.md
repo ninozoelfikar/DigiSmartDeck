@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.6.0] - 2026-09-26
+- Menambahkan pengaturan efek getar haptic feedback dan pilihan intensitas di modal Settings
+
 ### [1.5.2] - 2026-09-26
 - Perbaikan isolasi CSS fullscreen tip dan tombol tutup tip langsung
 
@@ -99,6 +102,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.6.0] - 2026-09-26
+- Release v1.6.0 updates
 
 ### [1.5.2] - 2026-09-26
 - Release v1.5.2 updates

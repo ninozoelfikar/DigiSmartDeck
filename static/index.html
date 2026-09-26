@@ -1128,6 +1128,23 @@ html, body {
           </div>
         </div>
 
+        <!-- HAPTIC / VIBRATION SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">📳 Efek Getar Tombol (Haptic Feedback)</div>
+          <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;margin-bottom:8px;">
+            <input type="checkbox" id="chk-haptic" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+            <span>Getar saat tombol keyboard &amp; trackpad berhasil diklik</span>
+          </label>
+          <div id="haptic-strength-controls">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Intensitas / Durasi Getaran:</div>
+            <div class="size-presets" id="haptic-presets">
+              <button class="size-preset-btn haptic-preset-btn" data-vibe="soft">Lembut (15ms)</button>
+              <button class="size-preset-btn haptic-preset-btn active" data-vibe="normal">Normal (30ms)</button>
+              <button class="size-preset-btn haptic-preset-btn" data-vibe="strong">Kuat (50ms)</button>
+            </div>
+          </div>
+        </div>
+
         <!-- DISPLAY OPTIONS -->
         <div class="setting-group">
           <div class="setting-title">ℹ️ Opsi Tampilan</div>
@@ -1153,7 +1170,9 @@ html, body {
 // ── State ──
 let ws = null, connected = false;
 let pingT = 0, pingTimer = null;
-let latch = true, haptic = true;
+let latch = true;
+let haptic = localStorage.getItem('digi_haptic') !== 'false';
+let vibeDuration = parseInt(localStorage.getItem('digi_vibe_ms'), 10) || 30;
 
 const mods = { ctrl: false, alt: false, shift: false, cmd: false, caps_lock: false };
 
@@ -1180,9 +1199,13 @@ $('btn-latch').onclick = () => {
   vibe(15);
 };
 $('btn-haptic').onclick = () => {
-  haptic = !haptic;
-  $('btn-haptic').classList.toggle('on', haptic);
-  if (haptic) vibe(30);
+  if (typeof setHapticState === 'function') {
+    setHapticState(!haptic);
+  } else {
+    haptic = !haptic;
+    $('btn-haptic').classList.toggle('on', haptic);
+  }
+  if (haptic) vibe(vibeDuration);
 };
 function isFs() {
   return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
@@ -1217,8 +1240,10 @@ $('btn-fs').onclick = () => {
 };
 
 // ── Haptic ──
-function vibe(ms = 12) {
-  if (haptic && navigator.vibrate) { try { navigator.vibrate(ms); } catch(e){} }
+function vibe(ms = null) {
+  if (!haptic || !navigator.vibrate) return;
+  const dur = ms !== null ? ms : vibeDuration;
+  try { navigator.vibrate(dur); } catch(e){}
 }
 
 // ── WebSocket ──
@@ -1336,7 +1361,7 @@ function startRepeat(btn, key, char, shiftChar) {
       char: sendChar || null,
       modifiers: { ctrl: mods.ctrl, alt: mods.alt, shift: mods.shift, cmd: mods.cmd }
     });
-    vibe(6);
+    vibe(Math.max(8, Math.round(vibeDuration * 0.3)));
   }
 
   // Standar PC keyboard repeat: 350ms delay, kemudian interval 45ms (~22 keypress/detik)
@@ -1357,7 +1382,7 @@ function pressKey(el) {
   const char = btn.dataset.char || null;
   const shiftChar = btn.dataset.shift || null;
 
-  vibe(12);
+  vibe();
   btn.classList.add('pressed');
 
   // MODIFIER KEY
@@ -1870,6 +1895,63 @@ if (chkShowTip) {
 
 const savedShowTip = localStorage.getItem('digi_show_tip') !== 'false';
 setTipVisibility(savedShowTip);
+
+// ── Haptic Settings Controller ──
+const chkHaptic = $('chk-haptic');
+const hapticPresetBtns = document.querySelectorAll('.haptic-preset-btn');
+const strengthControls = $('haptic-strength-controls');
+
+const VIBE_PRESETS = {
+  soft: 15,
+  normal: 30,
+  strong: 50
+};
+
+function setHapticState(enable) {
+  haptic = enable;
+  localStorage.setItem('digi_haptic', haptic ? 'true' : 'false');
+  const btn = $('btn-haptic');
+  if (btn) btn.classList.toggle('on', haptic);
+  if (chkHaptic) chkHaptic.checked = haptic;
+  if (strengthControls) strengthControls.style.opacity = haptic ? '1' : '0.4';
+}
+
+function setVibeDuration(ms, presetName) {
+  vibeDuration = parseInt(ms, 10) || 30;
+  localStorage.setItem('digi_vibe_ms', vibeDuration);
+  localStorage.setItem('digi_vibe_preset', presetName || '');
+
+  hapticPresetBtns.forEach(btn => {
+    if (presetName) {
+      btn.classList.toggle('active', btn.dataset.vibe === presetName);
+    } else {
+      btn.classList.toggle('active', VIBE_PRESETS[btn.dataset.vibe] === vibeDuration);
+    }
+  });
+
+  if (haptic) vibe(vibeDuration);
+}
+
+if (chkHaptic) {
+  chkHaptic.checked = haptic;
+  chkHaptic.addEventListener('change', (e) => {
+    setHapticState(e.target.checked);
+    if (haptic) vibe(vibeDuration);
+  });
+}
+
+hapticPresetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const p = btn.dataset.vibe;
+    if (VIBE_PRESETS[p] !== undefined) {
+      setVibeDuration(VIBE_PRESETS[p], p);
+    }
+  });
+});
+
+const savedVibePreset = localStorage.getItem('digi_vibe_preset') || 'normal';
+setVibeDuration(vibeDuration, savedVibePreset);
+setHapticState(haptic);
 
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());
