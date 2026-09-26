@@ -58,8 +58,8 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
   - Pilihan preset getaran: Lembut (15ms), Normal (30ms), Kuat (50ms).
 - [x] **Edge-to-Edge & Fullscreen Experience:**
   - Tombol manual fullscreen (`⛶`) di toolbar atas dan opsi sembunyikan baris tip.
-- [ ] **PWA (Progressive Web App):**
-  - Web App Manifest & Service Worker untuk opsi *"Add to Home Screen"*.
+- [x] **PWA (Progressive Web App):**
+  - Web App Manifest (`manifest.json`), Service Worker (`sw.js`), dan ikon HD multi-resolusi (192px, 512px, maskable, SVG) untuk opsi *"Add to Home Screen"*. Menjalankan aplikasi secara native fullscreen murni tanpa address bar dan bebas popup peringatan Chrome.
 - [ ] **Split Ergonomic Mode (Khusus HP):**
   - Membelah keyboard menjadi dua sisi (kiri & kanan) agar jempol tangan kiri dan kanan dapat mengetik santai tanpa menjangkau area tengah layar yang jauh.
 
@@ -109,7 +109,7 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
 Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward native mobile keyboards (Gboard/iOS) that swallow half the display, DigiKeyboard renders a **full-fidelity 1:1 mechanical PC keyboard canvas**, keeping all essential PC keys (`Esc`, `Tab`, `F1-F12`, `Ctrl`, `Alt`, `|`, `~`) immediately reachable.
 
 ### 📌 Phase 1: Progressive Web App & Mechanical Aesthetics
-- [ ] **PWA & Edge-to-Edge Experience:** Zero-browser address bar when launched from the home screen.
+- [x] **PWA & Edge-to-Edge Experience:** Zero-browser address bar and zero Chrome fullscreen popups when launched from the home screen via Web App Manifest & Service Worker.
 - [ ] **Mechanical Keycap Theme Engine:** Retro 1990s Beige, Cyberpunk Neon RGB, and Stealth Matte Dark.
 - [ ] **Acoustic Switch Feedback:** Optional synthesized mechanical switch click sounds (Clicky Blue, Tactile Brown, Thoccy Linear).
 - [ ] **Dedicated Tablet 10–12" Layout:** Optimized key pitch for 10-finger typing on iPads and Android tablets.

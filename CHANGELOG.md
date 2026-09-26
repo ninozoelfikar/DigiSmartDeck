@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.14.0] - 2026-09-26
+- Implementasi Progressive Web App (PWA) dengan manifest.json, sw.js, dan icon HD untuk mode fullscreen bebas popup Chrome
+
 ### [1.13.0] - 2026-09-26
 - Penambahan opsi matikan trackpad laptop (On/Off Toggle) via Pengaturan, toolbar, dan palm rest
 
@@ -132,6 +135,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.14.0] - 2026-09-26
+- Release v1.14.0 updates
 
 ### [1.13.0] - 2026-09-26
 - Release v1.13.0 updates

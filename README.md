@@ -52,6 +52,7 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Pemilih Font / Tipografi Mandiri (Custom Typography Studio):** Pilihan 10 jenis font tuts independen jika tidak menyukai font bawaan tema (Bawaan Tema/Auto, Ubuntu, Segoe UI, SF Pro Apple, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, Sistem UI).
    - **Ukuran Tinggi Tombol:** Preset (Kecil, Normal, Besar, Ekstra) dan slider ketinggian tombol (30px - 60px).
    - **Fullscreen & Tip Toggle:** Tombol manual fullscreen (`⛶`) dan opsi sembunyikan baris tip.
+   - **Dukungan PWA (Progressive Web App):** Dilengkapi Web App Manifest (`manifest.json`), Service Worker (`sw.js`), dan opsi instalasi ke Layar Utama (*Home Screen*). Membuka aplikasi secara mandiri (*standalone/fullscreen*) tanpa bilah URL browser dan tanpa popup peringatan fullscreen Chrome.
 6. **Smart LAN Detection & QR Code:**
    - Secara otomatis mendeteksi alamat IP Wi-Fi lokal fisik Anda (mengabaikan interface VPN/Docker seperti Cloudflare WARP), dan menampilkan QR code di terminal PC untuk koneksi instan.
 
@@ -145,6 +146,7 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 - **Target OS Profile & Layout Selector:** Dedicated OS selector (**Windows**, **macOS**, **Ubuntu / Linux**). Automatically configures physical modifier keys (`control ⌃`, `option ⌥`, `⌘ cmd` on Mac vs `Ctrl`, `⊞ Win`, `Alt` on Windows/Ubuntu), native OS typography, and OS-tailored shortcut bars (`⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc` on Mac; `Ctrl+Alt+T` on Ubuntu).
 - **Theme & Ergonomics Studio:** Independent visual themes (Native OS, Dark Modern, Retro 90s, Cyberpunk, Stealth, Nord) and granular key height scaling.
 - **Independent Font & Typography Studio:** Custom font selector offering 10 distinct font families if you prefer a different look from the theme default (Theme Default/Auto, Ubuntu, Segoe UI, SF Pro Apple, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, System UI).
+- **Progressive Web App (PWA) & Zero-Popup Fullscreen:** Add to Home Screen support with Web App Manifest (`manifest.json`), Service Worker (`sw.js`), and high-res app icons for a native full-screen experience with no browser URL bar and no Chrome fullscreen popups.
 - **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
 ---

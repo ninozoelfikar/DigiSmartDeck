@@ -1,0 +1,39 @@
+{
+  "name": "DigiKeyboard - Remote PC Keyboard",
+  "short_name": "DigiKeyboard",
+  "description": "Full-Fidelity Remote PC Keyboard with Multi-Touch Trackpad & Haptic Audio Feedback",
+  "start_url": "/?pwa=1",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "window-controls-overlay"],
+  "orientation": "any",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

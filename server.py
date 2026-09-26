@@ -707,9 +707,12 @@ def create_app():
     app.router.add_get('/api/version', api_version_handler)
     app.router.add_get('/api/info', api_info_handler)
     app.router.add_static('/static/', path=static_dir, name='static')
-    # Juga route langsung untuk style.css dan app.js jika diminta di root
+    # Juga route langsung untuk style.css, app.js, manifest.json, sw.js, dan favicon jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))
     app.router.add_get('/app.js', lambda r: web.FileResponse(os.path.join(static_dir, 'app.js')))
+    app.router.add_get('/manifest.json', lambda r: web.FileResponse(os.path.join(static_dir, 'manifest.json'), headers={'Content-Type': 'application/manifest+json'}))
+    app.router.add_get('/sw.js', lambda r: web.FileResponse(os.path.join(static_dir, 'sw.js'), headers={'Content-Type': 'application/javascript'}))
+    app.router.add_get('/favicon.ico', lambda r: web.FileResponse(os.path.join(static_dir, 'icon-192.png')))
     return app
 
 
