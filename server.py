@@ -11,6 +11,18 @@ import json
 import asyncio
 from aiohttp import web
 
+def load_version():
+    v_file = os.path.join(os.path.dirname(__file__), 'VERSION')
+    if os.path.exists(v_file):
+        try:
+            with open(v_file, 'r', encoding='utf-8') as f:
+                return f.read().strip()
+        except Exception:
+            pass
+    return '1.4.1'
+
+__version__ = load_version()
+
 # Keyboard Controller Setup
 KEYBOARD_AVAILABLE = False
 keyboard_controller = None
@@ -351,7 +363,7 @@ async def index_handler(request):
 def print_banner(port, ips):
     primary_url = f"http://{ips[0]}:{port}"
     print("=" * 60)
-    print("  ⌨️  REMOTE PC KEYBOARD SERVER  ⌨️")
+    print(f"  ⌨️  REMOTE PC KEYBOARD SERVER v{__version__}  ⌨️")
     print("=" * 60)
     print("Aplikasi siap digunakan!")
     print("Buka browser di HP/Tablet Anda yang terhubung ke Wi-Fi yang sama:")
@@ -374,12 +386,17 @@ def print_banner(port, ips):
     print("=" * 60)
 
 
+async def api_version_handler(request):
+    return web.json_response({'version': __version__, 'name': 'DigiKeyboard'})
+
+
 def create_app():
     app = web.Application()
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
 
     app.router.add_get('/', index_handler)
     app.router.add_get('/ws', websocket_handler)
+    app.router.add_get('/api/version', api_version_handler)
     app.router.add_static('/static/', path=static_dir, name='static')
     # Juga route langsung untuk style.css dan app.js jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))

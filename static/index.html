@@ -1126,7 +1126,8 @@ html, body {
         </div>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiKeyboard v1.4.1</span>
         <button class="btn-primary" id="btn-save-settings">Selesai</button>
       </div>
     </div>
@@ -1755,6 +1756,17 @@ applyKeyHeight(savedH);
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());
 refreshMods();
+try {
+  fetch('/api/version')
+    .then(r => r.json())
+    .then(d => {
+      if (d && d.version) {
+        const vEl = document.getElementById('app-version-badge');
+        if (vEl) vEl.textContent = `DigiKeyboard v${d.version}`;
+      }
+    })
+    .catch(() => {});
+} catch(e) {}
 connect();
 })();
 </script>

@@ -9,6 +9,13 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.4.1] - 2026-09-26 (Stable Golden Checkpoint)
+#### 🛠️ Perbaikan & Stabilitas (Fixed & Stabilized)
+- **Perbaikan Critical Syntax Error Client:** Memperbaiki penutupan blok kurung kurawal `}` pada *event listener* trackpad kanan di `static/index.html` yang sempat menyebabkan *parser crash* pada browser HP/Tablet.
+- **Pembersihan Fitur Fullscreen Otomatis:** Membatalkan percobaan *auto-fullscreen* dan mengembalikan kendali manual melalui tombol `⛶` demi stabilitas rendering di semua jenis peramban mobile.
+- **Sistem Versi Otomatis Terpusat:** Menetapkan berkas `VERSION` sebagai *single source of truth*, integrasi endpoint `/api/version`, serta penambahan lencana versi di modal Pengaturan.
+- **Milestone Stabil:** Menetapkan versi `1.4.1` sebagai titik aman optimal terverifikasi (koneksi instan, 5 tema skin, slider ukuran tombol, continuous key repeat, dan trackpad multi-touch).
+
 ### [1.4.0] - 2026-09-26
 #### ✨ Fitur Baru (Added)
 - **Modal Pengaturan Tema & Skin Keyboard:** Menambahkan tombol pengaturan `⚙️` pada toolbar atas dengan 5 tema visual kustom:
@@ -83,6 +90,13 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.4.1] - 2026-09-26 (Stable Golden Checkpoint)
+#### Fixed & Stabilized
+- **Client Script Syntax Fix:** Resolved missing closing brace `}` inside right trackpad click handler in `static/index.html` which previously prevented browser script execution.
+- **Manual Fullscreen Restored:** Completely removed experimental auto-fullscreen, restoring standard manual toggle `⛶` for cross-platform stability.
+- **Centralized Automated Versioning:** Introduced `VERSION` file as single source of truth, added `/api/version` endpoint, and integrated version badge in the Settings modal.
+- **Golden Milestone:** Verified stable operation with WebSocket connectivity, 5 themes, sizing slider, locked Fn row, continuous key repeat, and multi-touch trackpad.
 
 ### [1.4.0] - 2026-09-26
 #### Added
