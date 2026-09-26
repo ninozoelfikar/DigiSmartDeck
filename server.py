@@ -243,7 +243,8 @@ async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     client_ip = request.remote
-    print(f"[+] Client terhubung dari: {client_ip}")
+    ua = request.headers.get('User-Agent', 'Unknown')
+    print(f"[+] Client terhubung dari: {client_ip} | UA: {ua}")
 
     # Set tombol yang sedang ditekan untuk client ini
     active_keys = set()

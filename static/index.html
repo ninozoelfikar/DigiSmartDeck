@@ -1141,7 +1141,15 @@ html, body {
               <button class="size-preset-btn haptic-preset-btn active" data-vibe="normal">Normal (30ms)</button>
               <button class="size-preset-btn haptic-preset-btn" data-vibe="strong">Kuat (50ms)</button>
             </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;">🧪 Uji Getaran Sekarang</button>
+            </div>
+            <div id="haptic-device-notice" style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4;"></div>
           </div>
+          <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:8px 0 0 0;margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+            <input type="checkbox" id="chk-sound" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+            <span>🔊 Suara Klik Mekanikal (Bekerja di PC, Laptop &amp; HP)</span>
+          </label>
         </div>
 
         <!-- DISPLAY OPTIONS -->
@@ -1238,11 +1246,36 @@ $('btn-fs').onclick = () => {
   }
 };
 
-// ── Haptic ──
+// ── Haptic & Audio Feedback ──
+let audioCtx = null;
+let soundEnabled = localStorage.getItem('digi_sound') === 'true';
+
+function playClickSound() {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.025);
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.025);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.025);
+  } catch(e) {}
+}
+
 function vibe(ms = null) {
   if (!haptic || !navigator.vibrate) return;
   const dur = ms !== null ? ms : vibeDuration;
-  try { navigator.vibrate(dur); } catch(e){}
+  try {
+    navigator.vibrate(dur);
+    if (!Array.isArray(dur)) navigator.vibrate([dur]);
+  } catch(e){}
 }
 
 // ── WebSocket ──
@@ -1382,6 +1415,7 @@ function pressKey(el) {
   const shiftChar = btn.dataset.shift || null;
 
   vibe();
+  playClickSound();
   btn.classList.add('pressed');
 
   // MODIFIER KEY
@@ -1954,6 +1988,44 @@ hapticPresetBtns.forEach(btn => {
 const savedVibePreset = localStorage.getItem('digi_vibe_preset') || 'normal';
 setVibeDuration(vibeDuration, savedVibePreset);
 setHapticState(haptic);
+
+// ── Sound & Device Detection Notice ──
+const chkSound = $('chk-sound');
+if (chkSound) {
+  chkSound.checked = soundEnabled;
+  chkSound.addEventListener('change', (e) => {
+    soundEnabled = e.target.checked;
+    localStorage.setItem('digi_sound', soundEnabled ? 'true' : 'false');
+    if (soundEnabled) playClickSound();
+  });
+}
+
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isTabletOrIos = /iPad|Macintosh/i.test(navigator.userAgent) || (!('vibrate' in navigator));
+const hapticNotice = $('haptic-device-notice');
+if (hapticNotice) {
+  if (!('vibrate' in navigator)) {
+    hapticNotice.innerHTML = '⚠️ <i>Perangkat ini (misal iPad/iPhone) tidak mendukung motor getar web oleh Apple. Anda dapat mengaktifkan <b>Suara Klik Mekanikal</b> di bawah sebagai alternatif umpan balik sentuhan.</i>';
+  } else if (!isMobileDevice) {
+    hapticNotice.innerHTML = 'ℹ️ <i>Perangkat ini terdeteksi sebagai PC/Laptop (tidak memiliki motor getar fisik).</i>';
+  } else {
+    hapticNotice.innerHTML = '💡 <i>Tip Tablet: Banyak tablet Android/iPad dari pabrik tidak dipasang motor getar fisik. Jika tablet Anda tidak bergetar, aktifkan <b>Suara Klik Mekanikal</b> di bawah.</i>';
+  }
+}
+
+const btnTestHaptic = $('btn-test-haptic');
+if (btnTestHaptic) {
+  btnTestHaptic.addEventListener('click', () => {
+    if (!('vibrate' in navigator)) {
+      alert('Perangkat / peramban ini tidak mendukung Web Vibration API (seperti iPad / iPhone). Silakan aktifkan opsi Suara Klik Mekanikal.');
+      return;
+    }
+    try {
+      navigator.vibrate([60, 40, 60]);
+    } catch(e) {}
+    if (soundEnabled) playClickSound();
+  });
+}
 
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());
