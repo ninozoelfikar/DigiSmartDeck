@@ -62,51 +62,55 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
 - PC dan HP/Tablet terhubung ke **jaringan Wi-Fi yang sama**.
 - Python 3.8 atau lebih baru.
 
-#### Di Linux PC:
-Cara termudah menggunakan installer otomatis:
-```bash
-cd digikeyboard
-chmod +x install-linux.sh
-./install-linux.sh
-```
-
-Atau jalankan secara manual:
-```bash
-pip install -r requirements.txt
-python3 server.py
-```
-
-#### Menjalankan di Background (PM2 / Daemon):
-Jika Anda ingin server tetap berjalan di latar belakang tanpa harus membuka terminal:
-```bash
-# Menjalankan server
-pm2 start server.py --name digikeyboard --interpreter python3
-
-# Melihat status & log
-pm2 status digikeyboard
-pm2 logs digikeyboard
-
-# Menghentikan server
-pm2 stop digikeyboard
-```
-
-#### Di Windows:
+#### 1. Di Windows:
 Cukup klik ganda (double-click) berkas:
 ```cmd
 run.bat
 ```
+*Script otomatis mendeteksi launcher Python, memasang dependencies (`aiohttp`, `pynput`, `qrcode`), dan menjalankan server.*
+
+#### 2. Di Linux (Ubuntu, Debian, Fedora, Arch):
+- **Opsi Utama (Direkomendasikan untuk Dukungan Layar Login, Lock Screen & Sudo Password):**
+  ```bash
+  chmod +x setup-uinput.sh
+  ./setup-uinput.sh
+  ```
+- **Atau jalankan manual via script runner:**
+  ```bash
+  chmod +x run.sh
+  ./run.sh
+  ```
+
+#### 3. Di macOS:
+```bash
+chmod +x run.sh
+./run.sh
+```
+> *Catatan macOS:* Berikan izin Accessibility untuk aplikasi Terminal/iTerm Anda di **System Settings > Privacy & Security > Accessibility**.
+
+#### Menjalankan di Background (Linux Systemd / PM2):
+Untuk menjalankan DigiKeyboard sebagai background daemon permanen saat komputer menyala:
+```bash
+# Systemd Service (Otomatis aktif sebelum login):
+sudo systemctl enable --now digikeyboard.service
+
+# Atau menggunakan PM2:
+pm2 start server.py --name digikeyboard --interpreter python3
+```
 
 ---
 
-### 📱 Cara Terhubung dari HP / Tablet
+### 📱 Cara Terhubung dari HP / Tablet (Android & iOS)
+
 1. Saat server PC aktif, terminal akan menampilkan URL dan QR Code, contoh:
    ```text
    http://192.168.8.103:8080
    ```
-2. Buka kamera HP untuk scan **QR Code**, ATAU ketik alamat IP tersebut di browser (Chrome / Safari / Firefox).
+2. Buka kamera HP untuk scan **QR Code**, ATAU ketik alamat IP tersebut di browser (Chrome / Safari / Firefox / Edge).
 3. **Tips Penggunaan Terbaik:**
-   - Putar HP ke posisi **Landscape (Mendatar)**.
-   - Tekan ikon **⛶ (Fullscreen)** di pojok kanan atas layar agar tampilan keyboard penuh tanpa terhalang toolbar browser.
+   - **Android:** Buka menu browser > ketuk **"Install App"** atau **"Add to Home Screen"** untuk pengalaman keyboard layar penuh (PWA) tanpa address bar.
+   - **iOS (iPhone / iPad):** Buka Safari > ketuk tombol **Share (Bagikan)** > pilih **"Add to Home Screen"**. Buka ikon DigiKeyboard dari Home Screen untuk mode Fullscreen native dengan adaptasi notch/island & home bar.
+   - Putar perangkat ke posisi **Landscape (Mendatar)**.
 
 ---
 
@@ -120,8 +124,9 @@ run.bat
   # Fedora / RHEL
   sudo firewall-cmd --add-port=8080/tcp --permanent && sudo firewall-cmd --reload
   ```
+  Di Windows, klik "Allow Access" jika muncul dialog Windows Defender Firewall.
 * **Karakter tidak terketik di Linux:**
-  Pastikan display server X11 aktif (default desktop Ubuntu/Debian). Jika menjalankan melalui SSH, pastikan `export DISPLAY=:0` atau `DISPLAY=:1` sudah ditentukan.
+  Jalankan `./setup-uinput.sh` untuk menggunakan driver kernel hardware uinput yang mendukung pengetikan di semua aplikasi, terminal, dan kolom password.
 
 ---
 

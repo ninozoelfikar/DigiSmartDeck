@@ -1,78 +1,86 @@
-# 📦 Cara Install & Jalankan di Linux PC
+# 📦 Panduan Instalasi & Penggunaan Multi-Platform
 
-## Prasyarat
-- PC/Laptop Linux (Ubuntu / Debian / Fedora / Arch)
-- HP/Tablet berada di **jaringan WiFi yang sama** dengan PC
-- Sesi **Desktop GUI** aktif (bukan pure SSH tanpa X11)
-
----
-
-## ⚡ Cara Tercepat (1 Perintah)
-
-```bash
-# 1. Clone project ke PC
-git clone https://github.com/ninozoelfikar/digikeyboard.git
-cd digikeyboard
-
-# 2. Jalankan installer otomatis
-chmod +x install-linux.sh
-./install-linux.sh
-```
-
-Script `install-linux.sh` akan otomatis:
-- ✅ Memeriksa & menginstal Python 3 (jika belum ada)
-- ✅ Menginstal semua dependencies (`aiohttp`, `pynput`, `qrcode`)
-- ✅ Memeriksa koneksi keyboard ke display X11/Wayland
-- ✅ Mendeteksi IP lokal PC
-- ✅ Menampilkan petunjuk buka firewall jika diperlukan
-- ✅ Menampilkan URL + QR Code langsung di terminal
+DigiKeyboard dirancang untuk bekerja secara mulus di berbagai sistem operasi:
+- **Host Server (PC yang dikendalikan):** Windows, Linux, macOS
+- **Client (HP/Tablet/Browser pengendali):** Android, iOS (iPhone & iPad), Windows, Mac, Linux
 
 ---
 
-## 🔧 Cara Manual (Jika Prefer)
+## 🖥️ Menjalankan Server di PC / Laptop
 
-```bash
-# Install dependencies
-pip install aiohttp pynput qrcode
-
-# Jalankan server
-python3 server.py
-```
-
----
-
-## 🔥 Buka Firewall (jika HP tidak bisa terhubung)
-
-**Ubuntu/Debian:**
-```bash
-sudo ufw allow 8080/tcp
-```
-
-**Fedora/RHEL:**
-```bash
-sudo firewall-cmd --add-port=8080/tcp --permanent
-sudo firewall-cmd --reload
-```
-
----
-
-## 📱 Cara Pakai di HP
-
-1. Jalankan server di PC
-2. Scan **QR Code** yang muncul di terminal, ATAU buka browser HP ketik:
+### 1. Windows (10 / 11)
+1. Pastikan **Python 3.8+** sudah terinstal (unduh di [python.org](https://www.python.org/)).
+   > *PENTING: Pastikan centang opsi **"Add Python to PATH"** saat instalasi.*
+2. Buka folder `digikeyboard`, lalu **klik ganda (double-click)**:
+   ```cmd
+   run.bat
    ```
-   http://<IP-PC>:8080
+   *Skrip ini otomatis mendeteksi launcher Python (`python` atau `py`), menginstal dependensi (`aiohttp`, `pynput`, `qrcode`), dan langsung menjalankan server.*
+3. Catat alamat IP lokal atau scan QR Code yang muncul di terminal.
+
+### 2. Linux (Ubuntu, Debian, Fedora, Arch)
+1. Buka terminal di folder project:
+   ```bash
+   cd digikeyboard
    ```
-3. Putar HP ke **Landscape** untuk pengalaman terbaik
-4. Tekan **⛶ Fullscreen** untuk layar penuh
+2. **Direkomendasikan (Dukungan Layar Login, Lock Screen & Password):**
+   ```bash
+   chmod +x setup-uinput.sh
+   ./setup-uinput.sh
+   ```
+   *Mengaktifkan modul kernel Linux `uinput` sehingga DigiKeyboard bertindak sebagai keyboard USB fisik.*
+3. **Atau jalankan langsung melalui runner:**
+   ```bash
+   chmod +x run.sh
+   ./run.sh
+   ```
+
+### 3. macOS (Apple Silicon / Intel)
+1. Buka Terminal di folder project:
+   ```bash
+   cd digikeyboard
+   chmod +x run.sh
+   ./run.sh
+   ```
+2. **Izin Aksesibilitas (Wajib di macOS):**
+   macOS mewajibkan izin Accessibility agar aplikasi dapat mengirim input keyboard & mouse:
+   - Buka **System Settings** > **Privacy & Security** > **Accessibility**.
+   - Tambahkan dan aktifkan **Terminal** atau **iTerm**.
 
 ---
 
-## ❓ Troubleshooting
+## 📱 Menggunakan di HP / Tablet (Client)
 
-| Masalah | Solusi |
-|---|---|
-| `Site can't be reached` | PC & HP harus di WiFi yang sama. Buka firewall (lihat di atas). |
-| Keyboard tidak bereaksi di PC | Jalankan dari terminal di dalam sesi desktop GUI (bukan SSH) |
-| `failed to acquire X connection` | Jalankan `export DISPLAY=:0` sebelum `python3 server.py` |
-| Port 8080 sudah dipakai | Ganti port: `PORT=9090 python3 server.py` |
+### 1. Android (Google Chrome, Samsung Internet, Edge, Firefox)
+1. Hubungkan HP ke **jaringan Wi-Fi yang sama** dengan PC.
+2. Buka browser dan buka alamat IP PC Anda (misal `http://192.168.8.103:8080`), atau scan QR Code di terminal.
+3. Putar HP ke posisi **Landscape (Mendatar)**.
+4. **Tips Fullscreen / PWA:**
+   - Ketuk menu titik tiga di browser > pilih **"Add to Home screen" / "Instal Aplikasi"**.
+   - DigiKeyboard akan terbuka dalam layar penuh tanpa toolbar browser!
+
+### 2. iOS (iPhone & iPad - Safari)
+1. Hubungkan iPhone/iPad ke **Wi-Fi yang sama** dengan PC.
+2. Buka **Safari** dan ketik alamat IP server.
+3. **Tips Fullscreen di iOS (Sangat Direkomendasikan):**
+   - Ketuk tombol **Share (Bagikan)** di Safari (ikon kotak dengan panah atas).
+   - Pilih **"Add to Home Screen" (Tambahkan ke Layar Utama)**.
+   - Buka ikon DigiKeyboard dari Home Screen Anda.
+   - DigiKeyboard akan berjalan dalam mode **Standalone Fullscreen** dengan dukungan safe-area notch iPhone dan home bar!
+
+---
+
+## 🔥 Firewall (Jika Client Tidak Bisa Membuka Halaman Web)
+
+- **Ubuntu / Debian:**
+  ```bash
+  sudo ufw allow 8080/tcp
+  ```
+- **Fedora / RHEL:**
+  ```bash
+  sudo firewall-cmd --add-port=8080/tcp --permanent && sudo firewall-cmd --reload
+  ```
+- **Windows:**
+  Jika muncul pop-up *Windows Defender Firewall*, centang **Private Networks** lalu klik **Allow access**.
+- **macOS:**
+  Jika firewall aktif, buka *System Settings > Network > Firewall* dan izinkan koneksi masuk untuk Python.
