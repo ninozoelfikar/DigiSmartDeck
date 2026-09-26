@@ -95,6 +95,9 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
   - Layar PC memunculkan 4 angka acak yang wajib dimasukkan pada HP sebelum koneksi diizinkan. Ini mencegah serangan iseng/injeksi tombol pada Wi-Fi publik (kafe/kampus/kantor).
 - [ ] **Device Whitelist & Session Tokens:**
   - Menyimpan token HP yang telah terverifikasi agar koneksi berikutnya otomatis terhubung tanpa perlu memasukkan PIN berulang.
+- [x] **Persistent Modifier Lock (Paritas Keyboard Fisik PC):**
+  - Penguncian aktif terus tombol modifier (`Shift`, `Ctrl`, `Alt`, `Win`/`Cmd`) untuk seleksi teks multi-baris (`Shift + ⬇️ + ⬇️`) dan navigasi tab bersambung (`Alt + Tab + Tab`).
+  - Mendukung 3 mode: `🔒 Lock` (persisten), `⚡ 1-Shot` (lepas otomatis), dan `🖐️ Hold` (tahan manual).
 - [x] **mDNS / Zero-Config Local Domain:**
   - Dukungan resolusi domain mDNS (`Jarvis.local:8080`) dan fallback scanner otomatis.
 
@@ -132,6 +135,7 @@ Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward nati
 - [x] **Self-Healing Wi-Fi Reconnection:** 5.5s ping/pong watchdog to terminate zombie sockets, jittered exponential backoff auto-reconnect, screen-wake listeners, and parallel subnet port 8080 scanner to recover dynamically changed PC IP addresses upon router reboot.
 - [ ] **One-Time Pairing PIN:** 4-digit terminal code required to authenticate mobile clients on shared Wi-Fi networks.
 - [ ] **Trusted Device Sessions:** Cryptographic tokens to auto-reconnect trusted mobile devices.
+- [x] **Persistent Modifier Lock (Physical Keyboard Parity):** Continuous active lock for `Shift`, `Ctrl`, `Alt`, and `Win`/`Cmd` enabling seamless multi-line selection (`Shift + ⬇️ + ⬇️`) and serialized desktop shortcuts (`Alt + Tab + Tab`) with 3 selectable behaviors (`🔒 Lock`, `⚡ 1-Shot`, `🖐️ Hold`).
 - [x] **Zero-Config mDNS:** Support for hostname broadcast and resolution via `.local:8080`.
 
 ### 📌 Phase 4: Creator Macro Pad & Production Packaging

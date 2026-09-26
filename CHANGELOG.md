@@ -10,55 +10,136 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ## 🇮🇩 Bahasa Indonesia
 
 ### [1.16.0] - 2026-09-26
-- Mode penguncian tombol modifier aktif terus (Shift/Ctrl/Alt/Win) sesuai operasi fisik keyboard
+#### ✨ Fitur Baru (Added)
+- **Persistent Modifier Lock (Paritas Keyboard Fisik PC):**
+  - Mengubah mode default modifier menjadi `🔒 Lock`: tombol `Shift`, `Ctrl`, `Alt`, dan `Win`/`Cmd` tetap aktif terus secara visual di layar dan fungsional di host OS hingga ditekan kembali untuk melepaskan.
+  - Membuka kapabilitas desktop esensial yang sebelumnya sulit dilakukan di layar sentuh: seleksi teks multi-baris (`Shift + ⬇️ + ⬇️`), navigasi aplikasi berturut-turut (`Alt + Tab + Tab`), pengetikan huruf kapital / simbol bersambung, dan kombinasi shortcut kompleks.
+  - Menyediakan 3 mode perilaku modifier yang dapat dipilih pengguna: `🔒 Lock` (aktif terus / persistent), `⚡ 1-Shot` (lepas otomatis setelah 1 karakter), dan `🖐️ Hold` (aktif hanya selama jari menempel pada layar).
+  - Tombol sakelar cepat `🔒 Mod` pada toolbar atas tersinkronisasi dua arah secara real-time dengan pilihan di modal Pengaturan.
+#### 🛠️ Perbaikan & Stabilitas Backend (Fixed)
+- **Server-Side Active Keys State Machine:**
+  - Penambahan set pelacak global `ACTIVE_KEYS` di `server.py` untuk mengunci status penekanan tombol secara fisik di kernel Linux `uinput` maupun fallback `pynput`.
+  - Memperbaiki `keypress` dan `simulate_tap` agar tidak melepaskan `KEY_LEFTSHIFT` atau modifier lainnya secara prematur saat sedang dalam status aktif/terkunci.
+
+---
 
 ### [1.15.0] - 2026-09-26
-- Sistem pemulihan mandiri koneksi Wi-Fi (watchdog 5.5s, auto-reconnect backoff, dan pemindai subnet deteksi IP baru PC)
+#### ✨ Fitur Baru (Added)
+- **Sistem Pemulihan Mandiri Koneksi Wi-Fi (Self-Healing Network Recovery):**
+  - **Zombie Socket Destroyer Watchdog:** Heartbeat ping/pong dengan batas waktu 5.5 detik untuk mendeteksi dan memutus socket TCP zombie seketika saat router Wi-Fi me-reboot tanpa sinyal TCP RST.
+  - **Reconnection Loop Cerdas:** Auto-reconnect otomatis dengan exponential backoff dan jitter acak guna mencegah badai koneksi.
+  - **Screen-Wake & Network Event Listeners:** Mendengarkan event `online`, `offline`, dan `visibilitychange` (seketika mencoba rekoneksi saat layar HP dinyalakan kembali dari saku atau sleep).
+  - **Floating Reconnection Assistant Banner:** Banner bantuan pintar yang muncul otomatis jika rekoneksi gagal >3 kali, dilengkapi tombol coba lagi manual dan pemindai subnet.
+  - **Pemindai Subnet Paralel (Dynamic Subnet Scanner):** Scanner paralel (batch 24 IP) pada port 8080 untuk memeriksa endpoint `/api/version` dan mendeteksi IP baru PC secara otomatis jika DHCP router mengubah alamat IP host setelah restart.
+  - **Dukungan Resolusi mDNS:** Mengintegrasikan alamat lokal permanen `http://Jarvis.local:8080` dan modal asisten koneksi untuk mengarahkan klien ke IP baru dengan 1 ketukan.
+#### 🛠️ Perbaikan & Infrastruktur (Fixed)
+- **Pembersihan Konflik Daemon Port 8080:** Mengeliminasi duplikasi daemon antara PM2 dan Systemd yang berebut port 8080.
+- **Pembaruan Skrip Rilis:** Memperbarui `bump-version.sh` agar me-restart systemd service `digikeyboard.service` secara bersih saat versi dinaikkan.
+
+---
 
 ### [1.14.0] - 2026-09-26
-- Implementasi Progressive Web App (PWA) dengan manifest.json, sw.js, dan icon HD untuk mode fullscreen bebas popup Chrome
+#### ✨ Fitur Baru (Added)
+- **Progressive Web App (PWA) & Zero-Popup Fullscreen:**
+  - Penambahan Web App Manifest (`manifest.json`) dan Service Worker (`sw.js`) dengan strategi network-first untuk caching aset statis secara instan.
+  - Ikon aplikasi HD multi-resolusi (192px, 512px, maskable, dan favicon SVG) untuk opsi *"Add to Home Screen"*.
+  - Memberikan pengalaman aplikasi keyboard native layar penuh murni tanpa bilah URL browser dan bebas dari popup peringatan fullscreen browser Chrome.
+
+---
 
 ### [1.13.0] - 2026-09-26
-- Penambahan opsi matikan trackpad laptop (On/Off Toggle) via Pengaturan, toolbar, dan palm rest
+#### ✨ Fitur Baru (Added)
+- **Opsi Matikan / Sembunyikan Trackpad (Trackpad On/Off Toggle):**
+  - Tombol sakelar On/Off trackpad laptop di modal Pengaturan (⚙️), toolbar atas (`🖱️ Pad`), dan sandaran tangan (*palm rest*).
+  - Saat dimatikan, dek trackpad tersembunyi sepenuhnya memberikan ruang kanvas maksimal bagi tombol keyboard. Status tersimpan di *localStorage*.
+
+---
 
 ### [1.12.1] - 2026-09-26
-- Penyempurnaan auto-detect host OS, insets viewport mobile, dan key aliases
+#### 🛠️ Perbaikan (Fixed)
+- **Penyempurnaan Auto-Detect Host OS:** Optimasi deteksi platform browser klien untuk mencocokkan profil OS (Windows / macOS / Ubuntu) dan insets safe area pada layar HP/tablet berponi atau berpulau.
+
+---
 
 ### [1.12.0] - 2026-09-26
-- Penambahan pemilih font keyboard mandiri (Custom Typography Studio) dengan 10 pilihan font
+#### ✨ Fitur Baru (Added)
+- **Studio Tipografi & Pemilih Font Mandiri (Custom Typography Studio):**
+  - Pemilih font mandiri di modal Pengaturan dengan 10 jenis font: Bawaan Tema (Auto), Ubuntu, Segoe UI, SF Pro, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, dan Sistem UI.
+  - Pengguna bebas memadukan font favorit dengan tema visual apa pun.
+
+---
 
 ### [1.11.1] - 2026-09-26
-- Pemisahan menu profil sistem operasi (Target OS) dan tema visual keyboard tersendiri
+#### 🎨 Perubahan (Changed)
+- **Pemisahan Menu Target OS & Tema Visual:**
+  - Memisahkan pilihan profil Sistem Operasi (Windows, macOS, Ubuntu) dari pilihan tema visual keyboard, memungkinkan pengguna Ubuntu memakai tema Retro 90s, atau pengguna Windows memakai tema Nord Arctic.
+
+---
 
 ### [1.11.0] - 2026-09-26
-- Penyesuaian font keyboard per tema dan penambahan tema Windows, Mac, dan Ubuntu
+#### ✨ Fitur Baru (Added)
+- **Tema Visual Khas Sistem Operasi:**
+  - Penambahan tema native: Windows 11 Fluent, macOS Chiclet, dan Ubuntu Yaru Aubergine dengan tipografi dan warna aksen resmi tiap OS.
+
+---
 
 ### [1.10.0] - 2026-09-26
-- Dukungan Linux kernel uinput untuk pengetikan pada Layar Login Ubuntu (GDM) dan Lock Screen
+#### ✨ Fitur Baru (Added)
+- **Dukungan Linux Kernel Virtual Hardware (`uinput`):**
+  - Integrasi driver virtual keyboard kernel Linux via `/dev/uinput` (`setup-uinput.sh`).
+  - Memungkinkan pengetikan pada Layar Login Display Manager (GDM, SDDM, LightDM), Lock Screen, dan kolom kata sandi root (`sudo`).
+
+---
 
 ### [1.9.0] - 2026-09-26
-- Menambahkan pengaturan volume suara klik mekanikal (slider & preset) di menu Pengaturan
+#### ✨ Fitur Baru (Added)
+- **Pengontrol Volume Suara Klik Mekanikal:**
+  - Slider volume suara klik (10% s/d 100%) dan 3 preset cepat (Pelan, Sedang, Keras) di modal Pengaturan dengan persistensi *localStorage*.
+
+---
 
 ### [1.8.1] - 2026-09-26
-- Optimasi audio feedback klik mekanikal untuk speaker HP dan penambahan tombol uji suara
+#### 🛠️ Perbaikan (Fixed)
+- **Optimasi Audio Speaker HP & Tombol Uji Suara:**
+  - Penalaan osilator Web Audio API (`triangle` 1500Hz→350Hz) agar terdengar renyah pada speaker ponsel pintar kecil, disertai tombol uji suara di Pengaturan.
+
+---
 
 ### [1.8.0] - 2026-09-26
-- Menambahkan audio click feedback dan deteksi motor getar perangkat
+#### ✨ Fitur Baru (Added)
+- **Mechanical Click Synthesizer:** Umpan balik audio klik sakelar mekanikal sintetik via Web Audio API tanpa beban unduhan berkas audio eksternal.
+
+---
 
 ### [1.7.0] - 2026-09-26
-- Pindahkan slider sensitivitas kursor trackpad ke dalam modal Pengaturan
+#### 🎨 Perubahan (Changed)
+- **Integrasi Slider Sensitivitas Trackpad:** Memindahkan pengatur kecepatan kursor mouse ke dalam modal Pengaturan untuk tampilan layar yang lebih rapi.
+
+---
 
 ### [1.6.0] - 2026-09-26
-- Menambahkan pengaturan efek getar haptic feedback dan pilihan intensitas di modal Settings
+#### ✨ Fitur Baru (Added)
+- **Pengaturan Efek Getar Haptic Feedback:** Preset intensitas getar motor HP (Lembut 15ms, Normal 30ms, Kuat 50ms) di modal Pengaturan.
+
+---
 
 ### [1.5.2] - 2026-09-26
-- Perbaikan isolasi CSS fullscreen tip dan tombol tutup tip langsung
+#### 🛠️ Perbaikan (Fixed)
+- Perbaikan isolasi CSS fullscreen tip dan tombol tutup tip langsung.
+
+---
 
 ### [1.5.1] - 2026-09-26
-- Hilangkan modifier strip atas dan sembunyikan tip otomatis saat fullscreen
+#### 🛠️ Perbaikan (Fixed)
+- Menghilangkan modifier strip atas dan menyembunyikan tip otomatis saat masuk mode fullscreen.
+
+---
 
 ### [1.5.0] - 2026-09-26
-- Menambahkan pengaturan ukuran & skala tinggi trackpad
+#### ✨ Fitur Baru (Added)
+- Penambahan pengaturan ukuran & skala tinggi trackpad (Kecil, Normal, Besar, Ekstra, dan slider 60%-180%).
+
+---
 
 ### [1.4.1] - 2026-09-26 (Stable Golden Checkpoint)
 #### 🛠️ Perbaikan & Stabilitas (Fixed & Stabilized)
@@ -67,195 +148,213 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 - **Sistem Versi Otomatis Terpusat:** Menetapkan berkas `VERSION` sebagai *single source of truth*, integrasi endpoint `/api/version`, serta penambahan lencana versi di modal Pengaturan.
 - **Milestone Stabil:** Menetapkan versi `1.4.1` sebagai titik aman optimal terverifikasi (koneksi instan, 5 tema skin, slider ukuran tombol, continuous key repeat, dan trackpad multi-touch).
 
+---
+
 ### [1.4.0] - 2026-09-26
 #### ✨ Fitur Baru (Added)
-- **Modal Pengaturan Tema & Skin Keyboard:** Menambahkan tombol pengaturan `⚙️` pada toolbar atas dengan 5 tema visual kustom:
-  - *Dark Modern*: Tema bawaan bernuansa GitHub Dark / VS Code yang nyaman di mata.
-  - *Retro 90s*: Tampilan klasik beige gading khas keyboard IBM Model M tahun 1990-an.
-  - *Cyberpunk*: Aksen neon ungu elektrik, garis tepi cyan, dan enter magenta cerah.
-  - *Stealth*: Matte black monokrom super gelap dan minimalis untuk pencahayaan rendah.
-  - *Nord Arctic*: Palet warna biru beku Arktik Nord yang elegan dan sejuk.
-- **Pengatur Ukuran & Skalabilitas Tombol:** Pengguna dapat menyesuaikan tinggi tombol keyboard sesuai kenyamanan jari:
-  - Tersedia 4 preset cepat: *Kecil* (32px), *Normal* (38px), *Besar* (46px), dan *Ekstra* (54px).
-  - Slider interaktif granular dari `30px` hingga `60px` dengan penskalaan ukuran huruf secara otomatis dan proporsional.
-- **Penyimpanan Preferensi (Persistence):** Semua pilihan tema, ukuran tombol, dan orientasi trackpad tersimpan otomatis di *localStorage* browser.
-
-#### 🛠️ Perbaikan & Tata Letak (Fixed & Changed)
-- **Kuncian Posisi Baris Fn di Atas Angka:** Memindahkan baris Fn (`Esc`, `F1-F12`) dan baris Navigasi langsung ke dalam kontainer utama keyboard (`.kb-main`), sehingga saat diaktifkan, baris Fn **selalu berada tepat di atas baris angka**, baik ketika trackpad ditaruh di posisi atas maupun di bawah.
-- **Sinkronisasi Sakelar Posisi Trackpad:** Opsi pemindahan posisi trackpad di dalam modal pengaturan tersinkronisasi dua arah dengan tombol sakelar di sandaran tangan.
+- **Modal Pengaturan Tema & Skin Keyboard:** Tombol pengaturan `⚙️` dengan 5 tema visual kustom: *Dark Modern*, *Retro 90s*, *Cyberpunk*, *Stealth*, dan *Nord Arctic*.
+- **Pengatur Ukuran & Skalabilitas Tombol:** Slider granular `30px` hingga `60px` dan 4 preset tinggi tombol.
+- **Penyimpanan Preferensi (Persistence):** Semua preferensi tersimpan di *localStorage*.
 
 ---
 
 ### [1.3.0] - 2026-09-26
 #### ✨ Fitur Baru (Added)
-- **Continuous Key Auto-Repeat:** Menahan tombol keyboard (seperti `Backspace`, `Delete`, panah `▲ ◀ ▼ ▶`, `Space`, huruf/angka) sekarang menghasilkan input berulang otomatis (~22 karakter/detik setelah jeda awal 350ms), persis seperti keyboard fisik PC.
-- **Interactive Trackpad Position Switcher:** Tombol sakelar `⇅ Posisi: Atas / Bawah` yang memungkinkan pengguna memindahkan dek trackpad ke atas keyboard atau ke bawah keyboard secara instan tanpa perlu memuat ulang halaman. Preferensi posisi tersimpan di *localStorage*.
-
-#### 🎨 Perubahan Tampilan & Desain (Changed)
-- **Penyesuaian Proporsi Trackpad:** Mengurangi tinggi dek trackpad sebesar 30% pada semua ukuran layar (tablet, tablet besar, dan smartphone) agar keyboard mendapatkan porsi ruang yang lebih luas dan ergonomis.
-- **Posisi Default di Atas Keyboard:** Menempatkan dek trackpad di bagian atas secara default sesuai preferensi penggunaan meja pada layar sentuh tablet.
+- **Continuous Key Auto-Repeat:** Menahan tombol keyboard memicu input berulang otomatis (~22 karakter/detik setelah jeda awal 350ms) seperti keyboard fisik PC.
+- **Interactive Trackpad Position Switcher:** Tombol sakelar `⇅ Posisi: Atas / Bawah` untuk memindahkan dek trackpad ke atas atau bawah keyboard.
 
 ---
 
 ### [1.2.0] - 2026-09-26
 #### ✨ Fitur Baru (Added)
-- **Laptop Trackpad Deck:** Penambahan modul trackpad terintegrasi dengan sandaran tangan (*palm rest*) di bawah keyboard layaknya laptop sungguhan.
-- **Multi-Touch Gestures:**
-  - 1 Jari geser: Gerak kursor mouse kinetik dengan efek visual *glow*.
-  - 1 Jari tap: Klik Kiri mouse (+ getaran haptic).
-  - 2 Jari tap: Klik Kanan mouse.
-  - 2 Jari geser vertikal: Scroll dokumen & web secara halus (*smooth scrolling*).
-- **Tombol Fisik Klik Kiri & Kanan:** Tombol perangkat keras virtual di bawah trackpad yang mendukung aksi *drag and drop* (menahan tombol klik kiri sambil menggeser jari di trackpad).
-- **Kontrol Sensitivitas Kursor:** Slider pengatur kecepatan kursor mouse (`0.5x` s/d `3.0x`).
-- **Integrasi Server Mouse:** Dukungan penuh untuk simulasi `pynput.mouse` (`mousemove`, `mouseclick`, `mousedown`, `mouseup`, `mousescroll`) pada `server.py`.
-- **Toggle Button Toolbar:** Tombol `🖱️ Pad` pada toolbar atas untuk menyembunyikan/menampilkan trackpad.
+- **Laptop Trackpad Deck:** Penambahan modul trackpad terintegrasi dengan palm rest.
+- **Multi-Touch Gestures:** 1 Jari gerak kursor, 1 Jari tap klik kiri, 2 Jari tap klik kanan, 2 Jari geser vertikal untuk scroll.
+- **Tombol Fisik Klik Kiri & Kanan:** Virtual clickpad dengan dukungan aksi drag-and-drop.
 
 ---
 
 ### [1.1.0] - 2026-09-26
 #### 📚 Dokumentasi & Arsitektur (Added)
-- **Dokumentasi Komprehensif Bilingual:**
-  - `README.md`: Panduan instalasi modern, background service PM2, dan konfigurasi firewall.
-  - `docs/ARCHITECTURE.md`: Diagram sistem Mermaid, spesifikasi protokol WebSocket, dan logika deteksi jaringan.
-  - `docs/ROADMAP.md`: Rencana rilis masa depan (PWA, tema estetika mekanikal, audio switch, layout tablet 10-12").
-  - `docs/COMMERCIAL_GUIDE.md`: Analisis kompetitor, keunggulan visual *white space*, alternatif branding (*AirDeck*, *DeskPilot*), dan strategi monetisasi.
-  - `LICENSE`: Lisensi resmi MIT open-source.
-
-#### 🐛 Perbaikan Bug & Optimasi Jaringan (Fixed)
-- **Smart LAN IP Detection:** Mengoptimalkan fungsi `get_local_ip_addresses()` dengan pustaka `psutil` untuk memprioritaskan antarmuka Wi-Fi fisik (`192.168.x.x` / `10.x.x.x`) dan memfilter antarmuka virtual/VPN (Cloudflare WARP, Docker, virbr).
-- **QR Code Akurat:** QR code dan URL terminal dipastikan selalu mengarah ke IP Wi-Fi lokal yang dapat diakses oleh HP/Tablet.
-- **Dependency Management:** Menambahkan dependensi `aiohttp` yang hilang ke dalam `requirements.txt`.
-- **Daemon Support:** Panduan dan kompatibilitas penuh dengan PM2 background process manager.
+- Dokumentasi komprehensif bilingual (`README.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `docs/COMMERCIAL_GUIDE.md`, `LICENSE`).
+- Smart LAN IP Detection dengan penyaringan interface virtual / VPN.
 
 ---
 
 ### [1.0.0] - 2026-09-26
 #### 🚀 Rilis Awal (Initial Release)
-- **1:1 Canvas Physical PC Keyboard:** Tampilan visual keyboard fisik standar PC di browser HP/Tablet tanpa memicu keyboard bawaan smartphone (zero Gboard popup).
-- **Layout Standar PC:** Baris angka/simbol Shift, Tab, CapsLock, Enter lebar, Backspace lebar, panah navigasi, dan modifier keys (Ctrl, Alt, Shift, Win/Cmd).
-- **Sticky / Latch Modifier Mode:** Mengetuk Ctrl/Alt/Shift mengunci status tombol hingga karakter berikutnya ditekan.
-- **Panel Ekstensi:** Panel toggle untuk F1-F12, tombol navigasi (Home, End, PgUp, PgDn, PrtSc, Del), Numpad 17 tombol kalkulator, dan tombol pintasan cepat (Ctrl+C, Ctrl+V, Alt+Tab, Win+D, Ctrl+Alt+Del).
-- **Protokol WebSocket Cepat:** Latensi ultra-rendah (1-5 ms) melalui WebSocket server berbasis Python `aiohttp` dan `pynput`.
-- **Skrip Installer Linux:** Skrip otomasi `install-linux.sh` dan `run.sh`.
+- 1:1 Canvas Physical PC Keyboard tanpa popup keyboard virtual bawaan HP.
+- Low-latency Python `aiohttp` WebSocket server dan `pynput` input pipeline.
+- Sticky/latch modifier keys, multi-finger touch, panel Fn/Nav/Numpad, dan skrip runner Linux/Windows.
 
 ---
 
 ## 🇬🇧 English
 
 ### [1.16.0] - 2026-09-26
-- Release v1.16.0 updates
+#### ✨ Added
+- **Persistent Modifier Lock (Physical Keyboard Parity):**
+  - Set default modifier behavior to `🔒 Lock`: modifier keys (`Shift`, `Ctrl`, `Alt`, and `Win`/`Cmd`) remain actively held down on both the client canvas and the host operating system until tapped again to release.
+  - Delivers authentic desktop ergonomics on touchscreens: enables seamless multi-line text selection (`Shift + ⬇️ + ⬇️`), serialized application tab switching (`Alt + Tab + Tab`), continuous uppercase/symbol typing, and complex multi-key combinations without modifier state dropouts.
+  - Introduced 3 selectable modifier behaviors: `🔒 Lock` (Persistent active), `⚡ 1-Shot` (Auto-release after 1 subsequent keystroke), and `🖐️ Hold` (Active strictly while finger touches keycap).
+  - Real-time two-way synchronization between the header toolbar `🔒 Mod` toggle and the Settings modal selector.
+#### 🛠️ Fixed
+- **Server-Side Active Keys State Machine:**
+  - Added global `ACTIVE_KEYS` set tracking in `server.py` to preserve keydown state across kernel Linux `uinput` and `pynput` controllers.
+  - Fixed `keypress` and `simulate_tap` routines to prevent premature release of `KEY_LEFTSHIFT` and other modifiers while held in active lock mode.
+
+---
 
 ### [1.15.0] - 2026-09-26
-- Release v1.15.0 updates
+#### ✨ Added
+- **Self-Healing Wi-Fi Network Recovery:**
+  - **Zombie Socket Destroyer Watchdog:** 5.5s ping/pong heartbeat timeout to immediately detect and terminate stale TCP sockets when the Wi-Fi router reboots without emitting TCP RST/FIN packets.
+  - **Smart Reconnection Loop:** Auto-reconnect with exponential backoff and randomized jitter to prevent connection storms.
+  - **Screen-Wake & Network Event Handlers:** Proactive reconnect triggers on `visibilitychange` (when unlocking phone or waking screen) and `online`/`offline` browser events.
+  - **Floating Reconnection Assistant Banner:** Contextual helper banner appearing automatically after >3 consecutive failures, offering instant retry and subnet scanning options.
+  - **Parallel Subnet IP Scanner:** Background parallel scanner (batch size of 24 IPs) on port 8080 querying `/api/version` to locate the PC's newly assigned IP address when DHCP dynamically alters host addressing after a router reboot.
+  - **mDNS Hostname Support:** Integration with zero-configuration domain `http://Jarvis.local:8080` and 1-tap redirect modal.
+#### 🛠️ Fixed
+- **Port 8080 Daemon Cleanup:** Eliminated duplicate daemons between PM2 and Systemd competing for port 8080.
+- **Release Automation Script:** Updated `bump-version.sh` to cleanly restart `digikeyboard.service` via systemd.
+
+---
 
 ### [1.14.0] - 2026-09-26
-- Release v1.14.0 updates
+#### ✨ Added
+- **Progressive Web App (PWA) & Zero-Popup Fullscreen:**
+  - Added Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) with network-first offline asset caching.
+  - High-resolution multi-size app icons (192px, 512px, maskable, SVG) for "Add to Home Screen".
+  - Enables genuine native edge-to-edge fullscreen execution without browser URL bars and completely suppresses intrusive Chrome fullscreen warning banners.
+
+---
 
 ### [1.13.0] - 2026-09-26
-- Release v1.13.0 updates
+#### ✨ Added
+- **Laptop Trackpad On/Off Toggle:**
+  - Full toggle switch in the Settings modal (⚙️), header toolbar (`🖱️ Pad`), and palm rest to turn off the trackpad deck entirely.
+  - Hides the trackpad to allocate maximum canvas area for typing, with persistent state stored in `localStorage`.
+
+---
 
 ### [1.12.1] - 2026-09-26
-- Release v1.12.1 updates
+#### 🛠️ Fixed
+- **Enhanced Host OS & Viewport Detection:** Improved client-side browser platform detection to automatically match OS profiles (Windows, macOS, Ubuntu) and handle safe-area insets on notched/island displays.
+
+---
 
 ### [1.12.0] - 2026-09-26
-- Release v1.12.0 updates
+#### ✨ Added
+- **Custom Typography Studio:** Independent font selector in the Settings dialog featuring 10 font choices (Theme Default, Ubuntu, Segoe UI, SF Pro, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, System UI).
+
+---
 
 ### [1.11.1] - 2026-09-26
-- Release v1.11.1 updates
+#### 🎨 Changed
+- **Separated Target OS & Visual Themes:** Decoupled operating system key layouts from visual color palettes, enabling any visual theme (Retro 90s, Nord, Cyberpunk) across Windows, macOS, or Ubuntu layout profiles.
+
+---
 
 ### [1.11.0] - 2026-09-26
-- Release v1.11.0 updates
+#### ✨ Added
+- **Native Operating System Themes:** Added authentic Windows 11 Fluent, macOS Chiclet, and Ubuntu Yaru Aubergine visual themes.
+
+---
 
 ### [1.10.0] - 2026-09-26
-- Release v1.10.0 updates
+#### ✨ Added
+- **Linux Kernel Virtual Hardware Driver (`uinput`):**
+  - Integrated direct kernel input injection via `/dev/uinput` (`setup-uinput.sh`).
+  - Unlocks full keyboard functionality on Display Manager Login Screens (GDM, SDDM, LightDM), Lock Screens, and `sudo` root password prompts.
+
+---
 
 ### [1.9.0] - 2026-09-26
-- Release v1.9.0 updates
+#### ✨ Added
+- **Mechanical Switch Audio Volume Controller:** Granular volume slider (10% to 100%) and 3 quick presets (Quiet, Medium, Loud) with `localStorage` persistence.
+
+---
 
 ### [1.8.1] - 2026-09-26
-- Release v1.8.1 updates
+#### 🛠️ Fixed
+- **Mobile Speaker Tuning & Audio Test Button:** Adjusted Web Audio API oscillator curve (`triangle` 1500Hz→350Hz) for clarity on compact mobile speakers and added an instant test audio button in Settings.
+
+---
 
 ### [1.8.0] - 2026-09-26
-- Release v1.8.0 updates
+#### ✨ Added
+- **Mechanical Click Synthesizer:** Real-time dual-oscillator acoustic switch simulation using Web Audio API without external audio file downloads.
+
+---
 
 ### [1.7.0] - 2026-09-26
-- Release v1.7.0 updates
+#### 🎨 Changed
+- **Trackpad Sensitivity Relocation:** Moved mouse pointer sensitivity slider inside the Settings modal for a cleaner canvas.
+
+---
 
 ### [1.6.0] - 2026-09-26
-- Release v1.6.0 updates
+#### ✨ Added
+- **Haptic Vibration Feedback:** Configurable tactile feedback presets (Soft 15ms, Normal 30ms, Strong 50ms) in Settings.
+
+---
 
 ### [1.5.2] - 2026-09-26
-- Release v1.5.2 updates
+#### 🛠️ Fixed
+- Fixed CSS isolation for fullscreen tips and added instant dismiss button.
+
+---
 
 ### [1.5.1] - 2026-09-26
-- Release v1.5.1 updates
+#### 🛠️ Fixed
+- Removed top modifier strip and automatically hid tip banner in fullscreen mode.
+
+---
 
 ### [1.5.0] - 2026-09-26
-- Release v1.5.0 updates
+#### ✨ Added
+- Added trackpad sizing and deck height scale options (Compact, Normal, Large, XL, and 60%-180% slider).
+
+---
 
 ### [1.4.1] - 2026-09-26 (Stable Golden Checkpoint)
-#### Fixed & Stabilized
-- **Client Script Syntax Fix:** Resolved missing closing brace `}` inside right trackpad click handler in `static/index.html` which previously prevented browser script execution.
-- **Manual Fullscreen Restored:** Completely removed experimental auto-fullscreen, restoring standard manual toggle `⛶` for cross-platform stability.
-- **Centralized Automated Versioning:** Introduced `VERSION` file as single source of truth, added `/api/version` endpoint, and integrated version badge in the Settings modal.
-- **Golden Milestone:** Verified stable operation with WebSocket connectivity, 5 themes, sizing slider, locked Fn row, continuous key repeat, and multi-touch trackpad.
+#### 🛠️ Fixed & Stabilized
+- **Client Script Syntax Fix:** Resolved missing closing brace `}` in right trackpad click handler in `static/index.html`.
+- **Manual Fullscreen Restored:** Restored standard manual toggle `⛶` for cross-platform stability.
+- **Centralized Automated Versioning:** Introduced `VERSION` file as single source of truth, `/api/version` endpoint, and version badge in Settings.
+
+---
 
 ### [1.4.0] - 2026-09-26
-#### Added
-- **Settings Modal & Keyboard Themes:** Added a settings button `⚙️` to the header toolbar featuring 5 bespoke visual themes:
-  - *Dark Modern*: Default GitHub Dark / VS Code aesthetic.
-  - *Retro 90s*: Classic 1990s beige aesthetic inspired by IBM Model M mechanical keyboards.
-  - *Cyberpunk*: High-contrast neon purple, cyan glow borders, and hot magenta accents.
-  - *Stealth*: Pure matte black and charcoal minimalist style for dark environments.
-  - *Nord Arctic*: Frosty Arctic Nord blue palette.
-- **Custom Key Sizing & Dynamic Scaling:** Flexible keyboard button height control:
-  - 4 one-touch presets: *Compact* (32px), *Normal* (38px), *Large* (46px), and *XL* (54px).
-  - Granular slider ranging from `30px` to `60px` with proportional font-size recalculation.
-- **Full Client Persistence:** All custom themes, button heights, and trackpad positions persist automatically in browser `localStorage`.
-
-#### Fixed & Changed
-- **Locked Fn Bar Placement Above Numbers:** Relocated `#fn-row` (`Esc`, `F1-F12`) and `#nav-row` into `.kb-main` directly above Row 1 numbers, ensuring the Fn row is permanently anchored on top of the number keys regardless of trackpad deck orientation (top or bottom).
-- **Two-Way Trackpad Position Sync:** Trackpad orientation controls inside the settings dialog stay seamlessly synced with the deck palm rest toggle.
+#### ✨ Added
+- **Settings Modal & Themes:** Bespoke visual themes: *Dark Modern*, *Retro 90s*, *Cyberpunk*, *Stealth*, and *Nord Arctic*.
+- **Key Sizing:** Granular key height scaling slider from `30px` to `60px`.
+- **Full Client Persistence:** All custom preferences saved in `localStorage`.
 
 ---
 
 ### [1.3.0] - 2026-09-26
-#### Added
-- **Continuous Key Auto-Repeat:** Holding down keyboard buttons (such as `Backspace`, `Delete`, arrow keys `▲ ◀ ▼ ▶`, `Space`, or letters/numbers) now triggers continuous repeat input (~22 keys/sec after 350ms initial delay), mimicking real physical PC keyboards.
-- **Interactive Trackpad Position Switcher:** Added a quick toggle button `⇅ Posisi: Atas / Bawah` in the palm rest to dynamically swap the trackpad deck between the top and bottom of the keyboard without page reloads.
-
-#### Changed
-- **Proportional Dimension Tuning:** Reduced trackpad deck height by 30% across all viewports to provide significantly more room for the keyboard keys.
-- **Default Top Placement:** Set the trackpad position to the top of the keyboard canvas by default for tablet usage ergonomics.
+#### ✨ Added
+- **Continuous Key Auto-Repeat:** Holding down keyboard buttons triggers continuous repeat input (~22 keys/sec after 350ms delay).
+- **Interactive Trackpad Position Switcher:** Quick toggle `⇅ Posisi: Atas / Bawah` to swap trackpad deck placement.
 
 ---
 
 ### [1.2.0] - 2026-09-26
-#### Added
-- **Integrated Laptop Trackpad Deck:** Added an authentic laptop lower deck layout with palm rests and a centered multi-touch trackpad.
-- **Multi-Touch Trackpad Gestures:** Single-finger movement, tap-to-click, two-finger right click, and two-finger kinetic vertical scrolling.
-- **Physical Left & Right Buttons:** Virtual hardware click pads supporting click-and-drag window selection.
-- **Sensitivity Slider:** Adjustable cursor speed control from `0.5x` to `3.0x`.
-- **Server Mouse Pipeline:** Full `pynput.mouse` backend event dispatching in `server.py`.
-- **Toolbar Toggle:** `🖱️ Pad` button in the header toolbar to hide/show the deck.
+#### ✨ Added
+- **Integrated Laptop Trackpad Deck:** Authentic laptop lower deck with centered multi-touch trackpad and physical buttons.
+- **Multi-Touch Gestures:** 1-finger move, tap-to-click, 2-finger right click, and 2-finger kinetic vertical scrolling.
 
 ---
 
 ### [1.1.0] - 2026-09-26
-#### Added
-- **Complete Bilingual Documentation:** System architecture, WebSocket protocol specs, product roadmap, and commercialization blueprints.
-- **MIT License:** Open-source license attribution.
-
-#### Fixed
-- **Smart Interface Filtering:** Prioritize reachable physical LAN/Wi-Fi adapters over virtual/VPN adapters (Cloudflare WARP, Docker).
-- **Terminal QR Code:** Accurate routing QR code generation.
-- **Dependency Tracking:** Added missing `aiohttp` requirement to `requirements.txt`.
+#### 📚 Documentation & Architecture (Added)
+- Comprehensive bilingual documentation, architecture specs, roadmap, and commercial guide.
+- Smart LAN IP Detection with virtual/VPN interface filtering.
 
 ---
 
 ### [1.0.0] - 2026-09-26
-#### Initial Release
-- Full PC mechanical keyboard layout rendered on mobile browsers without native IME popups.
+#### 🚀 Initial Release
+- 1:1 Canvas Physical PC Keyboard on mobile browser with zero native mobile keyboard popup.
 - Low-latency Python `aiohttp` WebSocket server and `pynput` input pipeline.
-- Sticky/latch modifier keys and multi-finger touch detection.
-- Toggle panels for Fn bar (F1-F12), Nav bar, PC Numpad, and quick shortcuts.
+- Sticky/latch modifiers, multi-touch support, and quick shortcut panels.
