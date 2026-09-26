@@ -29,6 +29,9 @@ gantt
     Mode Gamepad & Wheel Steer     :p9, after p8, 35d
     Mode Live Stream & Soundboard  :p10, after p9, 30d
     Mode Potret (Portrait Layout)  :p11, after p10, 15d
+    section Phase 5 (Commercial & Hardware)
+    Build .exe & License Validator :p12, after p11, 20d
+    System Tray Wrapper & Dongle   :p13, after p12, 30d
 ```
 
 ---
@@ -155,7 +158,15 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
 
 ---
 
-### 📌 Fase 5: Distribusi Komersial & Hardware (Q4 2026)
+### 📌 Fase 5: Kesiapan Komersial, Distribusi & Hardware (Q4 2026)
+- [ ] **Script Build Windows Executable Mandiri (`build-exe.bat` / PyInstaller):**
+  - Script otomatisasi kompilasi untuk menghasilkan file binary `DigiKeyboard.exe` (atau `AirDeck.exe`) mandiri (*portable single-file*).
+  - Mengemas seluruh aset web frontend (`static/`), ikon Windows (`.ico`), dan server aiohttp ke dalam satu file executable tanpa mengharuskan pengguna akhir menginstal Python atau dependensi terminal.
+  - Kompatibel dengan pembuatan paket installer setup Windows (Inno Setup / NSIS).
+- [ ] **Mesin Validasi Kunci Lisensi Offline (Cryptographic License Key Validator):**
+  - Sistem validasi lisensi Pro berbasis kriptografi asimetris (Ed25519 / HMAC-SHA256) untuk verifikasi offline tanpa ketergantungan koneksi internet/server aktivasi terpusat.
+  - Mendukung tipe lisensi (Personal Lifetime, Creator Studio, B2B Multi-seat) dan batas kedaluwarsa opsional.
+  - Modal antarmuka aktivasi kunci lisensi (*License Activation Dialog*) di menu Pengaturan (⚙️) dengan status verifikasi visual instan.
 - [ ] **Desktop System Tray Wrapper:**
   - Aplikasi mini di taskbar Windows/Linux/macOS dengan ikon tray untuk *Start on Boot*, *Show QR*, dan *Settings*.
 - [ ] **Packaging Hardware Dongle (ESP32-S3):**
@@ -228,6 +239,14 @@ Upcoming dedicated functional controllers designed for specialized workflows:
   - Gyroscope & accelerometer-driven steering wheel control (tilt phone to steer cars in racing games like Forza, Assetto Corsa, or NFS).
   - Virtual analog gas and brake pedals, paddle shifters, and handbrake button.
 
-### 📌 Phase 5: Production Packaging & Commercial Distribution (Q4 2026)
+### 📌 Phase 5: Commercial Readiness, Packaging & Hardware (Q4 2026)
+- [ ] **Automated Windows Standalone Executable Build Script (`build-exe.bat` / PyInstaller):**
+  - Automated compilation pipeline to produce portable single-file `DigiKeyboard.exe` (or `AirDeck.exe`).
+  - Bundles web frontend assets (`static/`), application icons (`.ico`), and aiohttp server into a single executable without requiring Python installations or terminal CLI usage.
+  - Integration with Windows setup installer generators (Inno Setup / NSIS).
+- [ ] **Cryptographic Offline License Key Validator:**
+  - Asymmetric cryptographic license verification engine (Ed25519 / HMAC-SHA256) enabling 100% offline verification without central DRM or internet connectivity requirements.
+  - Supports license tiers (Personal Lifetime, Creator Studio, B2B Multi-seat) and optional expiry validations.
+  - In-app License Key Activation Dialog in Settings (⚙️) with immediate visual validation feedback.
 - [ ] **Desktop System Tray Wrapper:** Lightweight taskbar executable with auto-launch capabilities.
 - [ ] **Standalone Hardware Dongle (ESP32-S3):** Plug-and-play USB hardware HID firmware.
