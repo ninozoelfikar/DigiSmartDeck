@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.9.0] - 2026-09-26
+- Menambahkan pengaturan volume suara klik mekanikal (slider & preset) di menu Pengaturan
+
 ### [1.8.1] - 2026-09-26
 - Optimasi audio feedback klik mekanikal untuk speaker HP dan penambahan tombol uji suara
 
@@ -111,6 +114,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.9.0] - 2026-09-26
+- Release v1.9.0 updates
 
 ### [1.8.1] - 2026-09-26
 - Release v1.8.1 updates

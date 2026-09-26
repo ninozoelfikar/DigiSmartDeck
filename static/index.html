@@ -1151,10 +1151,21 @@ html, body {
               <input type="checkbox" id="chk-sound" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
               <span>🔊 Suara Klik Mekanikal (Renyah di HP, Tablet &amp; PC)</span>
             </label>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-              <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;">🧪 Uji Suara Klik</button>
+            <div id="sound-controls" style="margin-top:8px;">
+              <div class="setting-slider-row" style="margin-bottom:6px;">
+                <span class="setting-slider-label">Volume Suara Klik: <b id="lbl-sound-vol">70%</b></span>
+                <input type="range" id="slider-sound-vol" min="10" max="100" step="5" value="70" class="custom-slider">
+              </div>
+              <div class="size-presets" id="sound-vol-presets" style="margin-bottom:8px;">
+                <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="30">Pelan (30%)</button>
+                <button type="button" class="size-preset-btn sound-vol-preset-btn active" data-vol="70">Sedang (70%)</button>
+                <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="100">Keras (100%)</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;">🧪 Uji Suara Klik</button>
+              </div>
             </div>
-            <div style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4;">
+            <div style="font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.4;">
               💡 <i>Pastikan volume Media di HP menyala (tidak dalam mode senyap/silent). Pengaturan suara &amp; getar tersimpan mandiri di tiap peramban/perangkat.</i>
             </div>
           </div>
@@ -1257,6 +1268,8 @@ $('btn-fs').onclick = () => {
 // ── Haptic & Audio Feedback ──
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
+let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
+if (isNaN(soundVolume) || soundVolume <= 0) soundVolume = 0.7;
 
 function unlockAudio() {
   try {
@@ -1269,12 +1282,13 @@ function unlockAudio() {
 window.addEventListener('touchstart', unlockAudio, { passive: true });
 window.addEventListener('pointerdown', unlockAudio, { passive: true });
 
-function playClickSound() {
-  if (!soundEnabled) return;
+function playClickSound(force = false) {
+  if (!soundEnabled && !force) return;
   try {
     unlockAudio();
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
+    const vol = soundVolume;
 
     // 1. Transient click (frekuensi tajam 1500Hz -> 350Hz untuk speaker kecil HP)
     const osc1 = audioCtx.createOscillator();
@@ -1282,7 +1296,7 @@ function playClickSound() {
     osc1.type = 'triangle';
     osc1.frequency.setValueAtTime(1500, now);
     osc1.frequency.exponentialRampToValueAtTime(350, now + 0.016);
-    gain1.gain.setValueAtTime(0.5, now);
+    gain1.gain.setValueAtTime(0.7 * vol, now);
     gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.016);
     osc1.connect(gain1);
     gain1.connect(audioCtx.destination);
@@ -1295,7 +1309,7 @@ function playClickSound() {
     osc2.type = 'sine';
     osc2.frequency.setValueAtTime(300, now);
     osc2.frequency.exponentialRampToValueAtTime(90, now + 0.022);
-    gain2.gain.setValueAtTime(0.35, now);
+    gain2.gain.setValueAtTime(0.5 * vol, now);
     gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
     osc2.connect(gain2);
     gain2.connect(audioCtx.destination);
@@ -2029,27 +2043,76 @@ const savedVibePreset = localStorage.getItem('digi_vibe_preset') || 'normal';
 setVibeDuration(vibeDuration, savedVibePreset);
 setHapticState(haptic);
 
-// ── Sound & Device Detection Notice ──
+// ── Sound & Volume Settings Controller ──
 const chkSound = $('chk-sound');
+const soundControls = $('sound-controls');
+const sliderSoundVol = $('slider-sound-vol');
+const lblSoundVol = $('lbl-sound-vol');
+const soundVolPresetBtns = document.querySelectorAll('.sound-vol-preset-btn');
+const btnTestSound = $('btn-test-sound');
+
+function setSoundState(enable) {
+  soundEnabled = enable;
+  localStorage.setItem('digi_sound', soundEnabled ? 'true' : 'false');
+  if (chkSound) chkSound.checked = soundEnabled;
+  if (soundControls) soundControls.style.opacity = soundEnabled ? '1' : '0.45';
+}
+
+function applySoundVolume(percent, playSample = true) {
+  percent = parseInt(percent, 10) || 70;
+  percent = Math.max(10, Math.min(100, percent));
+  soundVolume = percent / 100;
+  localStorage.setItem('digi_sound_vol', soundVolume);
+
+  if (lblSoundVol) lblSoundVol.textContent = percent + '%';
+  if (sliderSoundVol) sliderSoundVol.value = percent;
+
+  soundVolPresetBtns.forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.vol, 10) === percent);
+  });
+
+  if (playSample && soundEnabled) {
+    playClickSound();
+  }
+}
+
 if (chkSound) {
   chkSound.checked = soundEnabled;
+  if (soundControls) soundControls.style.opacity = soundEnabled ? '1' : '0.45';
   chkSound.addEventListener('change', (e) => {
-    soundEnabled = e.target.checked;
-    localStorage.setItem('digi_sound', soundEnabled ? 'true' : 'false');
+    setSoundState(e.target.checked);
     if (soundEnabled) playClickSound();
   });
 }
 
-const btnTestSound = $('btn-test-sound');
+if (sliderSoundVol) {
+  sliderSoundVol.addEventListener('input', (e) => {
+    applySoundVolume(e.target.value, false);
+  });
+  sliderSoundVol.addEventListener('change', (e) => {
+    applySoundVolume(e.target.value, true);
+  });
+}
+
+soundVolPresetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const vol = parseInt(btn.dataset.vol, 10);
+    if (!isNaN(vol)) {
+      applySoundVolume(vol, true);
+      vibe(15);
+    }
+  });
+});
+
 if (btnTestSound) {
   btnTestSound.addEventListener('click', () => {
     unlockAudio();
-    const prev = soundEnabled;
-    soundEnabled = true;
-    playClickSound();
-    soundEnabled = prev;
+    playClickSound(true);
   });
 }
+
+applySoundVolume(Math.round(soundVolume * 100), false);
+setSoundState(soundEnabled);
 
 const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isTabletOrIos = /iPad|Macintosh/i.test(navigator.userAgent) || (!('vibrate' in navigator));
