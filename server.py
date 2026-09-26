@@ -16,6 +16,10 @@ KEYBOARD_AVAILABLE = False
 keyboard_controller = None
 Key = None
 
+MOUSE_AVAILABLE = False
+mouse_controller = None
+MouseButton = None
+
 try:
     from pynput.keyboard import Controller, Key as PynputKey
     keyboard_controller = Controller()
@@ -25,6 +29,15 @@ try:
 except Exception as e:
     print(f"[!] Warning: pynput controller tidak dapat mengaitkan display saat ini: {e}")
     print("[i] Server tetap akan berjalan dalam mode simulasi / logging.")
+
+try:
+    from pynput.mouse import Controller as MouseController, Button as PynputMouseButton
+    mouse_controller = MouseController()
+    MouseButton = PynputMouseButton
+    MOUSE_AVAILABLE = True
+    print("[✓] pynput mouse/trackpad controller berhasil diinisialisasi.")
+except Exception as e:
+    print(f"[!] Warning: pynput mouse controller gagal: {e}")
 
 # QR Code Support
 HAS_QR = False
@@ -114,6 +127,54 @@ def simulate_tap(k):
                 print(f"[Error] Tap key {k}: {e2}")
     else:
         print(f"[Simulasi Tap] {k}")
+
+
+def simulate_mouse_move(dx, dy):
+    """Simulasi pergerakan kursor mouse/trackpad"""
+    if MOUSE_AVAILABLE and mouse_controller:
+        try:
+            mouse_controller.move(float(dx), float(dy))
+        except Exception as e:
+            print(f"[Error] Mouse move: {e}")
+
+
+def simulate_mouse_click(button='left'):
+    """Simulasi klik mouse (left / right / middle)"""
+    if MOUSE_AVAILABLE and mouse_controller and MouseButton:
+        try:
+            btn = MouseButton.right if button == 'right' else (MouseButton.middle if button == 'middle' else MouseButton.left)
+            mouse_controller.click(btn)
+        except Exception as e:
+            print(f"[Error] Mouse click: {e}")
+
+
+def simulate_mouse_down(button='left'):
+    """Simulasi menahan tombol mouse (drag / select)"""
+    if MOUSE_AVAILABLE and mouse_controller and MouseButton:
+        try:
+            btn = MouseButton.right if button == 'right' else (MouseButton.middle if button == 'middle' else MouseButton.left)
+            mouse_controller.press(btn)
+        except Exception as e:
+            print(f"[Error] Mouse down: {e}")
+
+
+def simulate_mouse_up(button='left'):
+    """Simulasi melepas tombol mouse"""
+    if MOUSE_AVAILABLE and mouse_controller and MouseButton:
+        try:
+            btn = MouseButton.right if button == 'right' else (MouseButton.middle if button == 'middle' else MouseButton.left)
+            mouse_controller.release(btn)
+        except Exception as e:
+            print(f"[Error] Mouse up: {e}")
+
+
+def simulate_mouse_scroll(dx, dy):
+    """Simulasi scroll dua jari trackpad"""
+    if MOUSE_AVAILABLE and mouse_controller:
+        try:
+            mouse_controller.scroll(int(dx), int(dy))
+        except Exception as e:
+            print(f"[Error] Mouse scroll: {e}")
 
 
 def get_local_ip_addresses():
@@ -241,6 +302,28 @@ async def websocket_handler(request):
                     for k in reversed(resolved):
                         simulate_release(k)
 
+                elif msg_type == 'mousemove':
+                    dx = data.get('dx', 0)
+                    dy = data.get('dy', 0)
+                    simulate_mouse_move(dx, dy)
+
+                elif msg_type == 'mouseclick':
+                    btn = data.get('button', 'left')
+                    simulate_mouse_click(btn)
+
+                elif msg_type == 'mousedown':
+                    btn = data.get('button', 'left')
+                    simulate_mouse_down(btn)
+
+                elif msg_type == 'mouseup':
+                    btn = data.get('button', 'left')
+                    simulate_mouse_up(btn)
+
+                elif msg_type == 'mousescroll':
+                    dx = data.get('dx', 0)
+                    dy = data.get('dy', 0)
+                    simulate_mouse_scroll(dx, dy)
+
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")
 
@@ -248,6 +331,12 @@ async def websocket_handler(request):
         # Lepaskan semua tombol yang masih tertahan jika koneksi terputus
         for k in active_keys:
             simulate_release(k)
+        if MOUSE_AVAILABLE and mouse_controller and MouseButton:
+            try:
+                mouse_controller.release(MouseButton.left)
+                mouse_controller.release(MouseButton.right)
+            except Exception:
+                pass
         print(f"[-] Client terputus: {client_ip}")
 
     return ws

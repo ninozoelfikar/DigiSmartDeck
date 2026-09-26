@@ -285,6 +285,177 @@ html, body {
   text-overflow: ellipsis;
 }
 
+/* ─── LAPTOP TRACKPAD DECK ─── */
+.laptop-deck {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #13171e 0%, #0d1015 100%);
+  border-top: 1px solid #283140;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
+  padding: 6px 12px;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 110px;
+  max-height: 180px;
+  height: clamp(110px, 20vh, 180px);
+}
+.laptop-deck.hidden {
+  display: none;
+}
+.palm-rest {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 10px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+.palm-left {
+  align-items: flex-start;
+}
+.palm-right {
+  align-items: flex-end;
+}
+.palm-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--accent);
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.palm-tip {
+  font-size: 10px;
+  color: var(--text-dim);
+  max-width: 180px;
+  line-height: 1.3;
+}
+.palm-settings {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.palm-label {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.palm-slider {
+  width: 90px;
+  height: 4px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* Trackpad Center Box */
+.trackpad-container {
+  flex: 0 1 440px;
+  width: min(440px, 55vw);
+  display: flex;
+  flex-direction: column;
+  background: #181d26;
+  border: 1px solid #303947;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5), 0 3px 10px rgba(0,0,0,0.3);
+  overflow: hidden;
+  position: relative;
+}
+.trackpad-surface {
+  flex: 1;
+  min-height: 70px;
+  background: radial-gradient(circle at 50% 30%, #202734 0%, #161b24 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  touch-action: none;
+  cursor: crosshair;
+  border-bottom: 1px solid #2b3442;
+  overflow: hidden;
+}
+.trackpad-surface:active {
+  background: radial-gradient(circle at 50% 30%, #252e3d 0%, #19202a 100%);
+}
+.tp-guide-content {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.65;
+  transition: opacity 0.2s;
+}
+.tp-icon {
+  font-size: 16px;
+}
+.tp-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+.tp-instructions {
+  font-size: 9px;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 0 8px;
+}
+.tp-pointer-glow {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(88,166,255,0.4) 0%, rgba(88,166,255,0) 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+/* Trackpad Physical Buttons */
+.trackpad-buttons {
+  display: flex;
+  height: 34px;
+  background: #191f29;
+}
+.tp-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  touch-action: manipulation;
+}
+.tp-btn:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+.tp-btn:active, .tp-btn.active {
+  background: var(--key-active-bg);
+  color: #fff;
+}
+.tp-btn-divider {
+  width: 1px;
+  background: #2b3442;
+  height: 60%;
+  margin: auto 0;
+}
+@media (max-width: 650px) {
+  .palm-rest { display: none; }
+  .trackpad-container { flex: 1; width: 100%; }
+}
 @media (orientation: portrait) {
   .kb-wrap { justify-content: flex-start; overflow-x: auto; }
   .kb-main { min-width: 640px; }
@@ -310,6 +481,7 @@ html, body {
       <button class="tbtn" id="btn-nav">Nav</button>
       <button class="tbtn" id="btn-num">123</button>
       <button class="tbtn" id="btn-sc">⚡</button>
+      <button class="tbtn on" id="btn-tp" title="Toggle Trackpad Laptop">🖱️ Pad</button>
       <button class="tbtn on" id="btn-latch" title="Sticky modifier – Ctrl/Shift/Alt terkunci sampai tombol berikutnya">Latch</button>
       <button class="tbtn on" id="btn-haptic" title="Haptic feedback">📳</button>
       <button class="tbtn" id="btn-fs">⛶</button>
@@ -487,8 +659,43 @@ html, body {
     </section>
   </main>
 
+  <!-- LAPTOP TRACKPAD DECK (TABLET / LAPTOP LAYOUT) -->
+  <section class="laptop-deck" id="laptop-deck">
+    <div class="palm-rest palm-left">
+      <div class="palm-badge">LAPTOP DECK</div>
+      <div class="palm-tip">Layout fisik laptop dengan trackpad di bawah keyboard</div>
+    </div>
+
+    <div class="trackpad-container">
+      <div class="trackpad-surface" id="trackpad-surface">
+        <div class="tp-guide-content">
+          <div class="tp-icon">🖱️</div>
+          <div class="tp-label">Trackpad Multi-Touch</div>
+          <div class="tp-instructions">1 Jari: Kursor &amp; Klik • 2 Jari: Scroll &amp; Klik Kanan</div>
+        </div>
+        <div class="tp-pointer-glow" id="tp-glow"></div>
+      </div>
+      <div class="trackpad-buttons">
+        <button class="tp-btn tp-left" id="tp-btn-left">
+          <span>⯇ Klik Kiri</span>
+        </button>
+        <div class="tp-btn-divider"></div>
+        <button class="tp-btn tp-right" id="tp-btn-right">
+          <span>Klik Kanan ⯈</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="palm-rest palm-right">
+      <div class="palm-settings">
+        <label for="tp-speed" class="palm-label">Sensitivitas: <span id="tp-speed-val">1.2x</span></label>
+        <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="palm-slider">
+      </div>
+    </div>
+  </section>
+
   <footer class="footer">
-    <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Putar ke <b>Landscape</b> untuk pengalaman terbaik.
+    <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di bawah spacebar layaknya laptop.
   </footer>
 </div>
 
@@ -686,8 +893,8 @@ function releaseKey(el) {
 const touches = new Map();
 
 document.getElementById('app').addEventListener('touchstart', (e) => {
-  // Allow toolbar buttons to work normally
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn')) return;
+  // Allow toolbar buttons, shortcuts, and laptop trackpad deck to handle their own events
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -696,7 +903,7 @@ document.getElementById('app').addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 document.getElementById('app').addEventListener('touchend', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     releaseKey(touches.get(t.identifier));
@@ -714,7 +921,7 @@ document.getElementById('app').addEventListener('touchcancel', (e) => {
 // ── Mouse Fallback (Desktop Testing) ──
 let mouseEl = null;
 document.getElementById('app').addEventListener('mousedown', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck')) return;
   mouseEl = e.target;
   pressKey(e.target);
 });
@@ -730,6 +937,182 @@ document.querySelectorAll('.sc-btn').forEach(btn => {
     if (keys.length) send({ type: 'combo', keys });
   });
 });
+
+// ── Laptop Trackpad Controller ──
+let tpSpeed = 1.2;
+const tpSpeedSlider = $('tp-speed');
+const tpSpeedVal = $('tp-speed-val');
+if (tpSpeedSlider) {
+  tpSpeedSlider.addEventListener('input', (e) => {
+    tpSpeed = parseFloat(e.target.value);
+    if (tpSpeedVal) tpSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+  });
+}
+
+const btnTpToggle = $('btn-tp');
+if (btnTpToggle) {
+  btnTpToggle.addEventListener('click', () => {
+    const deck = $('laptop-deck');
+    deck.classList.toggle('hidden');
+    btnTpToggle.classList.toggle('on', !deck.classList.contains('hidden'));
+  });
+}
+
+const tpSurface = $('trackpad-surface');
+const tpGlow = $('tp-glow');
+
+if (tpSurface) {
+  const touchStartMap = new Map();
+  let startTime = 0;
+  let totalDistance = 0;
+  let prevX = 0, prevY = 0;
+  let prevScrollY = 0;
+  let lastMoveTime = 0;
+
+  tpSurface.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startTime = Date.now();
+    totalDistance = 0;
+
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i];
+      touchStartMap.set(t.identifier, { x: t.clientX, y: t.clientY });
+    }
+
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      prevX = t.clientX;
+      prevY = t.clientY;
+      if (tpGlow) {
+        const rect = tpSurface.getBoundingClientRect();
+        tpGlow.style.left = (t.clientX - rect.left) + 'px';
+        tpGlow.style.top = (t.clientY - rect.top) + 'px';
+        tpGlow.style.opacity = '1';
+      }
+    } else if (e.touches.length === 2) {
+      prevScrollY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    }
+  }, { passive: false });
+
+  tpSurface.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      const dx = (t.clientX - prevX) * tpSpeed * 1.5;
+      const dy = (t.clientY - prevY) * tpSpeed * 1.5;
+      totalDistance += Math.hypot(dx, dy);
+
+      prevX = t.clientX;
+      prevY = t.clientY;
+
+      if (tpGlow) {
+        const rect = tpSurface.getBoundingClientRect();
+        tpGlow.style.left = (t.clientX - rect.left) + 'px';
+        tpGlow.style.top = (t.clientY - rect.top) + 'px';
+      }
+
+      const now = Date.now();
+      if (now - lastMoveTime >= 8) { // throttle ~120fps
+        send({ type: 'mousemove', dx, dy });
+        lastMoveTime = now;
+      }
+    } else if (e.touches.length === 2) {
+      // 2-finger scroll
+      const currentY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const diffY = currentY - prevScrollY;
+      totalDistance += Math.abs(diffY);
+
+      if (Math.abs(diffY) > 3) {
+        const scrollAmount = Math.round(diffY * 0.25 * tpSpeed);
+        if (scrollAmount !== 0) {
+          send({ type: 'mousescroll', dx: 0, dy: scrollAmount });
+        }
+        prevScrollY = currentY;
+      }
+    }
+  }, { passive: false });
+
+  tpSurface.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (tpGlow) tpGlow.style.opacity = '0';
+    const duration = Date.now() - startTime;
+
+    // Check tap
+    if (e.touches.length === 0) {
+      if (touchStartMap.size === 1 && totalDistance < 12 && duration < 300) {
+        // 1-finger tap -> Left Click
+        send({ type: 'mouseclick', button: 'left' });
+        vibe(15);
+      } else if (touchStartMap.size === 2 && totalDistance < 18 && duration < 350) {
+        // 2-finger tap -> Right Click
+        send({ type: 'mouseclick', button: 'right' });
+        vibe(25);
+      }
+      touchStartMap.clear();
+    }
+  }, { passive: false });
+
+  tpSurface.addEventListener('touchcancel', () => {
+    touchStartMap.clear();
+    if (tpGlow) tpGlow.style.opacity = '0';
+  });
+
+  // Desktop mouse test on trackpad surface
+  let isMouseDragging = false;
+  let mouseStartX = 0, mouseStartY = 0;
+  tpSurface.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    isMouseDragging = true;
+    mouseStartX = e.clientX;
+    mouseStartY = e.clientY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isMouseDragging) return;
+    const dx = (e.clientX - mouseStartX) * tpSpeed * 1.5;
+    const dy = (e.clientY - mouseStartY) * tpSpeed * 1.5;
+    mouseStartX = e.clientX;
+    mouseStartY = e.clientY;
+    send({ type: 'mousemove', dx, dy });
+  });
+  window.addEventListener('mouseup', () => {
+    isMouseDragging = false;
+  });
+}
+
+// Trackpad Left & Right Physical Buttons
+const tpBtnLeft = $('tp-btn-left');
+const tpBtnRight = $('tp-btn-right');
+
+if (tpBtnLeft) {
+  const onLeftDown = (e) => {
+    e.preventDefault();
+    tpBtnLeft.classList.add('active');
+    send({ type: 'mousedown', button: 'left' });
+    vibe(15);
+  };
+  const onLeftUp = (e) => {
+    e.preventDefault();
+    tpBtnLeft.classList.remove('active');
+    send({ type: 'mouseup', button: 'left' });
+  };
+  tpBtnLeft.addEventListener('touchstart', onLeftDown, { passive: false });
+  tpBtnLeft.addEventListener('touchend', onLeftUp, { passive: false });
+  tpBtnLeft.addEventListener('mousedown', onLeftDown);
+  tpBtnLeft.addEventListener('mouseup', onLeftUp);
+}
+
+if (tpBtnRight) {
+  const onRightClick = (e) => {
+    e.preventDefault();
+    tpBtnRight.classList.add('active');
+    send({ type: 'mouseclick', button: 'right' });
+    vibe(25);
+    setTimeout(() => tpBtnRight.classList.remove('active'), 120);
+  };
+  tpBtnRight.addEventListener('touchstart', onRightClick, { passive: false });
+  tpBtnRight.addEventListener('mousedown', onRightClick);
+}
 
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());
