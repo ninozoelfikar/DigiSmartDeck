@@ -1124,6 +1124,15 @@ html, body {
             <button class="pos-option-btn" id="opt-tp-bottom">▼ Posisi: Di Bawah</button>
           </div>
         </div>
+
+        <!-- BEHAVIOR / AUTO FULLSCREEN -->
+        <div class="setting-group">
+          <div class="setting-title">⚡ Opsi Otomatisasi</div>
+          <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;">
+            <input type="checkbox" id="chk-auto-fs" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+            <span>Otomatis Layar Penuh (Fullscreen) saat terhubung</span>
+          </label>
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -1171,10 +1180,68 @@ $('btn-haptic').onclick = () => {
   $('btn-haptic').classList.toggle('on', haptic);
   if (haptic) vibe(30);
 };
-$('btn-fs').onclick = () => {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-  else document.exitFullscreen().catch(()=>{});
-};
+// ── Fullscreen Controls & Auto-Fullscreen ──
+let autoFsEnabled = localStorage.getItem('digi_auto_fs') !== 'false'; // default true
+
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+}
+
+function enterFullscreen() {
+  if (isFullscreen()) return;
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (req) {
+    req.call(el).catch(() => {});
+  }
+}
+
+function exitFullscreen() {
+  if (!isFullscreen()) return;
+  const ex = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+  if (ex) {
+    ex.call(document).catch(() => {});
+  }
+}
+
+function toggleFullscreen() {
+  if (isFullscreen()) exitFullscreen();
+  else enterFullscreen();
+}
+
+const btnFs = $('btn-fs');
+if (btnFs) btnFs.onclick = toggleFullscreen;
+
+function updateFsButton() {
+  if (btnFs) btnFs.classList.toggle('on', isFullscreen());
+}
+document.addEventListener('fullscreenchange', updateFsButton);
+document.addEventListener('webkitfullscreenchange', updateFsButton);
+document.addEventListener('mozfullscreenchange', updateFsButton);
+document.addEventListener('MSFullscreenChange', updateFsButton);
+
+let fsListenerAdded = false;
+function setupAutoFullscreen() {
+  if (!autoFsEnabled || isFullscreen()) return;
+  // 1. Coba request langsung
+  enterFullscreen();
+
+  // 2. Jika browser memblokir sebelum user gesture, tangkap interaksi/sentuhan pertama
+  if (!fsListenerAdded) {
+    fsListenerAdded = true;
+    const onFirstUserAction = () => {
+      if (autoFsEnabled && !isFullscreen()) {
+        enterFullscreen();
+      }
+      window.removeEventListener('pointerdown', onFirstUserAction, true);
+      window.removeEventListener('touchstart', onFirstUserAction, true);
+      window.removeEventListener('click', onFirstUserAction, true);
+    };
+    window.addEventListener('pointerdown', onFirstUserAction, { capture: true, once: true });
+    window.addEventListener('touchstart', onFirstUserAction, { capture: true, once: true });
+    window.addEventListener('click', onFirstUserAction, { capture: true, once: true });
+  }
+}
 
 // ── Haptic ──
 function vibe(ms = 12) {
@@ -1193,6 +1260,7 @@ function connect() {
   ws.onopen = () => {
     connected = true;
     setStatus(true, 'Terhubung');
+    setupAutoFullscreen();
     pingTimer = setInterval(() => {
       if (connected && ws.readyState === 1) {
         pingT = performance.now();
@@ -1750,9 +1818,21 @@ if (sliderKeyH) {
 const savedH = parseInt(localStorage.getItem('digi_key_h'), 10) || 38;
 applyKeyHeight(savedH);
 
+// Auto-Fullscreen Toggle
+const chkAutoFs = $('chk-auto-fs');
+if (chkAutoFs) {
+  chkAutoFs.checked = autoFsEnabled;
+  chkAutoFs.addEventListener('change', (e) => {
+    autoFsEnabled = e.target.checked;
+    localStorage.setItem('digi_auto_fs', autoFsEnabled);
+    if (autoFsEnabled) enterFullscreen();
+  });
+}
+
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());
 refreshMods();
+setupAutoFullscreen();
 connect();
 })();
 </script>
