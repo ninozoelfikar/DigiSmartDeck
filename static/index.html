@@ -387,9 +387,9 @@ html, body {
   padding: 6px 12px;
   gap: 12px;
   flex-shrink: 0;
-  min-height: 75px;
-  max-height: 125px;
-  height: clamp(75px, 14vh, 125px);
+  height: calc(clamp(75px, 14vh, 125px) * var(--tp-scale, 1));
+  min-height: calc(55px * var(--tp-scale, 1));
+  max-height: calc(180px * var(--tp-scale, 1));
 }
 .laptop-deck.pos-bottom {
   order: 6; /* Posisi Bawah */
@@ -578,9 +578,9 @@ html, body {
 /* ─── Tablet Specific Layout (iPad / Android Tablet) ─── */
 @media (min-width: 768px) and (min-height: 500px) {
   .laptop-deck {
-    min-height: 140px;
-    max-height: 260px;
-    height: clamp(140px, 22vh, 250px);
+    min-height: calc(90px * var(--tp-scale, 1));
+    max-height: calc(360px * var(--tp-scale, 1));
+    height: calc(clamp(140px, 22vh, 250px) * var(--tp-scale, 1));
     padding: 8px 20px;
     gap: 16px;
   }
@@ -628,9 +628,9 @@ html, body {
 /* ─── Large Tablet & Desktop View (iPad Pro 11"/12.9", 1080p+ Tablet) ─── */
 @media (min-width: 960px) and (min-height: 680px) {
   .laptop-deck {
-    min-height: 175px;
-    max-height: 300px;
-    height: clamp(175px, 25vh, 290px);
+    min-height: calc(110px * var(--tp-scale, 1));
+    max-height: calc(420px * var(--tp-scale, 1));
+    height: calc(clamp(175px, 25vh, 290px) * var(--tp-scale, 1));
     padding: 10px 28px;
   }
   .trackpad-container {
@@ -1105,10 +1105,10 @@ html, body {
         <div class="setting-group">
           <div class="setting-title">📏 Ukuran Tombol Keyboard</div>
           <div class="size-presets">
-            <button class="size-preset-btn" data-size="compact">Kecil</button>
-            <button class="size-preset-btn active" data-size="normal">Normal</button>
-            <button class="size-preset-btn" data-size="large">Besar</button>
-            <button class="size-preset-btn" data-size="xl">Ekstra</button>
+            <button class="size-preset-btn key-preset-btn" data-size="compact">Kecil</button>
+            <button class="size-preset-btn key-preset-btn active" data-size="normal">Normal</button>
+            <button class="size-preset-btn key-preset-btn" data-size="large">Besar</button>
+            <button class="size-preset-btn key-preset-btn" data-size="xl">Ekstra</button>
           </div>
           <div class="setting-slider-row">
             <span class="setting-slider-label">Tinggi Tombol: <b id="lbl-key-h">38px</b></span>
@@ -1118,10 +1118,22 @@ html, body {
 
         <!-- TRACKPAD POSITION & SIZE -->
         <div class="setting-group">
-          <div class="setting-title">🖱️ Posisi Trackpad</div>
-          <div class="trackpad-pos-buttons">
+          <div class="setting-title">🖱️ Pengaturan Trackpad</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Posisi Dek:</div>
+          <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
             <button class="pos-option-btn active" id="opt-tp-top">▲ Posisi: Di Atas</button>
             <button class="pos-option-btn" id="opt-tp-bottom">▼ Posisi: Di Bawah</button>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Ukuran / Skala Trackpad:</div>
+          <div class="size-presets" id="tp-size-presets">
+            <button class="size-preset-btn tp-preset-btn" data-tpsize="compact">Kecil</button>
+            <button class="size-preset-btn tp-preset-btn active" data-tpsize="normal">Normal</button>
+            <button class="size-preset-btn tp-preset-btn" data-tpsize="large">Besar</button>
+            <button class="size-preset-btn tp-preset-btn" data-tpsize="xl">Ekstra</button>
+          </div>
+          <div class="setting-slider-row">
+            <span class="setting-slider-label">Tinggi Trackpad: <b id="lbl-tp-scale">100%</b></span>
+            <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
           </div>
         </div>
       </div>
@@ -1702,11 +1714,11 @@ const savedTheme = localStorage.getItem('digi_theme') || 'dark';
 applyTheme(savedTheme);
 
 // Keyboard Sizing (Presets & Granular Height)
-const sizePresetBtns = document.querySelectorAll('.size-preset-btn');
+const keyPresetBtns = document.querySelectorAll('.key-preset-btn');
 const sliderKeyH = $('slider-key-h');
 const lblKeyH = $('lbl-key-h');
 
-const SIZE_PRESETS = {
+const KEY_SIZE_PRESETS = {
   compact: 32,
   normal: 38,
   large: 46,
@@ -1723,22 +1735,22 @@ function applyKeyHeight(h, presetName) {
   if (lblKeyH) lblKeyH.textContent = h + 'px';
   if (sliderKeyH) sliderKeyH.value = h;
 
-  sizePresetBtns.forEach(btn => {
+  keyPresetBtns.forEach(btn => {
     if (presetName) {
       btn.classList.toggle('active', btn.dataset.size === presetName);
     } else {
-      btn.classList.toggle('active', SIZE_PRESETS[btn.dataset.size] === h);
+      btn.classList.toggle('active', KEY_SIZE_PRESETS[btn.dataset.size] === h);
     }
   });
 
   localStorage.setItem('digi_key_h', h);
 }
 
-sizePresetBtns.forEach(btn => {
+keyPresetBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     const s = btn.dataset.size;
-    if (SIZE_PRESETS[s] !== undefined) {
-      applyKeyHeight(SIZE_PRESETS[s], s);
+    if (KEY_SIZE_PRESETS[s] !== undefined) {
+      applyKeyHeight(KEY_SIZE_PRESETS[s], s);
       vibe(15);
     }
   });
@@ -1752,6 +1764,58 @@ if (sliderKeyH) {
 
 const savedH = parseInt(localStorage.getItem('digi_key_h'), 10) || 38;
 applyKeyHeight(savedH);
+
+// ── Trackpad Sizing (Presets & Granular Scale) ──
+const tpPresetBtns = document.querySelectorAll('.tp-preset-btn');
+const sliderTpScale = $('slider-tp-scale');
+const lblTpScale = $('lbl-tp-scale');
+
+const TP_SIZE_PRESETS = {
+  compact: 70,
+  normal: 100,
+  large: 130,
+  xl: 160
+};
+
+function applyTpScale(percent, presetName) {
+  percent = parseInt(percent, 10) || 100;
+  percent = Math.max(50, Math.min(200, percent));
+  const scale = percent / 100;
+
+  document.documentElement.style.setProperty('--tp-scale', scale);
+
+  if (lblTpScale) lblTpScale.textContent = percent + '%';
+  if (sliderTpScale) sliderTpScale.value = percent;
+
+  tpPresetBtns.forEach(btn => {
+    if (presetName) {
+      btn.classList.toggle('active', btn.dataset.tpsize === presetName);
+    } else {
+      btn.classList.toggle('active', TP_SIZE_PRESETS[btn.dataset.tpsize] === percent);
+    }
+  });
+
+  localStorage.setItem('digi_tp_scale', percent);
+}
+
+tpPresetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const s = btn.dataset.tpsize;
+    if (TP_SIZE_PRESETS[s] !== undefined) {
+      applyTpScale(TP_SIZE_PRESETS[s], s);
+      vibe(15);
+    }
+  });
+});
+
+if (sliderTpScale) {
+  sliderTpScale.addEventListener('input', (e) => {
+    applyTpScale(e.target.value);
+  });
+}
+
+const savedTpScale = parseInt(localStorage.getItem('digi_tp_scale'), 10) || 100;
+applyTpScale(savedTpScale);
 
 // ── Init ──
 window.addEventListener('contextmenu', e => e.preventDefault());

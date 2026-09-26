@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.5.0] - 2026-09-26
+- Menambahkan pengaturan ukuran & skala tinggi trackpad
+
 ### [1.4.1] - 2026-09-26 (Stable Golden Checkpoint)
 #### 🛠️ Perbaikan & Stabilitas (Fixed & Stabilized)
 - **Perbaikan Critical Syntax Error Client:** Memperbaiki penutupan blok kurung kurawal `}` pada *event listener* trackpad kanan di `static/index.html` yang sempat menyebabkan *parser crash* pada browser HP/Tablet.
@@ -90,6 +93,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.5.0] - 2026-09-26
+- Release v1.5.0 updates
 
 ### [1.4.1] - 2026-09-26 (Stable Golden Checkpoint)
 #### Fixed & Stabilized
