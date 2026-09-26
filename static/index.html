@@ -188,30 +188,6 @@ html, body {
   color: #fff;
 }
 
-/* ─── MODIFIER STRIP ─── */
-.mod-strip {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  background: #111419;
-  padding: 2px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  flex-shrink: 0;
-}
-.mod-pill {
-  font-size: 9px;
-  font-weight: 700;
-  color: #484f58;
-  padding: 1px 6px;
-  border-radius: 4px;
-  letter-spacing: .5px;
-  transition: all .12s;
-}
-.mod-pill.on {
-  color: #fff;
-  background: var(--key-mod-active);
-  box-shadow: 0 0 5px rgba(35,134,54,.6);
-}
 
 /* ─── COLLAPSIBLE PANELS ─── */
 .panel {
@@ -372,9 +348,22 @@ html, body {
   text-overflow: ellipsis;
 }
 
+/* Otomatis sembunyikan tip di mode fullscreen agar ruang keyboard maksimal */
+:fullscreen .footer,
+:-webkit-full-screen .footer,
+:-moz-full-screen .footer,
+:-ms-fullscreen .footer,
+.is-fullscreen .footer,
+:fullscreen .palm-tip,
+:-webkit-full-screen .palm-tip,
+:-moz-full-screen .palm-tip,
+:-ms-fullscreen .palm-tip,
+.is-fullscreen .palm-tip {
+  display: none !important;
+}
+
 /* ─── LAPTOP TRACKPAD DECK ─── */
 .top-bar { order: 1; }
-.mod-strip { order: 2; }
 .panel { order: 3; }
 .laptop-deck {
   order: 4; /* Default: ATAS (Top) */
@@ -855,15 +844,6 @@ html, body {
     </div>
   </header>
 
-  <!-- MODIFIER INDICATOR -->
-  <div class="mod-strip">
-    <span class="mod-pill" id="tag-ctrl">CTRL</span>
-    <span class="mod-pill" id="tag-alt">ALT</span>
-    <span class="mod-pill" id="tag-shift">SHIFT</span>
-    <span class="mod-pill" id="tag-win">WIN</span>
-    <span class="mod-pill" id="tag-caps">CAPS</span>
-  </div>
-
   <!-- SHORTCUT BAR -->
   <div class="panel hidden" id="sc-bar">
     <button class="sc-btn" data-combo="ctrl,c">Ctrl+C</button>
@@ -1184,9 +1164,31 @@ $('btn-haptic').onclick = () => {
   $('btn-haptic').classList.toggle('on', haptic);
   if (haptic) vibe(30);
 };
+function isFs() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+}
+
+function updateFsState() {
+  const active = isFs();
+  document.body.classList.toggle('is-fullscreen', active);
+  const btn = $('btn-fs');
+  if (btn) btn.classList.toggle('on', active);
+}
+
+document.addEventListener('fullscreenchange', updateFsState);
+document.addEventListener('webkitfullscreenchange', updateFsState);
+document.addEventListener('mozfullscreenchange', updateFsState);
+document.addEventListener('MSFullscreenChange', updateFsState);
+
 $('btn-fs').onclick = () => {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
-  else document.exitFullscreen().catch(()=>{});
+  if (!isFs()) {
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if (req) req.call(el).catch(() => {});
+  } else {
+    const ex = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (ex) ex.call(document).catch(() => {});
+  }
 };
 
 // ── Haptic ──
