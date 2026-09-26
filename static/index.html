@@ -5,282 +5,737 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#12151c">
-  <title>Remote PC Keyboard</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#0d1117">
+  <title>DigiKeyboard - Remote PC Keyboard</title>
+  <style>
+:root {
+  --bg: #0d1117;
+  --header-bg: #161b22;
+  --panel-bg: #1c2128;
+  --key-bg: #21262d;
+  --key-active-bg: #1f6feb;
+  --key-active-border: #388bfd;
+  --key-shadow: #111418;
+  --key-border: #30363d;
+  --key-special: #1b2028;
+  --key-mod-active: #238636;
+  --accent: #58a6ff;
+  --text: #f0f6fc;
+  --text-dim: #8b949e;
+  --danger: #da3633;
+  --enter-bg: #1f4068;
+  --enter-border: #2a5286;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, monospace;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ─── TOP BAR ─── */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--key-border);
+  padding: 5px 10px;
+  height: 44px;
+  flex-shrink: 0;
+  z-index: 10;
+  gap: 8px;
+}
+.logo {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--key-border);
+  white-space: nowrap;
+}
+.status-badge .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #f85149;
+  flex-shrink: 0;
+}
+.status-badge.connected .dot { background: #3fb950; box-shadow: 0 0 5px #3fb950; }
+.ping { font-size: 10px; color: var(--text-dim); font-family: monospace; }
+.right-controls { display: flex; gap: 5px; align-items: center; }
+.left-controls { display: flex; gap: 6px; align-items: center; }
+.tbtn {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .12s;
+}
+.tbtn.on {
+  background: var(--key-active-bg);
+  border-color: var(--key-active-border);
+  color: #fff;
+}
+
+/* ─── MODIFIER STRIP ─── */
+.mod-strip {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  background: #111419;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+.mod-pill {
+  font-size: 9px;
+  font-weight: 700;
+  color: #484f58;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: .5px;
+  transition: all .12s;
+}
+.mod-pill.on {
+  color: #fff;
+  background: var(--key-mod-active);
+  box-shadow: 0 0 5px rgba(35,134,54,.6);
+}
+
+/* ─── COLLAPSIBLE PANELS ─── */
+.panel {
+  display: flex;
+  background: var(--panel-bg);
+  padding: 4px 8px;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--key-border);
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.panel::-webkit-scrollbar { display: none; }
+.panel.hidden { display: none !important; }
+
+/* ─── SHORTCUT BAR ─── */
+.sc-btn {
+  background: #252c37;
+  border: 1px solid var(--key-border);
+  color: var(--accent);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sc-btn:active { background: var(--key-active-bg); color: #fff; }
+.sc-btn.danger { color: #ff7b72; }
+
+/* ─── FN / NAV ROW KEYS ─── */
+.fn-key, .nav-key {
+  flex: 1;
+  min-width: 28px;
+  height: 34px;
+  font-size: 11px;
+}
+
+/* ─── KEYBOARD CONTAINER ─── */
+.kb-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  padding: 5px 6px;
+  gap: 6px;
+  background: var(--bg);
+  overflow: auto;
+}
+.kb-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3px;
+  max-width: 1200px;
+}
+.kb-row {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+}
+
+/* ─── KEY BUTTON ─── */
+.k {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--key-bg);
+  color: var(--text);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  box-shadow: 0 3px 0 var(--key-shadow), 0 2px 4px rgba(0,0,0,.4);
+  font-size: clamp(11px, 1.7vw, 15px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .05s, background .08s, box-shadow .05s;
+  min-height: 38px;
+  line-height: 1.2;
+  -webkit-touch-callout: none;
+}
+.k .sub {
+  font-size: 9px;
+  color: var(--accent);
+  line-height: 1;
+}
+.k .lbl { line-height: 1; }
+/* Special key backgrounds */
+.k.sp  { background: var(--key-special); font-size: clamp(9px,1.3vw,12px); }
+.k.ent { background: var(--enter-bg); border-color: var(--enter-border); }
+/* Width variants */
+.k.w15 { flex: 1.5; }
+.k.w18 { flex: 1.8; }
+.k.w2  { flex: 2; }
+.k.w22 { flex: 2.2; }
+.k.w24 { flex: 2.4; }
+.k.w13 { flex: 1.3; }
+.k.w12 { flex: 1.2; }
+.k.space { flex: 6; background: #2a313c; font-size: 11px; color: var(--text-dim); }
+.k.arr { background: #1c222b; color: var(--accent); font-size: 14px; }
+/* Press state */
+.k.pressed, .k:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--key-shadow);
+  background: var(--key-active-bg) !important;
+  border-color: var(--key-active-border) !important;
+  color: #fff !important;
+}
+/* Latched modifier */
+.k.latched {
+  background: var(--key-mod-active) !important;
+  border-color: #3fb950 !important;
+  color: #fff !important;
+  box-shadow: 0 0 8px rgba(63,185,80,.5) !important;
+}
+
+/* ─── NUMPAD ─── */
+.kb-numpad {
+  background: var(--panel-bg);
+  border-radius: 8px;
+  padding: 5px;
+  border: 1px solid var(--key-border);
+  display: flex;
+}
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 46px);
+  grid-auto-rows: 44px;
+  gap: 3px;
+}
+.np-tall { grid-row: span 2; }
+.np-wide { grid-column: span 2; }
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--header-bg);
+  border-top: 1px solid var(--key-border);
+  padding: 3px 10px;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-align: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (orientation: portrait) {
+  .kb-wrap { justify-content: flex-start; overflow-x: auto; }
+  .kb-main { min-width: 640px; }
+  .k { min-height: 46px; }
+}
+  </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Top Status Bar & Controls -->
-    <header class="top-bar">
-      <div class="left-controls">
-        <span class="logo">⌨️ PC Remote</span>
-        <span id="connection-status" class="status-badge disconnected">
-          <span class="dot"></span> <span id="status-text">Menghubungkan...</span>
-        </span>
-        <span id="ping-badge" class="ping-badge">-- ms</span>
-      </div>
+<div id="app">
 
-      <div class="right-controls">
-        <button id="btn-toggle-fn" class="tool-btn" title="Tampilkan Tombol F1-F12">Fn</button>
-        <button id="btn-toggle-nav" class="tool-btn" title="Tampilkan Tombol Navigasi (Home, End, PgUp, PgDn, Ins, Del)">Nav</button>
-        <button id="btn-toggle-numpad" class="tool-btn" title="Tampilkan Numpad PC">123</button>
-        <button id="btn-toggle-shortcuts" class="tool-btn" title="Tampilkan Shortcut Cepat">⚡</button>
-        <button id="btn-latch-mode" class="tool-btn active" title="Mode Sticky/Latch Modifier (Ctrl, Shift, Alt terkunci setelah ditekan)">Latch</button>
-        <button id="btn-haptic" class="tool-btn active" title="Getar / Haptic Feedback">📳</button>
-        <button id="btn-fullscreen" class="tool-btn" title="Layar Penuh">⛶</button>
-      </div>
-    </header>
-
-    <!-- Active Modifiers Indicator Bar -->
-    <div id="modifier-indicator" class="modifier-indicator">
-      <span class="mod-tag" id="tag-ctrl">CTRL</span>
-      <span class="mod-tag" id="tag-alt">ALT</span>
-      <span class="mod-tag" id="tag-shift">SHIFT</span>
-      <span class="mod-tag" id="tag-win">WIN</span>
-      <span class="mod-tag" id="tag-caps">CAPS</span>
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div class="left-controls">
+      <span class="logo">⌨️ DigiKeyboard</span>
+      <span id="badge" class="status-badge disconnected">
+        <span class="dot"></span>
+        <span id="badge-txt">Menghubungkan...</span>
+      </span>
+      <span id="ping" class="ping">-- ms</span>
     </div>
-
-    <!-- Quick Shortcuts Bar (Optional / Collapsible) -->
-    <div id="shortcuts-bar" class="collapsible-panel shortcuts-bar hidden">
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,c">Ctrl+C</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,v">Ctrl+V</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,x">Ctrl+X</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,z">Ctrl+Z</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,y">Ctrl+Y</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,a">Ctrl+A</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="ctrl,s">Ctrl+S</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="alt,tab">Alt+Tab</button>
-      <button class="shortcut-btn" data-action="combo" data-keys="cmd,d">Win+D</button>
-      <button class="shortcut-btn danger" data-action="combo" data-keys="ctrl,alt,delete">Ctrl+Alt+Del</button>
+    <div class="right-controls">
+      <button class="tbtn" id="btn-fn">Fn</button>
+      <button class="tbtn" id="btn-nav">Nav</button>
+      <button class="tbtn" id="btn-num">123</button>
+      <button class="tbtn" id="btn-sc">⚡</button>
+      <button class="tbtn on" id="btn-latch" title="Sticky modifier – Ctrl/Shift/Alt terkunci sampai tombol berikutnya">Latch</button>
+      <button class="tbtn on" id="btn-haptic" title="Haptic feedback">📳</button>
+      <button class="tbtn" id="btn-fs">⛶</button>
     </div>
+  </header>
 
-    <!-- Function Keys Row (F1-F12) -->
-    <div id="fn-row" class="collapsible-panel fn-row hidden">
-      <button class="key key-fn" data-code="Escape" data-key="esc">Esc</button>
-      <button class="key key-fn" data-code="F1" data-key="f1">F1</button>
-      <button class="key key-fn" data-code="F2" data-key="f2">F2</button>
-      <button class="key key-fn" data-code="F3" data-key="f3">F3</button>
-      <button class="key key-fn" data-code="F4" data-key="f4">F4</button>
-      <button class="key key-fn" data-code="F5" data-key="f5">F5</button>
-      <button class="key key-fn" data-code="F6" data-key="f6">F6</button>
-      <button class="key key-fn" data-code="F7" data-key="f7">F7</button>
-      <button class="key key-fn" data-code="F8" data-key="f8">F8</button>
-      <button class="key key-fn" data-code="F9" data-key="f9">F9</button>
-      <button class="key key-fn" data-code="F10" data-key="f10">F10</button>
-      <button class="key key-fn" data-code="F11" data-key="f11">F11</button>
-      <button class="key key-fn" data-code="F12" data-key="f12">F12</button>
-    </div>
-
-    <!-- Navigation Keys Cluster -->
-    <div id="nav-row" class="collapsible-panel nav-row hidden">
-      <button class="key key-nav" data-code="PrintScreen" data-key="print_screen">PrtSc</button>
-      <button class="key key-nav" data-code="ScrollLock" data-key="scroll_lock">ScrLk</button>
-      <button class="key key-nav" data-code="Pause" data-key="pause">Pause</button>
-      <button class="key key-nav" data-code="Insert" data-key="insert">Ins</button>
-      <button class="key key-nav" data-code="Delete" data-key="delete">Del</button>
-      <button class="key key-nav" data-code="Home" data-key="home">Home</button>
-      <button class="key key-nav" data-code="End" data-key="end">End</button>
-      <button class="key key-nav" data-code="PageUp" data-key="page_up">PgUp</button>
-      <button class="key key-nav" data-code="PageDown" data-key="page_down">PgDn</button>
-    </div>
-
-    <!-- Keyboard Workspace (Main Keyboard + Numpad side-by-side or stacked) -->
-    <main class="keyboard-container">
-      <!-- Standard Main PC Keyboard Layout -->
-      <section class="keyboard-main" id="main-keyboard">
-        <!-- Row 1: Number Row -->
-        <div class="kb-row">
-          <button class="key key-tilde" data-code="Backquote" data-char="`" data-shift="~">
-            <span class="sub">~</span><span class="main">`</span>
-          </button>
-          <button class="key" data-code="Digit1" data-char="1" data-shift="!">
-            <span class="sub">!</span><span class="main">1</span>
-          </button>
-          <button class="key" data-code="Digit2" data-char="2" data-shift="@">
-            <span class="sub">@</span><span class="main">2</span>
-          </button>
-          <button class="key" data-code="Digit3" data-char="3" data-shift="#">
-            <span class="sub">#</span><span class="main">3</span>
-          </button>
-          <button class="key" data-code="Digit4" data-char="4" data-shift="$">
-            <span class="sub">$</span><span class="main">4</span>
-          </button>
-          <button class="key" data-code="Digit5" data-char="5" data-shift="%">
-            <span class="sub">%</span><span class="main">5</span>
-          </button>
-          <button class="key" data-code="Digit6" data-char="6" data-shift="^">
-            <span class="sub">^</span><span class="main">6</span>
-          </button>
-          <button class="key" data-code="Digit7" data-char="7" data-shift="&">
-            <span class="sub">&</span><span class="main">7</span>
-          </button>
-          <button class="key" data-code="Digit8" data-char="8" data-shift="*">
-            <span class="sub">*</span><span class="main">8</span>
-          </button>
-          <button class="key" data-code="Digit9" data-char="9" data-shift="(">
-            <span class="sub">(</span><span class="main">9</span>
-          </button>
-          <button class="key" data-code="Digit0" data-char="0" data-shift=")">
-            <span class="sub">)</span><span class="main">0</span>
-          </button>
-          <button class="key" data-code="Minus" data-char="-" data-shift="_">
-            <span class="sub">_</span><span class="main">-</span>
-          </button>
-          <button class="key" data-code="Equal" data-char="=" data-shift="+">
-            <span class="sub">+</span><span class="main">=</span>
-          </button>
-          <button class="key key-backspace" data-code="Backspace" data-key="backspace" title="Backspace">
-            <span>⌫ Backspace</span>
-          </button>
-        </div>
-
-        <!-- Row 2: Tab + QWERTY -->
-        <div class="kb-row">
-          <button class="key key-tab" data-code="Tab" data-key="tab">
-            <span>Tab ⇥</span>
-          </button>
-          <button class="key" data-code="KeyQ" data-char="q" data-shift="Q"><span class="main">Q</span></button>
-          <button class="key" data-code="KeyW" data-char="w" data-shift="W"><span class="main">W</span></button>
-          <button class="key" data-code="KeyE" data-char="e" data-shift="E"><span class="main">E</span></button>
-          <button class="key" data-code="KeyR" data-char="r" data-shift="R"><span class="main">R</span></button>
-          <button class="key" data-code="KeyT" data-char="t" data-shift="T"><span class="main">T</span></button>
-          <button class="key" data-code="KeyY" data-char="y" data-shift="Y"><span class="main">Y</span></button>
-          <button class="key" data-code="KeyU" data-char="u" data-shift="U"><span class="main">U</span></button>
-          <button class="key" data-code="KeyI" data-char="i" data-shift="I"><span class="main">I</span></button>
-          <button class="key" data-code="KeyO" data-char="o" data-shift="O"><span class="main">O</span></button>
-          <button class="key" data-code="KeyP" data-char="p" data-shift="P"><span class="main">P</span></button>
-          <button class="key" data-code="BracketLeft" data-char="[" data-shift="{">
-            <span class="sub">{</span><span class="main">[</span>
-          </button>
-          <button class="key" data-code="BracketRight" data-char="]" data-shift="}">
-            <span class="sub">}</span><span class="main">]</span>
-          </button>
-          <button class="key key-backslash" data-code="Backslash" data-char="\" data-shift="|">
-            <span class="sub">|</span><span class="main">\</span>
-          </button>
-        </div>
-
-        <!-- Row 3: Caps + ASDF -->
-        <div class="kb-row">
-          <button class="key key-caps" id="key-caps" data-code="CapsLock" data-key="caps_lock">
-            <span>Caps Lock ⇪</span>
-          </button>
-          <button class="key" data-code="KeyA" data-char="a" data-shift="A"><span class="main">A</span></button>
-          <button class="key" data-code="KeyS" data-char="s" data-shift="S"><span class="main">S</span></button>
-          <button class="key" data-code="KeyD" data-char="d" data-shift="D"><span class="main">D</span></button>
-          <button class="key" data-code="KeyF" data-char="f" data-shift="F"><span class="main">F</span></button>
-          <button class="key" data-code="KeyG" data-char="g" data-shift="G"><span class="main">G</span></button>
-          <button class="key" data-code="KeyH" data-char="h" data-shift="H"><span class="main">H</span></button>
-          <button class="key" data-code="KeyJ" data-char="j" data-shift="J"><span class="main">J</span></button>
-          <button class="key" data-code="KeyK" data-char="k" data-shift="K"><span class="main">K</span></button>
-          <button class="key" data-code="KeyL" data-char="l" data-shift="L"><span class="main">L</span></button>
-          <button class="key" data-code="Semicolon" data-char=";" data-shift=":">
-            <span class="sub">:</span><span class="main">;</span>
-          </button>
-          <button class="key" data-code="Quote" data-char="'" data-shift='"'>
-            <span class="sub">"</span><span class="main">'</span>
-          </button>
-          <button class="key key-enter" data-code="Enter" data-key="enter">
-            <span>Enter ↵</span>
-          </button>
-        </div>
-
-        <!-- Row 4: Shift + ZXCV + Up Arrow -->
-        <div class="kb-row">
-          <button class="key key-shift" id="key-shift-left" data-code="ShiftLeft" data-key="shift">
-            <span>⇧ Shift</span>
-          </button>
-          <button class="key" data-code="KeyZ" data-char="z" data-shift="Z"><span class="main">Z</span></button>
-          <button class="key" data-code="KeyX" data-char="x" data-shift="X"><span class="main">X</span></button>
-          <button class="key" data-code="KeyC" data-char="c" data-shift="C"><span class="main">C</span></button>
-          <button class="key" data-code="KeyV" data-char="v" data-shift="V"><span class="main">V</span></button>
-          <button class="key" data-code="KeyB" data-char="b" data-shift="B"><span class="main">B</span></button>
-          <button class="key" data-code="KeyN" data-char="n" data-shift="N"><span class="main">N</span></button>
-          <button class="key" data-code="KeyM" data-char="m" data-shift="M"><span class="main">M</span></button>
-          <button class="key" data-code="Comma" data-char="," data-shift="<">
-            <span class="sub">&lt;</span><span class="main">,</span>
-          </button>
-          <button class="key" data-code="Period" data-char="." data-shift=">">
-            <span class="sub">&gt;</span><span class="main">.</span>
-          </button>
-          <button class="key" data-code="Slash" data-char="/" data-shift="?">
-            <span class="sub">?</span><span class="main">/</span>
-          </button>
-          <button class="key key-shift" id="key-shift-right" data-code="ShiftRight" data-key="shift">
-            <span>⇧ Shift</span>
-          </button>
-          <button class="key key-arrow" data-code="ArrowUp" data-key="up">
-            <span>▲</span>
-          </button>
-        </div>
-
-        <!-- Row 5: Modifiers, Space, Left/Down/Right Arrows -->
-        <div class="kb-row">
-          <button class="key key-ctrl" id="key-ctrl-left" data-code="ControlLeft" data-key="ctrl">
-            <span>Ctrl</span>
-          </button>
-          <button class="key key-win" id="key-win" data-code="MetaLeft" data-key="cmd" title="Windows / Super Key">
-            <span>⊞ Win</span>
-          </button>
-          <button class="key key-alt" id="key-alt-left" data-code="AltLeft" data-key="alt">
-            <span>Alt</span>
-          </button>
-          <button class="key key-space" data-code="Space" data-key="space">
-            <span>Space Bar</span>
-          </button>
-          <button class="key key-alt" id="key-alt-right" data-code="AltRight" data-key="alt">
-            <span>Alt</span>
-          </button>
-          <button class="key key-ctrl" id="key-ctrl-right" data-code="ControlRight" data-key="ctrl">
-            <span>Ctrl</span>
-          </button>
-          <button class="key key-arrow" data-code="ArrowLeft" data-key="left">
-            <span>◀</span>
-          </button>
-          <button class="key key-arrow" data-code="ArrowDown" data-key="down">
-            <span>▼</span>
-          </button>
-          <button class="key key-arrow" data-code="ArrowRight" data-key="right">
-            <span>▶</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- PC Numpad Layout (Collapsible / Toggleable) -->
-      <section class="keyboard-numpad collapsible-panel hidden" id="numpad">
-        <div class="numpad-grid">
-          <button class="key key-num" data-code="NumLock" data-key="num_lock"><span>Num</span></button>
-          <button class="key key-num" data-char="/"><span>/</span></button>
-          <button class="key key-num" data-char="*"><span>*</span></button>
-          <button class="key key-num" data-char="-"><span>-</span></button>
-
-          <button class="key key-num" data-char="7"><span>7</span></button>
-          <button class="key key-num" data-char="8"><span>8</span></button>
-          <button class="key key-num" data-char="9"><span>9</span></button>
-          <button class="key key-num num-tall" data-char="+"><span>+</span></button>
-
-          <button class="key key-num" data-char="4"><span>4</span></button>
-          <button class="key key-num" data-char="5"><span>5</span></button>
-          <button class="key key-num" data-char="6"><span>6</span></button>
-
-          <button class="key key-num" data-char="1"><span>1</span></button>
-          <button class="key key-num" data-char="2"><span>2</span></button>
-          <button class="key key-num" data-char="3"><span>3</span></button>
-          <button class="key key-num num-tall key-enter" data-code="NumpadEnter" data-key="enter"><span>↵</span></button>
-
-          <button class="key key-num num-wide" data-char="0"><span>0</span></button>
-          <button class="key key-num" data-char="."><span>.</span></button>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer info / Tips -->
-    <footer class="bottom-bar">
-      <span>Tip: Aktifkan <b>Latch</b> untuk menekan kombinasi (misal Ctrl lalu C). Putar layar ke <b>Lanskap</b> untuk kenyamanan maksimal.</span>
-    </footer>
+  <!-- MODIFIER INDICATOR -->
+  <div class="mod-strip">
+    <span class="mod-pill" id="tag-ctrl">CTRL</span>
+    <span class="mod-pill" id="tag-alt">ALT</span>
+    <span class="mod-pill" id="tag-shift">SHIFT</span>
+    <span class="mod-pill" id="tag-win">WIN</span>
+    <span class="mod-pill" id="tag-caps">CAPS</span>
   </div>
 
-  <script src="app.js"></script>
+  <!-- SHORTCUT BAR -->
+  <div class="panel hidden" id="sc-bar">
+    <button class="sc-btn" data-combo="ctrl,c">Ctrl+C</button>
+    <button class="sc-btn" data-combo="ctrl,v">Ctrl+V</button>
+    <button class="sc-btn" data-combo="ctrl,x">Ctrl+X</button>
+    <button class="sc-btn" data-combo="ctrl,z">Ctrl+Z</button>
+    <button class="sc-btn" data-combo="ctrl,y">Ctrl+Y</button>
+    <button class="sc-btn" data-combo="ctrl,a">Ctrl+A</button>
+    <button class="sc-btn" data-combo="ctrl,s">Ctrl+S</button>
+    <button class="sc-btn" data-combo="ctrl,f">Ctrl+F</button>
+    <button class="sc-btn" data-combo="alt,tab">Alt+Tab</button>
+    <button class="sc-btn" data-combo="cmd,d">Win+D</button>
+    <button class="sc-btn danger" data-combo="ctrl,alt,delete">Ctrl+Alt+Del</button>
+  </div>
+
+  <!-- FN ROW -->
+  <div class="panel hidden" id="fn-row">
+    <button class="k fn-key sp" data-key="esc">Esc</button>
+    <button class="k fn-key sp" data-key="f1">F1</button>
+    <button class="k fn-key sp" data-key="f2">F2</button>
+    <button class="k fn-key sp" data-key="f3">F3</button>
+    <button class="k fn-key sp" data-key="f4">F4</button>
+    <button class="k fn-key sp" data-key="f5">F5</button>
+    <button class="k fn-key sp" data-key="f6">F6</button>
+    <button class="k fn-key sp" data-key="f7">F7</button>
+    <button class="k fn-key sp" data-key="f8">F8</button>
+    <button class="k fn-key sp" data-key="f9">F9</button>
+    <button class="k fn-key sp" data-key="f10">F10</button>
+    <button class="k fn-key sp" data-key="f11">F11</button>
+    <button class="k fn-key sp" data-key="f12">F12</button>
+  </div>
+
+  <!-- NAV ROW -->
+  <div class="panel hidden" id="nav-row">
+    <button class="k nav-key sp" data-key="print_screen">PrtSc</button>
+    <button class="k nav-key sp" data-key="scroll_lock">ScrLk</button>
+    <button class="k nav-key sp" data-key="pause">Pause</button>
+    <button class="k nav-key sp" data-key="insert">Ins</button>
+    <button class="k nav-key sp" data-key="delete">Del</button>
+    <button class="k nav-key sp" data-key="home">Home</button>
+    <button class="k nav-key sp" data-key="end">End</button>
+    <button class="k nav-key sp" data-key="page_up">PgUp</button>
+    <button class="k nav-key sp" data-key="page_down">PgDn</button>
+  </div>
+
+  <!-- KEYBOARD + NUMPAD -->
+  <main class="kb-wrap">
+    <section class="kb-main">
+
+      <!-- ROW 1: Number row -->
+      <div class="kb-row">
+        <button class="k" data-char="`" data-shift="~"><span class="sub">~</span><span class="lbl">`</span></button>
+        <button class="k" data-char="1" data-shift="!"><span class="sub">!</span><span class="lbl">1</span></button>
+        <button class="k" data-char="2" data-shift="@"><span class="sub">@</span><span class="lbl">2</span></button>
+        <button class="k" data-char="3" data-shift="#"><span class="sub">#</span><span class="lbl">3</span></button>
+        <button class="k" data-char="4" data-shift="$"><span class="sub">$</span><span class="lbl">4</span></button>
+        <button class="k" data-char="5" data-shift="%"><span class="sub">%</span><span class="lbl">5</span></button>
+        <button class="k" data-char="6" data-shift="^"><span class="sub">^</span><span class="lbl">6</span></button>
+        <button class="k" data-char="7" data-shift="&amp;"><span class="sub">&amp;</span><span class="lbl">7</span></button>
+        <button class="k" data-char="8" data-shift="*"><span class="sub">*</span><span class="lbl">8</span></button>
+        <button class="k" data-char="9" data-shift="("><span class="sub">(</span><span class="lbl">9</span></button>
+        <button class="k" data-char="0" data-shift=")"><span class="sub">)</span><span class="lbl">0</span></button>
+        <button class="k" data-char="-" data-shift="_"><span class="sub">_</span><span class="lbl">-</span></button>
+        <button class="k" data-char="=" data-shift="+"><span class="sub">+</span><span class="lbl">=</span></button>
+        <button class="k sp w2" data-key="backspace">⌫ Back</button>
+      </div>
+
+      <!-- ROW 2: Tab + QWERTY -->
+      <div class="kb-row">
+        <button class="k sp w15" data-key="tab">Tab ⇥</button>
+        <button class="k" data-char="q" data-shift="Q">Q</button>
+        <button class="k" data-char="w" data-shift="W">W</button>
+        <button class="k" data-char="e" data-shift="E">E</button>
+        <button class="k" data-char="r" data-shift="R">R</button>
+        <button class="k" data-char="t" data-shift="T">T</button>
+        <button class="k" data-char="y" data-shift="Y">Y</button>
+        <button class="k" data-char="u" data-shift="U">U</button>
+        <button class="k" data-char="i" data-shift="I">I</button>
+        <button class="k" data-char="o" data-shift="O">O</button>
+        <button class="k" data-char="p" data-shift="P">P</button>
+        <button class="k" data-char="[" data-shift="{"><span class="sub">{</span><span class="lbl">[</span></button>
+        <button class="k" data-char="]" data-shift="}"><span class="sub">}</span><span class="lbl">]</span></button>
+        <button class="k w12" data-char="\" data-shift="|"><span class="sub">|</span><span class="lbl">\</span></button>
+      </div>
+
+      <!-- ROW 3: Caps + ASDF + Enter -->
+      <div class="kb-row">
+        <button class="k sp w18" data-key="caps_lock" id="key-caps">Caps ⇪</button>
+        <button class="k" data-char="a" data-shift="A">A</button>
+        <button class="k" data-char="s" data-shift="S">S</button>
+        <button class="k" data-char="d" data-shift="D">D</button>
+        <button class="k" data-char="f" data-shift="F">F</button>
+        <button class="k" data-char="g" data-shift="G">G</button>
+        <button class="k" data-char="h" data-shift="H">H</button>
+        <button class="k" data-char="j" data-shift="J">J</button>
+        <button class="k" data-char="k" data-shift="K">K</button>
+        <button class="k" data-char="l" data-shift="L">L</button>
+        <button class="k" data-char=";" data-shift=":"><span class="sub">:</span><span class="lbl">;</span></button>
+        <button class="k" data-char="'" data-shift='"'><span class="sub">"</span><span class="lbl">'</span></button>
+        <button class="k ent w22" data-key="enter">Enter ↵</button>
+      </div>
+
+      <!-- ROW 4: Shift + ZXCV + Up -->
+      <div class="kb-row">
+        <button class="k sp w24" data-key="shift" id="key-shift-l">⇧ Shift</button>
+        <button class="k" data-char="z" data-shift="Z">Z</button>
+        <button class="k" data-char="x" data-shift="X">X</button>
+        <button class="k" data-char="c" data-shift="C">C</button>
+        <button class="k" data-char="v" data-shift="V">V</button>
+        <button class="k" data-char="b" data-shift="B">B</button>
+        <button class="k" data-char="n" data-shift="N">N</button>
+        <button class="k" data-char="m" data-shift="M">M</button>
+        <button class="k" data-char="," data-shift="<"><span class="sub">&lt;</span><span class="lbl">,</span></button>
+        <button class="k" data-char="." data-shift=">"><span class="sub">&gt;</span><span class="lbl">.</span></button>
+        <button class="k" data-char="/" data-shift="?"><span class="sub">?</span><span class="lbl">/</span></button>
+        <button class="k sp w22" data-key="shift" id="key-shift-r">⇧ Shift</button>
+        <button class="k arr" data-key="up">▲</button>
+      </div>
+
+      <!-- ROW 5: Bottom modifiers + Space + Arrows -->
+      <div class="kb-row">
+        <button class="k sp w13" data-key="ctrl" id="key-ctrl-l">Ctrl</button>
+        <button class="k sp w13" data-key="cmd" id="key-win">⊞ Win</button>
+        <button class="k sp w13" data-key="alt" id="key-alt-l">Alt</button>
+        <button class="k space" data-key="space">Space Bar</button>
+        <button class="k sp w13" data-key="alt" id="key-alt-r">Alt</button>
+        <button class="k sp w13" data-key="ctrl" id="key-ctrl-r">Ctrl</button>
+        <button class="k arr" data-key="left">◀</button>
+        <button class="k arr" data-key="down">▼</button>
+        <button class="k arr" data-key="right">▶</button>
+      </div>
+
+    </section>
+
+    <!-- NUMPAD -->
+    <section class="kb-numpad panel hidden" id="numpad">
+      <div class="numpad-grid">
+        <button class="k sp" data-key="num_lock">Num</button>
+        <button class="k" data-char="/">/</button>
+        <button class="k" data-char="*">*</button>
+        <button class="k" data-char="-">-</button>
+
+        <button class="k" data-char="7">7</button>
+        <button class="k" data-char="8">8</button>
+        <button class="k" data-char="9">9</button>
+        <button class="k np-tall" data-char="+">+</button>
+
+        <button class="k" data-char="4">4</button>
+        <button class="k" data-char="5">5</button>
+        <button class="k" data-char="6">6</button>
+
+        <button class="k" data-char="1">1</button>
+        <button class="k" data-char="2">2</button>
+        <button class="k" data-char="3">3</button>
+        <button class="k ent np-tall" data-key="enter">↵</button>
+
+        <button class="k np-wide" data-char="0">0</button>
+        <button class="k" data-char=".">.</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Putar ke <b>Landscape</b> untuk pengalaman terbaik.
+  </footer>
+</div>
+
+<script>
+(function() {
+'use strict';
+
+// ── State ──
+let ws = null, connected = false;
+let pingT = 0, pingTimer = null;
+let latch = true, haptic = true;
+
+const mods = { ctrl: false, alt: false, shift: false, cmd: false, caps_lock: false };
+
+// ── DOM ──
+const badge    = document.getElementById('badge');
+const badgeTxt = document.getElementById('badge-txt');
+const pingEl   = document.getElementById('ping');
+
+function $(id) { return document.getElementById(id); }
+
+// ── Panels ──
+function togglePanel(panelId, btnId) {
+  const p = $(panelId), b = $(btnId);
+  p.classList.toggle('hidden');
+  b.classList.toggle('on', !p.classList.contains('hidden'));
+}
+$('btn-fn').onclick    = () => togglePanel('fn-row', 'btn-fn');
+$('btn-nav').onclick   = () => togglePanel('nav-row', 'btn-nav');
+$('btn-num').onclick   = () => togglePanel('numpad', 'btn-num');
+$('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc');
+$('btn-latch').onclick = () => {
+  latch = !latch;
+  $('btn-latch').classList.toggle('on', latch);
+  vibe(15);
+};
+$('btn-haptic').onclick = () => {
+  haptic = !haptic;
+  $('btn-haptic').classList.toggle('on', haptic);
+  if (haptic) vibe(30);
+};
+$('btn-fs').onclick = () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen().catch(()=>{});
+};
+
+// ── Haptic ──
+function vibe(ms = 12) {
+  if (haptic && navigator.vibrate) { try { navigator.vibrate(ms); } catch(e){} }
+}
+
+// ── WebSocket ──
+function connect() {
+  const loc = window.location;
+  const proto = loc.protocol === 'https:' ? 'wss:' : 'ws:';
+  const url = proto + '//' + loc.host + '/ws';
+
+  setStatus(false, 'Menghubungkan...');
+  try { ws = new WebSocket(url); } catch(e) { setTimeout(connect, 2000); return; }
+
+  ws.onopen = () => {
+    connected = true;
+    setStatus(true, 'Terhubung');
+    pingTimer = setInterval(() => {
+      if (connected && ws.readyState === 1) {
+        pingT = performance.now();
+        send({ type: 'ping' });
+      }
+    }, 3000);
+  };
+  ws.onmessage = (e) => {
+    try {
+      const d = JSON.parse(e.data);
+      if (d.type === 'pong') pingEl.textContent = Math.round(performance.now() - pingT) + ' ms';
+    } catch(err) {}
+  };
+  ws.onclose = () => {
+    connected = false;
+    clearInterval(pingTimer);
+    pingEl.textContent = '-- ms';
+    setStatus(false, 'Terputus');
+    setTimeout(connect, 1500);
+  };
+  ws.onerror = () => ws.close();
+}
+
+function send(obj) {
+  if (connected && ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
+}
+
+function setStatus(ok, txt) {
+  badge.classList.toggle('connected', ok);
+  badge.classList.toggle('disconnected', !ok);
+  badgeTxt.textContent = txt;
+}
+
+// ── Modifier UI ──
+function refreshMods() {
+  ['ctrl','alt','shift','win','caps'].forEach(k => {
+    const el = document.getElementById('tag-' + k);
+    if (el) el.classList.toggle('on', k === 'win' ? mods.cmd : mods[k === 'caps' ? 'caps_lock' : k]);
+  });
+
+  // Visual latch on modifier keys
+  document.querySelectorAll('[data-key="ctrl"]').forEach(el => el.classList.toggle('latched', mods.ctrl));
+  document.querySelectorAll('[data-key="alt"]').forEach(el => el.classList.toggle('latched', mods.alt));
+  document.querySelectorAll('[data-key="shift"]').forEach(el => el.classList.toggle('latched', mods.shift));
+  document.querySelectorAll('[data-key="cmd"]').forEach(el => el.classList.toggle('latched', mods.cmd));
+  const cap = document.getElementById('key-caps');
+  if (cap) cap.classList.toggle('latched', mods.caps_lock);
+
+  // Swap displayed letter case when Shift or Caps active
+  const shifted = mods.shift || mods.caps_lock;
+  document.querySelectorAll('.k[data-char]').forEach(el => {
+    const ch = el.dataset.char;
+    if (ch && ch.length === 1 && /[a-z]/i.test(ch)) {
+      // find span.lbl or direct text
+      const lbl = el.querySelector('.lbl') || el;
+      if (!el.dataset.shift || el.dataset.shift.length === 1) {
+        lbl.textContent = shifted ? ch.toUpperCase() : ch.toLowerCase();
+      }
+    }
+  });
+}
+
+// ── Key Press Logic ──
+const MOD_KEYS = new Set(['ctrl','alt','shift','cmd','caps_lock']);
+
+function pressKey(el) {
+  if (!el) return;
+  const btn = el.closest('.k');
+  if (!btn) return;
+
+  const key  = btn.dataset.key  || null;
+  const char = btn.dataset.char || null;
+  const shiftChar = btn.dataset.shift || null;
+
+  vibe(12);
+  btn.classList.add('pressed');
+
+  // MODIFIER KEY
+  if (key && MOD_KEYS.has(key)) {
+    if (latch) {
+      mods[key] = !mods[key];
+      send({ type: mods[key] ? 'keydown' : 'keyup', key });
+    } else {
+      mods[key] = true;
+      send({ type: 'keydown', key });
+    }
+    refreshMods();
+    return;
+  }
+
+  // NORMAL KEY
+  let sendChar = char;
+  if (char) {
+    if (mods.shift && shiftChar) {
+      sendChar = shiftChar;
+    } else if (mods.shift || mods.caps_lock) {
+      sendChar = char.toUpperCase();
+    }
+  }
+
+  send({
+    type: 'keypress',
+    key: key || null,
+    char: sendChar || null,
+    modifiers: { ctrl: mods.ctrl, alt: mods.alt, shift: mods.shift, cmd: mods.cmd }
+  });
+
+  // Release latched modifiers (except caps_lock)
+  if (latch) {
+    let changed = false;
+    ['ctrl','alt','shift','cmd'].forEach(m => {
+      if (mods[m]) { mods[m] = false; send({ type: 'keyup', key: m }); changed = true; }
+    });
+    if (changed) refreshMods();
+  }
+}
+
+function releaseKey(el) {
+  if (!el) return;
+  const btn = el.closest('.k');
+  if (!btn) return;
+  btn.classList.remove('pressed');
+  const key = btn.dataset.key || null;
+  if (!latch && key && MOD_KEYS.has(key)) {
+    mods[key] = false;
+    send({ type: 'keyup', key });
+    refreshMods();
+  }
+}
+
+// ── Touch Events (Multi-Touch) ──
+const touches = new Map();
+
+document.getElementById('app').addEventListener('touchstart', (e) => {
+  // Allow toolbar buttons to work normally
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn')) return;
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    if (el) { touches.set(t.identifier, el); pressKey(el); }
+  }
+}, { passive: false });
+
+document.getElementById('app').addEventListener('touchend', (e) => {
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn')) return;
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    releaseKey(touches.get(t.identifier));
+    touches.delete(t.identifier);
+  }
+}, { passive: false });
+
+document.getElementById('app').addEventListener('touchcancel', (e) => {
+  for (const t of e.changedTouches) {
+    releaseKey(touches.get(t.identifier));
+    touches.delete(t.identifier);
+  }
+}, { passive: false });
+
+// ── Mouse Fallback (Desktop Testing) ──
+let mouseEl = null;
+document.getElementById('app').addEventListener('mousedown', (e) => {
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn')) return;
+  mouseEl = e.target;
+  pressKey(e.target);
+});
+window.addEventListener('mouseup', () => {
+  if (mouseEl) { releaseKey(mouseEl); mouseEl = null; }
+});
+
+// ── Shortcut Buttons ──
+document.querySelectorAll('.sc-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    vibe(20);
+    const keys = (btn.dataset.combo || '').split(',');
+    if (keys.length) send({ type: 'combo', keys });
+  });
+});
+
+// ── Init ──
+window.addEventListener('contextmenu', e => e.preventDefault());
+refreshMods();
+connect();
+})();
+</script>
 </body>
 </html>
