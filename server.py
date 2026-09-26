@@ -37,6 +37,7 @@ UINPUT_AVAILABLE = False
 uinput_device = None
 KEY_NAME_TO_EVDEV = {}
 CHAR_TO_EVDEV = {}
+ACTIVE_KEYS = set()
 
 # 1. Coba inisialisasi Linux uinput (Kernel-Level Hardware Input)
 # Ini memungkinkan pengetikan di Layar Login Ubuntu (GDM), Lock Screen, Wayland, dan X11
@@ -321,9 +322,10 @@ def simulate_tap(k):
     if UINPUT_AVAILABLE and uinput_device and k is not None:
         try:
             import evdev.ecodes as e
+            shift_held = ('shift' in ACTIVE_KEYS or resolve_key('shift') in ACTIVE_KEYS)
             if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
                 code, need_shift = CHAR_TO_EVDEV[k]
-                if need_shift:
+                if need_shift and not shift_held:
                     uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 1)
                     uinput_device.syn()
                 uinput_device.write(e.EV_KEY, code, 1)
@@ -331,7 +333,7 @@ def simulate_tap(k):
                 time.sleep(0.005)
                 uinput_device.write(e.EV_KEY, code, 0)
                 uinput_device.syn()
-                if need_shift:
+                if need_shift and not shift_held:
                     time.sleep(0.002)
                     uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 0)
                     uinput_device.syn()
@@ -565,19 +567,19 @@ async def websocket_handler(request):
 
                     target = resolve_key(key_name) if key_name else char
 
-                    # Tekan modifier jika ada
+                    # Tekan modifier jika ada dan belum aktif ditekan secara persisten
                     applied_mods = []
-                    if mods.get('ctrl'):
+                    if mods.get('ctrl') and 'ctrl' not in active_keys and resolve_key('ctrl') not in active_keys:
                         simulate_press('ctrl')
                         applied_mods.append('ctrl')
-                    if mods.get('alt'):
+                    if mods.get('alt') and 'alt' not in active_keys and resolve_key('alt') not in active_keys:
                         simulate_press('alt')
                         applied_mods.append('alt')
-                    if mods.get('shift') and not char:
+                    if mods.get('shift') and not char and 'shift' not in active_keys and resolve_key('shift') not in active_keys:
                         # Shift untuk special key
                         simulate_press('shift')
                         applied_mods.append('shift')
-                    if mods.get('cmd'):
+                    if mods.get('cmd') and 'cmd' not in active_keys and resolve_key('cmd') not in active_keys:
                         simulate_press('cmd')
                         applied_mods.append('cmd')
 
@@ -585,7 +587,7 @@ async def websocket_handler(request):
                     if target:
                         simulate_tap(target)
 
-                    # Lepas modifier
+                    # Lepas hanya modifier sementara yang ditekan khusus untuk keypress ini
                     for m in reversed(applied_mods):
                         simulate_release(m)
 
@@ -594,14 +596,20 @@ async def websocket_handler(request):
                     target = resolve_key(key_name)
                     if target:
                         simulate_press(target)
+                        active_keys.add(key_name)
                         active_keys.add(target)
+                        ACTIVE_KEYS.add(key_name)
+                        ACTIVE_KEYS.add(target)
 
                 elif msg_type == 'keyup':
                     key_name = data.get('key')
                     target = resolve_key(key_name)
                     if target:
                         simulate_release(target)
+                        active_keys.discard(key_name)
                         active_keys.discard(target)
+                        ACTIVE_KEYS.discard(key_name)
+                        ACTIVE_KEYS.discard(target)
 
                 elif msg_type == 'combo':
                     # Eksekusi kombinasi tombol, contoh: ["ctrl", "c"]
@@ -642,8 +650,9 @@ async def websocket_handler(request):
 
     finally:
         # Lepaskan semua tombol yang masih tertahan jika koneksi terputus
-        for k in active_keys:
+        for k in list(active_keys):
             simulate_release(k)
+            ACTIVE_KEYS.discard(k)
         if MOUSE_AVAILABLE and mouse_controller and MouseButton:
             try:
                 mouse_controller.release(MouseButton.left)

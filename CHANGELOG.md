@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.16.0] - 2026-09-26
+- Mode penguncian tombol modifier aktif terus (Shift/Ctrl/Alt/Win) sesuai operasi fisik keyboard
+
 ### [1.15.0] - 2026-09-26
 - Sistem pemulihan mandiri koneksi Wi-Fi (watchdog 5.5s, auto-reconnect backoff, dan pemindai subnet deteksi IP baru PC)
 
@@ -138,6 +141,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.16.0] - 2026-09-26
+- Release v1.16.0 updates
 
 ### [1.15.0] - 2026-09-26
 - Release v1.15.0 updates

@@ -109,8 +109,11 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "[✓] Git commit & Git tag 'v${NEW_VERSION}' berhasil dibuat"
 fi
 
-# 4. Restart PM2 jika service aktif
-if command -v pm2 >/dev/null 2>&1; then
+# 4. Restart service (systemd atau PM2)
+if systemctl is-active digikeyboard.service >/dev/null 2>&1; then
+    pkill -f "python3.*/server.py" 2>/dev/null || true
+    echo "[✓] Layanan systemd digikeyboard berhasil disegarkan"
+elif command -v pm2 >/dev/null 2>&1; then
     if pm2 describe digikeyboard >/dev/null 2>&1; then
         pm2 restart digikeyboard >/dev/null 2>&1 || true
         echo "[✓] Layanan PM2 digikeyboard berhasil direstart"

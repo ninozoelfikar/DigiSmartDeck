@@ -1163,7 +1163,7 @@ html, body {
       <button class="tbtn" id="btn-num">123</button>
       <button class="tbtn" id="btn-sc">⚡</button>
       <button class="tbtn on" id="btn-tp" title="Toggle Trackpad Laptop">🖱️ Pad</button>
-      <button class="tbtn on" id="btn-latch" title="Sticky modifier – Ctrl/Shift/Alt terkunci sampai tombol berikutnya">Latch</button>
+      <button class="tbtn on" id="btn-latch" title="Kunci Modifier: Aktif Terus (Shift/Ctrl/Alt tetap aktif sampai ditekan lagi)">🔒 Lock</button>
       <button class="tbtn on" id="btn-haptic" title="Haptic feedback">📳</button>
       <button class="tbtn" id="btn-settings" title="Pengaturan Tema & Ukuran">⚙️</button>
       <button class="tbtn" id="btn-fs">⛶</button>
@@ -1558,6 +1558,20 @@ html, body {
           </div>
         </div>
 
+        <!-- MODIFIER LOCK BEHAVIOR -->
+        <div class="setting-group">
+          <div class="setting-title">🔒 Penguncian Tombol Modifier (Shift / Ctrl / Alt / Win)</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Pilih bagaimana tombol Shift, Ctrl, Alt &amp; Win beroperasi saat dipencet:</div>
+          <div class="size-presets" id="mod-lock-presets">
+            <button type="button" class="size-preset-btn mod-lock-btn active" data-modmode="lock">🔒 Aktif Terus</button>
+            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="oneshot">⚡ Kunci 1x</button>
+            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="hold">🖐️ Tahan Manual</button>
+          </div>
+          <div id="mod-lock-desc" style="font-size:11px;color:var(--text);margin-top:6px;line-height:1.4;">
+            💡 <b>Aktif Terus (Bawaan):</b> Tombol Shift/Ctrl/Alt/Win akan tetap aktif terus sampai ditekan kembali. Operasi sama persis dengan menahan tombol keyboard fisik untuk blok teks, shortcut multi-tuts, atau seleksi.
+          </div>
+        </div>
+
         <!-- HAPTIC / VIBRATION SECTION -->
         <div class="setting-group">
           <div class="setting-title">📳 Efek Getar Tombol (Haptic Feedback)</div>
@@ -1710,7 +1724,42 @@ let lastPongTime = Date.now();
 let retryCount = 0;
 let reconnectTimer = null;
 let isScanning = false;
-let latch = true;
+let modLockMode = localStorage.getItem('digi_mod_mode') || 'lock'; // 'lock' (Aktif Terus / Default), 'oneshot' (1x), 'hold' (manual)
+
+function updateModModeUI() {
+  const btn = $('btn-latch');
+  if (btn) {
+    if (modLockMode === 'lock') {
+      btn.textContent = '🔒 Lock';
+      btn.classList.add('on');
+      btn.title = 'Kunci Modifier: Aktif Terus (Shift/Ctrl/Alt tetap aktif sampai ditekan lagi)';
+    } else if (modLockMode === 'oneshot') {
+      btn.textContent = '⚡ 1-Shot';
+      btn.classList.add('on');
+      btn.title = 'Kunci Modifier: 1-Shot (Shift/Ctrl/Alt lepas otomatis setelah 1 tombol)';
+    } else {
+      btn.textContent = '🖐️ Hold';
+      btn.classList.remove('on');
+      btn.title = 'Kunci Modifier: Manual (Hanya aktif selama jari menahan tombol)';
+    }
+  }
+
+  // Update Settings modal buttons
+  document.querySelectorAll('.mod-lock-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.modmode === modLockMode);
+  });
+  const descEl = $('mod-lock-desc');
+  if (descEl) {
+    if (modLockMode === 'lock') {
+      descEl.innerHTML = '💡 <b>Aktif Terus (Bawaan):</b> Tombol Shift/Ctrl/Alt/Win akan tetap aktif terus sampai ditekan kembali. Operasi sama persis dengan menahan tombol keyboard fisik untuk blok teks, shortcut multi-tuts, atau seleksi.';
+    } else if (modLockMode === 'oneshot') {
+      descEl.innerHTML = '💡 <b>Kunci Sekali (1-Shot):</b> Tombol modifier aktif untuk 1 tombol berikutnya, lalu otomatis nonaktif.';
+    } else {
+      descEl.innerHTML = '💡 <b>Tahan Manual (Hold):</b> Tombol modifier hanya aktif selama jari menekan tombol di layar (multi-touch).';
+    }
+  }
+}
+let latch = modLockMode !== 'hold';
 let haptic = localStorage.getItem('digi_haptic') !== 'false';
 let vibeDuration = parseInt(localStorage.getItem('digi_vibe_ms'), 10) || 30;
 
@@ -1734,8 +1783,17 @@ $('btn-nav').onclick   = () => togglePanel('nav-row', 'btn-nav');
 $('btn-num').onclick   = () => togglePanel('numpad', 'btn-num');
 $('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc');
 $('btn-latch').onclick = () => {
-  latch = !latch;
-  $('btn-latch').classList.toggle('on', latch);
+  // Cycle mode: lock (aktif terus) -> oneshot (1-shot) -> hold (manual) -> lock
+  if (modLockMode === 'lock') {
+    modLockMode = 'oneshot';
+  } else if (modLockMode === 'oneshot') {
+    modLockMode = 'hold';
+  } else {
+    modLockMode = 'lock';
+  }
+  latch = modLockMode !== 'hold';
+  localStorage.setItem('digi_mod_mode', modLockMode);
+  updateModModeUI();
   vibe(15);
 };
 $('btn-haptic').onclick = () => {
@@ -2343,10 +2401,24 @@ function pressKey(el) {
 
   // MODIFIER KEY
   if (key && MOD_KEYS.has(key)) {
-    if (latch) {
+    if (key === 'caps_lock') {
+      mods.caps_lock = !mods.caps_lock;
+      send({ type: 'keypress', key: 'caps_lock' });
+      refreshMods();
+      return;
+    }
+
+    if (modLockMode === 'lock') {
+      // AKTIF TERUS (Persistent Lock - Bawaan):
+      // Menekan tombol modifier (misal Shift) akan membuatnya AKTIF TERUS sampai ditekan lagi
+      mods[key] = !mods[key];
+      send({ type: mods[key] ? 'keydown' : 'keyup', key });
+    } else if (modLockMode === 'oneshot') {
+      // 1-SHOT LATCH: Aktif untuk 1 tombol berikutnya
       mods[key] = !mods[key];
       send({ type: mods[key] ? 'keydown' : 'keyup', key });
     } else {
+      // HOLD MODE: Hanya aktif saat jari menekan tombol
       mods[key] = true;
       send({ type: 'keydown', key });
     }
@@ -2374,14 +2446,20 @@ function pressKey(el) {
   // Start auto-repeat if user keeps holding the key (e.g. Backspace, Delete, Arrows, Letters)
   startRepeat(btn, key, char, shiftChar);
 
-  // Release latched modifiers (except caps_lock)
-  if (latch) {
+  // Jika dalam mode 1-shot (oneshot), lepas modifier setelah 1 tombol ditekan
+  if (modLockMode === 'oneshot') {
     let changed = false;
     ['ctrl','alt','shift','cmd'].forEach(m => {
-      if (mods[m]) { mods[m] = false; send({ type: 'keyup', key: m }); changed = true; }
+      if (mods[m]) {
+        mods[m] = false;
+        send({ type: 'keyup', key: m });
+        changed = true;
+      }
     });
     if (changed) refreshMods();
   }
+  // Dalam mode 'lock' (Aktif Terus / Default), modifier TIDAK DILEPAS!
+  // Modifier tetap aktif terus sampai user menekan tombol modifier tersebut lagi.
 }
 
 function releaseKey(el) {
@@ -2391,7 +2469,9 @@ function releaseKey(el) {
   stopRepeat(btn);
   btn.classList.remove('pressed');
   const key = btn.dataset.key || null;
-  if (!latch && key && MOD_KEYS.has(key)) {
+
+  // Hanya jika dalam mode 'hold' manual, lepaskan modifier saat jari diangkat
+  if (modLockMode === 'hold' && key && MOD_KEYS.has(key) && key !== 'caps_lock') {
     mods[key] = false;
     send({ type: 'keyup', key });
     refreshMods();
@@ -3324,6 +3404,18 @@ if (btnPwaInstall) {
     deferredInstallPrompt = null;
   });
 }
+
+// ── Modifier Lock Mode Preset Listeners ──
+document.querySelectorAll('.mod-lock-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    modLockMode = b.dataset.modmode;
+    latch = modLockMode !== 'hold';
+    localStorage.setItem('digi_mod_mode', modLockMode);
+    updateModModeUI();
+    vibe(15);
+  });
+});
+updateModModeUI();
 
 connect();
 })();
