@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.12.1] - 2026-09-26
+- Penyempurnaan auto-detect host OS, insets viewport mobile, dan key aliases
+
 ### [1.12.0] - 2026-09-26
 - Penambahan pemilih font keyboard mandiri (Custom Typography Studio) dengan 10 pilihan font
 
@@ -126,6 +129,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.12.1] - 2026-09-26
+- Release v1.12.1 updates
 
 ### [1.12.0] - 2026-09-26
 - Release v1.12.0 updates

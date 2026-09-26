@@ -188,12 +188,27 @@ if Key is not None:
         'caps_lock': Key.caps_lock,
         'shift': Key.shift,
         'ctrl': Key.ctrl,
+        'control': Key.ctrl,
         'alt': Key.alt,
+        'option': Key.alt,
+        'opt': Key.alt,
         'cmd': Key.cmd,
+        'win': Key.cmd,
+        'super': Key.cmd,
+        'meta': Key.cmd,
+        'windows': Key.cmd,
         'enter': Key.enter,
+        'return': Key.enter,
         'backspace': Key.backspace,
         'delete': Key.delete,
         'space': Key.space,
+        ' ': Key.space,
+        'shift_l': getattr(Key, 'shift_l', Key.shift),
+        'shift_r': getattr(Key, 'shift_r', Key.shift),
+        'ctrl_l': getattr(Key, 'ctrl_l', Key.ctrl),
+        'ctrl_r': getattr(Key, 'ctrl_r', Key.ctrl),
+        'alt_l': getattr(Key, 'alt_l', Key.alt),
+        'alt_r': getattr(Key, 'alt_r', getattr(Key, 'alt_gr', Key.alt)),
         'up': Key.up,
         'down': Key.down,
         'left': Key.left,
@@ -456,7 +471,10 @@ def get_local_ip_addresses():
         other_ips = []
         for iface, addrs in psutil.net_if_addrs().items():
             iface_lower = iface.lower()
-            is_virtual = any(k in iface_lower for k in ['docker', 'br-', 'virbr', 'warp', 'tun', 'tap', 'veth'])
+            is_virtual = any(k in iface_lower for k in [
+                'docker', 'br-', 'virbr', 'warp', 'tun', 'tap', 'veth',
+                'vethernet', 'hyper-v', 'vmware', 'virtualbox', 'wsl'
+            ])
             for addr in addrs:
                 if addr.family == socket.AF_INET and not addr.address.startswith('127.'):
                     if not is_virtual and (addr.address.startswith('192.168.') or addr.address.startswith('10.')):
@@ -496,6 +514,15 @@ def get_local_ip_addresses():
     return ip_list
 
 
+def get_host_os():
+    """Mendeteksi jenis sistem operasi komputer server"""
+    if sys.platform.startswith('linux'):
+        return 'ubuntu'
+    elif sys.platform == 'darwin':
+        return 'mac'
+    return 'win'
+
+
 # --- WebSocket Handler ---
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
@@ -503,6 +530,18 @@ async def websocket_handler(request):
     client_ip = request.remote
     ua = request.headers.get('User-Agent', 'Unknown')
     print(f"[+] Client terhubung dari: {client_ip} | UA: {ua}")
+
+    # Kirim handshake inisialisasi ke client
+    try:
+        await ws.send_str(json.dumps({
+            'type': 'init',
+            'version': __version__,
+            'host_os': get_host_os(),
+            'platform': sys.platform,
+            'uinput_active': UINPUT_AVAILABLE
+        }))
+    except Exception:
+        pass
 
     # Set tombol yang sedang ditekan untuk client ini
     active_keys = set()
@@ -649,6 +688,16 @@ async def api_version_handler(request):
     return web.json_response({'version': __version__, 'name': 'DigiKeyboard'})
 
 
+async def api_info_handler(request):
+    return web.json_response({
+        'version': __version__,
+        'name': 'DigiKeyboard',
+        'host_os': get_host_os(),
+        'platform': sys.platform,
+        'uinput_active': UINPUT_AVAILABLE
+    })
+
+
 def create_app():
     app = web.Application()
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
@@ -656,6 +705,7 @@ def create_app():
     app.router.add_get('/', index_handler)
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/api/version', api_version_handler)
+    app.router.add_get('/api/info', api_info_handler)
     app.router.add_static('/static/', path=static_dir, name='static')
     # Juga route langsung untuk style.css dan app.js jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))
