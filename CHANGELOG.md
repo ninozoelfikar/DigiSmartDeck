@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.8.1] - 2026-09-26
+- Optimasi audio feedback klik mekanikal untuk speaker HP dan penambahan tombol uji suara
+
 ### [1.8.0] - 2026-09-26
 - Menambahkan audio click feedback dan deteksi motor getar perangkat
 
@@ -108,6 +111,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.8.1] - 2026-09-26
+- Release v1.8.1 updates
 
 ### [1.8.0] - 2026-09-26
 - Release v1.8.0 updates

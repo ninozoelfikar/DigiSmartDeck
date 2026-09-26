@@ -1146,10 +1146,18 @@ html, body {
             </div>
             <div id="haptic-device-notice" style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4;"></div>
           </div>
-          <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:8px 0 0 0;margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
-            <input type="checkbox" id="chk-sound" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
-            <span>🔊 Suara Klik Mekanikal (Bekerja di PC, Laptop &amp; HP)</span>
-          </label>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+            <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:2px 0;">
+              <input type="checkbox" id="chk-sound" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+              <span>🔊 Suara Klik Mekanikal (Renyah di HP, Tablet &amp; PC)</span>
+            </label>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+              <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;">🧪 Uji Suara Klik</button>
+            </div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4;">
+              💡 <i>Pastikan volume Media di HP menyala (tidak dalam mode senyap/silent). Pengaturan suara &amp; getar tersimpan mandiri di tiap peramban/perangkat.</i>
+            </div>
+          </div>
         </div>
 
         <!-- DISPLAY OPTIONS -->
@@ -1250,22 +1258,49 @@ $('btn-fs').onclick = () => {
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
 
+function unlockAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  } catch(e) {}
+}
+window.addEventListener('touchstart', unlockAudio, { passive: true });
+window.addEventListener('pointerdown', unlockAudio, { passive: true });
+
 function playClickSound() {
   if (!soundEnabled) return;
   try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.025);
-    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.025);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.025);
+    unlockAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+
+    // 1. Transient click (frekuensi tajam 1500Hz -> 350Hz untuk speaker kecil HP)
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(1500, now);
+    osc1.frequency.exponentialRampToValueAtTime(350, now + 0.016);
+    gain1.gain.setValueAtTime(0.5, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.016);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.016);
+
+    // 2. Body tap (frekuensi rendah 300Hz -> 90Hz untuk tablet & PC)
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(300, now);
+    osc2.frequency.exponentialRampToValueAtTime(90, now + 0.022);
+    gain2.gain.setValueAtTime(0.35, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.start(now);
+    osc2.stop(now + 0.022);
   } catch(e) {}
 }
 
@@ -1522,6 +1557,7 @@ window.addEventListener('mouseup', () => {
 document.querySelectorAll('.sc-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     vibe(20);
+    playClickSound();
     const keys = (btn.dataset.combo || '').split(',');
     if (keys.length) send({ type: 'combo', keys });
   });
@@ -1680,10 +1716,12 @@ if (tpSurface) {
         // 1-finger tap -> Left Click
         send({ type: 'mouseclick', button: 'left' });
         vibe(15);
+        playClickSound();
       } else if (touchStartMap.size === 2 && totalDistance < 18 && duration < 350) {
         // 2-finger tap -> Right Click
         send({ type: 'mouseclick', button: 'right' });
         vibe(25);
+        playClickSound();
       }
       touchStartMap.clear();
     }
@@ -1726,6 +1764,7 @@ if (tpBtnLeft) {
     tpBtnLeft.classList.add('active');
     send({ type: 'mousedown', button: 'left' });
     vibe(15);
+    playClickSound();
   };
   const onLeftUp = (e) => {
     e.preventDefault();
@@ -1744,6 +1783,7 @@ if (tpBtnRight) {
     tpBtnRight.classList.add('active');
     send({ type: 'mouseclick', button: 'right' });
     vibe(25);
+    playClickSound();
     setTimeout(() => tpBtnRight.classList.remove('active'), 120);
   };
   tpBtnRight.addEventListener('touchstart', onRightClick, { passive: false });
@@ -1997,6 +2037,17 @@ if (chkSound) {
     soundEnabled = e.target.checked;
     localStorage.setItem('digi_sound', soundEnabled ? 'true' : 'false');
     if (soundEnabled) playClickSound();
+  });
+}
+
+const btnTestSound = $('btn-test-sound');
+if (btnTestSound) {
+  btnTestSound.addEventListener('click', () => {
+    unlockAudio();
+    const prev = soundEnabled;
+    soundEnabled = true;
+    playClickSound();
+    soundEnabled = prev;
   });
 }
 
