@@ -1,0 +1,17 @@
+[Unit]
+Description=DigiKeyboard Remote PC Keyboard Server (Kernel uinput)
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nino
+Group=input
+WorkingDirectory=/home/nino/digikeyboard
+ExecStart=/usr/bin/python3 /home/nino/digikeyboard/server.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

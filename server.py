@@ -23,7 +23,7 @@ def load_version():
 
 __version__ = load_version()
 
-# Keyboard Controller Setup
+# ── Dual Input Controller Setup (uinput Kernel Driver & pynput Fallback) ──
 KEYBOARD_AVAILABLE = False
 keyboard_controller = None
 Key = None
@@ -32,24 +32,137 @@ MOUSE_AVAILABLE = False
 mouse_controller = None
 MouseButton = None
 
+UINPUT_AVAILABLE = False
+uinput_device = None
+KEY_NAME_TO_EVDEV = {}
+CHAR_TO_EVDEV = {}
+
+# 1. Coba inisialisasi Linux uinput (Kernel-Level Hardware Input)
+# Ini memungkinkan pengetikan di Layar Login Ubuntu (GDM), Lock Screen, Wayland, dan X11
+if sys.platform.startswith('linux'):
+    try:
+        import evdev
+        from evdev import UInput, ecodes as e
+
+        if os.path.exists('/dev/uinput') and os.access('/dev/uinput', os.W_OK):
+            cap = {
+                e.EV_KEY: [
+                    # Special & Navigation
+                    e.KEY_ESC, e.KEY_TAB, e.KEY_CAPSLOCK, e.KEY_LEFTSHIFT, e.KEY_RIGHTSHIFT,
+                    e.KEY_LEFTCTRL, e.KEY_RIGHTCTRL, e.KEY_LEFTALT, e.KEY_RIGHTALT,
+                    e.KEY_LEFTMETA, e.KEY_RIGHTMETA, e.KEY_ENTER, e.KEY_BACKSPACE,
+                    e.KEY_DELETE, e.KEY_SPACE, e.KEY_UP, e.KEY_DOWN, e.KEY_LEFT, e.KEY_RIGHT,
+                    e.KEY_HOME, e.KEY_END, e.KEY_PAGEUP, e.KEY_PAGEDOWN, e.KEY_INSERT,
+                    e.KEY_PRINT, e.KEY_SCROLLLOCK, e.KEY_PAUSE, e.KEY_NUMLOCK,
+                    # Function Keys
+                    e.KEY_F1, e.KEY_F2, e.KEY_F3, e.KEY_F4, e.KEY_F5, e.KEY_F6,
+                    e.KEY_F7, e.KEY_F8, e.KEY_F9, e.KEY_F10, e.KEY_F11, e.KEY_F12,
+                    # Number row
+                    e.KEY_1, e.KEY_2, e.KEY_3, e.KEY_4, e.KEY_5,
+                    e.KEY_6, e.KEY_7, e.KEY_8, e.KEY_9, e.KEY_0,
+                    # Punctuation
+                    e.KEY_MINUS, e.KEY_EQUAL, e.KEY_LEFTBRACE, e.KEY_RIGHTBRACE,
+                    e.KEY_BACKSLASH, e.KEY_SEMICOLON, e.KEY_APOSTROPHE, e.KEY_GRAVE,
+                    e.KEY_COMMA, e.KEY_DOT, e.KEY_SLASH,
+                    # Letters A-Z
+                    e.KEY_A, e.KEY_B, e.KEY_C, e.KEY_D, e.KEY_E, e.KEY_F, e.KEY_G,
+                    e.KEY_H, e.KEY_I, e.KEY_J, e.KEY_K, e.KEY_L, e.KEY_M, e.KEY_N,
+                    e.KEY_O, e.KEY_P, e.KEY_Q, e.KEY_R, e.KEY_S, e.KEY_T, e.KEY_U,
+                    e.KEY_V, e.KEY_W, e.KEY_X, e.KEY_Y, e.KEY_Z,
+                    # Numpad
+                    e.KEY_KP0, e.KEY_KP1, e.KEY_KP2, e.KEY_KP3, e.KEY_KP4,
+                    e.KEY_KP5, e.KEY_KP6, e.KEY_KP7, e.KEY_KP8, e.KEY_KP9,
+                    e.KEY_KPENTER, e.KEY_KPPLUS, e.KEY_KPMINUS, e.KEY_KPASTERISK, e.KEY_KPSLASH, e.KEY_KPDOT,
+                    # Mouse Buttons
+                    e.BTN_LEFT, e.BTN_RIGHT, e.BTN_MIDDLE
+                ],
+                e.EV_REL: [
+                    e.REL_X, e.REL_Y, e.REL_WHEEL, e.REL_HWHEEL
+                ]
+            }
+            uinput_device = UInput(cap, name="DigiKeyboard Virtual USB Device", vendor=0x1234, product=0x5678)
+            UINPUT_AVAILABLE = True
+            KEYBOARD_AVAILABLE = True
+            MOUSE_AVAILABLE = True
+            print("[✓] Linux uinput Virtual Hardware Controller aktif.")
+            print("    (Mendukung Layar Login Ubuntu GDM, Lock Screen, Wayland & X11)")
+
+            KEY_NAME_TO_EVDEV = {
+                'esc': e.KEY_ESC, 'tab': e.KEY_TAB, 'caps_lock': e.KEY_CAPSLOCK,
+                'shift': e.KEY_LEFTSHIFT, 'ctrl': e.KEY_LEFTCTRL, 'alt': e.KEY_LEFTALT,
+                'cmd': e.KEY_LEFTMETA, 'enter': e.KEY_ENTER, 'backspace': e.KEY_BACKSPACE,
+                'delete': e.KEY_DELETE, 'space': e.KEY_SPACE, 'up': e.KEY_UP,
+                'down': e.KEY_DOWN, 'left': e.KEY_LEFT, 'right': e.KEY_RIGHT,
+                'home': e.KEY_HOME, 'end': e.KEY_END, 'page_up': e.KEY_PAGEUP,
+                'page_down': e.KEY_PAGEDOWN, 'insert': e.KEY_INSERT,
+                'print_screen': e.KEY_PRINT, 'scroll_lock': e.KEY_SCROLLLOCK,
+                'pause': e.KEY_PAUSE, 'num_lock': e.KEY_NUMLOCK,
+                'f1': e.KEY_F1, 'f2': e.KEY_F2, 'f3': e.KEY_F3, 'f4': e.KEY_F4,
+                'f5': e.KEY_F5, 'f6': e.KEY_F6, 'f7': e.KEY_F7, 'f8': e.KEY_F8,
+                'f9': e.KEY_F9, 'f10': e.KEY_F10, 'f11': e.KEY_F11, 'f12': e.KEY_F12,
+            }
+
+            CHAR_TO_EVDEV = {
+                'a': (e.KEY_A, False), 'b': (e.KEY_B, False), 'c': (e.KEY_C, False), 'd': (e.KEY_D, False),
+                'e': (e.KEY_E, False), 'f': (e.KEY_F, False), 'g': (e.KEY_G, False), 'h': (e.KEY_H, False),
+                'i': (e.KEY_I, False), 'j': (e.KEY_J, False), 'k': (e.KEY_K, False), 'l': (e.KEY_L, False),
+                'm': (e.KEY_M, False), 'n': (e.KEY_N, False), 'o': (e.KEY_O, False), 'p': (e.KEY_P, False),
+                'q': (e.KEY_Q, False), 'r': (e.KEY_R, False), 's': (e.KEY_S, False), 't': (e.KEY_T, False),
+                'u': (e.KEY_U, False), 'v': (e.KEY_V, False), 'w': (e.KEY_W, False), 'x': (e.KEY_X, False),
+                'y': (e.KEY_Y, False), 'z': (e.KEY_Z, False),
+                'A': (e.KEY_A, True),  'B': (e.KEY_B, True),  'C': (e.KEY_C, True),  'D': (e.KEY_D, True),
+                'E': (e.KEY_E, True),  'F': (e.KEY_F, True),  'G': (e.KEY_G, True),  'H': (e.KEY_H, True),
+                'I': (e.KEY_I, True),  'J': (e.KEY_J, True),  'K': (e.KEY_K, True),  'L': (e.KEY_L, True),
+                'M': (e.KEY_M, True),  'N': (e.KEY_N, True),  'O': (e.KEY_O, True),  'P': (e.KEY_P, True),
+                'Q': (e.KEY_Q, True),  'R': (e.KEY_R, True),  'S': (e.KEY_S, True),  'T': (e.KEY_T, True),
+                'U': (e.KEY_U, True),  'V': (e.KEY_V, True),  'W': (e.KEY_W, True),  'X': (e.KEY_X, True),
+                'Y': (e.KEY_Y, True),  'Z': (e.KEY_Z, True),
+                '1': (e.KEY_1, False), '2': (e.KEY_2, False), '3': (e.KEY_3, False), '4': (e.KEY_4, False),
+                '5': (e.KEY_5, False), '6': (e.KEY_6, False), '7': (e.KEY_7, False), '8': (e.KEY_8, False),
+                '9': (e.KEY_9, False), '0': (e.KEY_0, False),
+                '!': (e.KEY_1, True),  '@': (e.KEY_2, True),  '#': (e.KEY_3, True),  '$': (e.KEY_4, True),
+                '%': (e.KEY_5, True),  '^': (e.KEY_6, True),  '&': (e.KEY_7, True),  '*': (e.KEY_8, True),
+                '(': (e.KEY_9, True),  ')': (e.KEY_0, True),
+                ' ': (e.KEY_SPACE, False),
+                '-': (e.KEY_MINUS, False),      '_': (e.KEY_MINUS, True),
+                '=': (e.KEY_EQUAL, False),      '+': (e.KEY_EQUAL, True),
+                '[': (e.KEY_LEFTBRACE, False),  '{': (e.KEY_LEFTBRACE, True),
+                ']': (e.KEY_RIGHTBRACE, False), '}': (e.KEY_RIGHTBRACE, True),
+                '\\': (e.KEY_BACKSLASH, False), '|': (e.KEY_BACKSLASH, True),
+                ';': (e.KEY_SEMICOLON, False),  ':': (e.KEY_SEMICOLON, True),
+                '\'': (e.KEY_APOSTROPHE, False), '"': (e.KEY_APOSTROPHE, True),
+                '`': (e.KEY_GRAVE, False),      '~': (e.KEY_GRAVE, True),
+                ',': (e.KEY_COMMA, False),      '<': (e.KEY_COMMA, True),
+                '.': (e.KEY_DOT, False),        '>': (e.KEY_DOT, True),
+                '/': (e.KEY_SLASH, False),      '?': (e.KEY_SLASH, True),
+            }
+        else:
+            print("[i] Info: /dev/uinput belum memiliki izin tulis untuk user saat ini.")
+            print("    Jalankan './setup-uinput.sh' untuk mengaktifkan dukungan Layar Login Ubuntu.")
+    except Exception as e_init:
+        print(f"[i] uinput detection skipped: {e_init}")
+
+# 2. Inisialisasi pynput (sebagai controller utama di Windows/macOS atau fallback di Linux)
 try:
     from pynput.keyboard import Controller, Key as PynputKey
     keyboard_controller = Controller()
     Key = PynputKey
     KEYBOARD_AVAILABLE = True
-    print("[✓] pynput keyboard controller berhasil diinisialisasi.")
+    print("[✓] pynput keyboard controller siap.")
 except Exception as e:
-    print(f"[!] Warning: pynput controller tidak dapat mengaitkan display saat ini: {e}")
-    print("[i] Server tetap akan berjalan dalam mode simulasi / logging.")
+    if not UINPUT_AVAILABLE:
+        print(f"[!] Warning: pynput controller tidak dapat mengaitkan display saat ini: {e}")
+        print("[i] Server tetap akan berjalan dalam mode simulasi / logging.")
 
 try:
     from pynput.mouse import Controller as MouseController, Button as PynputMouseButton
     mouse_controller = MouseController()
     MouseButton = PynputMouseButton
     MOUSE_AVAILABLE = True
-    print("[✓] pynput mouse/trackpad controller berhasil diinisialisasi.")
+    print("[✓] pynput mouse/trackpad controller siap.")
 except Exception as e:
-    print(f"[!] Warning: pynput mouse controller gagal: {e}")
+    if not UINPUT_AVAILABLE:
+        print(f"[!] Warning: pynput mouse controller gagal: {e}")
 
 # QR Code Support
 HAS_QR = False
@@ -103,11 +216,45 @@ def resolve_key(key_name):
     return key_name
 
 
+def get_evdev_code_for_key(k):
+    """Mendapatkan evdev scancode dari key name atau pynput key"""
+    if isinstance(k, int):
+        return k
+    if not k:
+        return None
+    s = str(k).lower()
+    if s in KEY_NAME_TO_EVDEV:
+        return KEY_NAME_TO_EVDEV[s]
+    if hasattr(k, 'name') and k.name.lower() in KEY_NAME_TO_EVDEV:
+        return KEY_NAME_TO_EVDEV[k.name.lower()]
+    return None
+
+
 def simulate_press(k):
-    """Simulasi penekanan tombol"""
+    """Simulasi penekanan tombol (uinput driver level atau pynput fallback)"""
+    if UINPUT_AVAILABLE and uinput_device and k is not None:
+        try:
+            import evdev.ecodes as e
+            ev_code = get_evdev_code_for_key(k)
+            if ev_code:
+                uinput_device.write(e.EV_KEY, ev_code, 1)
+                uinput_device.syn()
+                return
+            if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
+                code, need_shift = CHAR_TO_EVDEV[k]
+                if need_shift:
+                    uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 1)
+                    uinput_device.syn()
+                uinput_device.write(e.EV_KEY, code, 1)
+                uinput_device.syn()
+                return
+        except Exception as e_ui:
+            print(f"[Error uinput press]: {e_ui}")
+
     if KEYBOARD_AVAILABLE and keyboard_controller and k is not None:
         try:
-            keyboard_controller.press(k)
+            pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
+            keyboard_controller.press(pk)
         except Exception as e:
             print(f"[Error] Press key {k}: {e}")
     else:
@@ -115,10 +262,30 @@ def simulate_press(k):
 
 
 def simulate_release(k):
-    """Simulasi pelepasan tombol"""
+    """Simulasi pelepasan tombol (uinput driver level atau pynput fallback)"""
+    if UINPUT_AVAILABLE and uinput_device and k is not None:
+        try:
+            import evdev.ecodes as e
+            ev_code = get_evdev_code_for_key(k)
+            if ev_code:
+                uinput_device.write(e.EV_KEY, ev_code, 0)
+                uinput_device.syn()
+                return
+            if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
+                code, need_shift = CHAR_TO_EVDEV[k]
+                uinput_device.write(e.EV_KEY, code, 0)
+                uinput_device.syn()
+                if need_shift:
+                    uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 0)
+                    uinput_device.syn()
+                return
+        except Exception as e_ui:
+            print(f"[Error uinput release]: {e_ui}")
+
     if KEYBOARD_AVAILABLE and keyboard_controller and k is not None:
         try:
-            keyboard_controller.release(k)
+            pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
+            keyboard_controller.release(pk)
         except Exception as e:
             print(f"[Error] Release key {k}: {e}")
     else:
@@ -127,14 +294,41 @@ def simulate_release(k):
 
 def simulate_tap(k):
     """Simulasi tap (tekan lalu lepas)"""
+    if UINPUT_AVAILABLE and uinput_device and k is not None:
+        try:
+            import evdev.ecodes as e
+            if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
+                code, need_shift = CHAR_TO_EVDEV[k]
+                if need_shift:
+                    uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 1)
+                    uinput_device.syn()
+                uinput_device.write(e.EV_KEY, code, 1)
+                uinput_device.syn()
+                uinput_device.write(e.EV_KEY, code, 0)
+                uinput_device.syn()
+                if need_shift:
+                    uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 0)
+                    uinput_device.syn()
+                return
+
+            ev_code = get_evdev_code_for_key(k)
+            if ev_code:
+                uinput_device.write(e.EV_KEY, ev_code, 1)
+                uinput_device.syn()
+                uinput_device.write(e.EV_KEY, ev_code, 0)
+                uinput_device.syn()
+                return
+        except Exception as e_ui:
+            print(f"[Error uinput tap]: {e_ui}")
+
     if KEYBOARD_AVAILABLE and keyboard_controller and k is not None:
         try:
-            keyboard_controller.tap(k)
+            pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
+            keyboard_controller.tap(pk)
         except Exception as e:
-            # Fallback jika karakter khusus tidak mendukung tap langsung
             try:
-                keyboard_controller.press(k)
-                keyboard_controller.release(k)
+                keyboard_controller.press(pk)
+                keyboard_controller.release(pk)
             except Exception as e2:
                 print(f"[Error] Tap key {k}: {e2}")
     else:
@@ -143,6 +337,16 @@ def simulate_tap(k):
 
 def simulate_mouse_move(dx, dy):
     """Simulasi pergerakan kursor mouse/trackpad"""
+    if UINPUT_AVAILABLE and uinput_device:
+        try:
+            import evdev.ecodes as e
+            uinput_device.write(e.EV_REL, e.REL_X, int(round(float(dx))))
+            uinput_device.write(e.EV_REL, e.REL_Y, int(round(float(dy))))
+            uinput_device.syn()
+            return
+        except Exception as e_ui:
+            print(f"[Error uinput mouse move]: {e_ui}")
+
     if MOUSE_AVAILABLE and mouse_controller:
         try:
             mouse_controller.move(float(dx), float(dy))
@@ -152,6 +356,18 @@ def simulate_mouse_move(dx, dy):
 
 def simulate_mouse_click(button='left'):
     """Simulasi klik mouse (left / right / middle)"""
+    if UINPUT_AVAILABLE and uinput_device:
+        try:
+            import evdev.ecodes as e
+            btn = e.BTN_RIGHT if button == 'right' else (e.BTN_MIDDLE if button == 'middle' else e.BTN_LEFT)
+            uinput_device.write(e.EV_KEY, btn, 1)
+            uinput_device.syn()
+            uinput_device.write(e.EV_KEY, btn, 0)
+            uinput_device.syn()
+            return
+        except Exception as e_ui:
+            print(f"[Error uinput mouse click]: {e_ui}")
+
     if MOUSE_AVAILABLE and mouse_controller and MouseButton:
         try:
             btn = MouseButton.right if button == 'right' else (MouseButton.middle if button == 'middle' else MouseButton.left)
@@ -162,6 +378,16 @@ def simulate_mouse_click(button='left'):
 
 def simulate_mouse_down(button='left'):
     """Simulasi menahan tombol mouse (drag / select)"""
+    if UINPUT_AVAILABLE and uinput_device:
+        try:
+            import evdev.ecodes as e
+            btn = e.BTN_RIGHT if button == 'right' else (e.BTN_MIDDLE if button == 'middle' else e.BTN_LEFT)
+            uinput_device.write(e.EV_KEY, btn, 1)
+            uinput_device.syn()
+            return
+        except Exception as e_ui:
+            print(f"[Error uinput mouse down]: {e_ui}")
+
     if MOUSE_AVAILABLE and mouse_controller and MouseButton:
         try:
             btn = MouseButton.right if button == 'right' else (MouseButton.middle if button == 'middle' else MouseButton.left)
@@ -172,6 +398,16 @@ def simulate_mouse_down(button='left'):
 
 def simulate_mouse_up(button='left'):
     """Simulasi melepas tombol mouse"""
+    if UINPUT_AVAILABLE and uinput_device:
+        try:
+            import evdev.ecodes as e
+            btn = e.BTN_RIGHT if button == 'right' else (e.BTN_MIDDLE if button == 'middle' else e.BTN_LEFT)
+            uinput_device.write(e.EV_KEY, btn, 0)
+            uinput_device.syn()
+            return
+        except Exception as e_ui:
+            print(f"[Error uinput mouse up]: {e_ui}")
+
     if MOUSE_AVAILABLE and mouse_controller and MouseButton:
         try:
             btn = MouseButton.right if button == 'right' else (MouseButton.middle if button == 'middle' else MouseButton.left)
@@ -182,6 +418,16 @@ def simulate_mouse_up(button='left'):
 
 def simulate_mouse_scroll(dx, dy):
     """Simulasi scroll dua jari trackpad"""
+    if UINPUT_AVAILABLE and uinput_device:
+        try:
+            import evdev.ecodes as e
+            # Pada evdev, REL_WHEEL positif adalah scroll up, negatif scroll down
+            uinput_device.write(e.EV_REL, e.REL_WHEEL, int(round(float(dy))))
+            uinput_device.syn()
+            return
+        except Exception as e_ui:
+            print(f"[Error uinput mouse scroll]: {e_ui}")
+
     if MOUSE_AVAILABLE and mouse_controller:
         try:
             mouse_controller.scroll(int(dx), int(dy))
@@ -267,19 +513,19 @@ async def websocket_handler(request):
 
                     # Tekan modifier jika ada
                     applied_mods = []
-                    if mods.get('ctrl') and Key:
-                        simulate_press(Key.ctrl)
-                        applied_mods.append(Key.ctrl)
-                    if mods.get('alt') and Key:
-                        simulate_press(Key.alt)
-                        applied_mods.append(Key.alt)
-                    if mods.get('shift') and Key and not char:
+                    if mods.get('ctrl'):
+                        simulate_press('ctrl')
+                        applied_mods.append('ctrl')
+                    if mods.get('alt'):
+                        simulate_press('alt')
+                        applied_mods.append('alt')
+                    if mods.get('shift') and not char:
                         # Shift untuk special key
-                        simulate_press(Key.shift)
-                        applied_mods.append(Key.shift)
-                    if mods.get('cmd') and Key:
-                        simulate_press(Key.cmd)
-                        applied_mods.append(Key.cmd)
+                        simulate_press('shift')
+                        applied_mods.append('shift')
+                    if mods.get('cmd'):
+                        simulate_press('cmd')
+                        applied_mods.append('cmd')
 
                     # Kirim tombol utama
                     if target:

@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.10.0] - 2026-09-26
+- Dukungan Linux kernel uinput untuk pengetikan pada Layar Login Ubuntu (GDM) dan Lock Screen
+
 ### [1.9.0] - 2026-09-26
 - Menambahkan pengaturan volume suara klik mekanikal (slider & preset) di menu Pengaturan
 
@@ -114,6 +117,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.10.0] - 2026-09-26
+- Release v1.10.0 updates
 
 ### [1.9.0] - 2026-09-26
 - Release v1.9.0 updates
