@@ -120,13 +120,35 @@ def get_local_ip_addresses():
     """Mengambil daftar IP lokal komputer di jaringan Wi-Fi/LAN"""
     ip_list = []
     try:
+        import psutil
+        lan_ips = []
+        other_ips = []
+        for iface, addrs in psutil.net_if_addrs().items():
+            iface_lower = iface.lower()
+            is_virtual = any(k in iface_lower for k in ['docker', 'br-', 'virbr', 'warp', 'tun', 'tap', 'veth'])
+            for addr in addrs:
+                if addr.family == socket.AF_INET and not addr.address.startswith('127.'):
+                    if not is_virtual and (addr.address.startswith('192.168.') or addr.address.startswith('10.')):
+                        lan_ips.append(addr.address)
+                    elif not is_virtual:
+                        lan_ips.append(addr.address)
+                    else:
+                        other_ips.append(addr.address)
+        for ip in lan_ips + other_ips:
+            if ip not in ip_list:
+                ip_list.append(ip)
+    except Exception:
+        pass
+
+    try:
         # Hubungkan dummy socket untuk mengetahui IP rute utama
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.settimeout(0.1)
         s.connect(('8.8.8.8', 80))
         primary_ip = s.getsockname()[0]
         s.close()
-        ip_list.append(primary_ip)
+        if primary_ip not in ip_list:
+            ip_list.append(primary_ip)
     except Exception:
         pass
 
