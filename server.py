@@ -870,47 +870,22 @@ async def websocket_handler(request):
 # --- HTTP Index Handler ---
 async def index_handler(request):
     static_dir = os.path.join(BASE_DIR, 'static')
-    host = request.headers.get('Host', '')
-    # Cek apakah permintaan untuk versi web tanpa fullscreen:
-    # 1. Melalui port alternatif 8081 (atau host yang berisi :8081)
-    # 2. Melalui path /lite, /nofs, /web, /nofullscreen, /windowed
-    # 3. Melalui query parameter ?mode=nofs atau ?mode=lite
-    is_alt = (
-        ':8081' in host or
-        request.path in ('/lite', '/nofs', '/web', '/nofullscreen', '/windowed') or
-        request.query.get('mode') in ('nofs', 'lite', 'nofullscreen', 'windowed')
-    )
-    if is_alt:
-        nofs_path = os.path.join(static_dir, 'nofullscreen.html')
-        if os.path.exists(nofs_path):
-            return web.FileResponse(nofs_path)
     return web.FileResponse(os.path.join(static_dir, 'index.html'))
 
 
-def print_banner(port, ips, alt_port=None):
+def print_banner(port, ips):
     primary_url = f"http://{ips[0]}:{port}"
     print("=" * 60)
     print(f"  ⌨️  REMOTE PC KEYBOARD SERVER v{__version__}  ⌨️")
     print("=" * 60)
     print("Aplikasi siap digunakan!")
-    print("\n[PILIHAN 1] Versi Standar (Layar Penuh, PWA, Gamepad & Slide):")
+    print("Buka browser di HP/Tablet Anda yang terhubung ke Wi-Fi yang sama:")
     for ip in ips:
         print(f"  👉 http://{ip}:{port}")
-    if alt_port:
-        print(f"\n[PILIHAN 2] Versi Alternatif Web (Tanpa Pop-up Fullscreen Chrome):")
-        for ip in ips:
-            print(f"  👉 http://{ip}:{alt_port}  (atau http://{ip}:{port}/lite)")
-    else:
-        print(f"\n[PILIHAN 2] Versi Alternatif Web (Tanpa Pop-up Fullscreen Chrome):")
-        for ip in ips:
-            print(f"  👉 http://{ip}:{port}/lite")
-    print("\n[PILIHAN 3] Unduh Aplikasi Android Native (APK):")
-    for ip in ips:
-        print(f"  📱 http://{ip}:{port}/download/apk")
     print("-" * 60)
 
     if HAS_QR:
-        print("Scan QR Code berikut untuk koneksi instan:")
+        print("Atau scan QR Code berikut dengan kamera HP Anda:")
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -955,11 +930,6 @@ def create_app():
     static_dir = os.path.join(BASE_DIR, 'static')
 
     app.router.add_get('/', index_handler)
-    app.router.add_get('/lite', index_handler)
-    app.router.add_get('/nofs', index_handler)
-    app.router.add_get('/web', index_handler)
-    app.router.add_get('/nofullscreen', index_handler)
-    app.router.add_get('/windowed', index_handler)
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/api/version', api_version_handler)
     app.router.add_options('/api/version', options_handler)
@@ -980,9 +950,8 @@ def create_app():
     return app
 
 
-async def run_server():
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
-    alt_port = int(os.environ.get('ALT_PORT', 8081))
     try:
         import system_checker
         check_result = system_checker.run_preflight_check(interactive=sys.stdin.isatty(), port=port)
@@ -993,44 +962,15 @@ async def run_server():
         pass
 
     ips = get_local_ip_addresses()
-    app = create_app()
-    runner = web.AppRunner(app)
-    await runner.setup()
+    print_banner(port, ips)
 
-    site_primary = web.TCPSite(runner, '0.0.0.0', port)
+    app = create_app()
     try:
-        await site_primary.start()
+        web.run_app(app, host='0.0.0.0', port=port, print=None)
     except OSError as e:
-        if getattr(e, 'errno', None) in (98, 10048):
+        if getattr(e, 'errno', None) in (98, 10048):  # Linux 98, Windows 10048
             print(f"\n[!] Port {port} sedang digunakan oleh program lain.")
-            print(f"    Tips: Anda dapat menjalankan dengan port lain, contoh: PORT={port+2} python3 server.py")
+            print(f"    Tips: Anda dapat menjalankan dengan port lain, contoh: PORT={port+1} python3 server.py")
         else:
             print(f"\n[!] Gagal menjalankan server: {e}")
         sys.exit(1)
-
-    active_alt_port = None
-    if alt_port and alt_port != port:
-        try:
-            site_alt = web.TCPSite(runner, '0.0.0.0', alt_port)
-            await site_alt.start()
-            active_alt_port = alt_port
-        except Exception:
-            active_alt_port = None
-
-    print_banner(port, ips, active_alt_port)
-
-    # Menjaga server tetap hidup
-    stop_event = asyncio.Event()
-    try:
-        await stop_event.wait()
-    except (asyncio.CancelledError, KeyboardInterrupt):
-        pass
-    finally:
-        await runner.cleanup()
-
-
-if __name__ == '__main__':
-    try:
-        asyncio.run(run_server())
-    except (KeyboardInterrupt, SystemExit):
-        pass

@@ -11,10 +11,6 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ### [1.17.0] - 2026-09-28
 #### ✨ Fitur Baru (Added)
-- **Versi Alternatif Web Tanpa Pop-up Fullscreen (Dual-Port Listener):**
-  - Penyediaan antarmuka web alternatif (`static/nofullscreen.html`) yang menggunakan pure CSS viewport fitting (`100dvh`, `touch-action: none`) dan auto-scroll 1px untuk menyembunyikan browser chrome tanpa memanggil API `requestFullscreen()`, mengeliminasi pop-up toast peringatan 5 detik browser Chrome (*"Swipe down from top to exit full screen"*).
-  - Server dual-port terintegrasi di `server.py`: Port standar `8080` (versi full/PWA) dan Port alternatif `8081` (versi web tanpa fullscreen langsung di root `http://<IP-PC>:8081`).
-  - Endpoint alias fleksibel di port 8080: `/lite`, `/nofs`, `/web`, `/nofullscreen`, `/windowed`, dan `?mode=nofs`.
 - **Aplikasi Native Android (DigiKeyboard.apk):**
   - Pembuatan project Android mandiri di folder `android/` berbasis WebView berperforma tinggi dan SDK Android 14.
   - **Mode True Immersive Sticky Fullscreen:** Mengeliminasi seluruh pop-up dan peringatan browser Chrome (*"Swipe down from the top to exit full screen"* dan *"This app cannot be installed"*).
@@ -238,10 +234,6 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ### [1.17.0] - 2026-09-28
 #### ✨ Added
-- **Alternative No-Fullscreen Web Version (Dual-Port Server Architecture):**
-  - Dedicated lightweight web client (`static/nofullscreen.html`) leveraging modern pure CSS viewport fitting (`100dvh`, `touch-action: none`) and 1px scroll tricks to hide browser address bars without invoking the browser `requestFullscreen()` API, eliminating Chrome's disruptive 5-second exit warning toast (*"Swipe down from top to exit full screen"*).
-  - Built-in dual-port server in `server.py`: Primary Port `8080` (full PWA, Gamepad, and Slide Remote) and Alternative Port `8081` (serves the zero-fullscreen web interface directly at `http://<PC_IP>:8081`).
-  - Flexible route aliases on port 8080: `/lite`, `/nofs`, `/web`, `/nofullscreen`, `/windowed`, and `?mode=nofs`.
 - **Native Android Client App (`DigiKeyboard.apk`):**
   - Dedicated Android standalone project located in `android/` utilizing high-performance WebView and modern Android 14 SDK.
   - **True Immersive Sticky Fullscreen:** Eliminates browser Chrome warning toasts (*"Swipe down from the top to exit full screen"*) and installation banners.

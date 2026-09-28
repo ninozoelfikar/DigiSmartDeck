@@ -146,11 +146,7 @@ pm2 start server.py --name digikeyboard --interpreter python3
      - Buka `http://<PC_IP>:8080/download/apk` di browser HP atau klik tombol **"📱 Download Android APK"** di header web.
      - Pasang APK `DigiKeyboard.apk` di HP Anda.
      - Nikmati fullscreen murni tanpa popup peringatan Chrome, orientasi landscape terkunci, dan opsi **Bluetooth HID**.
-   - **🌐 Versi Alternatif Web (Bebas Pop-up Fullscreen Chrome):**
-     - Buka port alternatif: `http://<PC_IP>:8081` atau endpoint `http://<PC_IP>:8080/lite`.
-     - Menggunakan pure CSS viewport fitting tanpa memanggil Fullscreen API sehingga tidak akan memicu pesan peringatan 5 detik browser Chrome.
-   - **🌐 Mode Web Browser Standar / PWA:**
-     - Buka `http://<PC_IP>:8080`.
+   - **🌐 Mode Web Browser / PWA:**
      - **Android:** Buka menu Chrome > ketuk **"Add to Home Screen"** / **"Install App"**.
      - **iOS (iPhone / iPad):** Buka Safari > ketuk tombol **Share (Bagikan)** > pilih **"Add to Home Screen"**.
      - Putar perangkat ke posisi **Landscape (Mendatar)**.
@@ -211,7 +207,7 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
    ```
 3. Run on Windows:
    Double-click `run.bat` or run `dist\DigiKeyboard.exe`.
-4. Scan the terminal ASCII QR code or visit `http://<PC_IP>:8080` (Standard Fullscreen / PWA) or `http://<PC_IP>:8081` (Zero Fullscreen Popup Web version), or download `http://<PC_IP>:8080/download/apk` on Android.
+4. Scan the terminal ASCII QR code or visit `http://<PC_IP>:8080` in your mobile browser, or download `http://<PC_IP>:8080/download/apk` on Android.
 
 ---
 
