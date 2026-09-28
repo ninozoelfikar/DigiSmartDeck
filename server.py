@@ -10,10 +10,13 @@ import socket
 import json
 import asyncio
 import time
+import glob
 from aiohttp import web
 
+BASE_DIR = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+
 def load_version():
-    v_file = os.path.join(os.path.dirname(__file__), 'VERSION')
+    v_file = os.path.join(BASE_DIR, 'VERSION')
     if os.path.exists(v_file):
         try:
             with open(v_file, 'r', encoding='utf-8') as f:
@@ -255,6 +258,52 @@ def get_evdev_code_for_key(k):
     return None
 
 
+def is_caps_lock_on():
+    """Mendeteksi apakah Caps Lock pada sistem operasi host sedang aktif (ON)."""
+    if sys.platform.startswith('linux'):
+        # 1. Sysfs brightness (bekerja di Wayland, X11, GDM login screen, tty)
+        for p in glob.glob('/sys/class/leds/*capslock*/brightness') + glob.glob('/sys/class/leds/*caps_lock*/brightness') + glob.glob('/sys/class/leds/*::capslock/brightness'):
+            try:
+                with open(p, 'r') as f:
+                    val = f.read().strip()
+                    if val.isdigit() and int(val) > 0:
+                        return True
+            except Exception:
+                pass
+        # 2. X11 via ctypes (fallback jika DISPLAY aktif)
+        try:
+            import ctypes
+            x11 = ctypes.cdll.LoadLibrary('libX11.so.6')
+            display = x11.XOpenDisplay(None)
+            if display:
+                class XKeyboardState(ctypes.Structure):
+                    _fields_ = [
+                        ('k', ctypes.c_int), ('b', ctypes.c_int), ('p', ctypes.c_uint),
+                        ('d', ctypes.c_uint), ('led_mask', ctypes.c_ulong),
+                        ('g', ctypes.c_int), ('a', ctypes.c_char * 32)
+                    ]
+                kb = XKeyboardState()
+                x11.XGetKeyboardControl(display, ctypes.byref(kb))
+                x11.XCloseDisplay(display)
+                return bool(kb.led_mask & 1)
+        except Exception:
+            pass
+        return False
+    elif sys.platform == 'win32':
+        try:
+            import ctypes
+            return bool(ctypes.windll.user32.GetKeyState(0x14) & 1)
+        except Exception:
+            return False
+    elif sys.platform == 'darwin':
+        try:
+            import Quartz
+            return bool(Quartz.CGEventSourceFlagsState(Quartz.kCGEventSourceStateCombinedSessionState) & Quartz.kCGEventFlagMaskAlphaShift)
+        except Exception:
+            return False
+    return False
+
+
 def simulate_press(k):
     """Simulasi penekanan tombol (uinput driver level atau pynput fallback)"""
     if UINPUT_AVAILABLE and uinput_device and k is not None:
@@ -266,7 +315,12 @@ def simulate_press(k):
                 uinput_device.syn()
                 return
             if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
-                code, need_shift = CHAR_TO_EVDEV[k]
+                code, base_need_shift = CHAR_TO_EVDEV[k]
+                need_shift = base_need_shift
+                if k.isalpha():
+                    caps_on = is_caps_lock_on()
+                    want_upper = k.isupper()
+                    need_shift = (want_upper != caps_on)
                 if need_shift:
                     uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 1)
                     uinput_device.syn()
@@ -278,8 +332,14 @@ def simulate_press(k):
 
     if KEYBOARD_AVAILABLE and keyboard_controller and k is not None:
         try:
-            pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
-            keyboard_controller.press(pk)
+            if isinstance(k, str) and len(k) == 1 and k.isalpha():
+                caps_on = is_caps_lock_on()
+                want_upper = k.isupper()
+                target_k = (k.lower() if want_upper else k.upper()) if caps_on else k
+                keyboard_controller.press(target_k)
+            else:
+                pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
+                keyboard_controller.press(pk)
         except Exception as e:
             print(f"[Error] Press key {k}: {e}")
     else:
@@ -297,7 +357,12 @@ def simulate_release(k):
                 uinput_device.syn()
                 return
             if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
-                code, need_shift = CHAR_TO_EVDEV[k]
+                code, base_need_shift = CHAR_TO_EVDEV[k]
+                need_shift = base_need_shift
+                if k.isalpha():
+                    caps_on = is_caps_lock_on()
+                    want_upper = k.isupper()
+                    need_shift = (want_upper != caps_on)
                 uinput_device.write(e.EV_KEY, code, 0)
                 uinput_device.syn()
                 if need_shift:
@@ -309,8 +374,14 @@ def simulate_release(k):
 
     if KEYBOARD_AVAILABLE and keyboard_controller and k is not None:
         try:
-            pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
-            keyboard_controller.release(pk)
+            if isinstance(k, str) and len(k) == 1 and k.isalpha():
+                caps_on = is_caps_lock_on()
+                want_upper = k.isupper()
+                target_k = (k.lower() if want_upper else k.upper()) if caps_on else k
+                keyboard_controller.release(target_k)
+            else:
+                pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
+                keyboard_controller.release(pk)
         except Exception as e:
             print(f"[Error] Release key {k}: {e}")
     else:
@@ -324,7 +395,13 @@ def simulate_tap(k):
             import evdev.ecodes as e
             shift_held = ('shift' in ACTIVE_KEYS or resolve_key('shift') in ACTIVE_KEYS)
             if isinstance(k, str) and len(k) == 1 and k in CHAR_TO_EVDEV:
-                code, need_shift = CHAR_TO_EVDEV[k]
+                code, base_need_shift = CHAR_TO_EVDEV[k]
+                need_shift = base_need_shift
+                if k.isalpha():
+                    caps_on = is_caps_lock_on()
+                    want_upper = k.isupper()
+                    need_shift = (want_upper != caps_on)
+
                 if need_shift and not shift_held:
                     uinput_device.write(e.EV_KEY, e.KEY_LEFTSHIFT, 1)
                     uinput_device.syn()
@@ -352,8 +429,14 @@ def simulate_tap(k):
 
     if KEYBOARD_AVAILABLE and keyboard_controller and k is not None:
         try:
-            pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
-            keyboard_controller.tap(pk)
+            if isinstance(k, str) and len(k) == 1 and k.isalpha():
+                caps_on = is_caps_lock_on()
+                want_upper = k.isupper()
+                target_k = (k.lower() if want_upper else k.upper()) if caps_on else k
+                keyboard_controller.tap(target_k)
+            else:
+                pk = KEY_MAPPINGS.get(k.lower()) if (isinstance(k, str) and k.lower() in KEY_MAPPINGS) else k
+                keyboard_controller.tap(pk)
         except Exception as e:
             try:
                 keyboard_controller.press(pk)
@@ -526,12 +609,76 @@ def get_host_os():
 
 
 # --- WebSocket Handler ---
+CONNECTED_CLIENTS = set()
+ACTIVE_CONTROLLER_WS = None
+ACTIVE_CONTROLLER_INFO = None
+LAST_ACTIVITY_TIME = 0
+
+def get_device_label(request, data=None):
+    if data and data.get('device_name'):
+        return str(data.get('device_name'))
+    ua = request.headers.get('User-Agent', '')
+    ip = request.remote or '127.0.0.1'
+    if 'Android' in ua:
+        dev = 'Android'
+    elif 'iPhone' in ua:
+        dev = 'iPhone'
+    elif 'iPad' in ua:
+        dev = 'iPad'
+    elif 'Macintosh' in ua:
+        dev = 'Mac'
+    elif 'Windows' in ua:
+        dev = 'Windows'
+    elif 'Linux' in ua:
+        dev = 'Linux'
+    else:
+        dev = 'Perangkat'
+    return f"{dev} ({ip})"
+
+async def broadcast_controller_status():
+    global ACTIVE_CONTROLLER_WS, ACTIVE_CONTROLLER_INFO
+    if ACTIVE_CONTROLLER_WS and ACTIVE_CONTROLLER_WS.closed:
+        ACTIVE_CONTROLLER_WS = None
+        ACTIVE_CONTROLLER_INFO = None
+
+    active_name = ACTIVE_CONTROLLER_INFO.get('name', 'Tidak ada') if ACTIVE_CONTROLLER_INFO else None
+
+    for client in list(CONNECTED_CLIENTS):
+        try:
+            is_active = (client == ACTIVE_CONTROLLER_WS)
+            await client.send_str(json.dumps({
+                'type': 'controller_status',
+                'role': 'active' if is_active else 'standby',
+                'active_name': active_name,
+                'message': '🟢 Anda adalah Pengendali Aktif PC.' if is_active else f"🟡 Mode Siaga: PC sedang dikendalikan oleh {active_name}."
+            }))
+        except Exception:
+            pass
+
+def release_all_client_keys(keys_set):
+    for k in list(keys_set):
+        simulate_release(k)
+        ACTIVE_KEYS.discard(k)
+    keys_set.clear()
+
 async def websocket_handler(request):
+    global ACTIVE_CONTROLLER_WS, ACTIVE_CONTROLLER_INFO, LAST_ACTIVITY_TIME
     ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0)
     await ws.prepare(request)
+    CONNECTED_CLIENTS.add(ws)
     client_ip = request.remote
     ua = request.headers.get('User-Agent', 'Unknown')
-    print(f"[+] Client terhubung dari: {client_ip} | UA: {ua}")
+    device_label = get_device_label(request)
+    print(f"[+] Client terhubung dari: {client_ip} | {device_label}")
+
+    # Otomatis tentukan role pengendali aktif (Mencegah Tabrakan Antar User)
+    if ACTIVE_CONTROLLER_WS is None or ACTIVE_CONTROLLER_WS.closed:
+        ACTIVE_CONTROLLER_WS = ws
+        ACTIVE_CONTROLLER_INFO = {'name': device_label, 'ip': client_ip}
+        LAST_ACTIVITY_TIME = time.time()
+        print(f"[👑] Pengendali Aktif terpilih: {device_label}")
+    else:
+        print(f"[👥] Client masuk dalam mode Siaga (Anti-Collision): {device_label}")
 
     # Kirim handshake inisialisasi ke client
     try:
@@ -540,8 +687,10 @@ async def websocket_handler(request):
             'version': __version__,
             'host_os': get_host_os(),
             'platform': sys.platform,
-            'uinput_active': UINPUT_AVAILABLE
+            'uinput_active': UINPUT_AVAILABLE,
+            'caps_lock': is_caps_lock_on()
         }))
+        await broadcast_controller_status()
     except Exception:
         pass
 
@@ -554,13 +703,46 @@ async def websocket_handler(request):
                 data = json.loads(msg.data)
                 msg_type = data.get('type')
 
+                # Update nama perangkat jika dikirim dari client
+                if data.get('device_name'):
+                    device_label = str(data.get('device_name'))
+                    if ws == ACTIVE_CONTROLLER_WS and ACTIVE_CONTROLLER_INFO:
+                        ACTIVE_CONTROLLER_INFO['name'] = device_label
+
                 if msg_type == 'ping':
-                    pong_payload = {'type': 'pong'}
+                    pong_payload = {'type': 'pong', 'caps_lock': is_caps_lock_on()}
                     if 't' in data:
                         pong_payload['t'] = data['t']
                     await ws.send_str(json.dumps(pong_payload))
+                    continue
 
-                elif msg_type == 'keypress':
+                elif msg_type == 'takeover':
+                    # Permintaan alih kendali dari perangkat siaga
+                    release_all_client_keys(active_keys)
+                    ACTIVE_CONTROLLER_WS = ws
+                    ACTIVE_CONTROLLER_INFO = {'name': device_label, 'ip': client_ip}
+                    LAST_ACTIVITY_TIME = time.time()
+                    print(f"[👑] Pengendali dialihkan ke: {device_label}")
+                    await broadcast_controller_status()
+                    continue
+
+                # ── FILTER ANTI-COLLISION (Mencegah Tabrakan Input) ──
+                # Jika bukan pengendali aktif, abaikan input keyboard & mouse
+                if msg_type in ('keypress', 'keydown', 'keyup', 'combo', 'mousemove', 'mouseclick', 'mousedown', 'mouseup', 'mousescroll'):
+                    if ws != ACTIVE_CONTROLLER_WS:
+                        # Auto-takeover jika pengendali utama sudah idle lebih dari 30 detik
+                        if time.time() - LAST_ACTIVITY_TIME > 30.0:
+                            ACTIVE_CONTROLLER_WS = ws
+                            ACTIVE_CONTROLLER_INFO = {'name': device_label, 'ip': client_ip}
+                            LAST_ACTIVITY_TIME = time.time()
+                            print(f"[👑] Auto-Takeover karena idle: {device_label}")
+                            await broadcast_controller_status()
+                        else:
+                            # Abaikan input agar tidak bertabrakan dengan pengguna utama
+                            continue
+                    LAST_ACTIVITY_TIME = time.time()
+
+                if msg_type == 'keypress':
                     key_name = data.get('key')
                     char = data.get('char')
                     mods = data.get('modifiers', {})
@@ -586,6 +768,17 @@ async def websocket_handler(request):
                     # Kirim tombol utama
                     if target:
                         simulate_tap(target)
+                        if key_name == 'caps_lock':
+                            await asyncio.sleep(0.05)
+                            curr_caps = is_caps_lock_on()
+                            for cws in list(CONNECTED_CLIENTS):
+                                try:
+                                    await cws.send_str(json.dumps({
+                                        'type': 'caps_state',
+                                        'caps_lock': curr_caps
+                                    }))
+                                except Exception:
+                                    pass
 
                     # Lepas hanya modifier sementara yang ditekan khusus untuk keypress ini
                     for m in reversed(applied_mods):
@@ -649,24 +842,34 @@ async def websocket_handler(request):
                 print(f"[!] WS Error: {ws.exception()}")
 
     finally:
+        CONNECTED_CLIENTS.discard(ws)
         # Lepaskan semua tombol yang masih tertahan jika koneksi terputus
-        for k in list(active_keys):
-            simulate_release(k)
-            ACTIVE_KEYS.discard(k)
+        release_all_client_keys(active_keys)
         if MOUSE_AVAILABLE and mouse_controller and MouseButton:
             try:
                 mouse_controller.release(MouseButton.left)
                 mouse_controller.release(MouseButton.right)
             except Exception:
                 pass
-        print(f"[-] Client terputus: {client_ip}")
+        print(f"[-] Client terputus: {client_ip} | {device_label}")
+
+        if ws == ACTIVE_CONTROLLER_WS:
+            ACTIVE_CONTROLLER_WS = None
+            ACTIVE_CONTROLLER_INFO = None
+            # Jika ada client lain yang masih aktif, promosikan
+            active_candidates = [c for c in CONNECTED_CLIENTS if not c.closed]
+            if active_candidates:
+                ACTIVE_CONTROLLER_WS = active_candidates[0]
+                ACTIVE_CONTROLLER_INFO = {'name': 'Perangkat Terhubung', 'ip': 'remote'}
+                print("[👑] Mempromosikan pengendali baru dari antrean perangkat siaga.")
+            asyncio.create_task(broadcast_controller_status())
 
     return ws
 
 
 # --- HTTP Index Handler ---
 async def index_handler(request):
-    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    static_dir = os.path.join(BASE_DIR, 'static')
     return web.FileResponse(os.path.join(static_dir, 'index.html'))
 
 
@@ -724,7 +927,7 @@ async def options_handler(request):
 
 def create_app():
     app = web.Application()
-    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    static_dir = os.path.join(BASE_DIR, 'static')
 
     app.router.add_get('/', index_handler)
     app.router.add_get('/ws', websocket_handler)
@@ -739,13 +942,35 @@ def create_app():
     app.router.add_get('/manifest.json', lambda r: web.FileResponse(os.path.join(static_dir, 'manifest.json'), headers={'Content-Type': 'application/manifest+json'}))
     app.router.add_get('/sw.js', lambda r: web.FileResponse(os.path.join(static_dir, 'sw.js'), headers={'Content-Type': 'application/javascript'}))
     app.router.add_get('/favicon.ico', lambda r: web.FileResponse(os.path.join(static_dir, 'icon-192.png')))
+    # Route unduh langsung Android APK
+    apk_file = os.path.join(static_dir, 'DigiKeyboard.apk')
+    if os.path.exists(apk_file):
+        app.router.add_get('/download/apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiKeyboard.apk"'}))
+        app.router.add_get('/DigiKeyboard.apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiKeyboard.apk"'}))
     return app
 
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
+    try:
+        import system_checker
+        check_result = system_checker.run_preflight_check(interactive=sys.stdin.isatty(), port=port)
+        if check_result.get('status') == 'already_running':
+            sys.exit(0)
+        port = check_result.get('port', port)
+    except Exception:
+        pass
+
     ips = get_local_ip_addresses()
     print_banner(port, ips)
 
     app = create_app()
-    web.run_app(app, host='0.0.0.0', port=port, print=None)
+    try:
+        web.run_app(app, host='0.0.0.0', port=port, print=None)
+    except OSError as e:
+        if getattr(e, 'errno', None) in (98, 10048):  # Linux 98, Windows 10048
+            print(f"\n[!] Port {port} sedang digunakan oleh program lain.")
+            print(f"    Tips: Anda dapat menjalankan dengan port lain, contoh: PORT={port+1} python3 server.py")
+        else:
+            print(f"\n[!] Gagal menjalankan server: {e}")
+        sys.exit(1)

@@ -41,11 +41,18 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
 * **Tier Hardware (Fase Lanjutan):** Modul USB dongle ESP32 plug-and-play siap pakai.
 
 ### B. Price (Harga)
-* **Free Tier:** Rp 0 (Full basic features).
-* **Pro License (Sekali Bayar / Lifetime):**
-  - Pasar Domestik (Indonesia): **Rp 49.000** (Promo rilis: **Rp 29.000**).
-  - Pasar Global: **$4.99 USD** (Promo rilis: **$2.99 USD**).
-* **B2B / Lab License:** **Rp 499.000 / instansi** ($49.00 USD).
+* **Free Tier (Personal & Game Mode):** **Rp 0** (Keyboard PC, Trackpad, Gamepad & Steering Wheel Gyro gratis selamanya; monetisasi via donasi sukarela/Saweria/Trakteer).
+* **Pro All-Access License (Sekali Bayar / Lifetime):**
+  - **Harga Resmi Penuh (Full Price):** **Rp 250.000** (Pasar Global: **$15.99 USD**).
+  - **Promo Peluncuran (Early-Bird Launch):** **Rp 99.000** (Pasar Global: **$6.99 USD**) untuk 250 pembeli pertama.
+* **Mikrotransaksi Skin & Tema Premium (Collector Theme):**
+  - **Rp 10.000 / item** (Pasar Global: **$0.99 USD / item**).
+  - Pembelian impulsif 1-klik via QRIS untuk skin visual eksklusif (misal: *Gundam Mecha, Retro Macintosh 1984, Vaporwave Sunset, RGB Reactive Chroma, & Custom Switch Audio Packs*).
+* **Monetisasi Slot Stiker Palm Rest (Free Tier Ads & Affiliate):**
+  - **Model Afiliasi:** Link diskon periferal tech, gaming gear, atau cloud/hosting di e-commerce (Tokopedia/Shopee/Amazon) dengan komisi 5% - 12% per penjualan.
+  - **Sewa Slot Sponsor Brand:** Brand teknologi / gaming gear menyewa slot banner stiker tetap (misal: Rp 1.500.000 – Rp 3.000.000 / slot / bulan).
+  - *Perk Pro:* Pengguna Pro All-Access bebas dari semua stiker sponsor (Clean Minimalist Deck) atau dapat menempelkan stiker kustom sendiri.
+* **B2B / Lab License (Institusi / Kampus):** **Rp 999.000 / instansi** ($99.00 USD).
 
 ### C. Place (Distribusi Penjualan)
 * **Distribusi Software:**

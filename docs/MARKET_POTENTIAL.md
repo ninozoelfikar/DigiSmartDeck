@@ -40,16 +40,18 @@ Produk software utilitas lokal memiliki keunggulan ekstrem: **beban server mende
 
 | Produk / Aliran Pendapatan | Harga Jual Kotor (Gross) | Potongan Biaya Payment Gateway | Pendapatan Bersih per Unit (Net Margin) |
 | :--- | :--- | :--- | :--- |
-| **Lisensi Pro (Indonesia - QRIS/E-Wallet)** | **Rp 49.000** | ~Rp 1.500 (Mayar / Midtrans ~2.5% + fee) | **Rp 47.500 (97%)** |
-| **Lisensi Pro (Global - Kartu Kredit/PayPal)** | **$4.99 USD** (~Rp 78.000) | ~$0.75 (Lemon Squeezy 5% + $0.50) | **$4.24 (~Rp 66.000) (85%)** |
-| **Preset Macro / Theme Pack (Add-on)** | **Rp 25.000 / $1.99** | ~Rp 1.000 / $0.40 | **Rp 24.000 / $1.59 (96%)** |
-| **Lisensi B2B (Sekolah / Lab Komputer)** | **Rp 499.000 / $49.00** | ~Rp 15.000 / $3.50 | **Rp 484.000 / $45.50 (97%)** |
+| **Lisensi Pro All-Access (Indonesia)** | **Rp 250.000** *(Promo: Rp 99k - 149k)* | ~Rp 6.250 (Mayar/Midtrans ~2.5%) | **Rp 243.750 (97%)** |
+| **Lisensi Pro All-Access (Global)** | **$15.99 USD** (~Rp 250.000) | ~$1.30 (Lemon Squeezy 5% + $0.50) | **$14.69 (~Rp 230.000) (92%)** |
+| **Skin & Theme Premium (Per Item)** | **Rp 10.000 / $0.99** | ~Rp 500 / $0.20 | **Rp 9.500 / $0.79 (95%)** |
+| **Sewa Slot Stiker / Afiliasi (per bulan)** | **Rp 1.500.000 – Rp 3.000.000** | Net setelah fee / flat | **~Rp 1.500.000+ (100%)** |
+| **Donasi Free Tier (Personal & Game)** | Sukarela (Rata-rata Rp 20.000) | ~Rp 1.000 (Saweria/Trakteer) | **Rp 19.000 (95%)** |
+| **Lisensi B2B (Sekolah / Lab Komputer)** | **Rp 999.000 / $99.00** | ~Rp 25.000 / $5.50 | **Rp 974.000 / $93.50 (97%)** |
 
 ---
 
-## 📊 3. Simulasi Proyeksi Pendapatan (Tahun Pertama)
+## 📊 3. Simulasi Proyeksi Pendapatan (Tahun Pertama - Harga Rp 250.000)
 
-Berikut adalah 3 skenario pendapatan tahunan berdasarkan intensitas eksekusi pemasaran:
+Dengan harga Rp 250.000 (blended average ~Rp 200.000 memperhitungkan promo early-bird), volume penjualan yang dibutuhkan untuk meraih ratusan juta rupiah jauh lebih sedikit:
 
 ```
           ┌─────────────────────────────────────────────────────────┐
@@ -61,46 +63,50 @@ Berikut adalah 3 skenario pendapatan tahunan berdasarkan intensitas eksekusi pem
 │   KONSERVATIF    │          │     MODERAT      │          │     AGRESIF      │
 │  (Side-Project)  │          │   (Realistis)    │          │  (Viral Scale)   │
 ├──────────────────┤          ├──────────────────┤          ├──────────────────┤
-│ • 500 Lisensi ID │          │ • 2.500 Lis. ID  │          │ • 8.000 Lis. ID  │
-│ • 300 Lis. Int'l │          │ • 1.800 Lis. Int │          │ • 6.500 Lis. Int │
-│ • 0 B2B Lab      │          │ • 10 B2B Lab     │          │ • 35 B2B Lab     │
+│ • 150 Lisensi ID │          │ • 750 Lisensi ID │          │ • 2.500 Lis. ID  │
+│ • 100 Lis. Int'l │          │ • 600 Lis. Int'l │          │ • 2.000 Lis. Int │
+│ • 0 B2B Lab      │          │ • 5 B2B Lab      │          │ • 20 B2B Lab     │
 ├──────────────────┤          ├──────────────────┤          ├──────────────────┤
-│  Rp 48,5 Juta    │          │   Rp 276,4 Juta  │          │   Rp 914,8 Juta  │
-│ (~$3.100 USD/th) │          │ (~$17.700 USD/th)│          │ (~$58.600 USD/th)│
-│  Rp 4 Juta/bulan │          │  Rp 23 Juta/bulan│          │  Rp 76 Juta/bulan│
+│  Rp 61,5 Juta    │          │   Rp 327,8 Juta  │          │  Rp 1,11 Miliar  │
+│ (~$3.900 USD/th) │          │ (~$21.000 USD/th)│          │ (~$71.500 USD/th)│
+│  Rp 5,1 Juta/bln │          │  Rp 27,3 Juta/bln│          │  Rp 92,8 Juta/bln│
 └──────────────────┘          └──────────────────┘          └──────────────────┘
 ```
 
-### Rincian Simulasi:
+### Rincian Simulasi Bertahap (Berdasarkan Akuisisi Pengguna 3 Tahap)
 
-#### Skenario 1: Konservatif (Pertumbuhan Organik Murni / Tanpa Iklan)
-*Kondisi: Hanya mengandalkan repository GitHub, rilis Reddit sekali, dan word-of-mouth pengguna Linux/Homelab.*
-* **Lisensi Pro Indonesia:** 500 unit × Rp 47.500 = Rp 23.750.000
-* **Lisensi Pro Global:** 300 unit × Rp 66.000 = Rp 19.800.000
-* **Donasi FOSS / Sponsors (GitHub/Saweria):** Rp 5.000.000
-* **Total Pendapatan Bersih:** **Rp 48.550.000 / tahun** *(~Rp 4.000.000 / bulan)*.
-
----
-
-#### Skenario 2: Moderat (Rekomendasi Baseline - Eksekusi Rencana Pemasaran)
-*Kondisi: Binary Windows .exe 1-klik siap, Product Hunt Top 5, 2–3 konten video TikTok/Shorts tembus FYP (>100k views), promosi rutin di grup tech.*
-* **Lisensi Pro Indonesia:** 2.500 unit × Rp 47.500 = **Rp 118.750.000**
-* **Lisensi Pro Global:** 1.800 unit × Rp 66.000 = **Rp 118.800.000**
-* **Add-on Theme & Macro Packs (Take-rate 20%):** 860 unit × Rp 24.000 = **Rp 20.640.000**
-* **Lisensi B2B / Lab Komputer Kampus/Sekolah:** 10 paket × Rp 484.000 = **Rp 4.840.000**
-* **Donasi & Sponsorship:** Rp 13.400.000
-* **Total Pendapatan Bersih:** **Rp 276.430.000 / tahun** *(~Rp 23.000.000 / bulan)*.
+Struktur aliran pendapatan yang dihitung:
+1. **Donasi Free Tier (Personal & Game)** (Tingkat donasi 0.1% - 0.3%)
+2. **Mikrotransaksi Skin Kolektor @ Rp 10.000 / $0.99** (Konversi 2% - 5%)
+3. **Monetisasi Stiker Palm Rest** (Komisi afiliasi periferal & sewa space sponsor brand)
+4. **Lisensi Pro All-Access** (Harga normal Rp 250.000, blended average Rp 180k - 210k net)
+5. **Lisensi B2B Kampus/Lab** (@ Rp 974.000 net)
 
 ---
 
-#### Skenario 3: Agresif (Pertumbuhan Cepat / Viral & Ekspansi Produk)
-*Kondisi: Di-review oleh channel tech besar (YouTuber/TikToker setup desk), adopsi luas di kalangan gamer dan pemilik TV PC, integrasi hardware dongle ESP32.*
-* **Lisensi Pro Indonesia:** 8.000 unit × Rp 47.500 = **Rp 380.000.000**
-* **Lisensi Pro Global:** 6.500 unit × Rp 66.000 = **Rp 429.000.000**
-* **Add-on Theme & Macro Packs:** 2.800 unit × Rp 24.000 = **Rp 67.200.000**
-* **Lisensi B2B Institusi:** 35 paket × Rp 484.000 = **Rp 16.940.000**
-* **Penjualan Hardware Dongle USB (Plug & Play):** 300 unit × Laba Bersih Rp 75.000 = **Rp 22.500.000**
-* **Total Pendapatan Bersih:** **Rp 915.640.000 / tahun** *(~Rp 76.300.000 / bulan)*.
+#### 🌧️ Skenario PESIMIS (Pertumbuhan Organik Lambat / Tanpa Video Viral)
+
+| Tahapan Akuisisi | Basis Pengguna Baru | Donasi | Skin Rp 10k | Stiker Ads / Afiliasi | Pro All-Access (Rp 250k) | Total Pendapatan Tahap | Rata-rata per Bulan |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Tahap 1: Peluncuran (Bln 1–3)** | 5.000 user | Rp 100.000 | Rp 712.500 | Rp 300.000 | Rp 2.850.000 (30 unit promo) | **Rp 3.962.500** | ~Rp 1,3 Juta/bln |
+| **Tahap 2: Traksi (Bln 4–6)** | 15.000 user | Rp 300.000 | Rp 2.850.000 | Rp 1.500.000 | Rp 21.600.000 (120 unit) | **Rp 26.250.000** | ~Rp 8,7 Juta/bln |
+| **Tahap 3: Stabil (Bln 7–12)** | 40.000 user | Rp 800.000 | Rp 7.600.000 | Rp 9.000.000 (Afiliasi+Sewa) | Rp 69.100.000 (320 unit + 2 B2B) | **Rp 86.500.000** | ~Rp 14,4 Juta/bln |
+| **TOTAL TAHUN 1 (PESIMIS)** | **60.000 user** | **Rp 1,2 Jt** | **Rp 11,1 Jt** | **Rp 10,8 Jt** | **Rp 93,5 Jt** | **Rp 116.712.500** | **~Rp 9,7 Juta/bulan** |
+
+*Intisari Pesimis:* Sekalipun tanpa video viral, bisnis ini tetap membukukan laba bersih **~Rp 116 Juta di tahun pertama** (rata-rata ~Rp 10 Juta/bulan).
+
+---
+
+#### 🚀 Skenario OPTIMIS (Viralitas Game Mode & Streamer Adoption)
+
+| Tahapan Akuisisi | Basis Pengguna Baru | Donasi | Skin Rp 10k | Stiker Ads / Afiliasi | Pro All-Access (Rp 250k) | Total Pendapatan Tahap | Rata-rata per Bulan |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Tahap 1: Meledak (Bln 1–3)** | 25.000 user | Rp 1.500.000 | Rp 9.500.000 | Rp 2.500.000 | Rp 47.500.000 (500 unit promo) | **Rp 61.000.000** | ~Rp 20,3 Juta/bln |
+| **Tahap 2: Viral FYP (Bln 4–6)** | 125.000 user | Rp 5.000.000 | Rp 59.375.000 | Rp 13.500.000 (Sewa brand + Afiliasi) | Rp 453.800.000 (2.250 unit + 4 B2B) | **Rp 531.675.000** | ~Rp 177,2 Juta/bln |
+| **Tahap 3: Global Scale (Bln 7–12)**| 350.000 user | Rp 12.000.000| Rp 166.250.000| Rp 45.000.000 (2 brand sponsor eksklusif)| Rp 1.116.750.000 (5.250 unit + 15 B2B)| **Rp 1.340.000.000** | ~Rp 223,3 Juta/bln |
+| **TOTAL TAHUN 1 (OPTIMIS)** | **500.000 user**| **Rp 18,5 Jt**| **Rp 235,1 Jt**| **Rp 61,0 Jt** | **Rp 1.618,0 Jt** | **Rp 1.932.675.000** | **~Rp 161,0 Juta/bulan** |
+
+*Intisari Optimis:* Jika konten video Game Mode (misal setir gyro) menembus FYP TikTok/Shorts dan diadopsi komunitas streamer, pendapatan tahun pertama menembus **Rp 1,93 Miliar bersih** (~Rp 161 Juta/bulan).
 
 ---
 

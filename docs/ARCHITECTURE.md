@@ -12,13 +12,22 @@ Dokumen ini menjelaskan desain arsitektur internal, alur data, protokol komunika
 
 ```mermaid
 flowchart TD
-    subgraph MobileDevice["📱 Perangkat Mobile (Browser HP / Tablet / PWA)"]
+    subgraph MobileDevice["📱 Perangkat Mobile (Android App / Browser HP / PWA)"]
         UI["Virtual PC Keyboard, Laptop Trackpad & Settings Studio UI"]
         TouchLogic["Touch, Multi-Touch & Trackpad Gesture Engine"]
         ModState["Client Persistent Modifier State Machine\n(Lock / 1-Shot / Hold)"]
         AudioHaptic["Web Audio API & Vibration Engine"]
         NetWatchdog["Self-Healing Network Subsystem\n(5.5s Watchdog, Backoff, Subnet Scanner)"]
         PWA["Service Worker & Offline Cache (PWA)"]
+        
+        subgraph NativeAndroid["🤖 Android Native App (DigiKeyboard.apk)"]
+            Immersive["True Immersive Sticky Fullscreen\n(Zero Chrome Popup / Toast)"]
+            Bridge["DigiAndroidBridge (JS Interface)"]
+            BtHid["Bluetooth HID Hardware Emulation\n(Keyboard + Mouse Composite HID)"]
+            Immersive --> Bridge
+            Bridge --> BtHid
+        end
+        
         WSClient["WebSocket Client (ws://<PC_IP>:8080/ws)"]
         
         UI --> TouchLogic
@@ -27,6 +36,11 @@ flowchart TD
         ModState --> WSClient
         TouchLogic --> WSClient
         NetWatchdog <--> WSClient
+        TouchLogic -.->|Direct Native Input| Bridge
+    end
+
+    subgraph DirectBtLink["📡 Direct Bluetooth Wireless Link (Zero Server Software)"]
+        BtHid <-->|Standard Bluetooth HID Profile (L2CAP)| TargetPC["💻 Target PC / Mac / Smart TV / Tablet"]
     end
 
     subgraph LocalNetwork["📶 Jaringan Wi-Fi Lokal / mDNS"]
@@ -36,7 +50,9 @@ flowchart TD
     end
 
     subgraph HostPC["💻 Host PC (Linux / Windows / macOS)"]
+        PreFlight["System Pre-Flight Checker\n(system_checker.py: Port, uinput, Firewall)"]
         WSServer["HTTP & WebSocket Server (aiohttp)"]
+        Arbitrator["Anti-Collision Controller Arbitrator\n(Single Active Controller / Standby Queue / Takeover)"]
         IPEngine["Smart Network Detector (psutil / socket)"]
         ServerActiveKeys["Server Active Keys State Machine\n(global ACTIVE_KEYS tracker)"]
         KeyTranslator["Keycode & OS Profile Translator\n(Windows / macOS / Ubuntu)"]
@@ -49,12 +65,16 @@ flowchart TD
         
         OSInput["OS Input Pipeline (Kernel Virtual HID / Desktop Environment)"]
 
+        PreFlight --> WSServer
         IPEngine --> WSServer
-        WSServer -->|Keyboard Payloads| ServerActiveKeys
+        WSServer --> Arbitrator
+        Arbitrator -->|Active Controller Only| ServerActiveKeys
+        Arbitrator -.->|Standby Mode: Inputs Dropped| Arbitrator
         ServerActiveKeys --> KeyTranslator
         KeyTranslator -->|Linux Kernel Direct| UinputDriver --> OSInput
         KeyTranslator -->|Fallback Driver| PynputFallback --> OSInput
-        WSServer -->|Mouse/Trackpad Payloads| MouseHandler --> PynputFallback --> OSInput
+        Arbitrator -->|Active Controller Only| MouseHandler
+        MouseHandler --> PynputFallback --> OSInput
     end
 ```
 
@@ -104,6 +124,38 @@ flowchart TD
    - **Audio Context Unlocker:** Memastikan `audioCtx` langsung aktif (*resumed*) pada sentuhan layar pertama pengguna, melewati limitasi autoplay browser mobile.
    - **Pengontrol Volume Granular:** Pengaturan volume suara klik (10% s/d 100%) dan tombol uji suara di modal Pengaturan.
 
+
+8. **Anti-Collision Single Active Controller Arbitration (Manajemen Anti-Tabrakan Multi-User):**
+   - **Masalah:** Jika beberapa perangkat (HP anak, tablet, laptop lain) membuka URL DigiKeyboard yang sama secara bersamaan, input keyboard dan kursor mouse akan saling tumpang tindih (*interleaved keystrokes* dan jitter mouse acak).
+   - **Solusi Arbitrase Server-Side:**
+     - `ACTIVE_CONTROLLER_WS` dan `ACTIVE_CONTROLLER_INFO`: Server menetapkan koneksi pertama yang terhubung sebagai **Pengendali Aktif** (`🟢 👑 Pengendali Aktif`).
+     - **Mode Siaga Otomatis (Standby Mode):** Klien berikutnya yang terhubung secara otomatis ditempatkan dalam status `standby` (`🟡 ⚡ Siaga (Ambil Alih)`). Seluruh payload pengetikan dan pergerakan mouse dari klien standby diabaikan (*dropped/suppressed*) oleh server demi melindungi integritas sesi.
+     - **Manual Takeover:** Pengguna di mode siaga dapat mengetuk badge siaga untuk mengirimkan event `{ "type": "takeover" }`. Server akan langsung memindahkan kendali aktif kepadanya dan mengabarkan status terbaru ke seluruh klien via broadcast WebSocket.
+     - **Auto-Takeover Timeout (30 Detik):** Jika pengendali aktif tidak melakukan aktivitas (tidak ada input) selama 30 detik, klien lain yang mengirim input diizinkan mengambil alih kendali secara otomatis.
+     - **Clean Modifier Release on Handoff/Disconnect:** Saat pengendali aktif terputus (*disconnect*) atau diambil alih, fungsi `release_all_client_keys()` otomatis melepas semua modifier OS yang tertahan (Shift, Ctrl, Alt, Win/Cmd) agar tombol fisik PC tidak "tersangkut" (*stuck keys*).
+
+9. **Android Native Client & Bluetooth HID Hardware Emulation:**
+   - **Android Native Wrapper (`DigiKeyboard.apk`):**
+     - Dibangun menggunakan Gradle 8.5 dan Android SDK 34 dengan arsitektur web-to-native terpadu (`WebView` + `DigiAndroidBridge`).
+     - **True Immersive Sticky Fullscreen:** Menghilangkan batasan browser mobile Chrome seperti bilah navigasi OS, status bar, dan pop-up peringatan Chrome (*"Swipe down to exit fullscreen"*) yang kerap mengganggu.
+     - Orientasi lanskap terkunci otomatis (*locked landscape*) dan layar dicegah mati (*Keep Screen Awake*).
+     - Menekan pemunculan keyboard virtual bawaan ponsel (Gboard/Swiftkey) secara absolut.
+   - **Bluetooth HID Composite Profile (`BluetoothHidHelper.java`):**
+     - Menggunakan Android 9+ (API 28) `BluetoothHidDevice` untuk mendaftarkan ponsel sebagai perangkat keras **Bluetooth Human Interface Device (HID)** standar.
+     - Menggunakan Report Descriptor USB HID komposit standar (Keyboard 8-byte report format + Mouse 4-byte report format).
+     - **Zero Server Software Needed:** Ponsel dapat langsung di-pair via Bluetooth ke PC Windows, Mac, Linux, iPad, Android TV, atau Smart TV dan langsung berfungsi sebagai keyboard & mouse nirkabel tanpa perlu menginstall software apa pun di komputer target.
+
+10. **System Pre-Flight Diagnostics Engine & Standalone Packaging:**
+    - **Pemeriksa Pra-Jalan Interaktif (`system_checker.py`):**
+      - Dirancang khusus agar ramah bagi pengguna awam (zero-panic, zero-traceback).
+      - **Pendeteksi Tabrakan Port 8080:** Jika port 8080 telah digunakan, sistem memeriksa apakah proses tersebut adalah daemon DigiKeyboard yang sudah aktif. Jika ya, program menampilkan pesan sukses dan IP tanpa error. Jika digunakan aplikasi lain, sistem memandu pengguna dengan instruksi ramah.
+      - **Otomatisasi Izin Kernel Linux (`/dev/uinput`):** Memeriksa hak akses uinput dan menawarkan perbaikan instan via `setfacl` tanpa restart.
+      - **Pemeriksaan Firewall:** Memverifikasi status UFW pada Linux.
+    - **Executable Mandiri (Zero-Python Installation):**
+      - Linux: `build-linux.sh` menghasilkan binary mandiri ELF 64-bit `dist/DigiKeyboard` (39MB).
+      - Windows: `build-exe.bat` menghasilkan `dist/DigiKeyboard.exe` mandiri via PyInstaller.
+      - macOS: `build-macos.sh` menghasilkan `dist/DigiKeyboardApp.app`.
+
 ---
 
 ### 3. Spesifikasi Protokol WebSocket
@@ -144,13 +196,33 @@ Komunikasi antara browser mobile dan host PC menggunakan payload JSON ringkas be
 { "type": "mousescroll", "dx": 0, "dy": -3 }
 ```
 
-3. **Keepalive (Ping / Pong Heartbeat):**
+3. **Arbitrase Pengendali (Controller Arbitration & Takeover):**
+```json
+// Permintaan ambil alih kendali aktif dari klien standby:
+{ "type": "takeover" }
+```
+
+4. **Keepalive (Ping / Pong Heartbeat):**
 ```json
 // Client:
 { "type": "ping" }
 
 // Server Response:
 { "type": "pong" }
+```
+
+#### Payload Server ke Client:
+
+1. **Status Pengendali Aktif vs Standby:**
+```json
+// Dikirim saat koneksi awal dan setiap kali ada pergantian status pengendali:
+{
+  "type": "controller_status",
+  "status": "active" | "standby",
+  "active_ip": "192.168.8.100",
+  "active_ua": "Mozilla/5.0 (Linux; Android 14)...",
+  "message": "Anda adalah pengendali aktif" | "Perangkat lain sedang mengendalikan PC"
+}
 ```
 
 ---
@@ -188,3 +260,33 @@ Mobile clients frequently experience connection loss when host Wi-Fi routers reb
 3. **Screen-Wake & Network State Listeners:** Immediately triggers reconnect probes on `visibilitychange` (when waking from sleep or phone unlock) and `online` events.
 4. **Parallel Subnet IP Scanner:** If the PC's IP address changes due to router reboot (e.g. from `192.168.8.103` to `192.168.8.100`), the client launches a background parallel scanner (batch size of 24 IPs) against port 8080 targeting `/api/version`. Upon finding the host, it presents a 1-tap reconnection prompt.
 5. **Zero-Config mDNS:** Supports permanent local hostname resolution via `http://Jarvis.local:8080`.
+
+### 5. Anti-Collision Single Active Controller Arbitration
+When multiple mobile devices or family members open the DigiKeyboard URL concurrently, concurrent uncoordinated keystrokes and trackpad motions would result in garbled text and erratic cursor jumping. DigiKeyboard solves this through a server-side state machine:
+- **Authoritative Controller:** The first client WebSocket to connect is designated as the **Active Controller** (`🟢 👑 Active Controller`).
+- **Standby Isolation Mode:** Subsequent connecting clients automatically enter **Standby Mode** (`🟡 ⚡ Standby (Takeover)`). All typing, hotkey combinations, and mouse payloads from standby clients are dropped server-side to guarantee input session integrity.
+- **Manual Takeover:** A standby user can tap the badge to dispatch `{ "type": "takeover" }`. The server transfers active control instantly and broadcasts updated status to all clients.
+- **Auto-Takeover Timeout:** If the active controller is inactive for 30 seconds, any input from a standby client automatically transfers control.
+- **Clean Modifier Release on Handoff/Disconnect:** Whenever an active session disconnects or is transferred, `release_all_client_keys()` releases any stuck OS modifiers (`Shift`, `Ctrl`, `Alt`, `Win`/`Cmd`).
+
+### 6. Android Native Client & Bluetooth HID Composite Profile
+- **Android Native App (`DigiKeyboard.apk`):**
+  - Compiled using Android SDK 34 and Gradle 8.5 with an optimized WebView architecture and `DigiAndroidBridge` JavaScript interface.
+  - **True Immersive Sticky Fullscreen:** Completely eliminates Chrome browser bars, Android system gesture navigation bars, and the disruptive Chrome fullscreen warning toast.
+  - Locked landscape orientation and screen keep-awake flag (`FLAG_KEEP_SCREEN_ON`).
+  - Total suppression of native soft keyboard (Gboard/Swiftkey) popups.
+- **Bluetooth HID Hardware Emulation (`BluetoothHidHelper.java`):**
+  - Utilizes Android 9+ (API 28) `BluetoothHidDevice` to register the phone as a native Bluetooth Human Interface Device.
+  - Uses standard composite USB HID Report Descriptors (Keyboard + Mouse).
+  - **Zero Server Software Required:** Direct hardware pairing to Windows, Mac, Linux, iPad, Android TV, or Smart TV.
+
+### 7. System Pre-Flight Diagnostics Engine & Standalone Packaging
+- **Interactive Pre-Flight Checker (`system_checker.py`):**
+  - Designed for non-technical users with zero traceback panic.
+  - Detects port 8080 conflicts intelligently: if the port is already used by an active DigiKeyboard systemd daemon, it prints a clean success message and IP URLs without errors.
+  - Automatically verifies and provisions Linux `/dev/uinput` permissions using `setfacl`.
+  - Audits Linux UFW firewall status.
+- **Standalone Binary Packaging:**
+  - Linux standalone 64-bit ELF binary `dist/DigiKeyboard` (39MB) via `build-linux.sh`.
+  - Windows standalone `dist/DigiKeyboard.exe` via `build-exe.bat`.
+  - macOS standalone bundle `dist/DigiKeyboardApp.app` via `build-macos.sh`.

@@ -1,12 +1,13 @@
 # ⌨️ DigiKeyboard (Remote PC Keyboard)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20macOS-informational)](#)
+[![Version](https://img.shields.io/badge/Version-v1.17.0-brightgreen.svg)](CHANGELOG.md)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20macOS%20%7C%20Android-informational)](#)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-brightgreen.svg)](#)
-[![Tech](https://img.shields.io/badge/Stack-WebSocket%20%7C%20aiohttp%20%7C%20pynput-orange.svg)](#)
+[![Tech](https://img.shields.io/badge/Stack-WebSocket%20%7C%20Bluetooth%20HID%20%7C%20aiohttp%20%7C%20uinput-orange.svg)](#)
 
-> **Ubah layar HP / Tablet Anda menjadi keyboard fisik standar PC nirkabel via Wi-Fi lokal, tanpa memicu keyboard virtual HP bawaan.**  
-> *Transform your smartphone or tablet into a full-fidelity wireless PC physical keyboard over local Wi-Fi, without triggering native mobile on-screen keyboards.*
+> **Ubah layar HP / Tablet Anda menjadi keyboard fisik standar PC nirkabel via Wi-Fi lokal atau Bluetooth HID, tanpa memicu keyboard virtual HP bawaan.**  
+> *Transform your smartphone or tablet into a full-fidelity wireless PC physical keyboard over local Wi-Fi or Bluetooth HID, without triggering native mobile on-screen keyboards.*
 
 ---
 
@@ -19,7 +20,7 @@
 ### 🌟 Mengapa DigiKeyboard?
 Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keyboard bawaan HP (Gboard / SwiftKey). Hal ini menyulitkan akses ke tombol-tombol fungsional PC seperti **Esc, Tab, Ctrl, Alt, Win/Super, F1-F12, Backspace, Panah**, hingga **Numpad**.
 
-**DigiKeyboard** menyajikan antarmuka visual layout keyboard fisik PC sesungguhnya langsung di layar browser HP/Tablet Anda dengan latensi ultra-rendah (1-5 ms) melalui WebSocket.
+**DigiKeyboard** menyajikan antarmuka visual layout keyboard fisik PC sesungguhnya langsung di layar HP/Tablet Anda dengan latensi ultra-rendah (1-5 ms) melalui WebSocket Wi-Fi lokal atau emulasi perangkat keras Bluetooth HID.
 
 ---
 
@@ -41,32 +42,44 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Haptic Vibration (Getar):** Pilihan preset Lembut (15ms), Normal (30ms), Kuat (50ms), serta tombol uji coba langsung.
    - **Suara Klik Mekanikal Sintetis:** Menghasilkan klik switch mekanik renyah via Web Audio API, terdengar jelas di speaker kecil HP, tablet, maupun PC.
    - **Pengontrol Volume Suara:** Slider granular (10% - 100%), preset Pelan (30%), Sedang (70%), Keras (100%), dan tombol uji suara (`🧪 Uji Suara Klik`).
-4. **Panel Ekstensi (Bisa di-toggle):**
+4. **🛡️ Anti-Collision Controller Arbitration (Anti-Tabrakan Pengendali):**
+   - **Mencegah Tabrakan Multi-User:** Jika beberapa HP atau tablet membuka URL DigiKeyboard secara bersamaan di jaringan yang sama, sistem arbitrase memastikan hanya 1 perangkat yang menjadi **Pengendali Aktif** (`🟢 👑 Pengendali Aktif`).
+   - **Mode Siaga Otomatis (Standby):** Perangkat lain yang terhubung otomatis masuk ke mode `🟡 ⚡ Siaga (Ambil Alih)` dengan pengetikan diabaikan server agar tidak mengacaukan sesi yang sedang berjalan.
+   - **Pengambilan Alih Instan (Takeover):** Pengguna di mode siaga dapat mengetuk tombol status untuk mengambil alih kendali dengan konfirmasi 1-ketuk.
+   - **Auto-Takeover:** Mengalihkan kendali secara otomatis jika pengendali aktif tidak melakukan pengetikan selama 30 detik.
+   - **Pelepasan Modifier Bersih:** Saat handoff atau putus koneksi, seluruh tombol modifier yang tertahan (Shift, Ctrl, Alt, Win) otomatis dilepas di level OS.
+5. **📱 Aplikasi Android Native (APK Langsung Download):**
+   - Mengatasi batasan browser mobile Chrome (*"This app cannot be installed"* pada HTTP lokal dan peringatan popup fullscreen yang mengganggu).
+   - Menghadirkan *True Immersive Sticky Fullscreen*, rotasi lanskap terkunci otomatis, dan layar tetap menyala (*keep screen awake*).
+   - Dapat diunduh langsung dari halaman server: `http://<PC_IP>:8080/download/apk` atau tombol unduh di browser.
+6. **📶 Opsi Koneksi Ganda (Wi-Fi WebSocket + Bluetooth HID):**
+   - **Jalur Wi-Fi WebSocket:** Latensi ultra-rendah 1–5 ms melalui jaringan lokal tanpa konfigurasi khusus.
+   - **Jalur Bluetooth HID Hardware Emulation (Android):** Emulasi standar Keyboard + Mouse Bluetooth hardware menggunakan `BluetoothHidDevice` (Android 9+). Terhubung langsung ke PC Windows, Mac, iPad, atau Smart TV tanpa perlu menginstal aplikasi server apa pun di perangkat penerima!
+7. **Panel Ekstensi (Bisa di-toggle):**
    - **Fn Bar:** Tombol `Esc`, `F1` s/d `F12`.
    - **Nav Bar:** `Insert`, `Delete`, `Home`, `End`, `Page Up`, `Page Down`, `Print Screen`.
    - **PC Numpad:** Blok 17 tombol kalkulator angka lengkap.
    - **Shortcut Cepat:** Tombol 1-tap untuk `Ctrl+C`, `Ctrl+V`, `Ctrl+Z`, `Ctrl+A`, `Alt+Tab`, `Win+D`.
-5. **Kustomisasi Sistem Operasi, Tema & Font (Menu Pengaturan ⚙️):**
+8. **Kustomisasi Sistem Operasi, Tema & Font (Menu Pengaturan ⚙️):**
    - **Pemilih Sistem Operasi Terpisah (Target OS):** Pilihan profil OS tersendiri (**Windows**, **macOS**, **Ubuntu / Linux**). Mengubah susunan tuts modifier (misal `control ⌃`, `option ⌥`, `⌘ cmd` pada Mac vs `Ctrl`, `⊞ Win`, `Alt` pada Windows/Ubuntu), font default OS, serta bilah pintasan cepat secara otomatis (`⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc` untuk Mac; `Ctrl+Alt+T` untuk Ubuntu).
    - **Koleksi Tema Visual:** Tema Sesuai OS (Native), Dark Modern, Retro 90s, Cyberpunk, Stealth Matte, dan Nord Arctic.
    - **Pemilih Font / Tipografi Mandiri (Custom Typography Studio):** Pilihan 10 jenis font tuts independen jika tidak menyukai font bawaan tema (Bawaan Tema/Auto, Ubuntu, Segoe UI, SF Pro Apple, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, Sistem UI).
    - **Ukuran Tinggi Tombol:** Preset (Kecil, Normal, Besar, Ekstra) dan slider ketinggian tombol (30px - 60px).
    - **Fullscreen & Tip Toggle:** Tombol manual fullscreen (`⛶`) dan opsi sembunyikan baris tip.
-   - **Dukungan PWA (Progressive Web App):** Dilengkapi Web App Manifest (`manifest.json`), Service Worker (`sw.js`), dan opsi instalasi ke Layar Utama (*Home Screen*). Membuka aplikasi secara mandiri (*standalone/fullscreen*) tanpa bilah URL browser dan tanpa popup peringatan fullscreen Chrome.
-6. **Mode Penguncian Modifier Persisten (Persistent Modifier Lock):**
+   - **Dukungan PWA (Progressive Web App):** Dilengkapi Web App Manifest (`manifest.json`), Service Worker (`sw.js`), dan opsi instalasi ke Layar Utama (*Home Screen*).
+9. **Mode Penguncian Modifier Persisten (Persistent Modifier Lock):**
    - **Operasi Sama Persis Keyboard Fisik:** Mengetuk tombol `Shift`, `Ctrl`, `Alt`, atau `Win`/`Cmd` akan membuatnya **aktif terus secara mandiri** (tetap tertahan di level driver OS PC) sampai diketuk kembali untuk melepasnya.
    - **Seleksi Teks & Navigasi Lancar:** Memungkinkan seleksi baris berkali-kali (`Shift + ⬇️ + ⬇️ + ⬇️`), navigasi jendela aplikasi (`Alt + Tab + Tab`), pengetikan huruf kapital / simbol beruntun tanpa lepas, dan kombinasi shortcut kompleks.
-   - **Pilihan 3 Mode Fleksibel:**
-     - `🔒 Lock` (Aktif Terus / Bawaan): Tetap aktif sampai ditekan lagi.
-     - `⚡ 1-Shot`: Lepas otomatis setelah 1 tombol berikutnya ditekan.
-     - `🖐️ Hold`: Hanya aktif selama jari menyentuh tombol di layar (multi-touch manual).
-   - Dapat diubah instan melalui tombol toolbar atas (`🔒 Lock`) maupun menu Pengaturan (⚙️).
-7. **Sistem Pemulihan Mandiri Koneksi Wi-Fi (Self-Healing Network & Auto-Reconnect):**
-   - **Watchdog Heartbeat & Dead Socket Destroyer:** Menghancurkan socket TCP zombie secara otomatis dalam 5.5 detik saat router Wi-Fi di-restart (mencegah koneksi gantung/hang).
-   - **Reconnection Loop Cerdas:** Algoritma exponential backoff dengan jitter acak serta responsivitas instan saat sinyal Wi-Fi terhubung kembali (`online`) dan saat HP dinyalakan dari mode tidur (`visibilitychange`).
-   - **Asisten Pemulihan & Pemindai Subnet Otomatis (DHCP IP Change Discovery):** Memindai seluruh subnet lokal pada port 8080 secara paralel dan resolusi nama mDNS (`Jarvis.local`) untuk mendeteksi otomatis jika router memberikan IP baru ke PC setelah reboot.
-8. **Smart LAN Detection & QR Code:**
-   - Secara otomatis mendeteksi alamat IP Wi-Fi lokal fisik Anda (mengabaikan interface VPN/Docker seperti Cloudflare WARP), dan menampilkan QR code di terminal PC untuk koneksi instan.
+   - **Pilihan 3 Mode Fleksibel:** `🔒 Lock` (Aktif Terus / Bawaan), `⚡ 1-Shot` (Lepas otomatis setelah 1 tombol berikutnya ditekan), `🖐️ Hold` (Hanya aktif selama jari menyentuh layar).
+10. **Sistem Pemulihan Mandiri Koneksi Wi-Fi (Self-Healing Network & Auto-Reconnect):**
+    - **Watchdog Heartbeat & Dead Socket Destroyer:** Menghancurkan socket TCP zombie secara otomatis dalam 5.5 detik saat router Wi-Fi di-restart (mencegah koneksi gantung/hang).
+    - **Reconnection Loop Cerdas:** Algoritma exponential backoff dengan jitter acak serta responsivitas instan saat sinyal Wi-Fi terhubung kembali (`online`) dan saat HP dinyalakan dari mode tidur (`visibilitychange`).
+    - **Asisten Pemulihan & Pemindai Subnet Otomatis (DHCP IP Change Discovery):** Memindai seluruh subnet lokal pada port 8080 secara paralel dan resolusi nama mDNS (`Jarvis.local`) untuk mendeteksi otomatis jika router memberikan IP baru ke PC setelah reboot.
+11. **🛠️ Pemeriksa Sistem Pra-Jalan Cerdas (System Pre-Flight Checker):**
+    - Otomatis mengecek kesehatan port, firewall, dan izin kernel sebelum server berjalan via `system_checker.py`.
+    - Menangani bentrokan port 8080 secara ramah tanpa crash atau pesan traceback yang membingungkan orang awam.
+12. **Smart LAN Detection & QR Code:**
+    - Secara otomatis mendeteksi alamat IP Wi-Fi lokal fisik Anda (mengabaikan interface VPN/Docker seperti Cloudflare WARP), dan menampilkan QR code di terminal PC untuk koneksi instan.
 
 ---
 
@@ -118,13 +131,18 @@ pm2 start server.py --name digikeyboard --interpreter python3
 
 1. Saat server PC aktif, terminal akan menampilkan URL dan QR Code, contoh:
    ```text
-   http://192.168.8.103:8080
+   http://192.168.8.100:8080
    ```
 2. Buka kamera HP untuk scan **QR Code**, ATAU ketik alamat IP tersebut di browser (Chrome / Safari / Firefox / Edge).
-3. **Tips Penggunaan Terbaik:**
-   - **Android:** Buka menu browser > ketuk **"Install App"** atau **"Add to Home Screen"** untuk pengalaman keyboard layar penuh (PWA) tanpa address bar.
-   - **iOS (iPhone / iPad):** Buka Safari > ketuk tombol **Share (Bagikan)** > pilih **"Add to Home Screen"**. Buka ikon DigiKeyboard dari Home Screen untuk mode Fullscreen native dengan adaptasi notch/island & home bar.
-   - Putar perangkat ke posisi **Landscape (Mendatar)**.
+3. **Pilihan Cara Menggunakan:**
+   - **📱 Aplikasi Android Native (Direkomendasikan untuk Pengalaman Terbaik):**
+     - Buka `http://<PC_IP>:8080/download/apk` di browser HP atau klik tombol **"📱 Download Android APK"** di header web.
+     - Pasang APK `DigiKeyboard.apk` di HP Anda.
+     - Nikmati fullscreen murni tanpa popup peringatan Chrome, orientasi landscape terkunci, dan opsi **Bluetooth HID**.
+   - **🌐 Mode Web Browser / PWA:**
+     - **Android:** Buka menu Chrome > ketuk **"Add to Home Screen"** / **"Install App"**.
+     - **iOS (iPhone / iPad):** Buka Safari > ketuk tombol **Share (Bagikan)** > pilih **"Add to Home Screen"**.
+     - Putar perangkat ke posisi **Landscape (Mendatar)**.
 
 ---
 
@@ -149,18 +167,23 @@ pm2 start server.py --name digikeyboard --interpreter python3
 ### 🌟 Overview
 Most remote keyboard applications rely on native text inputs that trigger clumsy mobile virtual keyboards (Gboard/SwiftKey), concealing essential PC keys such as **Esc, Tab, Function keys (F1-F12), Alt, Windows/Super, and Arrows**.
 
-**DigiKeyboard** solves this by projecting an authentic, full-fidelity mechanical PC keyboard layout directly onto your mobile browser canvas via low-latency WebSocket communication (1-5 ms).
+**DigiKeyboard** solves this by projecting an authentic, full-fidelity mechanical PC keyboard layout directly onto your mobile canvas via low-latency WebSocket communication (1-5 ms) or direct Bluetooth HID hardware emulation.
 
 ### ✨ Key Features
 - **True 1:1 PC Keyboard Canvas:** Number row, full QWERTY, navigation keys, latching modifiers, and Numpad without mobile OS keyboard popup.
 - **Laptop Trackpad / Mouse Control Deck:** Smooth multi-touch trackpad with 1-finger left click tap, 2-finger right click tap, 2-finger vertical scroll, physical left/right buttons, position toggle (top/bottom), sizing/sensitivity controls, and persistent On/Off option (via toolbar, palm rest button, or Settings).
 - **Tactile & Audio Feedback:** Web Vibration API haptics (Soft, Normal, Strong) and synthesized mechanical switch sound with custom volume slider (10%-100%) and quick presets.
+- **🛡️ Anti-Collision Controller Arbitration:** Prevents keystroke interleaving and pointer jitter when multiple family members or devices open the keyboard simultaneously. Automatically designates one Active Controller (`🟢 👑 Active Controller`) while placing other devices into Standby Mode (`🟡 ⚡ Standby (Takeover)`). Features 1-tap takeover, 30s idle auto-takeover, and clean modifier release on handoff/disconnect.
+- **📱 Android Native Client (Direct APK Download):** Bypasses browser PWA/fullscreen limitations, offering true sticky immersive fullscreen, locked landscape, screen keep-awake, and direct download from `http://<PC_IP>:8080/download/apk`.
+- **📶 Dual Wireless Modes (Wi-Fi + Bluetooth HID):** Connect via high-speed local Wi-Fi WebSocket or switch to native Bluetooth HID hardware emulation (Keyboard + Mouse composite device) to control PCs, Macs, iPads, or Smart TVs without installing server software.
 - **Target OS Profile & Layout Selector:** Dedicated OS selector (**Windows**, **macOS**, **Ubuntu / Linux**). Automatically configures physical modifier keys (`control ⌃`, `option ⌥`, `⌘ cmd` on Mac vs `Ctrl`, `⊞ Win`, `Alt` on Windows/Ubuntu), native OS typography, and OS-tailored shortcut bars (`⌘+C`, `⌘+Tab`, `⌘+Space`, `⌥+⌘+Esc` on Mac; `Ctrl+Alt+T` on Ubuntu).
 - **Theme & Ergonomics Studio:** Independent visual themes (Native OS, Dark Modern, Retro 90s, Cyberpunk, Stealth, Nord) and granular key height scaling.
 - **Independent Font & Typography Studio:** Custom font selector offering 10 distinct font families if you prefer a different look from the theme default (Theme Default/Auto, Ubuntu, Segoe UI, SF Pro Apple, JetBrains Mono, Inter, Fira Code, Orbitron, Courier New, System UI).
-- **Progressive Web App (PWA) & Zero-Popup Fullscreen:** Add to Home Screen support with Web App Manifest (`manifest.json`), Service Worker (`sw.js`), and high-res app icons for a native full-screen experience with no browser URL bar and no Chrome fullscreen popups.
+- **Progressive Web App (PWA) & Zero-Popup Fullscreen:** Add to Home Screen support with Web App Manifest (`manifest.json`), Service Worker (`sw.js`), and high-res app icons for a native full-screen experience.
 - **Persistent Modifier Lock (Physical Keyboard Parity):** Modifier keys (`Shift`, `Ctrl`, `Alt`, `Win`/`Cmd`) remain actively held down on the host OS until tapped again, enabling seamless multi-line text selection (`Shift + Arrow + Arrow`), window switching (`Alt + Tab + Tab`), continuous uppercase/symbol typing, and complex desktop shortcuts. Features 3 selectable behaviors: `🔒 Lock` (Persistent), `⚡ 1-Shot` (Auto-release), and `🖐️ Hold` (Touch-and-hold).
 - **Self-Healing Wi-Fi Connection & Dynamic IP Discovery:** Heartbeat watchdog destroying zombie sockets in 5.5s upon router reboot, jittered exponential backoff auto-reconnect, network & screen-wake event listeners, and parallel subnet scanner on port 8080 to auto-locate newly assigned PC IP addresses.
+- **🛠️ System Pre-Flight Diagnostics:** Non-technical friendly preflight audit (`system_checker.py`) gracefully handling port 8080 conflicts, Linux `/dev/uinput` permissions, and firewalls without panic tracebacks.
+- **📦 Standalone Portable Executables:** Ready-to-run binaries without manual Python setup for Linux (`dist/DigiKeyboard`), Windows (`dist/DigiKeyboard.exe`), and macOS (`dist/DigiKeyboardApp.app`).
 - **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
 ---
@@ -170,10 +193,12 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 2. Run on Linux:
    ```bash
    chmod +x install-linux.sh && ./install-linux.sh
+   # Or run the standalone executable:
+   ./dist/DigiKeyboard
    ```
 3. Run on Windows:
-   Double-click `run.bat`.
-4. Scan the terminal ASCII QR code or visit `http://<PC_IP>:8080` in your mobile browser.
+   Double-click `run.bat` or run `dist\DigiKeyboard.exe`.
+4. Scan the terminal ASCII QR code or visit `http://<PC_IP>:8080` in your mobile browser, or download `http://<PC_IP>:8080/download/apk` on Android.
 
 ---
 

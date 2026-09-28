@@ -84,3 +84,90 @@ DigiKeyboard dirancang untuk bekerja secara mulus di berbagai sistem operasi:
   Jika muncul pop-up *Windows Defender Firewall*, centang **Private Networks** lalu klik **Allow access**.
 - **macOS:**
   Jika firewall aktif, buka *System Settings > Network > Firewall* dan izinkan koneksi masuk untuk Python.
+
+---
+
+## 📦 Build Standalone Executable (Tanpa Python di PC Target)
+
+Jika Anda ingin mendistribusikan aplikasi sebagai satu file aplikasi mandiri:
+
+### 1. Windows (`.exe`)
+Jalankan file batch:
+```cmd
+build-exe.bat
+```
+Hasil: `dist\DigiKeyboard.exe` (Standalone Windows Executable dengan icon).
+
+### 2. Linux (Binary Executable)
+Jalankan script bash:
+```bash
+chmod +x build-linux.sh
+./build-linux.sh
+```
+Hasil: `dist/DigiKeyboard` (Standalone ELF Binary). Jalankan langsung dengan `./dist/DigiKeyboard`.
+
+### 3. macOS (`.app` Bundle & Binary)
+Jalankan script bash di macOS:
+```bash
+chmod +x build-macos.sh
+./build-macos.sh
+```
+Hasil:
+- Terminal Binary: `dist/DigiKeyboard`
+- macOS Application Bundle: `dist/DigiKeyboardApp.app`
+
+---
+
+## 📱 Build & Penggunaan Android Native APK (Solusi Bebas Pop-up Chrome & Bluetooth HID)
+
+Untuk pengalaman terbaik di HP/Tablet Android tanpa pop-up keamanan Chrome (*"Swipe down to exit fullscreen"*), tanpa bilah alamat browser, dan dengan opsi **Bluetooth HID**, gunakan aplikasi **DigiKeyboard APK**.
+
+### 1. Cara Download Langsung dari HP (Paling Cepat):
+1. Jalankan server DigiKeyboard di PC.
+2. Buka browser di HP ke alamat:
+   ```text
+   http://<PC_IP>:8080/download/apk
+   ```
+   Atau buka `http://<PC_IP>:8080` dan klik tombol **"📱 Download Android APK"** di header atas.
+3. Pasang file `DigiKeyboard.apk` di HP Android Anda.
+
+### 2. Fitur Spesial Android APK:
+- **True Immersive Sticky Fullscreen:** 100% bebas dari pop-up peringatan Chrome.
+- **Koneksi Wi-Fi Fleksibel:** Masukkan alamat IP server PC langsung di dalam aplikasi saat pertama kali dibuka.
+- **Mode Bluetooth HID Hardware Emulation:**
+  - Mendukung emulasi hardware Keyboard + Mouse Bluetooth standar via `BluetoothHidDevice` (Android 9+).
+  - Sambungkan (pair) Bluetooth ponsel Anda langsung ke PC, Mac, iPad, Android TV, atau Smart TV.
+  - Berfungsi tanpa perlu menginstal aplikasi server apa pun di PC target!
+
+### 3. Cara Build APK Sendiri dari Source Code:
+1. **Menggunakan Script CLI (Otomatis):**
+   ```bash
+   ./build-apk.sh
+   ```
+   Hasil APK siap pakai akan otomatis disimpan di `dist/DigiKeyboard.apk` dan `static/DigiKeyboard.apk`.
+2. **Menggunakan Android Studio:**
+   - Buka Android Studio > pilih **Open** > arahkan ke folder `android/`.
+   - Pilih menu **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+3. **Build Otomatis Cloud via GitHub Actions:**
+   - Cukup push project ke GitHub. Workflow `.github/workflows/build-apk.yml` akan otomatis mengompilasi APK dan menyediakannya untuk di-download langsung di tab **Actions > Artifacts**.
+
+---
+
+## 🛡️ Fitur Anti-Tabrakan Pengendali (Multi-Device Arbitration)
+
+Jika Anda memiliki beberapa HP atau tablet yang membuka DigiKeyboard secara bersamaan:
+1. **Pengendali Aktif (`🟢 👑`):** Perangkat pertama yang tersambung menjadi pengendali utama yang dapat mengetik dan menggerakkan mouse.
+2. **Mode Siaga (`🟡 ⚡`):** Perangkat kedua dan seterusnya otomatis berstatus siaga. Tombol yang diketik tidak akan dikirimkan ke PC untuk mencegah teks bertabrakan atau kursor mouse bergerak liar.
+3. **Ambil Alih Kendali (Takeover):**
+   - **Manual:** Ketuk tombol status `🟡 ⚡ Siaga` di layar HP Anda, lalu konfirmasi **"Ya, Ambil Alih"**. Kendali langsung berpindah ke HP Anda.
+   - **Otomatis (Idle Timeout):** Jika pengendali aktif tidak melakukan pengetikan selama 30 detik, perangkat siaga yang mengetik tombol akan otomatis mengambil alih kendali.
+
+---
+
+## 🛠️ Pemeriksa Sistem Otomatis (System Pre-Flight Checker)
+
+Saat Anda menjalankan server:
+- Skrip [`system_checker.py`](system_checker.py) akan memverifikasi kesehatan jaringan lokal, ketersediaan port 8080, status firewall, dan hak akses Linux `/dev/uinput`.
+- Jika port 8080 sudah digunakan oleh daemon DigiKeyboard lain, aplikasi mendeteksinya secara cerdas dan menampilkan URL aktif tanpa error crash atau traceback.
+
+

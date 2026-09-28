@@ -9,6 +9,41 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## 🇮🇩 Bahasa Indonesia
 
+### [1.17.0] - 2026-09-28
+#### ✨ Fitur Baru (Added)
+- **Aplikasi Native Android (DigiKeyboard.apk):**
+  - Pembuatan project Android mandiri di folder `android/` berbasis WebView berperforma tinggi dan SDK Android 14.
+  - **Mode True Immersive Sticky Fullscreen:** Mengeliminasi seluruh pop-up dan peringatan browser Chrome (*"Swipe down from the top to exit full screen"* dan *"This app cannot be installed"*).
+  - Fitur *Auto-Landscape*, *Keep Screen Awake*, dan *Soft Keyboard Suppressed* (mencegah keyboard virtual bawaan HP muncul menutupi tuts).
+  - Tautan download instan langsung di server lokal: `http://<IP-PC>:8080/static/DigiKeyboard.apk` dan tombol 1-klik di modal Pengaturan.
+- **Dukungan Bluetooth HID Hardware (Plug & Play Tanpa Server PC):**
+  - Implementasi modul `BluetoothHidHelper.java` (Android 9+ API 28) dengan standar USB Composite HID Report Descriptor (Keyboard + Mouse).
+  - Menyamarkan HP menjadi keyboard & mouse fisik nirkabel asli yang langsung dikenali oleh Windows, macOS, Linux, iPad, Android TV, bahkan menu BIOS/UEFI tanpa perlu software server di PC.
+  - Tombol sakelar cepat `📶 BT` pada toolbar antarmuka pengguna.
+- **Sistem Arbitrase Anti-Tabrakan Antar Pengguna (Single Active Controller):**
+  - Arbitrase pengendali aktif tunggal di `server.py`: perangkat pertama yang tersambung otomatis menjadi `👑 Pengendali Aktif`.
+  - Perangkat kedua atau berikutnya otomatis masuk ke `🟡 Mode Siaga (Standby)` dengan penahanan input di level server guna mencegah benturan tuts (*interleaved typing*) dan perebutan kursor mouse.
+  - Tombol `⚡ Ambil Alih (Takeover)` dan *Auto-Takeover* saat pengendali aktif idle > 30 detik.
+  - Pelepasan tombol bersih (*Clean Key Release*): otomatis melepaskan seluruh modifier yang tertahan saat pergantian kendali atau koneksi terputus.
+- **Pemeriksa Kesiapan Sistem Ramah Awam (Layman-Friendly System Checker):**
+  - Modul mandiri `system_checker.py` dengan checklist visual berwarna (🟢 / 🟡 / 🔴) dan bahasa sehari-hari tanpa istilah teknis membingungkan.
+  - Otomatis mendeteksi background service yang sudah aktif di port 8080 (menghindari error crash `Address already in use`), serta menawarkan bantuan otomatis 1-klik untuk perizinan hardware Linux `/dev/uinput` dan Firewall.
+- **Mode Game Console (Virtual Gamepad untuk Emulator & Game PC):**
+  - Tata letak konsol gamepad virtual penuh di layar sentuh dengan tombol switch cepat `🎮 Game` di toolbar atas.
+  - Pilihan kontrol arah ganda: D-Pad 8-arah kinetik dan Analog Thumbstick virtual responsif.
+  - Tombol aksi berlian (`A`, `B`, `X`, `Y`), tombol pundak (`L1`, `R1`), dan analog triggers (`L2`, `R2`).
+  - Tombol cepat emulator instan: `⏩ Turbo` (Spasi), `💾 Save` (F2), `📂 Load` (F4), dan `⏸️ Menu` (Esc).
+  - 4 Preset instan bawaan: RetroArch/SNES, GBA (VisualBoy), PlayStation (PSX/PCSX2), dan Modern WASD/PC.
+  - Modal Remap Tombol Mandiri (`⚙️ Remap`) untuk kustomisasi pemetaan tuts keyboard PC per tombol secara bebas dengan penyimpanan permanen di `localStorage`.
+- **Sinkronisasi Dua Arah Hardware Caps Lock Host OS:**
+  - Deteksi status fisik Caps Lock di host OS secara native di Linux (`/sys/class/leds/*capslock*/brightness` dan X11 ctypes), Windows (`GetKeyState(0x14)`), serta macOS (Quartz AlphaShift).
+  - Sinkronisasi status Caps Lock otomatis ke seluruh klien WebSocket yang terhubung via payload `caps_state` dan `pong`.
+  - Inversi cerdas huruf besar/kecil (`isUpper = caps_lock !== shift`) pada klien web dan server `uinput`/`pynput`.
+- **Paket Standalone Executable Lintas Platform:**
+  - Skrip build PyInstaller untuk Windows (`build-exe.bat` -> `dist/DigiKeyboard.exe`), Linux (`build-linux.sh` -> `dist/DigiKeyboard`), dan macOS (`build-macos.sh` -> `dist/DigiKeyboardApp.app`).
+
+---
+
 ### [1.16.0] - 2026-09-26
 #### ✨ Fitur Baru (Added)
 - **Persistent Modifier Lock (Paritas Keyboard Fisik PC):**
@@ -189,6 +224,40 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## 🇬🇧 English
+
+### [1.17.0] - 2026-09-28
+#### ✨ Added
+- **Native Android Client App (`DigiKeyboard.apk`):**
+  - Dedicated Android standalone project located in `android/` utilizing high-performance WebView and modern Android 14 SDK.
+  - **True Immersive Sticky Fullscreen:** Eliminates browser Chrome warning toasts (*"Swipe down from the top to exit full screen"*) and installation banners.
+  - Features *Auto-Landscape*, *Keep Screen Awake*, and *Soft Keyboard Suppressed* (guaranteeing that native virtual keyboards never cover keycaps).
+  - Instant local download link: `http://<PC_IP>:8080/download/apk` with a 1-tap download button inside the Settings modal.
+- **Native Bluetooth HID Hardware Emulation (Plug & Play without PC Server):**
+  - Integrated `BluetoothHidHelper.java` (Android 9+ API 28) using USB Composite HID Report Descriptor standards (Keyboard + Mouse).
+  - Emulates an authentic physical wireless keyboard & mouse directly recognized by Windows, macOS, Linux, iPadOS, Android TV, and UEFI/BIOS menus without requiring server software on the host.
+  - Quick `📶 BT` switch button integrated into the web client toolbar.
+- **Anti-Collision Single Active Controller Arbitration:**
+  - Single active controller arbitration in `server.py`: the first connected device is automatically designated `🟢 👑 Active Controller`.
+  - Secondary connected devices enter `🟡 Standby Mode` with server-side keystroke gating to prevent interleaved typing and pointer jitter.
+  - Features 1-tap `⚡ Takeover` button, automatic takeover after 30 seconds of primary inactivity, and clean modifier release on handoff/disconnect.
+- **Beginner-Friendly Pre-Flight Diagnostics Engine (`system_checker.py`):**
+  - Standalone pre-flight checklist module featuring color-coded status (🟢 / 🟡 / 🔴) in plain everyday language.
+  - Automatically identifies existing background services on port 8080 (preventing `Address already in use` crashes), offering 1-click remedies for Linux `/dev/uinput` permissions and firewall setup.
+- **Game Console Mode (Virtual Gamepad for Emulators & PC Games):**
+  - Full-screen virtual gamepad layout with a dedicated `🎮 Game` toggle in the header toolbar.
+  - Dual directional control options: 8-way kinetic D-Pad and a responsive virtual analog thumbstick.
+  - Diamond action buttons (`A`, `B`, `X`, `Y`), shoulder bumpers (`L1`, `R1`), and analog triggers (`L2`, `R2`).
+  - Instant emulator hotkeys: `⏩ Turbo` (Space), `💾 Save` (F2), `📂 Load` (F4), and `⏸️ Menu` (Esc).
+  - 4 Built-in instant presets: RetroArch/SNES, GBA (VisualBoy), PlayStation (PSX/PCSX2), and Modern WASD/PC.
+  - Dedicated key remapping modal (`⚙️ Remap`) for customizing physical PC key assignments per button with persistent `localStorage` saving.
+- **Two-Way Host OS Caps Lock Hardware Synchronization:**
+  - Native host OS Caps Lock detection across Linux (`/sys/class/leds/*capslock*/brightness` and X11 ctypes), Windows (`GetKeyState(0x14)`), and macOS (Quartz AlphaShift).
+  - Real-time Caps Lock state broadcasting to all connected clients via `caps_state` and `pong` payloads.
+  - Smart case inversion (`isUpper = caps_lock !== shift`) on web clients and `uinput`/`pynput` server engines.
+- **Multi-Platform Standalone Portable Executables:**
+  - Automated PyInstaller compilation scripts for Windows (`build-exe.bat` -> `dist/DigiKeyboard.exe`), Linux (`build-linux.sh` -> `dist/DigiKeyboard`), and macOS (`build-macos.sh` -> `dist/DigiKeyboardApp.app`).
+
+---
 
 ### [1.16.0] - 2026-09-26
 #### ✨ Added

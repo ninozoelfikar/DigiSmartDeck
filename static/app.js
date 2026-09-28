@@ -161,13 +161,13 @@
     if (capsBtn) capsBtn.classList.toggle('latched', modifiers.caps_lock);
 
     // Swap case / symbol visual display when Shift or Caps is active
-    const isShifted = modifiers.shift || modifiers.caps_lock;
     document.querySelectorAll('.key[data-char]').forEach(keyEl => {
       const char = keyEl.dataset.char;
       const shiftChar = keyEl.dataset.shift;
       const mainSpan = keyEl.querySelector('.main');
       if (mainSpan && char.length === 1 && char.match(/[a-z]/i)) {
-        mainSpan.textContent = isShifted ? char.toUpperCase() : char.toLowerCase();
+        const isUpper = (modifiers.caps_lock !== modifiers.shift);
+        mainSpan.textContent = isUpper ? char.toUpperCase() : char.toLowerCase();
       }
     });
   }
@@ -216,10 +216,12 @@
     // Regular character or special key
     let characterToSend = char;
     if (char) {
-      if (modifiers.shift && shiftChar) {
+      const isLetter = /^[a-zA-Z]$/.test(char);
+      if (isLetter) {
+        const isUpper = (modifiers.caps_lock !== modifiers.shift);
+        characterToSend = isUpper ? char.toUpperCase() : char.toLowerCase();
+      } else if (modifiers.shift && shiftChar) {
         characterToSend = shiftChar;
-      } else if (modifiers.shift || modifiers.caps_lock) {
-        characterToSend = char.toUpperCase();
       }
     }
 

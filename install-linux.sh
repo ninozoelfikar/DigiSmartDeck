@@ -61,57 +61,13 @@ else
     echo -e "    ${GREEN}✓ Semua dependencies sudah terinstal${NC}"
 fi
 
-# ── 3. Cek Display/X11 untuk pynput ──
-echo -e "${CYAN}[3/4]${NC} Memeriksa akses keyboard (X11/Wayland)..."
+# ── 3. Pemeriksaan Izin Sistem & Kesiapan (Ramah Awam) ──
+echo -e "${CYAN}[3/4]${NC} Memeriksa kesiapan sistem & izin akses..."
+python3 system_checker.py
 
-if python3 -c "
-from pynput.keyboard import Controller, Key
-c = Controller()
-print('OK')
-" 2>/dev/null | grep -q "OK"; then
-    echo -e "    ${GREEN}✓ Kontrol keyboard aktif - input akan dikirim ke PC${NC}"
-else
-    echo -e "    ${YELLOW}⚠ Display server tidak terdeteksi.${NC}"
-    echo "    Tips:"
-    echo "    • Pastikan Anda menjalankan script ini dari terminal di dalam sesi desktop GUI."
-    echo "    • Jika menggunakan SSH, tambahkan: export DISPLAY=:0"
-    echo ""
-    echo -e "    ${YELLOW}Server tetap akan berjalan (mode log/simulasi).${NC}"
+# ── 4. Jalankan Server jika belum aktif ──
+if ! python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/version', timeout=1)" 2>/dev/null; then
+    echo -e "${GREEN}Menjalankan DigiKeyboard Server...${NC}"
+    cd "$SCRIPT_DIR"
+    python3 server.py
 fi
-
-# ── 4. Deteksi IP ──
-echo -e "${CYAN}[4/4]${NC} Mendeteksi alamat IP jaringan lokal..."
-LOCAL_IP=$(python3 -c "
-import socket
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(('8.8.8.8', 80))
-    print(s.getsockname()[0])
-    s.close()
-except: print('127.0.0.1')
-")
-echo -e "    ${GREEN}✓ IP PC Anda: ${LOCAL_IP}${NC}"
-echo ""
-
-# ── Firewall Info ──
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "${YELLOW}[INFO FIREWALL]${NC}"
-echo "Jika HP tidak bisa terhubung, buka port 8080 di firewall:"
-echo ""
-if command -v ufw &>/dev/null; then
-    echo "  Ubuntu/Debian (ufw):"
-    echo -e "  ${CYAN}sudo ufw allow 8080/tcp${NC}"
-elif command -v firewall-cmd &>/dev/null; then
-    echo "  Fedora/RHEL (firewalld):"
-    echo -e "  ${CYAN}sudo firewall-cmd --add-port=8080/tcp --permanent && sudo firewall-cmd --reload${NC}"
-fi
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo -e "${GREEN}Menjalankan DigiKeyboard Server...${NC}"
-echo -e "Buka di HP/Tablet: ${CYAN}http://${LOCAL_IP}:8080${NC}"
-echo ""
-
-# ── Jalankan Server ──
-cd "$SCRIPT_DIR"
-python3 server.py

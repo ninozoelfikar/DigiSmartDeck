@@ -91,6 +91,10 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
 - [ ] **Developer & Sysadmin Power Bar:**
   - Tombol 1-tap khusus karakter terminal yang sering hilang di HP: `|` (pipe), `~` (tilde), `\`, `sudo `, `git `, `$`, `{ }`, `->`.
   - Mode Vim/Nano lock (Esc, Ctrl+C, Ctrl+Z, Tab, Arrow keys selalu siaga).
+- [ ] **Slot Banner Stiker Sponsor Palm Rest (Estetika Stiker Laptop):**
+  - Desain area kiri & kanan trackpad bergaya stiker laptop khas anak muda/kreator (native & non-intrusive).
+  - Khusus tampil di Free Tier: berfungsi sebagai slot afiliasi periferal/gadget, sewa sponsor brand teknologi, atau promosi internal (Skin Rp 10k & Lisensi Pro).
+  - Lisensi Pro otomatis menghilangkan stiker sponsor (Clean Minimalist Deck) atau membuka fitur upload stiker kustom pribadi.
 
 ---
 
@@ -146,7 +150,7 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
   - **Soundboard Audio FX:** Tombol instan efek suara reaksi siaran langsung (Tepuk Tangan / *Applause*, Tawa / *Laugh*, *Drum Roll*, *Air Horn*, *Ding*) yang langsung diputar ke output audio PC.
 
 #### 3. 🎮 Mode Gaming & Simulasi
-- [ ] **Mode Game Console (Virtual Gamepad):**
+- [x] **Mode Game Console (Virtual Gamepad):**
   - Tata letak konsol gamepad virtual penuh di layar sentuh:
     - D-Pad 8-arah di sisi kiri.
     - Tombol aksi `A`, `B`, `X`, `Y` di sisi kanan.
@@ -158,11 +162,19 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
 
 ---
 
-### 📌 Fase 5: Kesiapan Komersial, Distribusi & Hardware (Q4 2026)
-- [ ] **Script Build Windows Executable Mandiri (`build-exe.bat` / PyInstaller):**
-  - Script otomatisasi kompilasi untuk menghasilkan file binary `DigiKeyboard.exe` (atau `AirDeck.exe`) mandiri (*portable single-file*).
-  - Mengemas seluruh aset web frontend (`static/`), ikon Windows (`.ico`), dan server aiohttp ke dalam satu file executable tanpa mengharuskan pengguna akhir menginstal Python atau dependensi terminal.
-  - Kompatibel dengan pembuatan paket installer setup Windows (Inno Setup / NSIS).
+### 📌 Fase 5: Kesiapan Komersial, Distribusi & Hardware (Selesai Sebagian di v1.16.0 - v1.17.0)
+- [x] **Script Build Executable Mandiri Multi-Platform (PyInstaller):**
+  - **Linux Standalone Binary (`build-linux.sh`):** Menghasilkan executable ELF 64-bit mandiri `dist/DigiKeyboard` (39MB) tanpa dependensi Python di target PC.
+  - **Windows Executable (`build-exe.bat`):** Script kompilasi menghasilkan `dist/DigiKeyboard.exe` mandiri beserta aset ikon `.ico`.
+  - **macOS Bundle (`build-macos.sh`):** Menghasilkan bundle aplikasi `dist/DigiKeyboardApp.app` dan binary CLI macOS.
+- [x] **Aplikasi Android Native & Bluetooth HID (`DigiKeyboard.apk`):**
+  - Pengemasan APK Android native via Gradle 8.5 & Android SDK 34 (`build-apk.sh`).
+  - True Immersive Sticky Fullscreen bebas gangguan popup Chrome.
+  - Emulasi perangkat keras Bluetooth HID komposit (Keyboard + Mouse) via `BluetoothHidDevice` (Android 9+) untuk koneksi langsung tanpa software server.
+- [x] **Anti-Collision Single Active Controller Arbitration:**
+  - Manajemen sesi multi-koneksi dengan 1 pengendali aktif, antrean siaga (*standby*), dan pengambilalihan (*takeover*).
+- [x] **Pemeriksa Pra-Jalan Interaktif (`system_checker.py`):**
+  - Diagnostik kesehatan port, firewall, dan izin kernel ramah orang awam.
 - [ ] **Mesin Validasi Kunci Lisensi Offline (Cryptographic License Key Validator):**
   - Sistem validasi lisensi Pro berbasis kriptografi asimetris (Ed25519 / HMAC-SHA256) untuk verifikasi offline tanpa ketergantungan koneksi internet/server aktivasi terpusat.
   - Mendukung tipe lisensi (Personal Lifetime, Creator Studio, B2B Multi-seat) dan batas kedaluwarsa opsional.
@@ -191,8 +203,11 @@ Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward nati
 - [x] **Integrated Trackpad Companion:** Multi-touch laptop trackpad deck with kinetic pointer tracking, tap-to-click, 2-finger scroll, physical buttons, sensitivity/size scaling, and full On/Off toggle.
 - [x] **Linux Kernel Virtual Hardware Driver (`uinput`):** Native hardware-level injection for GDM/SDDM display login, lock screen, and root password prompts.
 - [x] **Continuous Key Auto-Repeat:** Hardware-like repeat (~22 keys/sec after 350ms delay).
-- [x] **Persistent Modifier Lock:** Continuous active lock for `Shift`, `Ctrl`, `Alt`, and `Win`/`Cmd` enabling multi-line text selection and serialized shortcuts.
 - [ ] **Terminal & Sysadmin Bar:** One-tap keys for `|`, `~`, `\`, `sudo`, `git`, `$`, `Esc`, and `Ctrl+C`.
+- [ ] **Palm Rest Laptop Sticker Ad Slots:**
+  - Aesthetic digital laptop sticker slots on the left & right margins of the trackpad, mimicking youthful laptop sticker culture.
+  - Exclusively on Free Tier: serves tech peripheral affiliate banners, brand sponsorship space, or internal promotions (Skins & Pro).
+  - Pro Tier removes all sponsor stickers for a pristine deck or enables user custom stickers.
 
 ### 📌 Phase 3: Pairing Security & Local Networking (Completed)
 - [x] **Self-Healing Wi-Fi Reconnection:** 5.5s ping/pong watchdog to terminate zombie sockets, jittered exponential backoff auto-reconnect, screen-wake listeners, and parallel subnet port 8080 scanner to recover dynamically changed PC IP addresses upon router reboot.
@@ -233,17 +248,25 @@ Upcoming dedicated functional controllers designed for specialized workflows:
   - **Soundboard FX Pad:** Instant trigger buttons for live broadcast audio reactions (applause, laugh, drum roll, air horn).
 
 #### 3. 🎮 Gaming & Simulation
-- [ ] **Game Console Mode (Virtual Gamepad):**
+- [x] **Game Console Mode (Virtual Gamepad):**
   - 8-way directional D-pad, `A-B-X-Y` face buttons, `L1/R1` shoulder buttons, `L2/R2` analog triggers, Start/Select, and virtual thumbstick.
 - [ ] **Steering Wheel Mode (Motion Racing Wheel):**
   - Gyroscope & accelerometer-driven steering wheel control (tilt phone to steer cars in racing games like Forza, Assetto Corsa, or NFS).
   - Virtual analog gas and brake pedals, paddle shifters, and handbrake button.
 
-### 📌 Phase 5: Commercial Readiness, Packaging & Hardware (Q4 2026)
-- [ ] **Automated Windows Standalone Executable Build Script (`build-exe.bat` / PyInstaller):**
-  - Automated compilation pipeline to produce portable single-file `DigiKeyboard.exe` (or `AirDeck.exe`).
-  - Bundles web frontend assets (`static/`), application icons (`.ico`), and aiohttp server into a single executable without requiring Python installations or terminal CLI usage.
-  - Integration with Windows setup installer generators (Inno Setup / NSIS).
+### 📌 Phase 5: Commercial Readiness, Packaging & Hardware (Completed Partially in v1.16.0 - v1.17.0)
+- [x] **Multi-Platform Standalone Executable Build Scripts (PyInstaller):**
+  - **Linux Standalone ELF Binary (`build-linux.sh`):** Compiles single-file 64-bit binary `dist/DigiKeyboard` (39MB) with zero Python dependencies needed on target machines.
+  - **Windows Executable (`build-exe.bat`):** Automated build script producing standalone `dist/DigiKeyboard.exe` with bundled icons and static assets.
+  - **macOS Bundle (`build-macos.sh`):** Automated build script for `dist/DigiKeyboardApp.app`.
+- [x] **Android Native Client & Bluetooth HID (`DigiKeyboard.apk`):**
+  - Native APK packaged using Gradle 8.5 & Android SDK 34 (`build-apk.sh`).
+  - True Immersive Sticky Fullscreen eliminating Chrome fullscreen warning toasts and browser address bars.
+  - Bluetooth HID composite device emulation (Keyboard + Mouse) via `BluetoothHidDevice` (Android 9+) for direct pairing without server software.
+- [x] **Anti-Collision Single Active Controller Arbitration:**
+  - Prevents multi-user input conflicts with single active controller, standby queue, 1-tap takeover, and clean modifier release on handoff/disconnect.
+- [x] **System Pre-Flight Diagnostics Engine (`system_checker.py`):**
+  - Beginner-friendly preflight checks for port 8080 conflicts, uinput permissions, and firewall rules without stack trace crashes.
 - [ ] **Cryptographic Offline License Key Validator:**
   - Asymmetric cryptographic license verification engine (Ed25519 / HMAC-SHA256) enabling 100% offline verification without central DRM or internet connectivity requirements.
   - Supports license tiers (Personal Lifetime, Creator Studio, B2B Multi-seat) and optional expiry validations.
