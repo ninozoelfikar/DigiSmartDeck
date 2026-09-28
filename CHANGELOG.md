@@ -39,6 +39,13 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
   - Deteksi status fisik Caps Lock di host OS secara native di Linux (`/sys/class/leds/*capslock*/brightness` dan X11 ctypes), Windows (`GetKeyState(0x14)`), serta macOS (Quartz AlphaShift).
   - Sinkronisasi status Caps Lock otomatis ke seluruh klien WebSocket yang terhubung via payload `caps_state` dan `pong`.
   - Inversi cerdas huruf besar/kecil (`isUpper = caps_lock !== shift`) pada klien web dan server `uinput`/`pynput`.
+- **Mode Presentasi & Meeting Controller (Workstation Remote):**
+  - Tata letak kendali slide mandiri dengan tombol sakelar `📽️ Slide` pada toolbar atas.
+  - Tombol raksasa ergonomis `NEXT ➡` dan `PREV ⬅` untuk pergantian slide yang nyaman dioperasikan satu tangan di panggung tanpa melihat layar.
+  - Tombol layar hitam (`B`), layar putih (`W`), laser pointer (`Ctrl+L`), spidol coret anotasi (`Ctrl+P`), kursor panah (`Ctrl+A`), dan pembersih catatan (`E`).
+  - **Digital Countdown Timer Presenter:** Pilihan durasi preset (5m s/d 60m), peringatan visual warna dinamis, dan getaran haptic hening (*silent haptic feedback*) di saku presenter pada menit ke-5, ke-1, dan saat waktu habis.
+  - **Mini Laser Trackpad & Air Mouse (Gyro Pointer):** Geser jari untuk mengarahkan pointer di proyektor, atau aktifkan mode Gyro Air untuk mengarahkan laser dengan memiringkan bodi HP secara kinetik (*Device Orientation*).
+  - Tombol pintas meeting online (Zoom, Google Meet, Microsoft Teams): Toggle Mute Mikrofon, Kamera Video, Angkat Tangan (*Raise Hand*), dan Bagikan Layar (*Share Screen*).
 - **Paket Standalone Executable Lintas Platform:**
   - Skrip build PyInstaller untuk Windows (`build-exe.bat` -> `dist/DigiKeyboard.exe`), Linux (`build-linux.sh` -> `dist/DigiKeyboard`), dan macOS (`build-macos.sh` -> `dist/DigiKeyboardApp.app`).
 
@@ -254,6 +261,13 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
   - Native host OS Caps Lock detection across Linux (`/sys/class/leds/*capslock*/brightness` and X11 ctypes), Windows (`GetKeyState(0x14)`), and macOS (Quartz AlphaShift).
   - Real-time Caps Lock state broadcasting to all connected clients via `caps_state` and `pong` payloads.
   - Smart case inversion (`isUpper = caps_lock !== shift`) on web clients and `uinput`/`pynput` server engines.
+- **Presentation & Virtual Meeting Controller Mode:**
+  - Standalone presentation slide remote view toggled via the `📽️ Slide` toolbar button.
+  - Oversized, ergonomic `NEXT ➡` and `PREV ⬅` thumb controls designed for blind, distraction-free stage navigation.
+  - Screen blanking (`B`), white screen (`W`), laser pointer (`Ctrl+L`), pen annotator (`Ctrl+P`), arrow cursor (`Ctrl+A`), and clear drawing notes (`E`).
+  - **Presenter Digital Countdown Timer:** Preset duration selector (5m to 60m), dynamic visual color warning, and silent haptic vibration alerts in the speaker's pocket at 5 minutes remaining, 1 minute remaining, and at 0 minutes.
+  - **Mini Laser Trackpad & Gyro Air Pointer:** 1-finger touchpad for cursor navigation, plus kinetic device orientation air-mouse mode (tilt smartphone to aim pointer directly on the projector screen).
+  - Online meeting quick toggles (Zoom, Google Meet, Microsoft Teams): Mic Mute, Video Camera, Raise Hand, and Screen Share.
 - **Multi-Platform Standalone Portable Executables:**
   - Automated PyInstaller compilation scripts for Windows (`build-exe.bat` -> `dist/DigiKeyboard.exe`), Linux (`build-linux.sh` -> `dist/DigiKeyboard`), and macOS (`build-macos.sh` -> `dist/DigiKeyboardApp.app`).
 

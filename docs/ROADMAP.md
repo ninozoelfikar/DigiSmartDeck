@@ -118,18 +118,17 @@ Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) m
 Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa memunculkan keyboard bawaan ponsel:
 
 #### 1. 💼 Mode Produktivitas & Kolaborasi
-- [ ] **Mode Presentasi (Presentation Remote):**
+- [x] **Mode Presentasi (Presentation Remote):**
   - Navigasi slide 1-tap berukuran besar (`Next ➡`, `Prev ⬅`, `First ⏪`, `Last ⏩`).
-  - Pointer laser virtual interaktif (memanfaatkan gyroscope/air-mouse HP untuk menggerakkan kursor laser di layar presentasi PC).
-  - Tombol layar hitam/kosong (`B` / Blank Screen) dan penyorot pointer (highlighter).
-  - Timer waktu presentasi (countdown timer) dan getaran haptic pengingat sisa waktu di HP presenter.
-- [ ] **Mode Zoom & Virtual Meeting Streaming:**
+  - Pointer laser virtual interaktif & mini laser trackpad (memanfaatkan gyroscope/air-mouse HP untuk menggerakkan kursor laser di layar presentasi PC).
+  - Tombol layar hitam/kosong (`B` / Blank Screen), layar putih (`W`), laser mode (`Ctrl+L`), pen spidol (`Ctrl+P`), dan penghapus (`E`).
+  - Timer waktu presentasi (countdown timer) dan getaran haptic pengingat sisa waktu di HP presenter tanpa suara.
+- [x] **Mode Zoom & Virtual Meeting Streaming:**
   - Panel kontrol rapat 1-tap yang disinkronkan dengan shortcut Zoom, Google Meet, dan Microsoft Teams:
     - Tombol Toggle Mute / Unmute Mikrofon dengan status indikator visual warna (Merah/Hijau).
     - Tombol Toggle Kamera On / Off.
     - Tombol Angkat Tangan (*Raise Hand*).
     - Tombol Bagikan Layar (*Share Screen*).
-    - Quick Reaction Emoji Bar (👍, 👏, ❤️, 🎉).
 - [ ] **Mode Potret (Portrait Layout):**
   - Tata letak khusus orientasi vertikal/tegak yang dioptimalkan untuk pengoperasian satu tangan saat smartphone dipegang vertikal, atau saat ditaruh pada stand tablet tegak.
   - Penyesuaian proporsi kanvas keyboard dan trackpad atas/bawah yang ergonomis dalam rasio layar potret.
@@ -220,17 +219,16 @@ Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward nati
 Upcoming dedicated functional controllers designed for specialized workflows:
 
 #### 1. 💼 Productivity & Collaboration
-- [ ] **Presentation Mode (Slide Remote):**
+- [x] **Presentation Mode (Slide Remote):**
   - Oversized 1-tap navigation keys (`Next ➡`, `Prev ⬅`, `First ⏪`, `Last ⏩`).
-  - Virtual gyro-assisted laser pointer (air mouse).
-  - Blank/black screen button (`B`) and highlighter toggle.
-  - Presenter countdown timer with haptic reminder intervals.
-- [ ] **Zoom & Virtual Meeting Controller:**
+  - Virtual gyro-assisted laser pointer (air mouse) & mini laser touch surface.
+  - Blank/black screen button (`B`), white screen (`W`), laser pointer (`Ctrl+L`), and pen annotation (`Ctrl+P`).
+  - Presenter countdown timer with silent haptic reminder intervals.
+- [x] **Zoom & Virtual Meeting Controller:**
   - One-tap status toggles for Zoom, Google Meet, and Microsoft Teams:
     - Mic Mute / Unmute toggle with red/green visual state indicators.
     - Camera On / Off toggle.
     - Raise Hand & Screen Share controls.
-    - Quick meeting reaction emojis (👍, 👏, ❤️, 🎉).
 - [ ] **Portrait Mode (Vertical Orientation Layout):**
   - Ergonomically arranged vertical layout tailored for one-handed smartphone use or vertical tablet stands.
 

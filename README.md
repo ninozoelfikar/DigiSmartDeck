@@ -80,6 +80,13 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
     - Menangani bentrokan port 8080 secara ramah tanpa crash atau pesan traceback yang membingungkan orang awam.
 12. **Smart LAN Detection & QR Code:**
     - Secara otomatis mendeteksi alamat IP Wi-Fi lokal fisik Anda (mengabaikan interface VPN/Docker seperti Cloudflare WARP), dan menampilkan QR code di terminal PC untuk koneksi instan.
+13. **📽️ Mode Presentasi & Meeting Controller (Workstation Remote):**
+    - Mengubah HP menjadi remote slide profesional: navigasi raksasa `NEXT ➡` & `PREV ⬅`, tombol layar hitam (`B`), layar putih (`W`), laser pointer (`Ctrl+L`), spidol coret (`Ctrl+P`), dan penghapus (`E`).
+    - Dilengkapi **Digital Countdown Timer** dengan alarm getar hening (*silent haptic feedback*), mini touchpad laser, serta sensor **Air Mouse (Gyro Pointer)** untuk mengarahkan kursor dengan memiringkan HP.
+    - Tombol cepat meeting online (Zoom, Google Meet, Microsoft Teams): Toggle Mute Mikrofon, Kamera Video, Angkat Tangan (*Raise Hand*), dan Bagikan Layar (*Share Screen*).
+14. **🎮 Mode Game Console (Virtual Gamepad):**
+    - Gamepad virtual layar penuh dengan D-Pad kinetik 8-arah atau Virtual Thumbstick, tombol aksi berlian `A/B/X/Y`, tombol bahu `L1/R1`, dan analog triggers `L2/R2`.
+    - Preset siap pakai: RetroArch/SNES, GBA, PlayStation (PSX/PCSX2), dan Modern PC WASD dengan modal remap kustom mandiri.
 
 ---
 
@@ -183,6 +190,8 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 - **Persistent Modifier Lock (Physical Keyboard Parity):** Modifier keys (`Shift`, `Ctrl`, `Alt`, `Win`/`Cmd`) remain actively held down on the host OS until tapped again, enabling seamless multi-line text selection (`Shift + Arrow + Arrow`), window switching (`Alt + Tab + Tab`), continuous uppercase/symbol typing, and complex desktop shortcuts. Features 3 selectable behaviors: `🔒 Lock` (Persistent), `⚡ 1-Shot` (Auto-release), and `🖐️ Hold` (Touch-and-hold).
 - **Self-Healing Wi-Fi Connection & Dynamic IP Discovery:** Heartbeat watchdog destroying zombie sockets in 5.5s upon router reboot, jittered exponential backoff auto-reconnect, network & screen-wake event listeners, and parallel subnet scanner on port 8080 to auto-locate newly assigned PC IP addresses.
 - **🛠️ System Pre-Flight Diagnostics:** Non-technical friendly preflight audit (`system_checker.py`) gracefully handling port 8080 conflicts, Linux `/dev/uinput` permissions, and firewalls without panic tracebacks.
+- **📽️ Presentation & Meeting Remote Mode:** Oversized 1-tap `NEXT ➡` and `PREV ⬅` keys, blank/black screen (`B`), white screen (`W`), laser pointer (`Ctrl+L`), and pen annotations (`Ctrl+P`). Features a digital countdown timer with silent haptic reminder alerts, mini laser trackpad, and motion-based **Gyro Air Pointer** (tilt smartphone to aim). Includes 1-tap online meeting controls for Zoom, Google Meet, and Microsoft Teams (Mute, Video, Raise Hand, Screen Share).
+- **🎮 Game Console Mode (Virtual Gamepad):** Full-screen touch gamepad featuring an 8-way kinetic D-Pad or Virtual Thumbstick, diamond action buttons (`A/B/X/Y`), shoulder bumpers (`L1/R1`), and analog triggers (`L2/R2`). Built-in presets for RetroArch, GBA, PlayStation, and Modern PC WASD with custom remapping modal.
 - **📦 Standalone Portable Executables:** Ready-to-run binaries without manual Python setup for Linux (`dist/DigiKeyboard`), Windows (`dist/DigiKeyboard.exe`), and macOS (`dist/DigiKeyboardApp.app`).
 - **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
