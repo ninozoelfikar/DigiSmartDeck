@@ -1,176 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background_dark"
-    android:keepScreenOn="true">
+    android:background="@color/background_dark">
 
-    <!-- ── TOP BAR NATIVE ── -->
-    <LinearLayout
-        android:id="@+id/topBar"
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@color/surface_dark"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:layout_height="match_parent"
+        android:background="@color/background_dark" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⌨️ DigiKeyboard"
-            android:textColor="#58a6ff"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+    <!-- Subtle Floating Settings Button (Transparan di pojok kanan atas) -->
+    <ImageButton
+        android:id="@+id/btnServerSettings"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Settings"
+        android:src="@android:drawable/ic_menu_preferences"
+        android:alpha="0.25"
+        android:tint="@color/text_muted" />
 
-        <TextView
-            android:id="@+id/badgeStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="#21262d"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:text="🔴 Terputus"
-            android:textColor="#f85149"
-            android:textSize="10sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txtPing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="-- ms"
-            android:textColor="@color/text_muted"
-            android:textSize="10sp"
-            android:fontFamily="monospace" />
-
-        <!-- Spacer -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <!-- Action Buttons -->
-        <Button
-            android:id="@+id/btnTogglePad"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:minWidth="0dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="🖱️ Pad"
-            android:textColor="#58a6ff"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnToggleLock"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:minWidth="0dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="🔒 Lock"
-            android:textColor="#3fb950"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnToggleHaptic"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:minWidth="0dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="📳 On"
-            android:textColor="@color/text_main"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnBluetooth"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:minWidth="0dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="📶 BT"
-            android:textColor="@color/text_muted"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <ImageButton
-            android:id="@+id/btnSettings"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_preferences"
-            android:tint="@color/text_main"
-            android:contentDescription="Settings" />
-    </LinearLayout>
-
-    <!-- ── NATIVE LAPTOP TRACKPAD DECK ── -->
-    <LinearLayout
-        android:id="@+id/trackpadContainer"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:orientation="horizontal"
-        android:padding="3dp"
-        android:background="#161b22">
-
-        <com.digikeyboard.remote.NativeTrackpadView
-            android:id="@+id/nativeTrackpad"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <!-- Physical Click Buttons on Side -->
-        <LinearLayout
-            android:layout_width="110dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginStart="4dp">
-
-            <Button
-                android:id="@+id/btnLeftClick"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="Klik Kiri"
-                android:textColor="@color/text_main"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:backgroundTint="#21262d" />
-
-            <Button
-                android:id="@+id/btnRightClick"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginTop="2dp"
-                android:text="Klik Kanan"
-                android:textColor="@color/text_main"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:backgroundTint="#21262d" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- ── NATIVE PHYSICAL KEYBOARD CANVAS ── -->
-    <com.digikeyboard.remote.NativeKeyboardView
-        android:id="@+id/nativeKeyboard"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-</LinearLayout>
+</FrameLayout>
