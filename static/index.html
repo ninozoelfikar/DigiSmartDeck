@@ -401,21 +401,24 @@ html, body {
   gap: 7px;
 }
 .deck-close {
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-dim);
   cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  transition: background 0.15s, color 0.15s;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
 }
-.deck-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text);
+.deck-close:hover, .deck-close:active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 .deck-body {
   display: flex;
@@ -1153,21 +1156,25 @@ body.is-fullscreen {
   gap: 7px;
 }
 .modal-close {
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-dim);
   cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  transition: background 0.15s, color 0.15s;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
 }
-.modal-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text);
+.modal-close:hover, .modal-close:active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 .modal-body {
   padding: 16px 18px;
@@ -4529,10 +4536,56 @@ if (btnBrandToggle) {
   });
 }
 
-if (btnCloseDeck) btnCloseDeck.addEventListener('click', closeControlDeck);
-if (deckBackdrop) deckBackdrop.addEventListener('click', closeControlDeck);
+// Listener penutup Menu Deck yang responsif untuk mouse & layar sentuh (mobile)
+function handleDeckCloseEvent(e) {
+  if (e) {
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+  }
+  closeControlDeck();
+  vibe(10);
+}
 
-// Auto-tutup Control Deck jika user mulai berinteraksi dengan keyboard atau trackpad
+if (btnCloseDeck) {
+  btnCloseDeck.addEventListener('click', handleDeckCloseEvent);
+  btnCloseDeck.addEventListener('touchend', handleDeckCloseEvent, { passive: false });
+}
+if (deckBackdrop) {
+  deckBackdrop.addEventListener('click', handleDeckCloseEvent);
+  deckBackdrop.addEventListener('touchend', handleDeckCloseEvent, { passive: false });
+}
+
+// ── Universal Modal & Popup Close Handler (Menjamin 100% tombol close berfungsi seketika di semua device) ──
+function handleUniversalClose(e) {
+  const target = e.target;
+  if (!target) return;
+
+  // 1. Cek tombol close (.modal-close atau .deck-close)
+  const closeBtn = target.closest('.modal-close, .deck-close');
+  if (closeBtn) {
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    if (closeBtn.classList.contains('deck-close') || closeBtn.id === 'btn-close-deck') {
+      closeControlDeck();
+    } else {
+      const modal = closeBtn.closest('.modal-backdrop');
+      if (modal) modal.classList.add('hidden');
+    }
+    vibe(10);
+    return;
+  }
+
+  // 2. Cek klik langsung pada backdrop modal
+  if (target.classList.contains('modal-backdrop')) {
+    if (e.cancelable) e.preventDefault();
+    target.classList.add('hidden');
+    vibe(10);
+  }
+}
+document.addEventListener('click', handleUniversalClose);
+document.addEventListener('touchend', handleUniversalClose, { passive: false });
+
+// Auto-tutup Control Deck jika user mulai berinteraksi di luar menu
 window.addEventListener('touchstart', (e) => {
   if (!controlDeck || !controlDeck.classList.contains('open')) return;
   if (!controlDeck.contains(e.target) && !e.target.closest('#btn-control-deck') && !e.target.closest('#btn-brand-toggle')) {
@@ -4541,24 +4594,87 @@ window.addEventListener('touchstart', (e) => {
 }, { passive: true });
 
 // Auto-tutup saat memilih layer atau utilitas agar layar langsung siap dipakai
-['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-fs'].forEach(id => {
+['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-fs', 'btn-store'].forEach(id => {
   const el = $(id);
   if (el) {
     el.addEventListener('click', () => {
-      setTimeout(closeControlDeck, 150);
+      setTimeout(closeControlDeck, 120);
     });
   }
 });
 
-// Tombol Mode Standard (Kembali ke Keyboard Utama dari mode Game / Slide)
+// ─── PENGATUR SENTRAL MODE KERJA (ANTI-KONFLIK & SELESAI SENGKETA TAMPILAN) ───
+function switchAppMode(targetMode) {
+  // Matikan proses background spesifik mode sebelumnya
+  if (targetMode !== 'game' && typeof releaseAllGpKeys === 'function') {
+    releaseAllGpKeys();
+  }
+  if (targetMode !== 'present' && typeof stopGyroAirMouse === 'function') {
+    stopGyroAirMouse();
+  }
+
+  isGameModeActive = (targetMode === 'game');
+  isPresentModeActive = (targetMode === 'present');
+  isCustomModeActive = (targetMode === 'custom');
+
+  const kbWrap = document.querySelector('.kb-wrap');
+  const laptopDeck = $('laptop-deck');
+  const footerTip = $('footer-tip');
+  const scBar = $('sc-bar');
+  const gamepadView = $('gamepad-view');
+  const presentView = $('present-view');
+  const customPadView = $('custom-pad-view');
+
+  const btnGameMode = $('btn-game-mode');
+  const btnPresentMode = $('btn-present-mode');
+  const btnCustomMode = $('btn-custom-mode');
+
+  // Toggle view visibility secara tegas
+  if (gamepadView) gamepadView.classList.toggle('hidden', !isGameModeActive);
+  if (presentView) presentView.classList.toggle('hidden', !isPresentModeActive);
+  if (customPadView) customPadView.classList.toggle('hidden', !isCustomModeActive);
+
+  // Status visual tombol di Menu Deck
+  if (btnGameMode) btnGameMode.classList.toggle('on', isGameModeActive);
+  if (btnPresentMode) btnPresentMode.classList.toggle('on', isPresentModeActive);
+  if (btnCustomMode) btnCustomMode.classList.toggle('on', isCustomModeActive);
+
+  if (targetMode === 'standard') {
+    // Mode Standard (Keyboard PC Utama)
+    if (kbWrap) kbWrap.style.display = '';
+    if (typeof tpEnabled !== 'undefined' && tpEnabled && laptopDeck) {
+      laptopDeck.classList.remove('hidden');
+    }
+    if (footerTip) footerTip.style.display = '';
+    vibe(15);
+  } else {
+    // Mode Khusus (Game / Presentasi / Kustom)
+    if (kbWrap) kbWrap.style.display = 'none';
+    if (laptopDeck) laptopDeck.classList.add('hidden');
+    if (footerTip) footerTip.style.display = 'none';
+    if (scBar) scBar.classList.add('hidden');
+
+    if (targetMode === 'game') {
+      if (typeof updateGamepadLabels === 'function') updateGamepadLabels();
+      if (typeof updateStickModeUI === 'function') updateStickModeUI();
+      vibe(25);
+    } else if (targetMode === 'present') {
+      vibe(25);
+    } else if (targetMode === 'custom') {
+      if (typeof setCustomEditMode === 'function') setCustomEditMode(false);
+      if (typeof renderCustomActiveCanvas === 'function') renderCustomActiveCanvas();
+      vibe(25);
+    }
+  }
+
+  updateDeckModesUI();
+  closeControlDeck(); // Selalu tutup menu popup seketika setelah memilih mode!
+}
+
+// Tombol Mode Standard (Kembali ke Keyboard Utama)
 if (btnModeStandard) {
   btnModeStandard.addEventListener('click', () => {
-    if (typeof setGameMode === 'function') setGameMode(false);
-    if (typeof setPresentMode === 'function') setPresentMode(false);
-    if (typeof setCustomMode === 'function') setCustomMode(false);
-    updateDeckModesUI();
-    closeControlDeck();
-    vibe(15);
+    switchAppMode('standard');
   });
 }
 
@@ -6455,47 +6571,16 @@ function releaseAllGpKeys() {
 }
 
 function setGameMode(enabled) {
-  isGameModeActive = !!enabled;
-  const kbWrap = document.querySelector('.kb-wrap');
-  const laptopDeck = $('laptop-deck');
-  const footerTip = $('footer-tip');
-  const scBar = $('sc-bar');
-
-  if (isGameModeActive) {
-    if (typeof isPresentModeActive !== 'undefined' && isPresentModeActive && typeof setPresentMode === 'function') {
-      setPresentMode(false);
-    }
-    if (typeof isCustomModeActive !== 'undefined' && isCustomModeActive && typeof setCustomMode === 'function') {
-      setCustomMode(false);
-    }
-    if (gamepadView) gamepadView.classList.remove('hidden');
-    if (kbWrap) kbWrap.style.display = 'none';
-    if (laptopDeck) laptopDeck.classList.add('hidden');
-    if (footerTip) footerTip.style.display = 'none';
-    if (scBar) scBar.classList.add('hidden');
-    if (btnGameMode) btnGameMode.classList.add('on');
-    updateGamepadLabels();
-    updateStickModeUI();
-    vibe(25);
-  } else {
-    releaseAllGpKeys();
-    if (gamepadView) gamepadView.classList.add('hidden');
-    if (kbWrap) kbWrap.style.display = '';
-    // Restore trackpad if it was enabled
-    if (typeof tpEnabled !== 'undefined' && tpEnabled && laptopDeck) {
-      laptopDeck.classList.remove('hidden');
-    }
-    if (footerTip) footerTip.style.display = '';
-    if (btnGameMode) btnGameMode.classList.remove('on');
-    vibe(15);
-  }
+  switchAppMode(enabled ? 'game' : 'standard');
 }
 
 if (btnGameMode) {
-  btnGameMode.addEventListener('click', () => setGameMode(!isGameModeActive));
+  btnGameMode.addEventListener('click', () => {
+    switchAppMode(isGameModeActive ? 'standard' : 'game');
+  });
 }
 if (btnExitGame) {
-  btnExitGame.addEventListener('click', () => setGameMode(false));
+  btnExitGame.addEventListener('click', () => switchAppMode('standard'));
 }
 
 // ── Preset Selection ──
@@ -7094,46 +7179,16 @@ function sendPrAction(actionKey) {
 
 // ── Switch Presentation Mode View ──
 function setPresentMode(enabled) {
-  isPresentModeActive = !!enabled;
-  const kbWrap = document.querySelector('.kb-wrap');
-  const laptopDeck = $('laptop-deck');
-  const footerTip = $('footer-tip');
-  const scBar = $('sc-bar');
-
-  if (isPresentModeActive) {
-    // If Gamepad mode is active, turn it off first
-    if (typeof isGameModeActive !== 'undefined' && isGameModeActive && typeof setGameMode === 'function') {
-      setGameMode(false);
-    }
-    if (typeof isCustomModeActive !== 'undefined' && isCustomModeActive && typeof setCustomMode === 'function') {
-      setCustomMode(false);
-    }
-
-    if (presentView) presentView.classList.remove('hidden');
-    if (kbWrap) kbWrap.style.display = 'none';
-    if (laptopDeck) laptopDeck.classList.add('hidden');
-    if (footerTip) footerTip.style.display = 'none';
-    if (scBar) scBar.classList.add('hidden');
-    if (btnPresentMode) btnPresentMode.classList.add('on');
-    vibe(25);
-  } else {
-    stopGyroAirMouse();
-    if (presentView) presentView.classList.add('hidden');
-    if (kbWrap) kbWrap.style.display = '';
-    if (typeof tpEnabled !== 'undefined' && tpEnabled && laptopDeck) {
-      laptopDeck.classList.remove('hidden');
-    }
-    if (footerTip) footerTip.style.display = '';
-    if (btnPresentMode) btnPresentMode.classList.remove('on');
-    vibe(15);
-  }
+  switchAppMode(enabled ? 'present' : 'standard');
 }
 
 if (btnPresentMode) {
-  btnPresentMode.addEventListener('click', () => setPresentMode(!isPresentModeActive));
+  btnPresentMode.addEventListener('click', () => {
+    switchAppMode(isPresentModeActive ? 'standard' : 'present');
+  });
 }
 if (btnExitPresent) {
-  btnExitPresent.addEventListener('click', () => setPresentMode(false));
+  btnExitPresent.addEventListener('click', () => switchAppMode('standard'));
 }
 
 // ── Software Profile Selector ──
@@ -7771,53 +7826,17 @@ function setCustomEditMode(inEdit) {
 
 // Mengaktifkan / Menonaktifkan Mode Kustom
 function setCustomMode(enabled) {
-  isCustomModeActive = !!enabled;
-  const kbWrap = document.querySelector('.kb-wrap');
-  const laptopDeck = $('laptop-deck');
-  const footerTip = $('footer-tip');
-  const scBar = $('sc-bar');
-
-  if (isCustomModeActive) {
-    if (typeof isGameModeActive !== 'undefined' && isGameModeActive && typeof setGameMode === 'function') {
-      setGameMode(false);
-    }
-    if (typeof isPresentModeActive !== 'undefined' && isPresentModeActive && typeof setPresentMode === 'function') {
-      setPresentMode(false);
-    }
-
-    if (customPadView) customPadView.classList.remove('hidden');
-    if (kbWrap) kbWrap.style.display = 'none';
-    if (laptopDeck) laptopDeck.classList.add('hidden');
-    if (footerTip) footerTip.style.display = 'none';
-    if (scBar) scBar.classList.add('hidden');
-    if (btnCustomMode) btnCustomMode.classList.add('on');
-
-    setCustomEditMode(false);
-    renderCustomActiveCanvas();
-    vibe(25);
-  } else {
-    if (customPadView) customPadView.classList.add('hidden');
-    if (kbWrap) kbWrap.style.display = '';
-    if (typeof tpEnabled !== 'undefined' && tpEnabled && laptopDeck) {
-      laptopDeck.classList.remove('hidden');
-    }
-    if (footerTip) footerTip.style.display = '';
-    if (btnCustomMode) btnCustomMode.classList.remove('on');
-    isCustomEditMode = false;
-    vibe(15);
-  }
-  updateDeckModesUI();
+  switchAppMode(enabled ? 'custom' : 'standard');
 }
 
 // Event Listeners Header Bar Mode Kustom
 if (btnCustomMode) {
   btnCustomMode.addEventListener('click', () => {
-    setCustomMode(!isCustomModeActive);
-    closeControlDeck();
+    switchAppMode(isCustomModeActive ? 'standard' : 'custom');
   });
 }
 if (btnExitCustom) {
-  btnExitCustom.addEventListener('click', () => setCustomMode(false));
+  btnExitCustom.addEventListener('click', () => switchAppMode('standard'));
 }
 if (btnCustomEdit) {
   btnCustomEdit.addEventListener('click', () => {
