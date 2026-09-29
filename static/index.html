@@ -1589,12 +1589,13 @@ body.is-fullscreen {
 
 /* ─── GAMEPAD VIEW (MODE GAME CONSOLE) ─── */
 .gamepad-view {
+  order: 5;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
   padding: 8px 16px;
   background: var(--bg);
   user-select: none;
@@ -2042,12 +2043,13 @@ body.is-fullscreen {
 
 /* ─── PRESENTATION & MEETING REMOTE VIEW ─── */
 .present-view {
+  order: 5;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
   padding: 8px 16px;
   background: var(--bg);
   user-select: none;
