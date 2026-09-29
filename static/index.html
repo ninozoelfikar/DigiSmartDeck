@@ -2439,21 +2439,20 @@ body.is-fullscreen {
   .pr-timer-display { font-size: 16px; padding: 1px 6px; }
   .pr-btn-next .pr-nav-arrow { font-size: 28px; }
   .pr-btn-prev .pr-nav-arrow { font-size: 22px; }
-/* ─── CUSTOM / AI WORKSTATION KEYPAD VIEW ─── */
+/* ─── MODE KUSTOM (CUSTOM PAD VIEW) ─── */
 .custom-pad-view {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   width: 100%;
-  max-width: 900px;
+  height: 100%;
   margin: 0 auto;
-  padding: 6px 12px 10px 12px;
+  padding: 6px 8px 8px 8px;
   background: var(--bg);
   user-select: none;
   overflow: hidden;
   box-sizing: border-box;
-  gap: 8px;
+  gap: 6px;
   position: relative;
 }
 .custom-pad-view.hidden {
@@ -2466,7 +2465,7 @@ body.is-fullscreen {
   align-items: center;
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
-  padding: 4px 10px;
+  padding: 5px 10px;
   border-radius: 8px;
   flex-shrink: 0;
   gap: 8px;
@@ -2482,261 +2481,303 @@ body.is-fullscreen {
   color: var(--accent);
   background: rgba(88, 166, 255, 0.12);
   border: 1px solid var(--accent);
-  padding: 3px 7px;
+  padding: 3px 8px;
   border-radius: 4px;
   letter-spacing: 0.5px;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
-.cp-preset-group {
-  display: flex;
-  gap: 3px;
-  background: rgba(0, 0, 0, 0.25);
-  padding: 2px;
-  border-radius: 6px;
-}
-.cp-preset-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-size: 10px;
+.cp-status-text {
+  font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  cursor: pointer;
+  color: var(--text-dim);
   white-space: nowrap;
-  transition: all 0.12s;
-}
-.cp-preset-btn.active, .cp-preset-btn:hover {
-  background: var(--key-bg);
-  color: var(--text);
-}
-.cp-preset-btn.active {
-  color: var(--accent);
-  font-weight: 700;
 }
 .cp-btn-aux, .cp-btn-exit {
   background: var(--key-bg);
   border: 1px solid var(--key-border);
   color: var(--text);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  transition: all 0.12s ease;
 }
 .cp-btn-aux:hover, .cp-btn-exit:hover {
   background: var(--key-active-bg);
   color: #fff;
 }
-
-.cp-main-canvas {
-  flex: 1;
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-  min-height: 0;
+.cp-btn-aux.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
-.cp-block {
-  background: var(--panel-bg);
-  border: 1.5px solid var(--key-border);
-  border-radius: 10px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.2s ease;
+.cp-btn-save-hl {
+  background: rgba(46, 160, 67, 0.2);
+  border-color: rgba(46, 160, 67, 0.6);
+  color: #56d364;
 }
-.cp-block.hidden {
-  display: none !important;
+.cp-btn-save-hl:hover {
+  background: #2ea043;
+  color: #fff;
 }
 
-/* Block Enter */
-.cp-block-enter {
-  flex: 1.3;
-  min-width: 140px;
-}
-.cp-enter-btn {
+/* Canvas Mode Aktif (100% Layar Otomatis Mengisi Space) */
+.custom-active-canvas {
   flex: 1;
   width: 100%;
   height: 100%;
+  min-height: 0;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(var(--cp-cols, 3), 1fr);
+  grid-template-rows: repeat(var(--cp-rows, 2), 1fr);
+  box-sizing: border-box;
+}
+.custom-active-canvas.hidden {
+  display: none !important;
+}
+
+.cp-custom-key {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  background: var(--enter-bg, #1f6feb);
-  border: 2px solid var(--enter-border, #388bfd);
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: transform 0.06s, filter 0.1s;
-}
-.cp-enter-btn:active, .cp-enter-btn.pressed {
-  transform: scale(0.97);
-  filter: brightness(1.2);
-}
-.cp-enter-icon {
-  font-size: 32px;
-  font-weight: 900;
-  line-height: 1;
-}
-.cp-enter-label {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-}
-
-/* Block Numpad */
-.cp-block-num {
-  flex: 1.5;
-}
-.cp-grid-num {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  height: 100%;
-}
-.cp-key {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  border-radius: 7px;
-  cursor: pointer;
-  border: 1px solid var(--key-border);
   background: var(--key-bg);
+  border: 1.5px solid var(--key-border);
+  border-radius: 8px;
   color: var(--text);
-  transition: transform 0.05s, background 0.08s;
-  min-height: 38px;
+  cursor: pointer;
+  font-size: clamp(14px, 3.2vw, 28px);
+  font-weight: 700;
+  font-family: inherit;
+  transition: transform 0.05s ease, background 0.08s ease, border-color 0.08s ease;
+  box-sizing: border-box;
+  padding: 4px;
+  text-align: center;
+  touch-action: manipulation;
 }
-.cp-key:active, .cp-key.pressed {
+.cp-custom-key:active, .cp-custom-key.pressed {
   background: var(--key-active-bg);
   color: #fff;
-  transform: scale(0.96);
+  transform: scale(0.97);
+  border-color: var(--accent);
 }
-
-/* Block Actions */
-.cp-block-actions {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.cp-custom-key.cp-key-enter {
+  background: var(--enter-bg, #1f6feb);
+  border-color: var(--enter-border, #388bfd);
+  color: #fff;
 }
-.cp-block-actions .cp-key {
-  flex: 1;
-  font-size: 12px;
+.cp-custom-key.cp-key-enter:active, .cp-custom-key.cp-key-enter.pressed {
+  filter: brightness(1.2);
 }
-.cp-action-danger {
+.cp-custom-key.cp-key-danger {
   color: #ff7b72;
   border-color: rgba(255, 123, 114, 0.4);
 }
-.cp-action-danger:active, .cp-action-danger.pressed {
+.cp-custom-key.cp-key-danger:active, .cp-custom-key.cp-key-danger.pressed {
   background: #b71c1c;
   color: #fff;
 }
-
-/* Block Navigation */
-.cp-block-nav {
-  flex: 1.1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.cp-key-sublabel {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.7;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
 }
-.cp-nav-cross {
+
+/* Empty State Canvas */
+.cp-empty-state {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  width: 100%;
-}
-.cp-nav-mid {
-  display: flex;
-  gap: 5px;
-  width: 100%;
   justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1.5px dashed var(--key-border);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-dim);
 }
-.cp-nav-btn {
-  width: 44px;
-  height: 44px;
+.cp-empty-title {
   font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.cp-empty-desc {
+  font-size: 12px;
+  max-width: 320px;
+  line-height: 1.4;
 }
 
-/* Config modal */
-.cp-config-modal {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
+/* Canvas Mode Edit / Picker */
+.custom-picker-canvas {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 4px 70px 4px;
+  box-sizing: border-box;
 }
-.cp-config-modal.hidden {
+.custom-picker-canvas.hidden {
   display: none !important;
 }
-.cp-config-content {
-  background: var(--bg);
-  border: 1.5px solid var(--key-border);
-  border-radius: 12px;
-  padding: 14px;
-  width: 90%;
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.cp-config-header {
+
+.cp-picker-header-banner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 800;
-  font-size: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 6px;
-}
-.cp-config-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.cp-cfg-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  background: rgba(88, 166, 255, 0.08);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 8px;
   font-size: 11px;
   color: var(--text);
-  cursor: pointer;
+  gap: 8px;
 }
-.cp-cfg-item input {
-  cursor: pointer;
-}
-.cp-config-footer {
+.cp-picker-header-banner span {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
 }
 
-@media (max-width: 540px) {
-  .cp-main-canvas {
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  .cp-block-enter {
-    min-height: 80px;
-    flex: none;
-  }
-  .cp-grid-num {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .cp-block-actions {
+.cp-picker-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px;
+}
+.cp-section-title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 2px;
+  margin-bottom: 2px;
+}
+.cp-picker-row {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.cp-picker-grid-fn {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 4px;
+}
+.cp-picker-grid-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+  gap: 4px;
+}
+.cp-picker-grid-num {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  max-width: 320px;
+}
+.cp-picker-grid-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 4px;
+}
+
+/* Key Tuts di Picker (Dim vs Active) */
+.pick-key {
+  background: var(--key-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  user-select: none;
+  min-height: 38px;
+  box-sizing: border-box;
+  text-align: center;
+}
+/* DIM: Awalnya redup / tidak aktif */
+.pick-key.dim {
+  opacity: 0.32;
+  filter: grayscale(100%);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-dim);
+}
+.pick-key.dim:hover {
+  opacity: 0.58;
+}
+/* AKTIF: Terang & Highlight */
+.pick-key.active {
+  opacity: 1;
+  filter: none;
+  background: rgba(88, 166, 255, 0.22);
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-weight: 800;
+  transform: scale(1.02);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.35);
+}
+
+/* Sticky Bottom Action Bar di Picker */
+.cp-picker-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--panel-bg);
+  border-top: 1px solid var(--key-border);
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
+}
+.cp-picker-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cp-picker-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* ── STORE / MARKETPLACE MODAL STYLES ── */
 .store-tab-bar {
   display: flex;
@@ -2950,8 +2991,8 @@ body.is-fullscreen {
               <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 3 3-3 3"/><line x1="14" x2="16" y1="16" y2="16"/></svg>
             </span>
             <div class="dc-text">
-              <span class="dc-name">Custom AI</span>
-              <span class="dc-sub">Workstation Pad</span>
+              <span class="dc-name">Mode Kustom</span>
+              <span class="dc-sub">Desain Tuts Sendiri</span>
             </div>
           </button>
         </div>
@@ -3489,110 +3530,231 @@ body.is-fullscreen {
     </div>
   </section>
 
-  <!-- CUSTOM / AI WORKSTATION KEYPAD VIEW -->
+  <!-- MODE KUSTOM (CUSTOM KEYPAD WORKSPACE) -->
   <section id="custom-pad-view" class="custom-pad-view hidden">
-    <!-- Top Utility Bar -->
+    <!-- Top Utility Bar: Mode Kustom Header -->
     <div class="cp-top-bar">
       <div class="cp-left-meta">
         <span class="cp-badge">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 3 3-3 3"/><line x1="14" x2="16" y1="16" y2="16"/></svg>
-          CUSTOM AI
+          MODE KUSTOM
         </span>
-        <div class="cp-preset-group">
-          <button type="button" class="cp-preset-btn active" data-preset="ai_prompt" id="btn-cp-preset-ai">AI Prompt</button>
-          <button type="button" class="cp-preset-btn" data-preset="numpad" id="btn-cp-preset-num">Numpad</button>
-          <button type="button" class="cp-preset-btn" data-preset="nav" id="btn-cp-preset-nav">Navigasi</button>
-        </div>
+        <span class="cp-status-text" id="custom-status-info">0 Tombol Aktif</span>
       </div>
       <div class="cp-right-meta">
-        <button type="button" class="cp-btn-aux" id="btn-cp-config" title="Pilih Modul Tombol Aktif">
-          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Atur
+        <button type="button" class="cp-btn-aux" id="btn-custom-edit" title="Pilih tombol keyboard yang diinginkan">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span id="lbl-custom-edit">Edit</span>
+        </button>
+        <button type="button" class="cp-btn-aux cp-btn-save-hl" id="btn-custom-save" title="Simpan tata letak tombol ke layar penuh">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Simpan</span>
         </button>
         <button type="button" class="cp-btn-exit" id="btn-exit-custom" title="Kembali ke Keyboard Penuh">
-          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          Tutup
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <span>Tutup</span>
         </button>
       </div>
     </div>
 
-    <!-- Main Dynamic Key Canvas -->
-    <div class="cp-main-canvas" id="cp-canvas">
-      <!-- Section: Giant Enter -->
-      <div class="cp-block cp-block-enter" id="cp-mod-enter">
-        <button type="button" class="k cp-key cp-enter-btn" data-key="enter" id="cp-btn-enter">
-          <span class="cp-enter-icon">↵</span>
-          <span class="cp-enter-label">ENTER / SEND</span>
-        </button>
-      </div>
-
-      <!-- Section: Numpad / Numbers -->
-      <div class="cp-block cp-block-num" id="cp-mod-num">
-        <div class="cp-grid-num">
-          <button type="button" class="k cp-key" data-char="1">1</button>
-          <button type="button" class="k cp-key" data-char="2">2</button>
-          <button type="button" class="k cp-key" data-char="3">3</button>
-          <button type="button" class="k cp-key" data-char="4">4</button>
-          <button type="button" class="k cp-key" data-char="5">5</button>
-          <button type="button" class="k cp-key" data-char="6">6</button>
-          <button type="button" class="k cp-key" data-char="7">7</button>
-          <button type="button" class="k cp-key" data-char="8">8</button>
-          <button type="button" class="k cp-key" data-char="9">9</button>
-          <button type="button" class="k cp-key" data-char="0">0</button>
-          <button type="button" class="k cp-key" data-char=".">.</button>
-          <button type="button" class="k cp-key sp" data-key="backspace" title="Backspace">⌫</button>
-        </div>
-      </div>
-
-      <!-- Section: Quick Actions (Ctrl+C, Esc, Space, Tab) -->
-      <div class="cp-block cp-block-actions" id="cp-mod-actions">
-        <button type="button" class="k cp-key cp-action-danger" data-combo="ctrl,c" title="Interrupt / Cancel AI Task (Ctrl+C)">Ctrl+C</button>
-        <button type="button" class="k cp-key" data-key="esc" title="Escape">Esc</button>
-        <button type="button" class="k cp-key" data-key="tab" title="Tab (Autocomplete)">Tab</button>
-        <button type="button" class="k cp-key" data-key="space" title="Space">Space</button>
-        <button type="button" class="k cp-key" data-key="backspace" title="Backspace">Backspace</button>
-      </div>
-
-      <!-- Section: Navigasi Panah -->
-      <div class="cp-block cp-block-nav" id="cp-mod-nav">
-        <div class="cp-nav-cross">
-          <button type="button" class="k cp-key cp-nav-btn" data-key="up" title="Previous Prompt (History)">▲</button>
-          <div class="cp-nav-mid">
-            <button type="button" class="k cp-key cp-nav-btn" data-key="left">◀</button>
-            <button type="button" class="k cp-key cp-nav-btn" data-key="down" title="Next Prompt">▼</button>
-            <button type="button" class="k cp-key cp-nav-btn" data-key="right">▶</button>
-          </div>
-        </div>
-      </div>
+    <!-- Active Canvas: Mengisi 100% Layar di bawah Head Bar Secara Otomatis -->
+    <div class="custom-active-canvas" id="custom-active-canvas">
+      <!-- Tombol-tombol aktif akan diisi otomatis secara dinamis oleh JavaScript -->
     </div>
 
-    <!-- Modal Atur Tombol Kustom -->
-    <div class="cp-config-modal hidden" id="cp-config-modal">
-      <div class="cp-config-content">
-        <div class="cp-config-header">
-          <span>Pilih Modul Tombol Aktif</span>
-          <button type="button" class="deck-close" id="btn-close-cp-config">✕</button>
+    <!-- Edit / Picker Canvas: Pilihan Semua Tuts (Std + Fn + Navigasi + Numpad) -->
+    <div class="custom-picker-canvas hidden" id="custom-picker-canvas">
+      <div class="cp-picker-header-banner">
+        <span>
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+          Ketuk tombol untuk memilih. Tombol redup (dim) = nonaktif, terang = aktif terpilih.
+        </span>
+        <span id="cp-picker-counter" style="font-weight:700; color:var(--accent);">0 Dipilih</span>
+      </div>
+
+      <!-- SEKSI 1: ROW FN (FUNCTION KEYS) -->
+      <div class="cp-picker-section">
+        <div class="cp-section-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>TOMBOL FUNGSI (FN ROW)</span>
         </div>
-        <div class="cp-config-body">
-          <label class="cp-cfg-item">
-            <input type="checkbox" id="chk-cp-enter" checked>
-            <span>Tombol Enter / Kirim Prompt (Raksasa)</span>
-          </label>
-          <label class="cp-cfg-item">
-            <input type="checkbox" id="chk-cp-num" checked>
-            <span>Numpad / Angka 0-9 (Pemilihan Opsi)</span>
-          </label>
-          <label class="cp-cfg-item">
-            <input type="checkbox" id="chk-cp-actions" checked>
-            <span>Tombol Aksi AI (Ctrl+C, Esc, Tab, Space, Backspace)</span>
-          </label>
-          <label class="cp-cfg-item">
-            <input type="checkbox" id="chk-cp-nav" checked>
-            <span>Panah Riwayat &amp; Navigasi (▲ ▼ ◀ ▶)</span>
-          </label>
+        <div class="cp-picker-grid-fn" id="cp-picker-fn">
+          <div class="pick-key dim" data-cp-id="esc" data-key="esc" data-label="Esc">Esc</div>
+          <div class="pick-key dim" data-cp-id="f1" data-key="f1" data-label="F1">F1</div>
+          <div class="pick-key dim" data-cp-id="f2" data-key="f2" data-label="F2">F2</div>
+          <div class="pick-key dim" data-cp-id="f3" data-key="f3" data-label="F3">F3</div>
+          <div class="pick-key dim" data-cp-id="f4" data-key="f4" data-label="F4">F4</div>
+          <div class="pick-key dim" data-cp-id="f5" data-key="f5" data-label="F5">F5</div>
+          <div class="pick-key dim" data-cp-id="f6" data-key="f6" data-label="F6">F6</div>
+          <div class="pick-key dim" data-cp-id="f7" data-key="f7" data-label="F7">F7</div>
+          <div class="pick-key dim" data-cp-id="f8" data-key="f8" data-label="F8">F8</div>
+          <div class="pick-key dim" data-cp-id="f9" data-key="f9" data-label="F9">F9</div>
+          <div class="pick-key dim" data-cp-id="f10" data-key="f10" data-label="F10">F10</div>
+          <div class="pick-key dim" data-cp-id="f11" data-key="f11" data-label="F11">F11</div>
+          <div class="pick-key dim" data-cp-id="f12" data-key="f12" data-label="F12">F12</div>
         </div>
-        <div class="cp-config-footer">
-          <button type="button" class="btn-primary" id="btn-save-cp-config" style="font-size:11px;padding:6px 14px;">Simpan Tampilan</button>
+      </div>
+
+      <!-- SEKSI 2: NAVIGASI & KONTROL DOKUMEN -->
+      <div class="cp-picker-section">
+        <div class="cp-section-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>NAVIGASI &amp; KONTROL ARAH</span>
+        </div>
+        <div class="cp-picker-grid-nav" id="cp-picker-nav">
+          <div class="pick-key dim" data-cp-id="up" data-key="up" data-label="▲" data-sub="Up">▲</div>
+          <div class="pick-key dim" data-cp-id="down" data-key="down" data-label="▼" data-sub="Down">▼</div>
+          <div class="pick-key dim" data-cp-id="left" data-key="left" data-label="◀" data-sub="Left">◀</div>
+          <div class="pick-key dim" data-cp-id="right" data-key="right" data-label="▶" data-sub="Right">▶</div>
+          <div class="pick-key dim" data-cp-id="home" data-key="home" data-label="Home">Home</div>
+          <div class="pick-key dim" data-cp-id="end" data-key="end" data-label="End">End</div>
+          <div class="pick-key dim" data-cp-id="pageup" data-key="pageup" data-label="PgUp">PgUp</div>
+          <div class="pick-key dim" data-cp-id="pagedown" data-key="pagedown" data-label="PgDn">PgDn</div>
+          <div class="pick-key dim" data-cp-id="insert" data-key="insert" data-label="Ins">Ins</div>
+          <div class="pick-key dim" data-cp-id="delete" data-key="delete" data-label="Del">Del</div>
+          <div class="pick-key dim" data-cp-id="printscreen" data-key="printscreen" data-label="PrtSc">PrtSc</div>
+        </div>
+      </div>
+
+      <!-- SEKSI 3: NUMPAD & ANGKA -->
+      <div class="cp-picker-section">
+        <div class="cp-section-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          <span>NUMPAD &amp; ANGKA</span>
+        </div>
+        <div class="cp-picker-grid-num" id="cp-picker-numpad">
+          <div class="pick-key dim" data-cp-id="num_7" data-char="7" data-label="7">7</div>
+          <div class="pick-key dim" data-cp-id="num_8" data-char="8" data-label="8">8</div>
+          <div class="pick-key dim" data-cp-id="num_9" data-char="9" data-label="9">9</div>
+          <div class="pick-key dim" data-cp-id="num_slash" data-char="/" data-label="/">/</div>
+
+          <div class="pick-key dim" data-cp-id="num_4" data-char="4" data-label="4">4</div>
+          <div class="pick-key dim" data-cp-id="num_5" data-char="5" data-label="5">5</div>
+          <div class="pick-key dim" data-cp-id="num_6" data-char="6" data-label="6">6</div>
+          <div class="pick-key dim" data-cp-id="num_star" data-char="*" data-label="*">*</div>
+
+          <div class="pick-key dim" data-cp-id="num_1" data-char="1" data-label="1">1</div>
+          <div class="pick-key dim" data-cp-id="num_2" data-char="2" data-label="2">2</div>
+          <div class="pick-key dim" data-cp-id="num_3" data-char="3" data-label="3">3</div>
+          <div class="pick-key dim" data-cp-id="num_minus" data-char="-" data-label="-">-</div>
+
+          <div class="pick-key dim" data-cp-id="num_0" data-char="0" data-label="0">0</div>
+          <div class="pick-key dim" data-cp-id="num_dot" data-char="." data-label=".">.</div>
+          <div class="pick-key dim" data-cp-id="num_plus" data-char="+" data-label="+">+</div>
+          <div class="pick-key dim" data-cp-id="num_enter" data-key="enter" data-label="Enter" style="color:var(--accent);">Enter</div>
+        </div>
+      </div>
+
+      <!-- SEKSI 4: ALFANUMERIK STANDAR (QWERTY) -->
+      <div class="cp-picker-section">
+        <div class="cp-section-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/></svg>
+          <span>TOMBOL STANDAR &amp; KETIK (QWERTY)</span>
+        </div>
+        <!-- Baris Angka -->
+        <div class="cp-picker-row">
+          <div class="pick-key dim" data-cp-id="std_tilde" data-char="`" data-label="`">`</div>
+          <div class="pick-key dim" data-cp-id="std_1" data-char="1" data-label="1">1</div>
+          <div class="pick-key dim" data-cp-id="std_2" data-char="2" data-label="2">2</div>
+          <div class="pick-key dim" data-cp-id="std_3" data-char="3" data-label="3">3</div>
+          <div class="pick-key dim" data-cp-id="std_4" data-char="4" data-label="4">4</div>
+          <div class="pick-key dim" data-cp-id="std_5" data-char="5" data-label="5">5</div>
+          <div class="pick-key dim" data-cp-id="std_6" data-char="6" data-label="6">6</div>
+          <div class="pick-key dim" data-cp-id="std_7" data-char="7" data-label="7">7</div>
+          <div class="pick-key dim" data-cp-id="std_8" data-char="8" data-label="8">8</div>
+          <div class="pick-key dim" data-cp-id="std_9" data-char="9" data-label="9">9</div>
+          <div class="pick-key dim" data-cp-id="std_0" data-char="0" data-label="0">0</div>
+          <div class="pick-key dim" data-cp-id="std_minus" data-char="-" data-label="-">-</div>
+          <div class="pick-key dim" data-cp-id="std_equal" data-char="=" data-label="=">=</div>
+          <div class="pick-key dim" data-cp-id="std_backspace" data-key="backspace" data-label="Backspace" style="min-width:64px;">Backspace</div>
+        </div>
+        <!-- Baris Q-P -->
+        <div class="cp-picker-row">
+          <div class="pick-key dim" data-cp-id="std_tab" data-key="tab" data-label="Tab" style="min-width:50px;">Tab</div>
+          <div class="pick-key dim" data-cp-id="std_q" data-char="q" data-label="Q">Q</div>
+          <div class="pick-key dim" data-cp-id="std_w" data-char="w" data-label="W">W</div>
+          <div class="pick-key dim" data-cp-id="std_e" data-char="e" data-label="E">E</div>
+          <div class="pick-key dim" data-cp-id="std_r" data-char="r" data-label="R">R</div>
+          <div class="pick-key dim" data-cp-id="std_t" data-char="t" data-label="T">T</div>
+          <div class="pick-key dim" data-cp-id="std_y" data-char="y" data-label="Y">Y</div>
+          <div class="pick-key dim" data-cp-id="std_u" data-char="u" data-label="U">U</div>
+          <div class="pick-key dim" data-cp-id="std_i" data-char="i" data-label="I">I</div>
+          <div class="pick-key dim" data-cp-id="std_o" data-char="o" data-label="O">O</div>
+          <div class="pick-key dim" data-cp-id="std_p" data-char="p" data-label="P">P</div>
+          <div class="pick-key dim" data-cp-id="std_bracket_l" data-char="[" data-label="[">[</div>
+          <div class="pick-key dim" data-cp-id="std_bracket_r" data-char="]" data-label="]">]</div>
+          <div class="pick-key dim" data-cp-id="std_backslash" data-char="\" data-label="\">\\</div>
+        </div>
+        <!-- Baris A-L -->
+        <div class="cp-picker-row">
+          <div class="pick-key dim" data-cp-id="std_caps" data-key="capslock" data-label="Caps" style="min-width:54px;">Caps</div>
+          <div class="pick-key dim" data-cp-id="std_a" data-char="a" data-label="A">A</div>
+          <div class="pick-key dim" data-cp-id="std_s" data-char="s" data-label="S">S</div>
+          <div class="pick-key dim" data-cp-id="std_d" data-char="d" data-label="D">D</div>
+          <div class="pick-key dim" data-cp-id="std_f" data-char="f" data-label="F">F</div>
+          <div class="pick-key dim" data-cp-id="std_g" data-char="g" data-label="G">G</div>
+          <div class="pick-key dim" data-cp-id="std_h" data-char="h" data-label="H">H</div>
+          <div class="pick-key dim" data-cp-id="std_j" data-char="j" data-label="J">J</div>
+          <div class="pick-key dim" data-cp-id="std_k" data-char="k" data-label="K">K</div>
+          <div class="pick-key dim" data-cp-id="std_l" data-char="l" data-label="L">L</div>
+          <div class="pick-key dim" data-cp-id="std_semicolon" data-char=";" data-label=";">;</div>
+          <div class="pick-key dim" data-cp-id="std_quote" data-char="'" data-label="'">'</div>
+          <div class="pick-key dim" data-cp-id="std_enter" data-key="enter" data-label="Enter" style="min-width:64px; color:var(--accent); font-weight:700;">Enter</div>
+        </div>
+        <!-- Baris Z-M -->
+        <div class="cp-picker-row">
+          <div class="pick-key dim" data-cp-id="std_shift" data-key="shift" data-label="Shift" style="min-width:60px;">Shift</div>
+          <div class="pick-key dim" data-cp-id="std_z" data-char="z" data-label="Z">Z</div>
+          <div class="pick-key dim" data-cp-id="std_x" data-char="x" data-label="X">X</div>
+          <div class="pick-key dim" data-cp-id="std_c" data-char="c" data-label="C">C</div>
+          <div class="pick-key dim" data-cp-id="std_v" data-char="v" data-label="V">V</div>
+          <div class="pick-key dim" data-cp-id="std_b" data-char="b" data-label="B">B</div>
+          <div class="pick-key dim" data-cp-id="std_n" data-char="n" data-label="N">N</div>
+          <div class="pick-key dim" data-cp-id="std_m" data-char="m" data-label="M">M</div>
+          <div class="pick-key dim" data-cp-id="std_comma" data-char="," data-label=",">,</div>
+          <div class="pick-key dim" data-cp-id="std_dot" data-char="." data-label=".">.</div>
+          <div class="pick-key dim" data-cp-id="std_slash" data-char="/" data-label="/">/</div>
+          <div class="pick-key dim" data-cp-id="std_shift_r" data-key="shift" data-label="Shift" style="min-width:60px;">Shift</div>
+        </div>
+        <!-- Baris Bawah (Modifier & Space) -->
+        <div class="cp-picker-row">
+          <div class="pick-key dim" data-cp-id="std_ctrl" data-key="ctrl" data-label="Ctrl">Ctrl</div>
+          <div class="pick-key dim" data-cp-id="std_win" data-key="meta" data-label="Win">Win</div>
+          <div class="pick-key dim" data-cp-id="std_alt" data-key="alt" data-label="Alt">Alt</div>
+          <div class="pick-key dim" data-cp-id="std_space" data-key="space" data-label="Space" style="flex:1; min-width:100px;">Space</div>
+          <div class="pick-key dim" data-cp-id="std_alt_r" data-key="alt" data-label="Alt">Alt</div>
+          <div class="pick-key dim" data-cp-id="std_ctrl_r" data-key="ctrl" data-label="Ctrl">Ctrl</div>
+        </div>
+      </div>
+
+      <!-- SEKSI 5: SHORTCUT PINTASAN POPULER -->
+      <div class="cp-picker-section">
+        <div class="cp-section-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>SHORTCUT PINTASAN KERJA</span>
+        </div>
+        <div class="cp-picker-grid-actions" id="cp-picker-shortcuts">
+          <div class="pick-key dim" data-cp-id="sh_ctrl_c" data-combo="ctrl,c" data-label="Ctrl+C">Ctrl+C</div>
+          <div class="pick-key dim" data-cp-id="sh_ctrl_v" data-combo="ctrl,v" data-label="Ctrl+V">Ctrl+V</div>
+          <div class="pick-key dim" data-cp-id="sh_ctrl_z" data-combo="ctrl,z" data-label="Ctrl+Z">Ctrl+Z</div>
+          <div class="pick-key dim" data-cp-id="sh_ctrl_a" data-combo="ctrl,a" data-label="Ctrl+A">Ctrl+A</div>
+          <div class="pick-key dim" data-cp-id="sh_ctrl_s" data-combo="ctrl,s" data-label="Ctrl+S">Ctrl+S</div>
+          <div class="pick-key dim" data-cp-id="sh_alt_tab" data-combo="alt,tab" data-label="Alt+Tab">Alt+Tab</div>
+        </div>
+      </div>
+
+      <!-- Sticky Footer Actions di Picker -->
+      <div class="cp-picker-footer">
+        <div class="cp-picker-footer-left">
+          <button type="button" class="cp-btn-aux" id="btn-cp-preset-ai" title="Preset Tombol AI & Angka">Preset AI</button>
+          <button type="button" class="cp-btn-aux" id="btn-cp-select-all" title="Pilih Semua Tombol">Semua</button>
+          <button type="button" class="cp-btn-aux" id="btn-cp-clear" title="Kosongkan Pilihan">Kosongkan</button>
+        </div>
+        <div class="cp-picker-footer-right">
+          <button type="button" class="cp-btn-aux cp-btn-save-hl" id="btn-cp-save-picker" title="Simpan dan Terapkan Tuts Pilihan">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>Simpan &amp; Terapkan</span>
+          </button>
         </div>
       </div>
     </div>
@@ -7397,73 +7559,216 @@ if (btnPrGyro) {
   });
 }
 
-// ─── MODE CUSTOM AI & WORKSTATION KEYPAD ───
+// ─── MODE KUSTOM (CUSTOM KEYPAD WORKSPACE) ───
 const customPadView = $('custom-pad-view');
+const customActiveCanvas = $('custom-active-canvas');
+const customPickerCanvas = $('custom-picker-canvas');
+const customStatusInfo = $('custom-status-info');
+const cpPickerCounter = $('cp-picker-counter');
+
 const btnCustomMode = $('btn-custom-mode');
+const btnCustomEdit = $('btn-custom-edit');
+const lblCustomEdit = $('lbl-custom-edit');
+const btnCustomSave = $('btn-custom-save');
 const btnExitCustom = $('btn-exit-custom');
-const btnCpConfig = $('btn-cp-config');
-const cpConfigModal = $('cp-config-modal');
-const btnCloseCpConfig = $('btn-close-cp-config');
-const btnSaveCpConfig = $('btn-save-cp-config');
+
+const btnCpPresetAi = $('btn-cp-preset-ai');
+const btnCpSelectAll = $('btn-cp-select-all');
+const btnCpClear = $('btn-cp-clear');
+const btnCpSavePicker = $('btn-cp-save-picker');
 
 let isCustomModeActive = false;
-let cpActivePreset = localStorage.getItem('digi_cp_preset') || 'ai_prompt';
+let isCustomEditMode = false;
 
-// Modules visibility state
-let cpModules = {
-  enter: true,
-  num: true,
-  actions: true,
-  nav: true
-};
+// Default preset tuts kustom yang sering dibutuhkan (Enter, Numpad 0-9, Backspace, Panah Navigasi)
+const DEFAULT_CUSTOM_KEYS = [
+  'std_enter',
+  'num_7', 'num_8', 'num_9',
+  'num_4', 'num_5', 'num_6',
+  'num_1', 'num_2', 'num_3',
+  'num_0', 'num_dot', 'std_backspace',
+  'up', 'left', 'down', 'right'
+];
+
+let selectedCustomKeys = [];
 try {
-  const savedMods = localStorage.getItem('digi_cp_modules');
-  if (savedMods) cpModules = Object.assign(cpModules, JSON.parse(savedMods));
-} catch(e) {}
+  const savedKeys = localStorage.getItem('digi_custom_user_keys');
+  if (savedKeys) {
+    selectedCustomKeys = JSON.parse(savedKeys);
+  } else {
+    selectedCustomKeys = [...DEFAULT_CUSTOM_KEYS];
+  }
+} catch(e) {
+  selectedCustomKeys = [...DEFAULT_CUSTOM_KEYS];
+}
 
-function applyCustomPadLayout() {
-  const modEnter = $('cp-mod-enter');
-  const modNum = $('cp-mod-num');
-  const modActions = $('cp-mod-actions');
-  const modNav = $('cp-mod-nav');
+// Mengambil metadata tombol dari elemen picker
+function getKeyMeta(cpId) {
+  const el = document.querySelector(`.pick-key[data-cp-id="${cpId}"]`);
+  if (!el) return null;
+  return {
+    id: cpId,
+    key: el.dataset.key || '',
+    char: el.dataset.char || '',
+    combo: el.dataset.combo || '',
+    label: el.dataset.label || el.textContent.trim(),
+    sub: el.dataset.sub || ''
+  };
+}
 
-  if (modEnter) modEnter.classList.toggle('hidden', !cpModules.enter);
-  if (modNum) modNum.classList.toggle('hidden', !cpModules.num);
-  if (modActions) modActions.classList.toggle('hidden', !cpModules.actions);
-  if (modNav) modNav.classList.toggle('hidden', !cpModules.nav);
+// Menghitung jumlah kolom dan baris yang optimal untuk mengisi 100% layar di bawah head bar
+function calculateOptimalGrid(count) {
+  if (count <= 0) return { cols: 1, rows: 1 };
+  if (!customActiveCanvas) return { cols: 3, rows: Math.ceil(count / 3) };
 
-  // Sync checkboxes
-  const chkEnter = $('chk-cp-enter');
-  const chkNum = $('chk-cp-num');
-  const chkActions = $('chk-cp-actions');
-  const chkNav = $('chk-cp-nav');
-  if (chkEnter) chkEnter.checked = cpModules.enter;
-  if (chkNum) chkNum.checked = cpModules.num;
-  if (chkActions) chkActions.checked = cpModules.actions;
-  if (chkNav) chkNav.checked = cpModules.nav;
+  const rect = customActiveCanvas.getBoundingClientRect();
+  const width = rect.width || window.innerWidth || 800;
+  const height = rect.height || (window.innerHeight - 90) || 400;
 
-  // Highlight active preset button
-  document.querySelectorAll('.cp-preset-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.preset === cpActivePreset);
+  let bestCols = 1;
+  let bestScore = Infinity;
+  const targetAspect = 1.45; // Rasio lebar:tinggi tombol keyboard yang ergonomis
+
+  for (let c = 1; c <= count; c++) {
+    const r = Math.ceil(count / c);
+    const cellW = width / c;
+    const cellH = height / r;
+    const aspect = cellW / cellH;
+    const score = Math.abs(Math.log(aspect / targetAspect));
+    if (score < bestScore) {
+      bestScore = score;
+      bestCols = c;
+    }
+  }
+
+  const bestRows = Math.ceil(count / bestCols);
+  return { cols: bestCols, rows: bestRows };
+}
+
+// Render seluruh tuts yang dipilih ke dalam Active Canvas (100% Auto Fill Layar)
+function renderCustomActiveCanvas() {
+  if (!customActiveCanvas) return;
+  customActiveCanvas.innerHTML = '';
+
+  const count = selectedCustomKeys.length;
+  if (customStatusInfo) {
+    customStatusInfo.textContent = `${count} Tombol Aktif`;
+  }
+
+  if (count === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'cp-empty-state';
+    empty.innerHTML = `
+      <div class="cp-empty-title">Belum Ada Tombol Dipilih</div>
+      <div class="cp-empty-desc">Pilih tombol yang Anda butuhkan (misal Enter dan tombol angka untuk AI) agar memenuhi seluruh layar.</div>
+      <button type="button" class="btn-primary" id="btn-empty-start-edit" style="font-size:12px;padding:8px 18px;">
+        Pilih Tombol Sekarang
+      </button>
+    `;
+    customActiveCanvas.appendChild(empty);
+    const btnStart = empty.querySelector('#btn-empty-start-edit');
+    if (btnStart) btnStart.addEventListener('click', () => setCustomEditMode(true));
+    return;
+  }
+
+  const { cols, rows } = calculateOptimalGrid(count);
+  customActiveCanvas.style.setProperty('--cp-cols', cols.toString());
+  customActiveCanvas.style.setProperty('--cp-rows', rows.toString());
+
+  const totalSlots = cols * rows;
+  const remaining = totalSlots - count;
+
+  selectedCustomKeys.forEach((cpId, idx) => {
+    const meta = getKeyMeta(cpId);
+    if (!meta) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'k cp-custom-key';
+
+    if (meta.key === 'enter') btn.classList.add('cp-key-enter');
+    if (meta.combo && (meta.combo.includes('c') || meta.key === 'esc')) btn.classList.add('cp-key-danger');
+
+    if (meta.key) btn.dataset.key = meta.key;
+    if (meta.char) btn.dataset.char = meta.char;
+    if (meta.combo) btn.dataset.combo = meta.combo;
+    btn.dataset.cpId = cpId;
+
+    // Jika ada slot sisa di baris terakhir, rentangkan tombol terakhir agar pas 100% tanpa celah kosong
+    if (idx === count - 1 && remaining > 0) {
+      btn.style.gridColumn = `span ${remaining + 1}`;
+    }
+
+    let inner = `<span>${meta.label}</span>`;
+    if (meta.sub) {
+      inner += `<span class="cp-key-sublabel">${meta.sub}</span>`;
+    }
+    btn.innerHTML = inner;
+    customActiveCanvas.appendChild(btn);
   });
 }
 
-function selectCustomPreset(preset) {
-  cpActivePreset = preset;
-  localStorage.setItem('digi_cp_preset', preset);
+// Update tampilan tombol di Picker Canvas (Dim vs Active)
+function updateCustomPickerUI() {
+  const allPickKeys = document.querySelectorAll('.pick-key');
+  allPickKeys.forEach(el => {
+    const cpId = el.dataset.cpId;
+    const isSelected = selectedCustomKeys.includes(cpId);
+    el.classList.toggle('active', isSelected);
+    el.classList.toggle('dim', !isSelected);
+  });
 
-  if (preset === 'ai_prompt') {
-    cpModules = { enter: true, num: true, actions: true, nav: true };
-  } else if (preset === 'numpad') {
-    cpModules = { enter: true, num: true, actions: false, nav: false };
-  } else if (preset === 'nav') {
-    cpModules = { enter: true, num: false, actions: true, nav: true };
+  if (cpPickerCounter) {
+    cpPickerCounter.textContent = `${selectedCustomKeys.length} Dipilih`;
   }
-  localStorage.setItem('digi_cp_modules', JSON.stringify(cpModules));
-  applyCustomPadLayout();
+}
+
+// Toggle status tombol di Mode Edit (Picker)
+function toggleCustomKey(cpId) {
+  if (!cpId) return;
+  const index = selectedCustomKeys.indexOf(cpId);
+  if (index >= 0) {
+    selectedCustomKeys.splice(index, 1);
+  } else {
+    selectedCustomKeys.push(cpId);
+  }
+  updateCustomPickerUI();
+  vibe(10);
+}
+
+// Menyimpan tuts kustom ke localStorage dan merender canvas 100% layar
+function saveCustomKeys() {
+  try {
+    localStorage.setItem('digi_custom_user_keys', JSON.stringify(selectedCustomKeys));
+  } catch(e) {}
+  setCustomEditMode(false);
+  renderCustomActiveCanvas();
+  vibe(25);
+}
+
+// Mengatur perpindahan antara Active Canvas dan Picker Canvas (Edit Mode)
+function setCustomEditMode(inEdit) {
+  isCustomEditMode = !!inEdit;
+
+  if (customActiveCanvas) customActiveCanvas.classList.toggle('hidden', isCustomEditMode);
+  if (customPickerCanvas) customPickerCanvas.classList.toggle('hidden', !isCustomEditMode);
+
+  if (btnCustomEdit) {
+    btnCustomEdit.classList.toggle('active', isCustomEditMode);
+  }
+  if (lblCustomEdit) {
+    lblCustomEdit.textContent = isCustomEditMode ? 'Batal' : 'Edit';
+  }
+
+  if (isCustomEditMode) {
+    updateCustomPickerUI();
+  } else {
+    renderCustomActiveCanvas();
+  }
   vibe(15);
 }
 
+// Mengaktifkan / Menonaktifkan Mode Kustom
 function setCustomMode(enabled) {
   isCustomModeActive = !!enabled;
   const kbWrap = document.querySelector('.kb-wrap');
@@ -7485,7 +7790,9 @@ function setCustomMode(enabled) {
     if (footerTip) footerTip.style.display = 'none';
     if (scBar) scBar.classList.add('hidden');
     if (btnCustomMode) btnCustomMode.classList.add('on');
-    applyCustomPadLayout();
+
+    setCustomEditMode(false);
+    renderCustomActiveCanvas();
     vibe(25);
   } else {
     if (customPadView) customPadView.classList.add('hidden');
@@ -7495,11 +7802,13 @@ function setCustomMode(enabled) {
     }
     if (footerTip) footerTip.style.display = '';
     if (btnCustomMode) btnCustomMode.classList.remove('on');
+    isCustomEditMode = false;
     vibe(15);
   }
   updateDeckModesUI();
 }
 
+// Event Listeners Header Bar Mode Kustom
 if (btnCustomMode) {
   btnCustomMode.addEventListener('click', () => {
     setCustomMode(!isCustomModeActive);
@@ -7509,73 +7818,93 @@ if (btnCustomMode) {
 if (btnExitCustom) {
   btnExitCustom.addEventListener('click', () => setCustomMode(false));
 }
-
-// Preset button handlers
-document.querySelectorAll('.cp-preset-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    selectCustomPreset(btn.dataset.preset);
+if (btnCustomEdit) {
+  btnCustomEdit.addEventListener('click', () => {
+    setCustomEditMode(!isCustomEditMode);
   });
-});
+}
+if (btnCustomSave) {
+  btnCustomSave.addEventListener('click', () => {
+    saveCustomKeys();
+  });
+}
 
-// Config modal
-if (btnCpConfig) {
-  btnCpConfig.addEventListener('click', () => {
-    if (cpConfigModal) cpConfigModal.classList.remove('hidden');
+// Event Listeners di Picker Canvas (Footer Actions)
+if (btnCpSavePicker) {
+  btnCpSavePicker.addEventListener('click', () => saveCustomKeys());
+}
+if (btnCpPresetAi) {
+  btnCpPresetAi.addEventListener('click', () => {
+    selectedCustomKeys = [...DEFAULT_CUSTOM_KEYS];
+    updateCustomPickerUI();
     vibe(15);
   });
 }
-if (btnCloseCpConfig) {
-  btnCloseCpConfig.addEventListener('click', () => {
-    if (cpConfigModal) cpConfigModal.classList.add('hidden');
+if (btnCpSelectAll) {
+  btnCpSelectAll.addEventListener('click', () => {
+    const all = [];
+    document.querySelectorAll('.pick-key').forEach(el => {
+      const id = el.dataset.cpId;
+      if (id && !all.includes(id)) all.push(id);
+    });
+    selectedCustomKeys = all;
+    updateCustomPickerUI();
+    vibe(15);
   });
 }
-if (btnSaveCpConfig) {
-  btnSaveCpConfig.addEventListener('click', () => {
-    const chkEnter = $('chk-cp-enter');
-    const chkNum = $('chk-cp-num');
-    const chkActions = $('chk-cp-actions');
-    const chkNav = $('chk-cp-nav');
-    cpModules.enter = chkEnter ? chkEnter.checked : true;
-    cpModules.num = chkNum ? chkNum.checked : true;
-    cpModules.actions = chkActions ? chkActions.checked : true;
-    cpModules.nav = chkNav ? chkNav.checked : true;
-
-    localStorage.setItem('digi_cp_modules', JSON.stringify(cpModules));
-    applyCustomPadLayout();
-    if (cpConfigModal) cpConfigModal.classList.add('hidden');
-    vibe(20);
+if (btnCpClear) {
+  btnCpClear.addEventListener('click', () => {
+    selectedCustomKeys = [];
+    updateCustomPickerUI();
+    vibe(15);
   });
 }
 
-// Touch delegation for custom pad keys
-if (customPadView) {
-  customPadView.addEventListener('touchstart', (e) => {
-    const btn = e.target.closest('.cp-key');
+// Ketuk tuts pada Picker Canvas untuk toggle Dim/Aktif
+if (customPickerCanvas) {
+  customPickerCanvas.addEventListener('click', (e) => {
+    const pickEl = e.target.closest('.pick-key');
+    if (!pickEl) return;
+    toggleCustomKey(pickEl.dataset.cpId);
+  });
+}
+
+// Touch & Click Delegation untuk Tombol Aktif di Active Canvas
+if (customActiveCanvas) {
+  customActiveCanvas.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest('.cp-custom-key');
     if (!btn) return;
     e.preventDefault();
     pressKey(btn);
   }, { passive: false });
 
-  customPadView.addEventListener('touchend', (e) => {
-    const btn = e.target.closest('.cp-key');
+  customActiveCanvas.addEventListener('touchend', (e) => {
+    const btn = e.target.closest('.cp-custom-key');
     if (btn) releaseKey(btn);
   });
-  customPadView.addEventListener('touchcancel', (e) => {
-    const btn = e.target.closest('.cp-key');
+  customActiveCanvas.addEventListener('touchcancel', (e) => {
+    const btn = e.target.closest('.cp-custom-key');
     if (btn) releaseKey(btn);
   });
 
-  // Desktop click / mousedown fallback
-  customPadView.addEventListener('mousedown', (e) => {
-    const btn = e.target.closest('.cp-key');
+  // Desktop click fallback
+  customActiveCanvas.addEventListener('mousedown', (e) => {
+    const btn = e.target.closest('.cp-custom-key');
     if (!btn) return;
     pressKey(btn);
   });
-  customPadView.addEventListener('mouseup', (e) => {
-    const btn = e.target.closest('.cp-key');
+  customActiveCanvas.addEventListener('mouseup', (e) => {
+    const btn = e.target.closest('.cp-custom-key');
     if (btn) releaseKey(btn);
   });
 }
+
+// Responsif otomatis saat rotasi atau perubahan ukuran jendela
+window.addEventListener('resize', () => {
+  if (isCustomModeActive && !isCustomEditMode) {
+    renderCustomActiveCanvas();
+  }
+});
 
 // ── Inisialisasi Tombol Bluetooth HID (jika berjalan di Android App) ──
 try {
