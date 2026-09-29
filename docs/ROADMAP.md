@@ -134,9 +134,12 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
   - Penyesuaian proporsi kanvas keyboard dan trackpad atas/bawah yang ergonomis dalam rasio layar potret.
 
 #### 2. 🎨 Mode Kreator, Media & AI Workflow
-- [x] **Custom Mode (Minimalist / AI Workstation Pad):**
-  - Tata letak kanvas minimalis yang dapat dikonfigurasi bebas sesuai kebutuhan spesifik alur kerja pengguna.
-  - Preset AI Workstation: tombol **`Enter` ekstra besar**, **Panah Navigasi `▲ ▼ ◀ ▶`** dengan layer Shift (PgUp/PgDn/Home/End), tombol aksi cepat AI (`Ctrl+C`, `Esc`, `Tab`, `Space`, `Backspace`), dan **`Numpad Kalkulator`** modular.
+- [ ] **Mode AI Workstation (Fitur Eksklusif Lisensi Pro — Pengganti Mode Kustom):**
+  - Tata letak khusus yang dirancang khusus untuk alur kerja AI Prompting, ChatGPT, Claude, Gemini, dan coding terminal:
+    - **Tuts `Enter` Ekstra Besar:** Tombol kirim prompt (*Submit Prompt*) berukuran jumbo yang nyaman ditekan dengan satu jempol tanpa salah ketuk.
+    - **4 Tombol Panah Navigasi (`▲`, `▼`, `◀`, `▶`):** Akses cepat riwayat prompt sebelumnya (*prompt history navigation*), koreksi baris kode, dan seleksi opsi.
+    - **Voice Typing Nirkabel Terpadu (Speech-to-Text):** Mengubah smartphone menjadi mikrofon nirkabel jarak dekat; pengguna mendiktekan prompt panjang dengan suara dan teks langsung terketik di PC host secara real-time.
+  - Masuk ke dalam jajaran fitur **Lisensi Pro All-Access** dan driver konversi monetisasi utama di Menu Store.
 - [ ] **Mode Media Controller (Pemutar Hiburan PC):**
   - Remote multimedia mandiri untuk mengontrol Spotify, YouTube, VLC, Netflix, dan pemutar musik PC.
   - Tombol Play / Pause besar, Trek Berikutnya / Sebelumnya, dan tombol lewati 10 detik.
@@ -251,8 +254,12 @@ Upcoming dedicated functional controllers designed for specialized workflows:
   - Ergonomically arranged vertical layout tailored for one-handed smartphone use or vertical tablet stands.
 
 #### 2. 🎨 Creators, Media & AI Workflows
-- [ ] **Custom Mode (Minimalist / AI Workstation Pad):**
-  - Configurable modular keypad tailored for specialized setups (e.g., displaying solely an oversized **`Enter` key**, **Navigation Arrows `▲ ▼ ◀ ▶`**, and a **`Numeric Keypad`** for comfortable single-handed AI prompt engineering, code review, or data entry).
+- [ ] **AI Workstation Mode (Exclusive Pro License Feature — Replacing Custom Mode):**
+  - Streamlined ergonomic keypad layout specialized for AI Prompt Engineering (ChatGPT, Claude, Gemini, coding terminals):
+    - **Oversized `Enter` Key:** Extra-large dispatch key for comfortable, error-free 1-thumb prompt execution.
+    - **4 Directional Arrows (`▲`, `▼`, `◀`, `▶`):** Rapid history command traversal, text cursor adjustment, and option browsing.
+    - **Wireless Voice Typing (Speech-to-Text):** Direct speech dictation streaming from mobile microphone to PC host in real-time.
+  - Bundled exclusively within the **DigiKeyboard Pro All-Access License**.
 - [ ] **Media Controller Mode:**
   - Dedicated multimedia deck for Spotify, YouTube, VLC, and Netflix.
   - Large Play/Pause, track skip, 10s scrub buttons, and a master volume knob/slider with instant mute.

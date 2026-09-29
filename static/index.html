@@ -518,6 +518,77 @@ html, body {
   color: var(--text-dim);
   display: block;
 }
+
+/* Banner Penawaran Akun Pro di Menu Pilihan Mode Kerja */
+.deck-pro-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(210, 153, 34, 0.14), rgba(88, 166, 255, 0.1));
+  border: 1px solid rgba(210, 153, 34, 0.35);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+.deck-pro-banner.hidden {
+  display: none !important;
+}
+.dpb-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pro-tag {
+  background: #d29922;
+  color: #0d1117;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+.dpb-text {
+  color: var(--text);
+  font-size: 10.5px;
+  line-height: 1.2;
+}
+.dpb-btn {
+  background: #238636;
+  border: 1px solid #2ea043;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.dpb-btn:hover {
+  background: #2ea043;
+}
+.deck-card-pro {
+  position: relative;
+  border-color: rgba(210, 153, 34, 0.35);
+}
+.deck-card-pro:hover {
+  border-color: #d29922;
+  background: rgba(210, 153, 34, 0.08);
+}
+.badge-card-pro {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #d29922;
+  color: #0d1117;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1;
+}
 .deck-chips {
   display: flex;
   flex-wrap: wrap;
@@ -3007,6 +3078,16 @@ body.is-fullscreen {
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
           <span>PILIH MODE KERJA</span>
         </div>
+
+        <!-- Banner Upgrade Pro untuk Pengguna Belum Pro -->
+        <div class="deck-pro-banner" id="deck-pro-banner">
+          <div class="dpb-left">
+            <span class="pro-tag">PRO</span>
+            <span class="dpb-text">Buka <b>Mode AI Workstation</b> &amp; Voice Typing</span>
+          </div>
+          <button type="button" class="dpb-btn" id="btn-deck-upgrade-pro">Buka Pro</button>
+        </div>
+
         <div class="deck-grid deck-grid-modes">
           <button class="deck-card active" id="btn-mode-standard" type="button">
             <span class="dc-icon">
@@ -3035,17 +3116,16 @@ body.is-fullscreen {
               <span class="dc-sub">Meeting &amp; PPT</span>
             </div>
           </button>
-          <!-- [MUTED SEMENTARA - DIKERJAKAN BELAKANGAN] Mode Kustom
-          <button class="deck-card" id="btn-custom-mode" type="button">
+          <button class="deck-card deck-card-pro" id="btn-ai-mode" type="button" title="Mode AI Workstation: Tuts Enter, 4 Panah, dan Voice Typing (Fitur Eksklusif Pro)">
+            <span class="badge-card-pro">PRO</span>
             <span class="dc-icon">
-              <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 3 3-3 3"/><line x1="14" x2="16" y1="16" y2="16"/></svg>
+              <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
             </span>
             <div class="dc-text">
-              <span class="dc-name">Mode Kustom</span>
-              <span class="dc-sub">Desain Tuts Sendiri</span>
+              <span class="dc-name">Mode AI</span>
+              <span class="dc-sub">Enter, Panah, Voice</span>
             </div>
           </button>
-          -->
         </div>
       </div>
 
@@ -4722,13 +4802,28 @@ function switchAppMode(targetMode) {
 
 
 
+function isProUser() {
+  return localStorage.getItem('digi_pro_license') === 'active' || localStorage.getItem('digi_pro_unlocked') === 'true';
+}
+
 function updateDeckModesUI() {
-  if (!btnModeStandard) return;
-  btnModeStandard.classList.toggle('active', !isGameModeActive && !isPresentModeActive);
+  if (btnModeStandard) {
+    btnModeStandard.classList.toggle('active', !isGameModeActive && !isPresentModeActive);
+  }
   const btnGm = $('btn-game-mode');
   const btnPr = $('btn-present-mode');
   if (btnGm) btnGm.classList.toggle('active', isGameModeActive);
   if (btnPr) btnPr.classList.toggle('active', isPresentModeActive);
+
+  // Perbarui visibilitas banner Pro di Menu Mode Kerja
+  const proBanner = $('deck-pro-banner');
+  if (proBanner) {
+    if (isProUser()) {
+      proBanner.classList.add('hidden');
+    } else {
+      proBanner.classList.remove('hidden');
+    }
+  }
 }
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
@@ -7988,6 +8083,8 @@ try {
 const btnModeStandardDeck = $('btn-mode-standard');
 const btnGameModeDeck     = $('btn-game-mode');
 const btnPresentModeDeck  = $('btn-present-mode');
+const btnAiModeDeck       = $('btn-ai-mode');
+const btnDeckUpgradePro   = $('btn-deck-upgrade-pro');
 
 if (btnModeStandardDeck) {
   btnModeStandardDeck.onclick = (e) => {
@@ -8005,6 +8102,26 @@ if (btnPresentModeDeck) {
   btnPresentModeDeck.onclick = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
     switchAppMode('present');
+  };
+}
+if (btnDeckUpgradePro) {
+  btnDeckUpgradePro.onclick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    closeControlDeck();
+    openStore('all');
+  };
+}
+if (btnAiModeDeck) {
+  btnAiModeDeck.onclick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!isProUser()) {
+      vibe(25);
+      closeControlDeck();
+      openStore('all');
+    } else {
+      vibe(15);
+      alert('Mode AI Workstation (Tuts Enter besar, 4 Arrow, dan Voice Typing) sedang dipersiapkan dan segera hadir di pembaruan v1.18 Pro.');
+    }
   };
 }
 

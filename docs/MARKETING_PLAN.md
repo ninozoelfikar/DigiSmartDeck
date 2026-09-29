@@ -37,7 +37,7 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
 
 ### A. Product (Produk & Ekosistem Plugin)
 * **Tier Community (FOSS):** Host script Python open source gratis di GitHub untuk membangun kredibilitas dan *developer trust*.
-* **Tier Pro Standalone:** Aplikasi Windows executable (`.exe` 1-klik tanpa Python), Wake-on-LAN, custom macro grid (ala Virtual Stream Deck), dan proteksi PIN/Pairing.
+* **Tier Pro Standalone:** Aplikasi Windows executable (`.exe` 1-klik tanpa Python), Wake-on-LAN, proteksi PIN/Pairing, serta **Mode AI Workstation Eksklusif Pro** (tuts Enter ekstra besar, 4 tombol panah navigasi, dan Voice Typing wireless speech-to-text terpadu).
 * **Ekosistem Arsitektur Plugin (Modular Capability System):**
   Aplikasi dirancang mendukung sistem ekstensi plugin modular agar pengguna dapat memperluas fungsi sesuai alur kerja spesifik tanpa membebani performa inti:
   - **Plugin Gratis (Free Plugins - Built-in untuk Semua Pengguna):**

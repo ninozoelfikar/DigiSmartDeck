@@ -125,7 +125,10 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
    - **AI Prompt Assistant:** Tombol 1-klik injeksi prompt kontekstual ke LLM (ChatGPT, Claude, Gemini, Ollama).
    - **Multi-Action Macro Chaining:** Eksekusi kombo tuts otomatis dengan jeda milidetik presisi.
    - **Cloud Sync:** Sinkronisasi konfigurasi kustom dan daftar snippet antar perangkat.
-3. **Semua Mode Studio Terbuka:** Mode Presenter + Laser Gyro, Mode Zoom/Teams Meeting, Mode OBS Studio Deck + Soundboard FX, dan Mode Drawing Canvas Tablet.
+3. **Semua Mode Studio & Workstation Terbuka:**
+   - **Mode AI Workstation (Eksklusif Pro):** Tuts Enter ekstra besar untuk dispatch prompt, 4 Panah Navigasi untuk history prompt & kursor, dan tombol Voice Typing nirkabel langsung.
+   - **Mode Presenter & Meeting:** Remote slide, laser pointer gyro, kontrol Zoom/Meet mic/cam.
+   - **Mode Kreator:** OBS Studio Deck + Soundboard FX, dan Mode Drawing Canvas Tablet.
 4. **Seluruh Skin Kolektor Terbuka:** Tidak perlu beli skin satuan Rp 10.000 lagi.
 5. **Bebas Stiker Sponsor:** Palm rest bersih elegan.
 6. **Grandfathering Guarantee:** Lisensi sekali seumur hidup (*lifetime*), mencakup seluruh update fitur dan plugin Pro di masa depan tanpa biaya langganan bulanan.
