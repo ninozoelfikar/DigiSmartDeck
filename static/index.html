@@ -8008,44 +8008,44 @@ const btnPresentModeDeck  = $('btn-present-mode');
 const btnAiModeDeck       = $('btn-ai-mode');
 const btnDeckUpgradePro   = $('btn-deck-upgrade-pro');
 
-if (btnModeStandardDeck) {
-  btnModeStandardDeck.onclick = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    switchAppMode('standard');
-  };
+// Helper: pasang listener mode yang tidak bisa ditimpa oleh touchstart auto-close
+function bindModeBtn(btn, handler) {
+  if (!btn) return;
+  // touchstart: cegah delay 300ms dan cegah auto-close deck menangkap lebih dulu
+  btn.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+  }, { passive: true });
+  btn.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+    handler();
+  }, { passive: false });
+  // fallback click (desktop / mouse)
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handler();
+  });
 }
-if (btnGameModeDeck) {
-  btnGameModeDeck.onclick = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    switchAppMode('game');
-  };
-}
-if (btnPresentModeDeck) {
-  btnPresentModeDeck.onclick = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    switchAppMode('present');
-  };
-}
-if (btnDeckUpgradePro) {
-  btnDeckUpgradePro.onclick = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
+
+bindModeBtn(btnModeStandardDeck, () => switchAppMode('standard'));
+bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
+bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
+
+bindModeBtn(btnDeckUpgradePro, () => {
+  closeControlDeck();
+  openStore('all');
+});
+
+bindModeBtn(btnAiModeDeck, () => {
+  if (!isProUser()) {
+    vibe(25);
     closeControlDeck();
     openStore('all');
-  };
-}
-if (btnAiModeDeck) {
-  btnAiModeDeck.onclick = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (!isProUser()) {
-      vibe(25);
-      closeControlDeck();
-      openStore('all');
-    } else {
-      vibe(15);
-      alert('Mode AI Workstation (Tuts Enter besar, 4 Arrow, dan Voice Typing) sedang dipersiapkan dan segera hadir di pembaruan v1.18 Pro.');
-    }
-  };
-}
+  } else {
+    vibe(15);
+    alert('Mode AI Workstation (Tuts Enter besar, 4 Arrow, dan Voice Typing) sedang dipersiapkan dan segera hadir di pembaruan v1.18 Pro.');
+  }
+});
 
 // Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=kb)
 try {
