@@ -3017,6 +3017,7 @@ body.is-fullscreen {
               <span class="dc-sub">Meeting &amp; PPT</span>
             </div>
           </button>
+          <!-- [MUTED SEMENTARA - DIKERJAKAN BELAKANGAN] Mode Kustom
           <button class="deck-card" id="btn-custom-mode" type="button">
             <span class="dc-icon">
               <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 3 3-3 3"/><line x1="14" x2="16" y1="16" y2="16"/></svg>
@@ -3026,6 +3027,7 @@ body.is-fullscreen {
               <span class="dc-sub">Desain Tuts Sendiri</span>
             </div>
           </button>
+          -->
         </div>
       </div>
 
@@ -3561,7 +3563,8 @@ body.is-fullscreen {
     </div>
   </section>
 
-  <!-- MODE KUSTOM (CUSTOM KEYPAD WORKSPACE) -->
+  <!-- [MUTED SEMENTARA - DIKERJAKAN BELAKANGAN] Mode Kustom di-wrap dalam template -->
+  <template id="custom-pad-view-template" style="display:none;">
   <section id="custom-pad-view" class="custom-pad-view hidden">
     <!-- Top Utility Bar: Mode Kustom Header -->
     <div class="cp-top-bar">
@@ -3790,6 +3793,7 @@ body.is-fullscreen {
       </div>
     </div>
   </section>
+  </template>
 
   <footer class="footer" id="footer-tip">
     <span><b>Tip:</b> Mode <b>Latch</b> aktif → tekan Ctrl lalu C untuk Ctrl+C. Trackpad terintegrasi di atas keyboard.</span>
@@ -4427,6 +4431,11 @@ let vibeDuration = parseInt(localStorage.getItem('digi_vibe_ms'), 10) || 30;
 
 const mods = { ctrl: false, alt: false, shift: false, cmd: false, caps_lock: false };
 
+// ── Work Mode Global States (Top-level scope, no TDZ) ──
+let isGameModeActive = false;
+let isPresentModeActive = false;
+let isCustomModeActive = false;
+
 // ── DOM ──
 const badge     = document.getElementById('badge');
 const badgeIcon = document.getElementById('badge-icon');
@@ -4645,7 +4654,7 @@ function switchAppMode(targetMode) {
 
   isGameModeActive = (targetMode === 'game');
   isPresentModeActive = (targetMode === 'present');
-  isCustomModeActive = (targetMode === 'custom');
+  isCustomModeActive = false; // Mode kustom di-mute sementara
 
   const kbWrap = document.querySelector('.kb-wrap');
   const laptopDeck = $('laptop-deck');
@@ -4653,21 +4662,17 @@ function switchAppMode(targetMode) {
   const scBar = $('sc-bar');
   const gamepadView = $('gamepad-view');
   const presentView = $('present-view');
-  const customPadView = $('custom-pad-view');
 
   const btnGameMode = $('btn-game-mode');
   const btnPresentMode = $('btn-present-mode');
-  const btnCustomMode = $('btn-custom-mode');
 
   // Toggle view visibility secara tegas
   if (gamepadView) gamepadView.classList.toggle('hidden', !isGameModeActive);
   if (presentView) presentView.classList.toggle('hidden', !isPresentModeActive);
-  if (customPadView) customPadView.classList.toggle('hidden', !isCustomModeActive);
 
   // Status visual tombol di Menu Deck
   if (btnGameMode) btnGameMode.classList.toggle('on', isGameModeActive);
   if (btnPresentMode) btnPresentMode.classList.toggle('on', isPresentModeActive);
-  if (btnCustomMode) btnCustomMode.classList.toggle('on', isCustomModeActive);
 
   if (targetMode === 'standard') {
     // Mode Standard (Keyboard PC Utama)
@@ -4678,7 +4683,7 @@ function switchAppMode(targetMode) {
     if (footerTip) footerTip.style.display = '';
     vibe(15);
   } else {
-    // Mode Khusus (Game / Presentasi / Kustom)
+    // Mode Khusus (Game / Presentasi)
     if (kbWrap) kbWrap.style.display = 'none';
     if (laptopDeck) laptopDeck.classList.add('hidden');
     if (footerTip) footerTip.style.display = 'none';
@@ -4690,10 +4695,6 @@ function switchAppMode(targetMode) {
       vibe(25);
     } else if (targetMode === 'present') {
       vibe(25);
-    } else if (targetMode === 'custom') {
-      if (typeof setCustomEditMode === 'function') setCustomEditMode(false);
-      if (typeof renderCustomActiveCanvas === 'function') renderCustomActiveCanvas();
-      vibe(25);
     }
   }
 
@@ -4701,25 +4702,15 @@ function switchAppMode(targetMode) {
   closeControlDeck(); // Selalu tutup menu popup seketika setelah memilih mode!
 }
 
-// Tombol Mode Standard (Kembali ke Keyboard Utama)
-if (btnModeStandard) {
-  btnModeStandard.addEventListener('click', () => {
-    switchAppMode('standard');
-  });
-}
+
 
 function updateDeckModesUI() {
   if (!btnModeStandard) return;
-  const isGame = typeof isGameModeActive !== 'undefined' && isGameModeActive;
-  const isPresent = typeof isPresentModeActive !== 'undefined' && isPresentModeActive;
-  const isCustom = typeof isCustomModeActive !== 'undefined' && isCustomModeActive;
-  btnModeStandard.classList.toggle('active', !isGame && !isPresent && !isCustom);
+  btnModeStandard.classList.toggle('active', !isGameModeActive && !isPresentModeActive);
   const btnGm = $('btn-game-mode');
   const btnPr = $('btn-present-mode');
-  const btnCm = $('btn-custom-mode');
-  if (btnGm) btnGm.classList.toggle('active', isGame);
-  if (btnPr) btnPr.classList.toggle('active', isPresent);
-  if (btnCm) btnCm.classList.toggle('active', isCustom);
+  if (btnGm) btnGm.classList.toggle('active', isGameModeActive);
+  if (btnPr) btnPr.classList.toggle('active', isPresentModeActive);
 }
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
@@ -6561,7 +6552,6 @@ try {
   if (savedCustom) customGpMapping = JSON.parse(savedCustom);
 } catch(e) {}
 
-let isGameModeActive = false;
 let isStickMode = localStorage.getItem('digi_gp_stick_mode') === 'true';
 
 // Active gamepad physical keys currently sent as keydown to PC
@@ -6620,13 +6610,8 @@ function setGameMode(enabled) {
   switchAppMode(enabled ? 'game' : 'standard');
 }
 
-if (btnGameMode) {
-  btnGameMode.addEventListener('click', () => {
-    switchAppMode(isGameModeActive ? 'standard' : 'game');
-  });
-}
 if (btnExitGame) {
-  btnExitGame.addEventListener('click', () => switchAppMode('standard'));
+  btnExitGame.onclick = () => switchAppMode('standard');
 }
 
 // ── Preset Selection ──
@@ -7133,7 +7118,6 @@ const btnPresentMode = $('btn-present-mode');
 const btnExitPresent = $('btn-exit-present');
 const prAppSelect = $('pr-app-select');
 
-let isPresentModeActive = false;
 let prCurrentApp = localStorage.getItem('digi_pr_app') || 'ppt';
 
 // Presentation Application Key Profile Definitions
@@ -7228,13 +7212,8 @@ function setPresentMode(enabled) {
   switchAppMode(enabled ? 'present' : 'standard');
 }
 
-if (btnPresentMode) {
-  btnPresentMode.addEventListener('click', () => {
-    switchAppMode(isPresentModeActive ? 'standard' : 'present');
-  });
-}
 if (btnExitPresent) {
-  btnExitPresent.addEventListener('click', () => switchAppMode('standard'));
+  btnExitPresent.onclick = () => switchAppMode('standard');
 }
 
 // ── Software Profile Selector ──
@@ -7661,6 +7640,7 @@ if (btnPrGyro) {
   });
 }
 
+/* [MUTED SEMENTARA - DIKERJAKAN BELAKANGAN] Mode Kustom JavaScript
 // ─── MODE KUSTOM (CUSTOM KEYPAD WORKSPACE) ───
 const customPadView = $('custom-pad-view');
 const customActiveCanvas = $('custom-active-canvas');
@@ -7971,6 +7951,7 @@ window.addEventListener('resize', () => {
     renderCustomActiveCanvas();
   }
 });
+*/
 
 // ── Inisialisasi Tombol Bluetooth HID (jika berjalan di Android App) ──
 try {
@@ -7984,6 +7965,45 @@ try {
     }
   }
 } catch(e) {}
+
+// ── Inisialisasi Sentral Mode Kerja (Semua Dependensi & Modul Sudah Siap) ──
+const btnModeStandardDeck = $('btn-mode-standard');
+const btnGameModeDeck     = $('btn-game-mode');
+const btnPresentModeDeck  = $('btn-present-mode');
+
+if (btnModeStandardDeck) {
+  btnModeStandardDeck.onclick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    switchAppMode('standard');
+  };
+}
+if (btnGameModeDeck) {
+  btnGameModeDeck.onclick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    switchAppMode('game');
+  };
+}
+if (btnPresentModeDeck) {
+  btnPresentModeDeck.onclick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    switchAppMode('present');
+  };
+}
+
+// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=kb)
+try {
+  const urlParams = new URLSearchParams(window.location.search);
+  const initMode = urlParams.get('mode');
+  if (initMode === 'game' || initMode === 'gamepad') {
+    switchAppMode('game');
+  } else if (initMode === 'present' || initMode === 'slide') {
+    switchAppMode('present');
+  } else {
+    switchAppMode('standard');
+  }
+} catch(e) {
+  switchAppMode('standard');
+}
 
 connect();
 })();
