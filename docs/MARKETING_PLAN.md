@@ -35,9 +35,22 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
 
 ## 🧩 3. Bauran Pemasaran (Marketing Mix - 4P)
 
-### A. Product (Produk)
+### A. Product (Produk & Ekosistem Plugin)
 * **Tier Community (FOSS):** Host script Python open source gratis di GitHub untuk membangun kredibilitas dan *developer trust*.
 * **Tier Pro Standalone:** Aplikasi Windows executable (`.exe` 1-klik tanpa Python), Wake-on-LAN, custom macro grid (ala Virtual Stream Deck), dan proteksi PIN/Pairing.
+* **Ekosistem Arsitektur Plugin (Modular Capability System):**
+  Aplikasi dirancang mendukung sistem ekstensi plugin modular agar pengguna dapat memperluas fungsi sesuai alur kerja spesifik tanpa membebani performa inti:
+  - **Plugin Gratis (Free Plugins - Built-in untuk Semua Pengguna):**
+    1. *Basic AutoText / Text Snippet:* Template frasa pendek untuk teks harian (salam pembuka, tanda tangan email, kalimat template singkat).
+    2. *Kalkulator Numpad Cepat:* Melakukan kalkulasi langsung di HP dan mengirimkan hasil angka ke kursor PC dengan 1 ketukan.
+    3. *Media & Slide Remote:* Kontrol volume, pemutar musik/video, dan kendali presentasi dasar.
+    4. *AI Action Bar Dasar:* Tombol tuts cepat perintah AI (Ctrl+C, Space, Backspace, Enter ekstra besar).
+  - **Plugin Pro (Pro Exclusive Plugins - Driver Konversi Monetisasi Utama):**
+    1. *Voice Typing / Wireless Dictation (Speech-to-Text):* Memanfaatkan mikrofon smartphone via Web Speech API / model AI speech lokal untuk mentranskripsikan suara pengguna langsung menjadi ketikan teks real-time di PC host (Word, Google Docs, VS Code, chat) tanpa kabel dan tanpa latensi. Mikrofon HP yang dekat ke mulut menghasilkan akurasi dikte jauh lebih superior dibanding mikrofon bawaan laptop/PC.
+    2. *Advanced AutoText & Snippet Engine (Dynamic Macro Expander):* Template teks multi-baris tanpa batas, variabel dinamis (tanggal otomatis, timestamp, clipboard paste), dan trigger prefix instan (misal ketik `;rek` langsung mengetik nama bank & nomor rekening lengkap di PC).
+    3. *AI Prompt Dispatcher & Assistant:* Preset generator prompt terstruktur ke ChatGPT/Claude/Gemini/Ollama dengan variabel konteks kustom dalam 1 klik.
+    4. *Multi-Action Chaining Macro:* Satu ketukan memicu sekuens kombinasi tuts berurutan dengan jeda presisi (delay milidetik), sangat krusial untuk gamer dan pekerja data entry.
+    5. *Cloud / Multi-Device Sync Profile:* Sinkronisasi instan snippet AutoText dan layout kustom antar ponsel, tablet, dan PC host.
 * **Tier Hardware (Fase Lanjutan):** Modul USB dongle ESP32 plug-and-play siap pakai.
 
 ### B. Price (Harga)

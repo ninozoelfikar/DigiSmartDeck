@@ -134,9 +134,9 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
   - Penyesuaian proporsi kanvas keyboard dan trackpad atas/bawah yang ergonomis dalam rasio layar potret.
 
 #### 2. 🎨 Mode Kreator, Media & AI Workflow
-- [ ] **Custom Mode (Minimalist / AI Workstation Pad):**
+- [x] **Custom Mode (Minimalist / AI Workstation Pad):**
   - Tata letak kanvas minimalis yang dapat dikonfigurasi bebas sesuai kebutuhan spesifik alur kerja pengguna.
-  - Contoh preset AI Workstation: hanya menampilkan tombol **`Enter` besar**, **Panah Navigasi `▲ ▼ ◀ ▶`**, dan **`Numpad Kalkulator`** untuk mempermudah eksekusi prompt AI, review spreadsheet, atau navigasi terminal dengan satu tangan tanpa kepadatan tombol QWERTY.
+  - Preset AI Workstation: tombol **`Enter` ekstra besar**, **Panah Navigasi `▲ ▼ ◀ ▶`** dengan layer Shift (PgUp/PgDn/Home/End), tombol aksi cepat AI (`Ctrl+C`, `Esc`, `Tab`, `Space`, `Backspace`), dan **`Numpad Kalkulator`** modular.
 - [ ] **Mode Media Controller (Pemutar Hiburan PC):**
   - Remote multimedia mandiri untuk mengontrol Spotify, YouTube, VLC, Netflix, dan pemutar musik PC.
   - Tombol Play / Pause besar, Trek Berikutnya / Sebelumnya, dan tombol lewati 10 detik.
@@ -148,7 +148,20 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
   - **OBS Studio Controller:** Integrasi WebSocket OBS untuk perpindahan Scene siaran, pergantian Kamera aktif (*Select Cam*), toggle sumber audio, dan tombol Mulai/Hentikan Streaming & Rekaman.
   - **Soundboard Audio FX:** Tombol instan efek suara reaksi siaran langsung (Tepuk Tangan / *Applause*, Tawa / *Laugh*, *Drum Roll*, *Air Horn*, *Ding*) yang langsung diputar ke output audio PC.
 
-#### 3. 🎮 Mode Gaming & Simulasi
+#### 3. 🧩 Ekosistem Plugin & Produktivitas Cerdas (Free & Pro Tier)
+- [ ] **Plugin Gratis (Free Built-in Plugins):**
+  - **Basic AutoText / Text Snippet:** Pengelola template frasa pendek untuk teks harian (salam pembuka, tanda tangan email, kalimat template singkat).
+  - **Numpad Calculator Mode:** Dek angka kalkulator cepat dengan tombol transfer hasil ke kursor PC secara instan.
+  - **Media & Slide Remote:** Kendali pemutar media dan slide presentasi esensial.
+  - **AI Action Bar Dasar:** Tombol tuts cepat perintah AI (Ctrl+C, Space, Backspace, Enter ekstra besar).
+- [ ] **Plugin Pro (Pro Exclusive Plugins):**
+  - **Voice Typing / Wireless Speech-to-Text Dictation:** Memanfaatkan mikrofon HP via Web Speech API / model AI speech lokal untuk mentranskripsikan suara pengguna langsung menjadi ketikan teks real-time di PC host (Word, Google Docs, VS Code, chat) tanpa kabel dan tanpa latensi.
+  - **Advanced AutoText & Snippet Engine:** Template multi-baris tanpa batas, variabel dinamis (tanggal otomatis, timestamp, clipboard paste), dan trigger prefix instan (misal ketik `;rek` langsung mengetik nama bank & nomor rekening lengkap di PC).
+  - **AI Prompt Assistant / Quick LLM Dispatcher:** Preset prompt generator terstruktur ke ChatGPT/Claude/Gemini/Ollama dengan variabel konteks kustom dalam 1 klik.
+  - **Multi-Action Macro Chaining:** 1 ketukan memicu sekuens kombinasi tuts berurutan dengan jeda presisi (delay milidetik).
+  - **Cloud Sync Profile:** Sinkronisasi instan snippet AutoText dan layout kustom antar perangkat.
+
+#### 4. 🎮 Mode Gaming & Simulasi
 - [x] **Mode Game Console (Virtual Gamepad):**
   - Tata letak konsol gamepad virtual penuh di layar sentuh:
     - D-Pad 8-arah di sisi kiri.

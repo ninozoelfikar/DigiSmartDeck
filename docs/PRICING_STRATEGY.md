@@ -112,10 +112,16 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 
 ### C. Fitur Pembeda (*Pro Value Proposition*)
 1. **File `.exe` Windows Mandiri (1-Klik):** Zero-install Python, tinggal klik langsung jalan.
-2. **Semua Mode Studio Terbuka:** Mode Presenter + Laser Gyro, Mode Zoom/Teams Meeting, Mode OBS Studio Deck + Soundboard FX, dan Mode Drawing Canvas Tablet.
-3. **Seluruh Skin Kolektor Terbuka:** Tidak perlu beli skin satuan Rp 10.000 lagi.
-4. **Bebas Stiker Sponsor:** Palm rest bersih elegan.
-5. **Grandfathering Guarantee:** Lisensi sekali seumur hidup (*lifetime*), mencakup seluruh update fitur di masa depan tanpa biaya langganan bulanan.
+2. **Paket Ekosistem Plugin Pro Terbuka Penuh:**
+   - **Voice Typing / Wireless Speech-to-Text:** Dikte suara jernih dari HP langsung tertulis di PC (Word, Docs, IDE, Chat) secara real-time.
+   - **Advanced AutoText & Snippet Engine:** Template teks dinamis multi-baris, auto-date/time, dan trigger ekspansi instan.
+   - **AI Prompt Assistant:** Tombol 1-klik injeksi prompt kontekstual ke LLM (ChatGPT, Claude, Gemini, Ollama).
+   - **Multi-Action Macro Chaining:** Eksekusi kombo tuts otomatis dengan jeda milidetik presisi.
+   - **Cloud Sync:** Sinkronisasi konfigurasi kustom dan daftar snippet antar perangkat.
+3. **Semua Mode Studio Terbuka:** Mode Presenter + Laser Gyro, Mode Zoom/Teams Meeting, Mode OBS Studio Deck + Soundboard FX, dan Mode Drawing Canvas Tablet.
+4. **Seluruh Skin Kolektor Terbuka:** Tidak perlu beli skin satuan Rp 10.000 lagi.
+5. **Bebas Stiker Sponsor:** Palm rest bersih elegan.
+6. **Grandfathering Guarantee:** Lisensi sekali seumur hidup (*lifetime*), mencakup seluruh update fitur dan plugin Pro di masa depan tanpa biaya langganan bulanan.
 
 ---
 
