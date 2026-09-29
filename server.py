@@ -11,6 +11,7 @@ import json
 import asyncio
 import time
 import glob
+import shutil
 from aiohttp import web
 
 BASE_DIR = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -552,23 +553,27 @@ def get_local_ip_addresses():
     ip_list = []
     try:
         import psutil
+        usb_ips = []
         lan_ips = []
         other_ips = []
         for iface, addrs in psutil.net_if_addrs().items():
             iface_lower = iface.lower()
-            is_virtual = any(k in iface_lower for k in [
+            is_usb = any(k in iface_lower for k in ['usb', 'rndis'])
+            is_virtual = not is_usb and any(k in iface_lower for k in [
                 'docker', 'br-', 'virbr', 'warp', 'tun', 'tap', 'veth',
                 'vethernet', 'hyper-v', 'vmware', 'virtualbox', 'wsl'
             ])
             for addr in addrs:
                 if addr.family == socket.AF_INET and not addr.address.startswith('127.'):
-                    if not is_virtual and (addr.address.startswith('192.168.') or addr.address.startswith('10.')):
+                    if is_usb:
+                        usb_ips.append(addr.address)
+                    elif not is_virtual and (addr.address.startswith('192.168.') or addr.address.startswith('10.')):
                         lan_ips.append(addr.address)
                     elif not is_virtual:
                         lan_ips.append(addr.address)
                     else:
                         other_ips.append(addr.address)
-        for ip in lan_ips + other_ips:
+        for ip in usb_ips + lan_ips + other_ips:
             if ip not in ip_list:
                 ip_list.append(ip)
     except Exception:
@@ -829,6 +834,9 @@ def print_banner(port, ips):
     for ip in ips:
         print(f"  👉 http://{ip}:{port}")
     print("-" * 60)
+    print("🔌 KONEKSI KABEL USB (Ultra-Low Latency <1ms):")
+    print(f"  👉 http://localhost:{port}  (Buka di browser HP via kabel USB & ADB)")
+    print("-" * 60)
 
     if HAS_QR:
         print("Atau scan QR Code berikut dengan kamera HP Anda:")
@@ -843,6 +851,57 @@ def print_banner(port, ips):
         qr.print_ascii(invert=True)
     print("Tekan Ctrl+C di terminal ini untuk mematikan server.")
     print("=" * 60)
+
+
+async def adb_reverse_watcher(port):
+    """Mendeteksi perangkat Android via kabel USB dan otomatis mengaktifkan port reverse forwarding (<1ms)"""
+    adb_cmd = shutil.which('adb')
+    if not adb_cmd:
+        return
+    known_devices = set()
+    while True:
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                adb_cmd, 'devices',
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, _ = await proc.communicate()
+            lines = stdout.decode().strip().splitlines()[1:]
+            current_devices = set()
+            for line in lines:
+                parts = line.split()
+                if len(parts) >= 2 and parts[1] == 'device':
+                    current_devices.add(parts[0])
+
+            new_devices = current_devices - known_devices
+            for dev in new_devices:
+                r_proc = await asyncio.create_subprocess_exec(
+                    adb_cmd, '-s', dev, 'reverse', f'tcp:{port}', f'tcp:{port}',
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+                await r_proc.communicate()
+                print(f"[🔌 USB] Terdeteksi kabel USB terhubung: {dev} -> Port reverse aktif (http://localhost:{port})")
+
+            known_devices = current_devices
+        except Exception:
+            pass
+        await asyncio.sleep(4.0)
+
+
+async def start_background_tasks(app):
+    port = app.get('server_port', 8080)
+    app['adb_watcher_task'] = asyncio.create_task(adb_reverse_watcher(port))
+
+
+async def cleanup_background_tasks(app):
+    if 'adb_watcher_task' in app:
+        app['adb_watcher_task'].cancel()
+        try:
+            await app['adb_watcher_task']
+        except asyncio.CancelledError:
+            pass
 
 
 async def api_version_handler(request):
@@ -871,8 +930,12 @@ async def options_handler(request):
     })
 
 
-def create_app():
+def create_app(port=8080):
     app = web.Application()
+    app['server_port'] = port
+    app.on_startup.append(start_background_tasks)
+    app.on_cleanup.append(cleanup_background_tasks)
+
     static_dir = os.path.join(BASE_DIR, 'static')
 
     app.router.add_get('/', index_handler)
@@ -910,7 +973,7 @@ if __name__ == '__main__':
     ips = get_local_ip_addresses()
     print_banner(port, ips)
 
-    app = create_app()
+    app = create_app(port)
     try:
         web.run_app(app, host='0.0.0.0', port=port, print=None)
     except OSError as e:

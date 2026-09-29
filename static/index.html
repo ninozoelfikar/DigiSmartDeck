@@ -265,6 +265,16 @@ html, body {
   flex-shrink: 0;
 }
 .status-badge.connected .dot { background: #3fb950; box-shadow: 0 0 5px #3fb950; }
+.status-badge.usb-mode {
+  background: rgba(56, 239, 125, 0.15) !important;
+  border-color: rgba(56, 239, 125, 0.45) !important;
+  color: #38ef7d !important;
+  font-weight: 700;
+}
+.status-badge.usb-mode .dot {
+  background: #38ef7d !important;
+  box-shadow: 0 0 8px #38ef7d !important;
+}
 .ping { font-size: 10px; color: var(--text-dim); font-family: monospace; }
 .right-controls { display: flex; gap: 5px; align-items: center; }
 .left-controls { display: flex; gap: 6px; align-items: center; }
@@ -2465,6 +2475,7 @@ body.is-fullscreen {
     </div>
     <div class="rc-actions">
       <button type="button" class="rc-btn rc-primary" id="btn-rc-retry" title="Coba hubungkan sekarang">⚡ Coba Lagi</button>
+      <button type="button" class="rc-btn" id="btn-rc-usb" title="Gunakan Kabel USB Ultra-Low Latency">🔌 Mode USB</button>
       <button type="button" class="rc-btn" id="btn-rc-scan" title="Pindai IP PC di jaringan Wi-Fi">🔍 Pindai PC</button>
       <button type="button" class="rc-btn" id="btn-rc-host" title="Ganti IP atau hostname secara manual">✏️ Ganti IP</button>
       <button type="button" class="rc-btn rc-close" id="btn-rc-close" title="Tutup banner">✕</button>
@@ -3704,7 +3715,13 @@ function send(obj) {
 function setStatus(ok, txt) {
   badge.classList.toggle('connected', ok);
   badge.classList.toggle('disconnected', !ok);
-  badgeTxt.textContent = txt;
+  const isUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.42.');
+  badge.classList.toggle('usb-mode', ok && isUsb);
+  if (ok && isUsb) {
+    badgeTxt.textContent = '🔌 USB (<1ms)';
+  } else {
+    badgeTxt.textContent = txt;
+  }
 }
 
 // ── Network Lifecycle & Screen Wake Listeners ──
@@ -3786,6 +3803,29 @@ if (badge) {
 // Banner Action Buttons
 const btnRcRetry = $('btn-rc-retry');
 if (btnRcRetry) btnRcRetry.onclick = () => scheduleReconnect(true);
+
+const btnRcUsb = $('btn-rc-usb');
+if (btnRcUsb) {
+  btnRcUsb.onclick = () => {
+    const isCurrentUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (!isCurrentUsb && confirm("🔌 Beralih ke Koneksi Kabel USB (<1ms Latency)?\n\nPastikan kabel USB sudah terhubung dari HP ke PC.\nBuka DigiKeyboard via USB (http://localhost:8080)?")) {
+      window.location.href = 'http://localhost:' + (window.location.port || '8080');
+    } else {
+      alert(
+        "🔌 PANDUAN KONEKSI KABEL USB (<1ms Latency):\n\n" +
+        "1. CARA 1: ADB FORWARDING (Otomatis & Tercepat):\n" +
+        "   - Colokkan kabel USB dari HP ke PC.\n" +
+        "   - Aktifkan 'USB Debugging' di Opsi Pengembang HP.\n" +
+        "   - Server PC otomatis mem-forward port.\n" +
+        "   - Buka browser Chrome HP: http://localhost:8080\n\n" +
+        "2. CARA 2: PENAMBATAN USB (Tanpa Debugging):\n" +
+        "   - Colokkan kabel USB ke PC.\n" +
+        "   - Di HP: Buka Pengaturan -> Hotspot & Tethering -> Nyalakan 'Penambatan USB'.\n" +
+        "   - PC dan HP akan otomatis terhubung via kabel langsung."
+      );
+    }
+  };
+}
 
 const btnRcScan = $('btn-rc-scan');
 if (btnRcScan) btnRcScan.onclick = () => openReconnectModal();
