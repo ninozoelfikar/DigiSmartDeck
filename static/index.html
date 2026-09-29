@@ -286,6 +286,181 @@ html, body {
   color: #fff;
 }
 
+/* ─── FLOATING CONTROL DECK (PILIHAN A) ─── */
+.deck-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--key-bg);
+  border: 1.5px solid var(--key-border);
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.deck-trigger-btn:hover, .deck-trigger-btn.active {
+  background: rgba(88, 166, 255, 0.18);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.deck-trigger-btn .deck-arrow {
+  font-size: 10px;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+.deck-trigger-btn.active .deck-arrow {
+  transform: rotate(180deg);
+}
+
+.control-deck-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.control-deck-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.control-deck {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -105%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg);
+  border: 1.5px solid var(--key-border);
+  border-top: none;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+  z-index: 999;
+  padding: 12px 14px 16px 14px;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.control-deck.open {
+  transform: translate(-50%, 0);
+}
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.deck-title {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.deck-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+}
+.deck-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+.deck-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.deck-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.deck-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.deck-grid-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.deck-card {
+  background: var(--panel-bg);
+  border: 1.5px solid var(--key-border);
+  border-radius: 10px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  color: var(--text);
+}
+.deck-card:hover {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.08);
+}
+.deck-card.on, .deck-card.active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.18);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.25);
+}
+.dc-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.dc-name {
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--text);
+  display: block;
+}
+.dc-sub {
+  font-size: 8.5px;
+  color: var(--text-dim);
+  display: block;
+}
+.deck-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.deck-chip {
+  flex: 1 1 auto;
+  min-width: 65px;
+  text-align: center;
+  padding: 6px 10px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+
 
 /* ─── COLLAPSIBLE PANELS ─── */
 .panel {
@@ -2195,9 +2370,9 @@ body.is-fullscreen {
 <body>
 <div id="app">
 
-  <!-- TOP BAR -->
+  <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
-    <div class="left-controls">
+    <div class="left-controls" id="btn-brand-toggle" style="cursor:pointer;" title="Buka Pusat Mode & Alat">
       <span class="logo">⌨️ DigiKeyboard</span>
       <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Klik untuk bantuan pemulihan koneksi Wi-Fi">
         <span class="dot"></span>
@@ -2206,20 +2381,78 @@ body.is-fullscreen {
       <span id="ping" class="ping">-- ms</span>
     </div>
     <div class="right-controls">
-      <button class="tbtn" id="btn-bt" title="Mode Bluetooth HID Hardware" style="display:none;">📶 BT</button>
-      <button class="tbtn" id="btn-fn">Fn</button>
-      <button class="tbtn" id="btn-nav">Nav</button>
-      <button class="tbtn" id="btn-num">123</button>
-      <button class="tbtn" id="btn-sc">⚡</button>
-      <button class="tbtn on" id="btn-tp" title="Toggle Trackpad Laptop">🖱️ Pad</button>
-      <button class="tbtn" id="btn-game-mode" title="Mode Game Console (Virtual Gamepad)">🎮 Game</button>
-      <button class="tbtn" id="btn-present-mode" title="Mode Presentasi & Meeting Remote">📽️ Slide</button>
-      <button class="tbtn on" id="btn-latch" title="Kunci Modifier: Aktif Terus (Shift/Ctrl/Alt tetap aktif sampai ditekan lagi)">🔒 Lock</button>
-      <button class="tbtn on" id="btn-haptic" title="Haptic feedback">📳</button>
-      <button class="tbtn" id="btn-settings" title="Pengaturan Tema & Ukuran">⚙️</button>
-      <button class="tbtn" id="btn-fs">⛶</button>
+      <button type="button" class="deck-trigger-btn" id="btn-control-deck" title="Pusat Mode & Alat">
+        <span class="deck-icon">🎛️</span>
+        <span class="deck-label">Mode &amp; Alat</span>
+        <span class="deck-arrow">▾</span>
+      </button>
     </div>
   </header>
+
+  <!-- FLOATING CONTROL DECK (PILIHAN A) -->
+  <div id="control-deck-backdrop" class="control-deck-backdrop"></div>
+  <div id="control-deck" class="control-deck">
+    <div class="deck-header">
+      <div class="deck-title">
+        <span>🧭 Pusat Mode &amp; Kontrol</span>
+      </div>
+      <button type="button" class="deck-close" id="btn-close-deck" title="Tutup Menu">✕</button>
+    </div>
+
+    <div class="deck-body">
+      <!-- SECTION 1: WORK MODES (SCALABLE UNTUK MODE-MODE BARU) -->
+      <div class="deck-section">
+        <div class="deck-section-title">🕹️ PILIH MODE KERJA</div>
+        <div class="deck-grid deck-grid-modes">
+          <button class="deck-card active" id="btn-mode-standard" type="button">
+            <span class="dc-icon">⌨️</span>
+            <div class="dc-text">
+              <span class="dc-name">Keyboard PC</span>
+              <span class="dc-sub">Mode Utama</span>
+            </div>
+          </button>
+          <button class="deck-card" id="btn-game-mode" type="button">
+            <span class="dc-icon">🎮</span>
+            <div class="dc-text">
+              <span class="dc-name">Game Console</span>
+              <span class="dc-sub">Virtual Gamepad</span>
+            </div>
+          </button>
+          <button class="deck-card" id="btn-present-mode" type="button">
+            <span class="dc-icon">📽️</span>
+            <div class="dc-text">
+              <span class="dc-name">Slide Remote</span>
+              <span class="dc-sub">Meeting &amp; PPT</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 2: KEYBOARD LAYERS -->
+      <div class="deck-section">
+        <div class="deck-section-title">🔤 LAYER KEYBOARD TAMBAHAN</div>
+        <div class="deck-chips">
+          <button type="button" class="tbtn deck-chip" id="btn-fn">Fn (F1-F12)</button>
+          <button type="button" class="tbtn deck-chip" id="btn-nav">Navigasi</button>
+          <button type="button" class="tbtn deck-chip" id="btn-num">123 (Numpad)</button>
+          <button type="button" class="tbtn deck-chip" id="btn-sc">⚡ Shortcut</button>
+        </div>
+      </div>
+
+      <!-- SECTION 3: UTILITIES & CONTROLS -->
+      <div class="deck-section">
+        <div class="deck-section-title">🛠️ FITUR &amp; PERANGKAT</div>
+        <div class="deck-chips">
+          <button type="button" class="tbtn on deck-chip" id="btn-tp" title="Toggle Trackpad Laptop">🖱️ Trackpad</button>
+          <button type="button" class="tbtn on deck-chip" id="btn-latch" title="Kunci Modifier: Aktif Terus">🔒 Mod Lock</button>
+          <button type="button" class="tbtn on deck-chip" id="btn-haptic" title="Haptic feedback">📳 Getar</button>
+          <button type="button" class="tbtn deck-chip" id="btn-settings" title="Pengaturan Tema &amp; Ukuran">⚙️ Pengaturan</button>
+          <button type="button" class="tbtn deck-chip" id="btn-fs" title="Layar Penuh">⛶ Fullscreen</button>
+          <button type="button" class="tbtn deck-chip" id="btn-bt" style="display:none;" title="Mode Bluetooth HID Hardware">📶 BT</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- RECONNECTION ASSISTANT BANNER -->
   <div id="reconnect-banner" class="reconnect-banner hidden">
@@ -3128,7 +3361,108 @@ $('btn-fs').onclick = () => {
   }
 };
 
-// ── Haptic & Audio Feedback ──
+// ── Floating Control Deck Controller (Pilihan A) ──
+const controlDeck = $('control-deck');
+const deckBackdrop = $('control-deck-backdrop');
+const btnControlDeck = $('btn-control-deck');
+const btnCloseDeck = $('btn-close-deck');
+const btnBrandToggle = $('btn-brand-toggle');
+const btnModeStandard = $('btn-mode-standard');
+
+let deckAutoCloseTimer = null;
+
+function openControlDeck() {
+  if (!controlDeck) return;
+  controlDeck.classList.add('open');
+  if (deckBackdrop) deckBackdrop.classList.add('open');
+  if (btnControlDeck) btnControlDeck.classList.add('active');
+  resetDeckAutoClose();
+  updateDeckModesUI();
+}
+
+function closeControlDeck() {
+  if (!controlDeck) return;
+  controlDeck.classList.remove('open');
+  if (deckBackdrop) deckBackdrop.classList.remove('open');
+  if (btnControlDeck) btnControlDeck.classList.remove('active');
+  if (deckAutoCloseTimer) {
+    clearTimeout(deckAutoCloseTimer);
+    deckAutoCloseTimer = null;
+  }
+}
+
+function toggleControlDeck() {
+  if (controlDeck && controlDeck.classList.contains('open')) {
+    closeControlDeck();
+  } else {
+    openControlDeck();
+  }
+}
+
+function resetDeckAutoClose() {
+  if (deckAutoCloseTimer) clearTimeout(deckAutoCloseTimer);
+  deckAutoCloseTimer = setTimeout(() => {
+    closeControlDeck();
+  }, 7000);
+}
+
+if (btnControlDeck) {
+  btnControlDeck.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleControlDeck();
+  });
+}
+
+if (btnBrandToggle) {
+  btnBrandToggle.addEventListener('click', (e) => {
+    // Jangan buka deck jika user mengklik status koneksi untuk bantuan Wi-Fi
+    if (e.target.closest('#badge')) return;
+    toggleControlDeck();
+  });
+}
+
+if (btnCloseDeck) btnCloseDeck.addEventListener('click', closeControlDeck);
+if (deckBackdrop) deckBackdrop.addEventListener('click', closeControlDeck);
+
+// Auto-tutup Control Deck jika user mulai berinteraksi dengan keyboard atau trackpad
+window.addEventListener('touchstart', (e) => {
+  if (!controlDeck || !controlDeck.classList.contains('open')) return;
+  if (!controlDeck.contains(e.target) && !e.target.closest('#btn-control-deck') && !e.target.closest('#btn-brand-toggle')) {
+    closeControlDeck();
+  }
+}, { passive: true });
+
+// Auto-tutup saat memilih layer atau utilitas agar layar langsung siap dipakai
+['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-fs'].forEach(id => {
+  const el = $(id);
+  if (el) {
+    el.addEventListener('click', () => {
+      setTimeout(closeControlDeck, 150);
+    });
+  }
+});
+
+// Tombol Mode Standard (Kembali ke Keyboard Utama dari mode Game / Slide)
+if (btnModeStandard) {
+  btnModeStandard.addEventListener('click', () => {
+    if (typeof setGameMode === 'function') setGameMode(false);
+    if (typeof setPresentMode === 'function') setPresentMode(false);
+    updateDeckModesUI();
+    closeControlDeck();
+    vibe(15);
+  });
+}
+
+function updateDeckModesUI() {
+  if (!btnModeStandard) return;
+  const isGame = typeof isGameModeActive !== 'undefined' && isGameModeActive;
+  const isPresent = typeof isPresentModeActive !== 'undefined' && isPresentModeActive;
+  btnModeStandard.classList.toggle('active', !isGame && !isPresent);
+  const btnGm = $('btn-game-mode');
+  const btnPr = $('btn-present-mode');
+  if (btnGm) btnGm.classList.toggle('active', isGame);
+  if (btnPr) btnPr.classList.toggle('active', isPresent);
+}
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
