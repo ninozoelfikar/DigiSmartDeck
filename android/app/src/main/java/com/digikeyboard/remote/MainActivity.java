@@ -123,6 +123,10 @@ public class MainActivity extends AppCompatActivity {
      * Tidak akan memicu peringatan/toast "Swipe to exit" dari Chrome!
      */
     private void applyImmersiveStickyMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getWindow().getAttributes().layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController controller = getWindow().getInsetsController();
             if (controller != null) {
