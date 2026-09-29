@@ -571,15 +571,33 @@ html, body {
   display: flex;
   gap: 3px;
   width: 100%;
-  flex: 1;
+}
+.panel-fn {
+  flex: 0.85; /* Perkecil ~15% proporsional seperti tuts fungsi laptop fisik asli */
+  min-height: 0;
+}
+.panel-nav {
+  flex: 0.9;
+  min-height: 0;
 }
 .panel-fn.hidden, .panel-nav.hidden {
   display: none !important;
 }
-.fn-key, .nav-key {
+.fn-key {
+  flex: 1;
+  min-width: 20px;
+  min-height: 0;
+  height: 100%;
+  font-size: clamp(9px, 1.2vw, 11px);
+  padding: 1px 0;
+  border-radius: 5px;
+  box-shadow: 0 2px 0 var(--key-shadow), 0 1px 3px rgba(0,0,0,.35);
+}
+.nav-key {
   flex: 1;
   min-width: 24px;
-  min-height: calc(var(--key-min-height, 38px) - 6px);
+  min-height: 0;
+  height: 100%;
   font-size: calc(var(--key-font-size, 11px) - 1px);
 }
 
@@ -2948,10 +2966,10 @@ body.is-fullscreen {
         <span>DigiKeyboard</span>
       </span>
       <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Status Koneksi">
+        <span class="dot"></span>
         <span id="badge-icon">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
         </span>
-        <span class="dot"></span>
         <span id="badge-txt" style="display:none;"></span>
       </span>
       <span id="ping" class="ping">-- ms</span>
