@@ -3224,16 +3224,11 @@ function connect() {
         const cBadge = $('controller-badge');
         const cTxt = $('controller-txt');
         if (cBadge && cTxt) {
-          cBadge.style.display = 'inline-flex';
           if (d.role === 'active') {
-            cBadge.style.background = 'rgba(46,160,67,0.2)';
-            cBadge.style.borderColor = '#2ea043';
-            cBadge.style.color = '#3fb950';
-            cTxt.textContent = '👑 Pengendali Aktif';
-            cBadge.title = 'Anda sedang mengendalikan PC ini (Anti-Tabrakan Aktif)';
-            cBadge.onclick = null;
+            cBadge.style.display = 'none';
             document.body.classList.remove('controller-standby');
           } else {
+            cBadge.style.display = 'inline-flex';
             cBadge.style.background = 'rgba(210,153,34,0.25)';
             cBadge.style.borderColor = '#d29922';
             cBadge.style.color = '#f0883e';
