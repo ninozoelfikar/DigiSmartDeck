@@ -195,6 +195,11 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
   - Aplikasi mini di taskbar Windows/Linux/macOS dengan ikon tray untuk *Start on Boot*, *Show QR*, dan *Settings*.
 - [ ] **Packaging Hardware Dongle (ESP32-S3):**
   - Firmware mikrokontroler USB Plug-and-Play yang langsung dikenali sebagai keyboard USB hardware tanpa instal software di PC.
+- [ ] **Hardware Khusus Keyboard Fisik OLED by King Ali Studio (DigiBoard OLED Workstation Deck):**
+  - Keyboard mekanikal fisik premium dengan keycaps layar mini OLED dinamis di setiap tuts / macro keys (desain hybrid ala Optimus Maximus & Stream Deck).
+  - **Sinkronisasi Dua Arah Real-Time:** Tuts OLED fisik secara otomatis mengubah icon grafis, label, dan fungsinya mengikuti mode kerja yang aktif di aplikasi DigiKeyboard (Mode AI Prompting, Game Console, Slide Remote, AutoText Snippet, Editing Video, dsb.).
+  - **Dukungan Plugin & Skin Terpadu:** Tema dan plugin visual yang dibeli di DigiKeyboard Store dapat langsung diproyeksikan ke layar fisik OLED tuts keyboard.
+  - **Bundling Penjualan & Ekosistem:** Dijual eksklusif direct-to-consumer (DTC) bundling gratis lisensi DigiKeyboard Lifetime Pro All-Access, memperluas jangkauan bisnis King Ali Studio dari software murni ke perangkat keras bernilai tinggi (*high-ticket hardware*).
 
 ---
 
@@ -284,3 +289,8 @@ Upcoming dedicated functional controllers designed for specialized workflows:
   - In-app License Key Activation Dialog in Settings (⚙️) with immediate visual validation feedback.
 - [ ] **Desktop System Tray Wrapper:** Lightweight taskbar executable with auto-launch capabilities.
 - [ ] **Standalone Hardware Dongle (ESP32-S3):** Plug-and-play USB hardware HID firmware.
+- [ ] **King Ali Studio Dedicated Physical OLED Keyboard (DigiBoard OLED Workstation Deck):**
+  - Premium physical mechanical keyboard featuring dynamic micro-OLED displays embedded into individual keycaps and macro clusters (Optimus Maximus + Stream Deck hybrid architecture).
+  - **Bidirectional Real-Time Synchronization:** Physical OLED keycaps automatically transform their displayed graphic icons, labels, and macro functions to match active DigiKeyboard software modes (AI Prompting, Gamepad, Slide Remote, AutoText Snippets, Video Scrubbing, etc.).
+  - **Unified Ecosystem & Plugin Store:** Visual themes, icon packs, and macro plugins purchased through the DigiKeyboard Store render natively on physical key displays.
+  - **Hardware + Software Commercial Bundling:** Sold direct-to-consumer (DTC) bundled with a complimentary DigiKeyboard Lifetime Pro All-Access license, scaling King Ali Studio into high-margin physical workstation hardware.

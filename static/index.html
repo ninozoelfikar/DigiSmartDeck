@@ -263,30 +263,50 @@ html, body {
 .status-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  font-size: 11px;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 12px;
   background: rgba(255,255,255,0.05);
   border: 1px solid var(--key-border);
+  color: var(--text-dim);
   white-space: nowrap;
+  transition: all 0.15s ease;
 }
 .status-badge .dot {
-  width: 7px; height: 7px;
+  width: 6px; height: 6px;
   border-radius: 50%;
   background: #f85149;
   flex-shrink: 0;
 }
-.status-badge.connected .dot { background: #3fb950; box-shadow: 0 0 5px #3fb950; }
+.status-badge.connected .dot { background: #3fb950; box-shadow: 0 0 6px #3fb950; }
+.status-badge.connected {
+  background: rgba(63, 185, 80, 0.12);
+  border-color: rgba(63, 185, 80, 0.35);
+  color: #3fb950;
+}
 .status-badge.usb-mode {
   background: rgba(56, 239, 125, 0.15) !important;
   border-color: rgba(56, 239, 125, 0.45) !important;
   color: #38ef7d !important;
-  font-weight: 700;
 }
 .status-badge.usb-mode .dot {
   background: #38ef7d !important;
-  box-shadow: 0 0 8px #38ef7d !important;
+  box-shadow: 0 0 6px #38ef7d !important;
+}
+.status-badge.bt-mode {
+  background: rgba(88, 166, 255, 0.15) !important;
+  border-color: rgba(88, 166, 255, 0.45) !important;
+  color: #58a6ff !important;
+}
+.status-badge.bt-mode .dot {
+  background: #58a6ff !important;
+  box-shadow: 0 0 6px #58a6ff !important;
+}
+.status-badge.disconnected {
+  background: rgba(248, 81, 73, 0.08);
+  border-color: rgba(248, 81, 73, 0.25);
+  color: #f85149;
 }
 .ping { font-size: 10px; color: var(--text-dim); font-family: monospace; }
 .right-controls { display: flex; gap: 5px; align-items: center; }
@@ -2927,9 +2947,12 @@ body.is-fullscreen {
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
         <span>DigiKeyboard</span>
       </span>
-      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Klik untuk bantuan pemulihan koneksi Wi-Fi">
+      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Status Koneksi">
+        <span id="badge-icon">
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
+        </span>
         <span class="dot"></span>
-        <span id="badge-txt">Menghubungkan...</span>
+        <span id="badge-txt" style="display:none;"></span>
       </span>
       <span id="ping" class="ping">-- ms</span>
     </div>
@@ -4405,9 +4428,16 @@ let vibeDuration = parseInt(localStorage.getItem('digi_vibe_ms'), 10) || 30;
 const mods = { ctrl: false, alt: false, shift: false, cmd: false, caps_lock: false };
 
 // ── DOM ──
-const badge    = document.getElementById('badge');
-const badgeTxt = document.getElementById('badge-txt');
-const pingEl   = document.getElementById('ping');
+const badge     = document.getElementById('badge');
+const badgeIcon = document.getElementById('badge-icon');
+const badgeTxt  = document.getElementById('badge-txt');
+const pingEl    = document.getElementById('ping');
+
+const CONN_ICONS = {
+  wifi: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>',
+  usb: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="19" r="2"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7"/><path d="M12 11h4a2 2 0 0 1 2 2v2"/><circle cx="18" cy="17" r="1.5"/><path d="M12 13H8a2 2 0 0 0-2 2v1"/><rect x="4.5" y="16" width="3" height="3" rx="0.5"/></svg>',
+  bluetooth: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>'
+};
 
 function $(id) { return document.getElementById(id); }
 
@@ -4933,12 +4963,28 @@ function setStatus(ok, txt) {
   badge.classList.toggle('connected', ok);
   badge.classList.toggle('disconnected', !ok);
   const isUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.42.');
-  badge.classList.toggle('usb-mode', ok && isUsb);
-  if (ok && isUsb) {
-    badgeTxt.textContent = 'USB';
-  } else {
-    badgeTxt.textContent = txt;
+  const isBt  = !!(window.isBluetoothActive || window.location.search.includes('mode=bt') || window.location.hash.includes('bt'));
+  badge.classList.toggle('usb-mode', ok && isUsb && !isBt);
+  badge.classList.toggle('bt-mode', ok && isBt);
+
+  if (badgeIcon) {
+    if (isBt) {
+      badgeIcon.innerHTML = CONN_ICONS.bluetooth;
+    } else if (isUsb) {
+      badgeIcon.innerHTML = CONN_ICONS.usb;
+    } else {
+      badgeIcon.innerHTML = CONN_ICONS.wifi;
+    }
   }
+
+  // Bersih tanpa teks "terhubung" - murni icon + dot status
+  if (badgeTxt) {
+    badgeTxt.textContent = '';
+  }
+
+  // Tooltip hover informatif untuk aksesibilitas
+  const modeName = isBt ? 'Bluetooth' : (isUsb ? 'USB' : 'Wi-Fi');
+  badge.title = ok ? `Koneksi ${modeName} Aktif` : (txt || `Menghubungkan ${modeName}...`);
 }
 
 // ── Network Lifecycle & Screen Wake Listeners ──

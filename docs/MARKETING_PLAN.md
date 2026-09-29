@@ -51,7 +51,9 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
     3. *AI Prompt Dispatcher & Assistant:* Preset generator prompt terstruktur ke ChatGPT/Claude/Gemini/Ollama dengan variabel konteks kustom dalam 1 klik.
     4. *Multi-Action Chaining Macro:* Satu ketukan memicu sekuens kombinasi tuts berurutan dengan jeda presisi (delay milidetik), sangat krusial untuk gamer dan pekerja data entry.
     5. *Cloud / Multi-Device Sync Profile:* Sinkronisasi instan snippet AutoText dan layout kustom antar ponsel, tablet, dan PC host.
-* **Tier Hardware (Fase Lanjutan):** Modul USB dongle ESP32 plug-and-play siap pakai.
+* **Tier Hardware (Ekspansi Fisik King Ali Studio):**
+  - **Dongle USB ESP32-S3:** Modul USB dongle plug-and-play siap pakai tanpa software PC.
+  - **DigiBoard OLED Workstation Deck by King Ali Studio:** Hardware fisik keyboard mekanikal kustom berlayar mini OLED dinamis di tiap tuts/macro key. Tuts fisik bersinkronisasi dua arah secara real-time dengan mode DigiKeyboard (AI mode, Gamepad, Presentasi, Video Scrubbing), sekaligus menjadi etalase fisik tema dan plugin dari DigiKeyboard Store.
 
 ### B. Price (Harga)
 * **Free Tier (Personal & Game Mode):** **Rp 0** (Keyboard PC, Trackpad, Gamepad & Steering Wheel Gyro gratis selamanya; monetisasi via donasi sukarela/Saweria/Trakteer).
@@ -61,6 +63,9 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
 * **Mikrotransaksi Skin & Tema Premium (Collector Theme):**
   - **Rp 10.000 / item** (Pasar Global: **$0.99 USD / item**).
   - Pembelian impulsif 1-klik via QRIS untuk skin visual eksklusif (misal: *Gundam Mecha, Retro Macintosh 1984, Vaporwave Sunset, RGB Reactive Chroma, & Custom Switch Audio Packs*).
+* **Hardware Fisik DigiBoard OLED by King Ali Studio:**
+  - **Macro Pad (12 Tuts OLED):** **Rp 1.499.000** ($99 USD) — *Bundling Lisensi Pro Seumur Hidup*.
+  - **Full 65% OLED Workstation:** **Rp 3.499.000** ($229 USD) — *Bundling Lisensi Pro + Seluruh Paket Skin*.
 * **Monetisasi Slot Stiker Palm Rest (Free Tier Ads & Affiliate):**
   - **Model Afiliasi:** Link diskon periferal tech, gaming gear, atau cloud/hosting di e-commerce (Tokopedia/Shopee/Amazon) dengan komisi 5% - 12% per penjualan.
   - **Sewa Slot Sponsor Brand:** Brand teknologi / gaming gear menyewa slot banner stiker tetap (misal: Rp 1.500.000 – Rp 3.000.000 / slot / bulan).
@@ -73,7 +78,8 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
   1. *Katalog Skin & Tema Premium:* Skin visual eksklusif (Gundam Mecha, Retro Mac 1984, Vaporwave, Cyberpunk Chroma) dan Custom Mechanical Audio Packs.
   2. *Katalog Plugin Pro:* Voice Typing (Speech-to-Text Dictation), Advanced AutoText Snippet Engine, AI Prompt Assistant, Macro Chaining.
   3. *Lisensi Pro All-Access:* Paket hemat seumur hidup membuka SEMUA skin dan SEMUA plugin selamanya.
-  4. *Tab Jalur Afiliasi (Partner Program):* Pintu pendaftaran instan bagi pengguna dan kreator untuk menjadi mitra penjual.
+  4. *Hardware Store (Pre-Order & Official Gear):* Showcase perangkat keras fisik resmi DigiBoard OLED Workstation Deck by King Ali Studio dengan link pre-order dan jaminan garansi resmi studio.
+  5. *Tab Jalur Afiliasi (Partner Program):* Pintu pendaftaran instan bagi pengguna dan kreator untuk menjadi mitra penjual.
 * **Distribusi Software:**
   - Kode & Versi Komunitas: **GitHub Releases**.
   - Checkout & Lisensi Pro (Global): **Gumroad** / **Lemon Squeezy** (menerima Kartu Kredit, Apple Pay, PayPal).
@@ -173,6 +179,10 @@ M-2 (Persiapan)     M-1 (Beta & Teaser)       M-0 (Hari Peluncuran)     M+1 s/d 
 * **Fase 3: Pasca-Peluncuran & Skalasi (Bulan 1 s/d 3):**
   - Merekrut 10 micro-influencer tech di TikTok/Instagram untuk membuat video ulasan organik (sistem barter lisensi Pro + komisi afiliasi 30%).
   - Memperkenalkan paket preset macro (OBS Studio Pack, Photoshop Pack).
+* **Fase 4: Ekspansi Hardware DigiBoard OLED by King Ali Studio (Bulan 4 s/d 6):**
+  - Membuka kampanye Pre-Order / Crowdfunding terbatas (100–200 unit batch perdana) untuk keyboard fisik *DigiBoard OLED Workstation Deck*.
+  - Mengirim unit prototipe fisik ke YouTuber reviewer keyboard mekanik & tech desk setup ternama untuk review viral.
+  - Mengintegrasikan banner etalase hardware langsung di dalam Menu Store aplikasi DigiKeyboard.
 
 ---
 

@@ -16,7 +16,8 @@ Semua produk berbayar (Skin/Tema, Plugin Pro, dan Lisensi Seumur Hidup) dipusatk
 │  ├─ 1. KATALOG SKIN & AUDIO │ Mikrotransaksi Impulsif (Rp 10.000 / $0.99 per item)     │
 │  ├─ 2. KATALOG PLUGIN PRO   │ Voice Typing, AutoText, Macro Chaining, AI Dispatcher    │
 │  ├─ 3. LISENSI ALL-ACCESS   │ High-Ticket Lifetime Software (Rp 250.000 / $15.99)       │
-│  └─ 4. JALUR AFILIASI MITRA │ Komisi 30% - 40% per penjualan untuk Kreator / Pengguna  │
+│  ├─ 4. HARDWARE KHUSUS OLED │ DigiBoard OLED Workstation Deck by King Ali Studio       │
+│  └─ 5. JALUR AFILIASI MITRA │ Komisi 30% - 40% per penjualan untuk Kreator / Pengguna  │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │  ALIRAN PENDAPATAN LAIN:                                                               │
 │  • Donasi Sukarela          │ Tip Jar Gamifikasi (Saweria / Trakteer / Ko-fi)          │
@@ -150,10 +151,32 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 
 ---
 
-## 🤝 6. Jalur Afiliasi & Ekonomi Viralitas (Affiliate & Creator Economics)
+## 🖥️ 6. Income Stream 6: Hardware Fisik Premium — DigiBoard OLED Workstation Deck by King Ali Studio
+
+### A. Tujuan & Positioning Pasar
+* **Tujuan:** Menembus pasar periferal workstation dan mechanical keyboard kustom bernilai tinggi (*high-ticket physical goods*) dengan hardware fisik eksklusif yang dirancang dari nol untuk menyatu dengan ekosistem DigiKeyboard.
+* **Konsep Produk:** Keyboard mekanikal kustom dengan keycaps mini OLED dinamis di setiap tuts / macro cluster (desain ala Optimus Maximus & Stream Deck). Tuts fisik berubah tampilan ikon dan fungsi secara dinamis mengikuti mode kerja DigiKeyboard (Mode AI Prompting, Game Console, Slide Remote, AutoText Snippets, Timeline Video Scrubbing).
+* **Prinsip Psikologi:** *Tactile Craftsmanship + Status Symbol*. Pengguna workstation profesional, software engineer, video editor, dan penggemar keyboard antusias bersedia membayar harga premium untuk alat kerja fisik yang estetis, fungsional, dan memiliki kepuasan taktil mekanik sejati.
+
+### B. Struktur Harga & Paket Penjualan (Pricing & Bundling)
+
+| Varian Hardware | Harga Domestik (IDR) | Harga Global (USD) | Spesifikasi & Bundling |
+| :--- | :---: | :---: | :--- |
+| **DigiBoard OLED Macro Pad (12 Tuts OLED)** | **Rp 1.499.000** | **$99.00** | 12 tombol OLED dinamis + rotary knob encoder, casing aluminium CNC anodized, hot-swappable switches, **Free Lisensi DigiKeyboard Pro Lifetime**. |
+| **DigiBoard OLED 65% Full Workstation** | **Rp 3.499.000** | **$229.00** | 68 tuts mekanik dengan OLED display keycaps per tuts, wireless tri-mode (Wi-Fi, Bluetooth, USB-C), **Free Lisensi Pro + Paket Semua Skin Eksklusif King Ali Studio**. |
+| **Collector Founder Edition (Numbered 1-100)** | **Rp 4.999.000** | **$329.00** | Edisi terbatas 100 unit dengan ukiran plat serial Founder King Ali Studio, hardcase premium, custom artisan keycap, lisensi B2B/Studio tak terbatas. |
+
+### C. Strategi Margin & Penjualan Direct-to-Consumer (DTC)
+1. **Target Gross Margin 45% - 55%:** Biaya produksi (COGS) di kisaran Rp 650.000 untuk Macro Pad dan Rp 1.600.000 untuk 65% Workstation melalui manufaktur mitra spesialis PCB dan injection molding.
+2. **Pre-Order Crowdfunding:** Peluncuran batch pertama dilakukan dengan skema Pre-Order (Kickstarter / Tokopedia / website resmi King Ali Studio) untuk memvalidasi permintaan pasar dan meniadakan risiko modal kerja inventori mati.
+3. **Hardware-Software Synergy Moat:** Tidak seperti keyboard biasa yang statis, DigiBoard OLED terhubung langsung ke mesin software DigiKeyboard sehingga setiap plugin baru (misal Voice Typing atau AutoText) langsung memiliki integrasi visual di hardware.
+
+---
+
+## 🤝 7. Jalur Afiliasi & Ekonomi Viralitas (Affiliate & Creator Economics)
 
 ### A. Tujuan & Desain Insentif
-* **Tujuan:** Mengubah setiap kreator, reviewer teknologi, streamer, dan pengguna puas menjadi armada pemasar (*growth engine*) yang mempromosikan DigiKeyboard secara masif di media sosial (TikTok, Reels, Shorts, Twitter/X).
+* **Tujuan:** Mengubah setiap kreator, reviewer teknologi, streamer, dan pengguna puas menjadi armada pemasar (*growth engine*) yang mempromosikan DigiKeyboard dan hardware King Ali Studio secara masif di media sosial (TikTok, Reels, Shorts, Twitter/X, YouTube).
 * **Mekanisme Pintu Masuk:** Pengguna dapat mendaftar langsung dari tab **"Afiliasi"** di dalam **Menu Store**.
 
 ### B. Struktur Pembagian Komisi (*Commission Split*)
@@ -164,10 +187,12 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 | **Plugin Pro Satuan (Voice Typing / AutoText)** | Rp 49.000 | **Rp 17.000 (35%)** | Rp 32.000 |
 | **Lisensi Pro All-Access (Early Bird)** | Rp 99.000 | **Rp 30.000 (30%)** | Rp 69.000 |
 | **Lisensi Pro All-Access (Harga Normal)** | Rp 250.000 | **Rp 75.000 (30%)** | Rp 175.000 |
+| **Hardware DigiBoard OLED (Macro Pad)** | Rp 1.499.000 | **Rp 150.000 (10%)** | Rp 1.349.000 |
+| **Hardware DigiBoard OLED (Full 65%)** | Rp 3.499.000 | **Rp 350.000 (10%)** | Rp 3.149.000 |
 
 ### C. Keuntungan Strategis Model Afiliasi
 1. **Zero Upfront CAC (Customer Acquisition Cost):** Tidak ada biaya iklan yang dibakar di muka. Komisi hanya dibayarkan ketika produk terbukti terjual (*performance-based marketing*).
-2. **Viral Video Loop:** Kreator berlomba-lomba membuat konten video demo menarik (contoh: unjuk kebolehan mengetik suara di PC lewat HP dari jarak 5 meter, atau pamer tema keyboard neon RGB).
+2. **Viral Video Loop:** Kreator berlomba-lomba membuat konten video demo menarik (contoh: unjuk kebolehan mengetik suara di PC lewat HP dari jarak 5 meter, memamerkan tuts OLED fisik yang otomatis berganti ikon saat membuka game/aplikasi coding).
 3. **Pencairan Cepat & Transparan:** Dashboard afiliasi via Mayar / Lynk.id / Lemon Squeezy yang mencatat klik, konversi, dan pencairan komisi otomatis ke rekening bank lokal atau e-wallet.
 
 ---
@@ -181,3 +206,4 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 | **3. Stiker Palm Rest** | Komisi & Sewa Flat | Rp 1,5 Jt – Rp 3 Jt/bln | Tayang permanen di Free Tier | Mengisi 2 slot banner per bulan |
 | **4. Pro All-Access** | Sekali Beli (Lifetime) | Rp 250.000 *(Launch: Rp 99k)* | Saat user klik fitur Presenter/OBS | 1,5% – 2,5% dari Free User |
 | **5. Lisensi B2B** | Site License | Rp 999.000 / lab | Proposal B2B via Email/LinkedIn | 2 – 5 instansi per bulan |
+| **6. Hardware OLED Deck** | Retail DTC / Pre-Order | Rp 1,5 Jt – Rp 3,5 Jt | Banner Store & Kampanye Komunitas | 50 – 200 unit per batch |
