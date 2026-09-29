@@ -610,9 +610,6 @@ def get_host_os():
 
 # --- WebSocket Handler ---
 CONNECTED_CLIENTS = set()
-ACTIVE_CONTROLLER_WS = None
-ACTIVE_CONTROLLER_INFO = None
-LAST_ACTIVITY_TIME = 0
 
 def get_device_label(request, data=None):
     if data and data.get('device_name'):
@@ -636,21 +633,12 @@ def get_device_label(request, data=None):
     return f"{dev} ({ip})"
 
 async def broadcast_controller_status():
-    global ACTIVE_CONTROLLER_WS, ACTIVE_CONTROLLER_INFO
-    if ACTIVE_CONTROLLER_WS and ACTIVE_CONTROLLER_WS.closed:
-        ACTIVE_CONTROLLER_WS = None
-        ACTIVE_CONTROLLER_INFO = None
-
-    active_name = ACTIVE_CONTROLLER_INFO.get('name', 'Tidak ada') if ACTIVE_CONTROLLER_INFO else None
-
     for client in list(CONNECTED_CLIENTS):
         try:
-            is_active = (client == ACTIVE_CONTROLLER_WS)
             await client.send_str(json.dumps({
                 'type': 'controller_status',
-                'role': 'active' if is_active else 'standby',
-                'active_name': active_name,
-                'message': '🟢 Anda adalah Pengendali Aktif PC.' if is_active else f"🟡 Mode Siaga: PC sedang dikendalikan oleh {active_name}."
+                'role': 'active',
+                'message': '🟢 Perangkat terhubung sebagai Pengendali PC.'
             }))
         except Exception:
             pass
@@ -662,25 +650,15 @@ def release_all_client_keys(keys_set):
     keys_set.clear()
 
 async def websocket_handler(request):
-    global ACTIVE_CONTROLLER_WS, ACTIVE_CONTROLLER_INFO, LAST_ACTIVITY_TIME
     ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0)
     await ws.prepare(request)
     CONNECTED_CLIENTS.add(ws)
     client_ip = request.remote
     ua = request.headers.get('User-Agent', 'Unknown')
     device_label = get_device_label(request)
-    print(f"[+] Client terhubung dari: {client_ip} | {device_label}")
+    print(f"[+] Client terhubung: {client_ip} | {device_label} (Total terhubung: {len(CONNECTED_CLIENTS)})")
 
-    # Otomatis tentukan role pengendali aktif (Mencegah Tabrakan Antar User)
-    if ACTIVE_CONTROLLER_WS is None or ACTIVE_CONTROLLER_WS.closed:
-        ACTIVE_CONTROLLER_WS = ws
-        ACTIVE_CONTROLLER_INFO = {'name': device_label, 'ip': client_ip}
-        LAST_ACTIVITY_TIME = time.time()
-        print(f"[👑] Pengendali Aktif terpilih: {device_label}")
-    else:
-        print(f"[👥] Client masuk dalam mode Siaga (Anti-Collision): {device_label}")
-
-    # Kirim handshake inisialisasi ke client
+    # Kirim handshake inisialisasi ke client (Semua client langsung aktif sebagai pengendali)
     try:
         await ws.send_str(json.dumps({
             'type': 'init',
@@ -690,7 +668,11 @@ async def websocket_handler(request):
             'uinput_active': UINPUT_AVAILABLE,
             'caps_lock': is_caps_lock_on()
         }))
-        await broadcast_controller_status()
+        await ws.send_str(json.dumps({
+            'type': 'controller_status',
+            'role': 'active',
+            'message': '🟢 Perangkat terhubung sebagai Pengendali PC.'
+        }))
     except Exception:
         pass
 
@@ -706,8 +688,6 @@ async def websocket_handler(request):
                 # Update nama perangkat jika dikirim dari client
                 if data.get('device_name'):
                     device_label = str(data.get('device_name'))
-                    if ws == ACTIVE_CONTROLLER_WS and ACTIVE_CONTROLLER_INFO:
-                        ACTIVE_CONTROLLER_INFO['name'] = device_label
 
                 if msg_type == 'ping':
                     pong_payload = {'type': 'pong', 'caps_lock': is_caps_lock_on()}
@@ -717,30 +697,7 @@ async def websocket_handler(request):
                     continue
 
                 elif msg_type == 'takeover':
-                    # Permintaan alih kendali dari perangkat siaga
-                    release_all_client_keys(active_keys)
-                    ACTIVE_CONTROLLER_WS = ws
-                    ACTIVE_CONTROLLER_INFO = {'name': device_label, 'ip': client_ip}
-                    LAST_ACTIVITY_TIME = time.time()
-                    print(f"[👑] Pengendali dialihkan ke: {device_label}")
-                    await broadcast_controller_status()
                     continue
-
-                # ── FILTER ANTI-COLLISION (Mencegah Tabrakan Input) ──
-                # Jika bukan pengendali aktif, abaikan input keyboard & mouse
-                if msg_type in ('keypress', 'keydown', 'keyup', 'combo', 'mousemove', 'mouseclick', 'mousedown', 'mouseup', 'mousescroll'):
-                    if ws != ACTIVE_CONTROLLER_WS:
-                        # Auto-takeover jika pengendali utama sudah idle lebih dari 30 detik
-                        if time.time() - LAST_ACTIVITY_TIME > 30.0:
-                            ACTIVE_CONTROLLER_WS = ws
-                            ACTIVE_CONTROLLER_INFO = {'name': device_label, 'ip': client_ip}
-                            LAST_ACTIVITY_TIME = time.time()
-                            print(f"[👑] Auto-Takeover karena idle: {device_label}")
-                            await broadcast_controller_status()
-                        else:
-                            # Abaikan input agar tidak bertabrakan dengan pengguna utama
-                            continue
-                    LAST_ACTIVITY_TIME = time.time()
 
                 if msg_type == 'keypress':
                     key_name = data.get('key')
@@ -851,18 +808,7 @@ async def websocket_handler(request):
                 mouse_controller.release(MouseButton.right)
             except Exception:
                 pass
-        print(f"[-] Client terputus: {client_ip} | {device_label}")
-
-        if ws == ACTIVE_CONTROLLER_WS:
-            ACTIVE_CONTROLLER_WS = None
-            ACTIVE_CONTROLLER_INFO = None
-            # Jika ada client lain yang masih aktif, promosikan
-            active_candidates = [c for c in CONNECTED_CLIENTS if not c.closed]
-            if active_candidates:
-                ACTIVE_CONTROLLER_WS = active_candidates[0]
-                ACTIVE_CONTROLLER_INFO = {'name': 'Perangkat Terhubung', 'ip': 'remote'}
-                print("[👑] Mempromosikan pengendali baru dari antrean perangkat siaga.")
-            asyncio.create_task(broadcast_controller_status())
+        print(f"[-] Client terputus: {client_ip} | {device_label} (Sisa terhubung: {len(CONNECTED_CLIENTS)})")
 
     return ws
 
