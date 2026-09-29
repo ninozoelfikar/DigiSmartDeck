@@ -67,15 +67,29 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
   - *Perk Pro:* Pengguna Pro All-Access bebas dari semua stiker sponsor (Clean Minimalist Deck) atau dapat menempelkan stiker kustom sendiri.
 * **B2B / Lab License (Institusi / Kampus):** **Rp 999.000 / instansi** ($99.00 USD).
 
-### C. Place (Distribusi Penjualan)
+### C. Place (Distribusi Penjualan & Sentralisasi Menu Store)
+* **Sentralisasi Menu "Store" di Dalam Aplikasi:**
+  Seluruh item berbayar tidak tersebar secara acak, melainkan terpusat di satu wadah resmi: **Menu "Store"** (dapat diakses langsung dari Floating Deck dan pengaturan). Menu Store mengelompokkan:
+  1. *Katalog Skin & Tema Premium:* Skin visual eksklusif (Gundam Mecha, Retro Mac 1984, Vaporwave, Cyberpunk Chroma) dan Custom Mechanical Audio Packs.
+  2. *Katalog Plugin Pro:* Voice Typing (Speech-to-Text Dictation), Advanced AutoText Snippet Engine, AI Prompt Assistant, Macro Chaining.
+  3. *Lisensi Pro All-Access:* Paket hemat seumur hidup membuka SEMUA skin dan SEMUA plugin selamanya.
+  4. *Tab Jalur Afiliasi (Partner Program):* Pintu pendaftaran instan bagi pengguna dan kreator untuk menjadi mitra penjual.
 * **Distribusi Software:**
   - Kode & Versi Komunitas: **GitHub Releases**.
-  - Versi Pro (Global): **Gumroad** / **Lemon Squeezy** (menerima Kartu Kredit, Apple Pay, PayPal).
-  - Versi Pro (Indonesia): **Mayar** / **Lynk.id** / **Trakteer** (pembayaran QRIS, GoPay, OVO, Virtual Account).
+  - Checkout & Lisensi Pro (Global): **Gumroad** / **Lemon Squeezy** (menerima Kartu Kredit, Apple Pay, PayPal).
+  - Checkout & Lisensi Pro (Indonesia): **Mayar** / **Lynk.id** / **Trakteer** (pembayaran QRIS instan, GoPay, OVO, Virtual Account).
 * **PWA Deployment:** Hosted static web frontend di cloud/CDN untuk fallback.
 
-### D. Promotion (Promosi & Akuisisi)
-* Mengutamakan kanal organik, konten video pendek demonstratif, dan komunitas teknis (akan dibedah di Bagian 4).
+### D. Promotion (Promosi, Jalur Afiliasi & Mesin Viralitas)
+* **Jalur Afiliasi Terintegrasi (Affiliate & Virality Engine):**
+  Untuk mendorong akselerasi penjualan dan viralitas tanpa biaya iklan awal yang mahal:
+  - **Komisi Menarik:** Mitra afiliasi menerima **komisi 30% – 40%** untuk setiap penjualan Skin, Plugin Pro, maupun Lisensi Pro All-Access.
+  - **Tautan Referral & Kupon Personal:** Setiap mitra mendapat URL unik (`digikeyboard.app/ref/nama_kreator`) dan kode promo diskon 10% untuk pengikutnya.
+  - **Viral Loop Kreator (TikTok / Reels / Shorts):**
+    1. Kreator membuat video demonstrasi visual (contoh: *"Mengetik suara di PC cuma ngomong ke HP"* atau *"Bikin tablet jadul jadi keyboard anime mecha"*).
+    2. Tautan bio kreator mengarahkan langsung ke **Menu Store** DigiKeyboard.
+    3. Penonton membeli item karena terbukti fungsional; kreator mendapatkan komisi otomatis; pembeli terdorong membagikan tautan referral miliknya ke teman atau komunitas.
+* Mengutamakan kanal organik, konten video pendek demonstratif, dan komunitas teknis (dibedah di Bagian 4).
 
 ---
 

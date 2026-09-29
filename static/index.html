@@ -2737,10 +2737,134 @@ body.is-fullscreen {
     grid-template-columns: repeat(4, 1fr);
   }
   .cp-block-actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    flex: none;
-  }
+/* ── STORE / MARKETPLACE MODAL STYLES ── */
+.store-tab-bar {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--key-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.store-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+.store-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim);
+  padding: 10px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.store-tab-btn:hover {
+  color: var(--text);
+}
+.store-tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.store-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+.store-card:hover {
+  border-color: var(--accent);
+}
+.store-card.featured {
+  border-color: #f1e05a;
+  background: linear-gradient(145deg, rgba(241, 224, 90, 0.08), rgba(28, 33, 40, 0.95));
+}
+.store-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.store-card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.store-price-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(88, 166, 255, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.store-card.featured .store-price-tag {
+  color: #f1e05a;
+  background: rgba(241, 224, 90, 0.18);
+}
+.store-card-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  flex: 1;
+}
+.store-card-btn {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--key-border);
+  background: var(--key-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+.store-card-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.store-card-btn.primary {
+  background: #238636;
+  border-color: #2ea043;
+  color: #fff;
+}
+.store-card-btn.primary:hover {
+  background: #2ea043;
+  color: #fff;
+}
+.store-card-btn.gold {
+  background: #b08800;
+  border-color: #d4a72c;
+  color: #fff;
+}
+.store-card-btn.gold:hover {
+  background: #c69900;
+}
 }
   </style>
 </head>
@@ -2872,6 +2996,10 @@ body.is-fullscreen {
           <button type="button" class="tbtn deck-chip" id="btn-settings" title="Pengaturan Tema &amp; Ukuran">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             <span>Pengaturan</span>
+          </button>
+          <button type="button" class="tbtn deck-chip" id="btn-store" title="Toko Resmi: Skin, Plugin &amp; Lisensi Pro" style="color:var(--accent);border-color:rgba(88,166,255,0.4);">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>Store</span>
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-fs" title="Layar Penuh">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
@@ -3845,6 +3973,211 @@ body.is-fullscreen {
 
     <div class="modal-footer">
       <button class="btn-primary" id="btn-dismiss-reconnect">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- STORE & AFFILIATE MARKETPLACE MODAL -->
+<div class="modal-backdrop hidden" id="modal-store">
+  <div class="modal-dialog" style="max-width:580px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>DigiKeyboard Store</span>
+      </div>
+      <button class="modal-close" id="btn-close-store" type="button">✕</button>
+    </div>
+
+    <!-- Store Navigation Tabs -->
+    <div class="store-tab-bar">
+      <button type="button" class="store-tab-btn active" data-store-tab="all">
+        <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+        <span>Semua Produk</span>
+      </button>
+      <button type="button" class="store-tab-btn" data-store-tab="plugins">
+        <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
+        <span>Plugin Pro</span>
+      </button>
+      <button type="button" class="store-tab-btn" data-store-tab="skins">
+        <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
+        <span>Skin &amp; Audio</span>
+      </button>
+      <button type="button" class="store-tab-btn" data-store-tab="affiliate" style="color:#3fb950;">
+        <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Jalur Afiliasi</span>
+      </button>
+    </div>
+
+    <div class="modal-body" style="max-height:65vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:14px;">
+      <!-- SECTION: ALL ACCESS LIFETIME PASS (FEATURED) -->
+      <div class="store-card featured store-item-all" id="store-item-pro-bundle">
+        <div class="store-card-header">
+          <div class="store-card-title" style="color:#f1e05a;">
+            <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" style="color:#f1e05a;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>Lisensi Pro All-Access (Lifetime Pass)</span>
+          </div>
+          <span class="store-price-tag">Rp 99.000 <s style="opacity:0.6;font-size:10px;">Rp 250k</s></span>
+        </div>
+        <div class="store-card-desc">
+          Buka <b>SEMUA</b> fitur Pro, seluruh katalog Skin &amp; Switch Sound, serta semua Plugin Pro (Voice Typing, AutoText, AI Prompt, Macro) selamanya dalam 1 lisensi seumur hidup tanpa biaya langganan.
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a href="https://mayar.link/digikeyboard-pro" target="_blank" rel="noopener noreferrer" class="store-card-btn gold">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Beli Akses Penuh (1-Klik QRIS / Card)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- SECTION: PRO PLUGINS -->
+      <div class="store-item-plugins" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Katalog Plugin Pro</div>
+        <div class="store-grid">
+          <!-- Plugin 1: Voice Typing -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                <span>Voice Typing Pro</span>
+              </div>
+              <span class="store-price-tag">Rp 49.000</span>
+            </div>
+            <div class="store-card-desc">
+              Dikte suara mikrofon HP langsung tertulis real-time di PC (Word, Docs, IDE, Chat). Akurasi tinggi dari jarak santai.
+            </div>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-voice">Buka Plugin</button>
+          </div>
+
+          <!-- Plugin 2: Advanced AutoText -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+                <span>AutoText Expander</span>
+              </div>
+              <span class="store-price-tag">Rp 39.000</span>
+            </div>
+            <div class="store-card-desc">
+              Template teks dinamis multi-baris, auto-date/jam, dan trigger prefix instan (misal ketik <code>;rek</code> langsung terketik nomor rekening).
+            </div>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-autotext">Buka Plugin</button>
+          </div>
+
+          <!-- Plugin 3: AI Prompt Assistant -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                <span>AI Prompt Assistant</span>
+              </div>
+              <span class="store-price-tag">Rp 29.000</span>
+            </div>
+            <div class="store-card-desc">
+              Preset generator prompt terstruktur ke ChatGPT, Claude, Gemini &amp; Ollama dengan variabel kustom dalam 1 klik.
+            </div>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-ai">Buka Plugin</button>
+          </div>
+
+          <!-- Plugin 4: Macro Chaining -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Macro Chaining</span>
+              </div>
+              <span class="store-price-tag">Rp 29.000</span>
+            </div>
+            <div class="store-card-desc">
+              Satu tombol mengeksekusi urutan kombinasi tombol berurutan dengan jeda presisi milidetik untuk game &amp; data entry.
+            </div>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-macro">Buka Plugin</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: SKINS & THEMES -->
+      <div class="store-item-skins" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Koleksi Skin &amp; Switch Audio</div>
+        <div class="store-grid">
+          <!-- Skin 1 -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <div class="theme-preview tp-retro" style="width:16px;height:16px;border-radius:3px;"></div>
+                <span>Retro Mac 1984</span>
+              </div>
+              <span class="store-price-tag">Rp 10.000</span>
+            </div>
+            <div class="store-card-desc">Estetika legendaris beige klasik era 1984 dengan aksen font serif.</div>
+            <button type="button" class="store-card-btn btn-buy-item" data-item="skin-retromac">Beli Skin</button>
+          </div>
+
+          <!-- Skin 2 -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <div class="theme-preview tp-cyberpunk" style="width:16px;height:16px;border-radius:3px;"></div>
+                <span>Cyberpunk Chroma</span>
+              </div>
+              <span class="store-price-tag">Rp 10.000</span>
+            </div>
+            <div class="store-card-desc">Nuansa neon ultraviolet reaktif dengan aksen font sci-fi Orbitron.</div>
+            <button type="button" class="store-card-btn btn-buy-item" data-item="skin-cyberpunk">Beli Skin</button>
+          </div>
+
+          <!-- Switch Audio Pack -->
+          <div class="store-card">
+            <div class="store-card-header">
+              <div class="store-card-title">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                <span>Holy Panda Switch</span>
+              </div>
+              <span class="store-price-tag">Rp 15.000</span>
+            </div>
+            <div class="store-card-desc">Paket suara klik tactile renyah dan thock bass dalam switch mekanik premium.</div>
+            <button type="button" class="store-card-btn btn-buy-item" data-item="sound-holypanda">Beli Audio</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: JALUR AFILIASI MITRA -->
+      <div class="store-item-affiliate" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;color:#3fb950;font-weight:700;font-size:13px;">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Program Afiliasi &amp; Mitra Kreator DigiKeyboard</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text);line-height:1.5;">
+            Dapatkan <b>komisi 30% hingga 40%</b> dari setiap penjualan Skin, Plugin Pro, maupun Lisensi All-Access yang berasal dari tautan referral unik Anda.
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+            <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text-dim);">Komisi Skin &amp; Plugin</div>
+              <div style="font-size:14px;font-weight:700;color:#3fb950;margin-top:2px;">35% per Item</div>
+            </div>
+            <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text-dim);">Komisi Lisensi Pro</div>
+              <div style="font-size:14px;font-weight:700;color:#3fb950;margin-top:2px;">Rp 30k – 75k</div>
+            </div>
+            <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text-dim);">Diskon Pengikut</div>
+              <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:2px;">10% Kupon</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.4;">
+            Cocok untuk kreator TikTok, Instagram Reels, YouTube Shorts, tech reviewer, dan keyboard enthusiast. Bagikan video demo unik dan dapatkan penghasilan pasif otomatis.
+          </div>
+          <a href="https://mayar.link/affiliate/digikeyboard" target="_blank" rel="noopener noreferrer" class="store-card-btn primary" style="background:#238636;padding:9px 14px;font-size:12px;">
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span>Daftar Menjadi Mitra Afiliasi Sekarang</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:11px;color:var(--text-dim);">Garansi Seumur Hidup • Sekali Bayar</span>
+      <button class="btn-primary" id="btn-dismiss-store">Tutup</button>
     </div>
   </div>
 </div>
@@ -5182,6 +5515,85 @@ if (settingsModal) {
     if (e.target === settingsModal) closeSettings();
   });
 }
+
+// ── Store Modal & Marketplace Tabs ──
+const storeModal = $('modal-store');
+const btnStore = $('btn-store');
+const btnCloseStore = $('btn-close-store');
+const btnDismissStore = $('btn-dismiss-store');
+
+function openStore(initialTab) {
+  if (storeModal) {
+    storeModal.classList.remove('hidden');
+    if (initialTab) switchStoreTab(initialTab);
+    vibe(15);
+  }
+}
+
+function closeStore() {
+  if (storeModal) {
+    storeModal.classList.add('hidden');
+    vibe(10);
+  }
+}
+
+function switchStoreTab(tabKey) {
+  const tabBtns = document.querySelectorAll('.store-tab-btn');
+  tabBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.storeTab === tabKey);
+  });
+
+  const bundleCard = $('store-item-pro-bundle');
+  const pluginsSection = document.querySelector('.store-item-plugins');
+  const skinsSection = document.querySelector('.store-item-skins');
+  const affiliateSection = document.querySelector('.store-item-affiliate');
+
+  if (tabKey === 'all') {
+    if (bundleCard) bundleCard.style.display = 'flex';
+    if (pluginsSection) pluginsSection.style.display = 'flex';
+    if (skinsSection) skinsSection.style.display = 'flex';
+    if (affiliateSection) affiliateSection.style.display = 'flex';
+  } else if (tabKey === 'plugins') {
+    if (bundleCard) bundleCard.style.display = 'none';
+    if (pluginsSection) pluginsSection.style.display = 'flex';
+    if (skinsSection) skinsSection.style.display = 'none';
+    if (affiliateSection) affiliateSection.style.display = 'none';
+  } else if (tabKey === 'skins') {
+    if (bundleCard) bundleCard.style.display = 'none';
+    if (pluginsSection) pluginsSection.style.display = 'none';
+    if (skinsSection) skinsSection.style.display = 'flex';
+    if (affiliateSection) affiliateSection.style.display = 'none';
+  } else if (tabKey === 'affiliate') {
+    if (bundleCard) bundleCard.style.display = 'none';
+    if (pluginsSection) pluginsSection.style.display = 'none';
+    if (skinsSection) skinsSection.style.display = 'none';
+    if (affiliateSection) affiliateSection.style.display = 'flex';
+  }
+}
+
+if (btnStore) btnStore.onclick = () => openStore('all');
+if (btnCloseStore) btnCloseStore.onclick = closeStore;
+if (btnDismissStore) btnDismissStore.onclick = closeStore;
+if (storeModal) {
+  storeModal.addEventListener('click', (e) => {
+    if (e.target === storeModal) closeStore();
+  });
+}
+
+const storeTabBtns = document.querySelectorAll('.store-tab-btn');
+storeTabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    switchStoreTab(btn.dataset.storeTab);
+    vibe(10);
+  });
+});
+
+document.querySelectorAll('.btn-buy-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    vibe(20);
+    window.open('https://mayar.link/digikeyboard-pro', '_blank');
+  });
+});
 
 // ─── Target OS & Layout Manager ───
 let currentOS = localStorage.getItem('digi_os');

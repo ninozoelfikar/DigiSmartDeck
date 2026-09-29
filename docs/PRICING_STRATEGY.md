@@ -5,17 +5,23 @@ Dokumen ini membedah strategi penetapan harga, taktik psikologis (*price anchori
 
 ---
 
-## 🧭 Ringkasan Arsitektur 5 Aliran Pendapatan
+## 🧭 Ringkasan Arsitektur Ekosistem & Menu Store Hub
+Semua produk berbayar (Skin/Tema, Plugin Pro, dan Lisensi Seumur Hidup) dipusatkan di dalam satu wadah: **Menu Store** di antarmuka aplikasi, terintegrasi dengan **Jalur Afiliasi** untuk mendorong viralitas dan volume penjualan:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        EKOSISTEM MONETISASI DIGIKEYBOARD                               │
+│                        EKOSISTEM STORE & MONETISASI DIGIKEYBOARD                       │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│  1. DONASI SUKARELA        │ Tip Jar Gamifikasi (Saweria / Trakteer / Ko-fi)          │
-│  2. SKIN KOLEKTOR          │ Mikrotransaksi Impulsif (Rp 10.000 / $0.99 per item)     │
-│  3. STIKER PALM REST       │ Afiliasi Periferal & Sewa Sponsor Brand (Sewa Bulanan)   │
-│  4. LISENSI PRO ALL-ACCESS │ High-Ticket Lifetime Software (Rp 250.000 / $15.99)       │
-│  5. LISENSI B2B INSTITUSI  │ Multi-seat Site License Lab/Studio (Rp 999.000 / $99.00) │
+│  MENU STORE (HUB TERPUSAT)                                                             │
+│  ├─ 1. KATALOG SKIN & AUDIO │ Mikrotransaksi Impulsif (Rp 10.000 / $0.99 per item)     │
+│  ├─ 2. KATALOG PLUGIN PRO   │ Voice Typing, AutoText, Macro Chaining, AI Dispatcher    │
+│  ├─ 3. LISENSI ALL-ACCESS   │ High-Ticket Lifetime Software (Rp 250.000 / $15.99)       │
+│  └─ 4. JALUR AFILIASI MITRA │ Komisi 30% - 40% per penjualan untuk Kreator / Pengguna  │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  ALIRAN PENDAPATAN LAIN:                                                               │
+│  • Donasi Sukarela          │ Tip Jar Gamifikasi (Saweria / Trakteer / Ko-fi)          │
+│  • Slot Stiker Palm Rest    │ Sponsor Brand & Komisi Afiliasi Periferal (Bulanan)      │
+│  • Lisensi B2B Institusi    │ Multi-seat Site License Lab/Studio (Rp 999.000 / $99.00) │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -141,6 +147,28 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 ### C. Taktik Penjualan B2B
 * **Metode Penjualan:** Penjualan langsung (*direct outreach*) ke kepala laboratorium komputer sekolah/kampus dan instruktur IT.
 * **Administrasi Pembayaran:** Menyediakan opsi faktur/invoice resmi, kuitansi bermeterai, dan pembayaran via transfer bank perusahaan (BCA/Mandiri).
+
+---
+
+## 🤝 6. Jalur Afiliasi & Ekonomi Viralitas (Affiliate & Creator Economics)
+
+### A. Tujuan & Desain Insentif
+* **Tujuan:** Mengubah setiap kreator, reviewer teknologi, streamer, dan pengguna puas menjadi armada pemasar (*growth engine*) yang mempromosikan DigiKeyboard secara masif di media sosial (TikTok, Reels, Shorts, Twitter/X).
+* **Mekanisme Pintu Masuk:** Pengguna dapat mendaftar langsung dari tab **"Afiliasi"** di dalam **Menu Store**.
+
+### B. Struktur Pembagian Komisi (*Commission Split*)
+
+| Kategori Produk Store | Harga Jual | Komisi Mitra Afiliasi (30% - 40%) | Pendapatan Bersih DigiKeyboard |
+| :--- | :---: | :---: | :---: |
+| **Koleksi Skin & Switch Audio** | Rp 10.000 | **Rp 3.500 (35%)** | Rp 6.500 |
+| **Plugin Pro Satuan (Voice Typing / AutoText)** | Rp 49.000 | **Rp 17.000 (35%)** | Rp 32.000 |
+| **Lisensi Pro All-Access (Early Bird)** | Rp 99.000 | **Rp 30.000 (30%)** | Rp 69.000 |
+| **Lisensi Pro All-Access (Harga Normal)** | Rp 250.000 | **Rp 75.000 (30%)** | Rp 175.000 |
+
+### C. Keuntungan Strategis Model Afiliasi
+1. **Zero Upfront CAC (Customer Acquisition Cost):** Tidak ada biaya iklan yang dibakar di muka. Komisi hanya dibayarkan ketika produk terbukti terjual (*performance-based marketing*).
+2. **Viral Video Loop:** Kreator berlomba-lomba membuat konten video demo menarik (contoh: unjuk kebolehan mengetik suara di PC lewat HP dari jarak 5 meter, atau pamer tema keyboard neon RGB).
+3. **Pencairan Cepat & Transparan:** Dashboard afiliasi via Mayar / Lynk.id / Lemon Squeezy yang mencatat klik, konversi, dan pencairan komisi otomatis ke rekening bank lokal atau e-wallet.
 
 ---
 
