@@ -382,19 +382,19 @@ html, body {
 
 .control-deck {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 50%;
-  transform: translate(-50%, -105%);
+  transform: translate(-50%, 105%);
   width: 100%;
   max-width: 480px;
   background: var(--bg);
   border: 1.5px solid var(--key-border);
-  border-top: none;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+  border-bottom: none;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.65);
   z-index: 999;
-  padding: 12px 14px 16px 14px;
+  padding: 4px 14px 16px 14px;
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
@@ -405,6 +405,25 @@ html, body {
 .control-deck.open {
   transform: translate(-50%, 0);
 }
+.deck-drag-handle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 0 2px;
+  cursor: grab;
+  touch-action: none;
+}
+.deck-drag-handle span {
+  display: block;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+}
+.deck-drag-handle:active {
+  cursor: grabbing;
+}
+
 .deck-header {
   display: flex;
   justify-content: space-between;
@@ -609,6 +628,46 @@ html, body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Sub-menu Game Type */
+.deck-game-submenu {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  animation: fadeSlideIn 0.18s ease;
+}
+.deck-game-submenu.visible {
+  display: flex;
+}
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dgs-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.dgs-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.dgs-chip {
+  font-size: 12px;
+}
+.dgs-chip.active {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+}
+
 .deck-chip {
   text-align: center;
   padding: 8px 10px;
@@ -3026,6 +3085,7 @@ body.is-fullscreen {
   <!-- FLOATING CONTROL DECK (PILIHAN A) -->
   <div id="control-deck-backdrop" class="control-deck-backdrop"></div>
   <div id="control-deck" class="control-deck">
+    <div class="deck-drag-handle" id="deck-drag-handle" aria-hidden="true"><span></span></div>
     <div class="deck-header">
       <div class="deck-title">
         <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
@@ -3068,8 +3128,8 @@ body.is-fullscreen {
               <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
             </span>
             <div class="dc-text">
-              <span class="dc-name">Game Console</span>
-              <span class="dc-sub">Virtual Gamepad</span>
+              <span class="dc-name">Game</span>
+              <span class="dc-sub">Pilih tipe →</span>
             </div>
           </button>
           <button class="deck-card" id="btn-present-mode" type="button">
@@ -3091,6 +3151,28 @@ body.is-fullscreen {
               <span class="dc-sub">Enter, Panah, Voice</span>
             </div>
           </button>
+        </div>
+
+        <!-- Sub-menu: GAME TYPE (muncul setelah klik tombol Game) -->
+        <div class="deck-game-submenu" id="deck-game-submenu">
+          <div class="dgs-title">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>TIPE GAME</span>
+          </div>
+          <div class="dgs-chips">
+            <button type="button" class="tbtn deck-chip dgs-chip" id="btn-game-console">
+              <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
+              Console
+            </button>
+            <button type="button" class="tbtn deck-chip dgs-chip" id="btn-game-arcade">
+              <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg>
+              Arcade
+            </button>
+            <button type="button" class="tbtn deck-chip dgs-chip" id="btn-game-racing">
+              <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+              Racing
+            </button>
+          </div>
         </div>
       </div>
 
@@ -4580,8 +4662,9 @@ function openControlDeck() {
   controlDeck.classList.add('open');
   if (deckBackdrop) deckBackdrop.classList.add('open');
   if (btnControlDeck) btnControlDeck.classList.add('active');
-  resetDeckAutoClose();
   updateDeckModesUI();
+  // Tampilkan sub-menu game jika sedang dalam mode game
+  if (typeof showGameSubmenu === 'function' && isGameModeActive) showGameSubmenu();
 }
 
 function closeControlDeck() {
@@ -4601,13 +4684,6 @@ function toggleControlDeck() {
   } else {
     openControlDeck();
   }
-}
-
-function resetDeckAutoClose() {
-  if (deckAutoCloseTimer) clearTimeout(deckAutoCloseTimer);
-  deckAutoCloseTimer = setTimeout(() => {
-    closeControlDeck();
-  }, 7000);
 }
 
 if (btnControlDeck) {
@@ -4673,14 +4749,6 @@ function handleUniversalClose(e) {
 }
 document.addEventListener('click', handleUniversalClose);
 document.addEventListener('touchend', handleUniversalClose, { passive: false });
-
-// Auto-tutup Control Deck jika user mulai berinteraksi di luar menu
-window.addEventListener('touchstart', (e) => {
-  if (!controlDeck || !controlDeck.classList.contains('open')) return;
-  if (!controlDeck.contains(e.target) && !e.target.closest('#btn-control-deck') && !e.target.closest('#btn-brand-toggle')) {
-    closeControlDeck();
-  }
-}, { passive: true });
 
 // Auto-tutup saat memilih layer atau utilitas agar layar langsung siap dipakai
 ['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-fs', 'btn-store'].forEach(id => {
@@ -8029,9 +8097,59 @@ function bindModeBtn(btn, handler) {
   });
 }
 
-bindModeBtn(btnModeStandardDeck, () => switchAppMode('standard'));
-bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
-bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
+bindModeBtn(btnModeStandardDeck, () => {
+  hideGameSubmenu();
+  switchAppMode('standard');
+});
+
+// Tombol Game: toggle sub-menu (tidak langsung masuk mode)
+const deckGameSubmenu = $('deck-game-submenu');
+function showGameSubmenu() {
+  if (deckGameSubmenu) {
+    deckGameSubmenu.classList.add('visible');
+    deckGameSubmenu.style.removeProperty('display');
+  }
+  if (btnGameModeDeck) btnGameModeDeck.classList.add('active');
+}
+function hideGameSubmenu() {
+  if (deckGameSubmenu) deckGameSubmenu.classList.remove('visible');
+  // Jika bukan mode game, hapus active dari tombol game juga
+  if (!isGameModeActive) {
+    if (btnGameModeDeck) btnGameModeDeck.classList.remove('active');
+  }
+}
+
+bindModeBtn(btnGameModeDeck, () => {
+  if (deckGameSubmenu && deckGameSubmenu.classList.contains('visible')) {
+    hideGameSubmenu();
+  } else {
+    showGameSubmenu();
+  }
+});
+
+// Sub-menu Game: Console, Arcade, Racing
+// (Saat ini semua masuk ke mode gamepad yang sama; tipe disimpan untuk UI)
+let activeGameType = 'console';
+function setGameType(type) {
+  activeGameType = type;
+  ['btn-game-console', 'btn-game-arcade', 'btn-game-racing'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('active', id === `btn-game-${type}`);
+  });
+}
+
+const btnGameConsole = $('btn-game-console');
+const btnGameArcade  = $('btn-game-arcade');
+const btnGameRacing  = $('btn-game-racing');
+
+bindModeBtn(btnGameConsole, () => { setGameType('console'); switchAppMode('game'); closeControlDeck(); });
+bindModeBtn(btnGameArcade,  () => { setGameType('arcade');  switchAppMode('game'); closeControlDeck(); });
+bindModeBtn(btnGameRacing,  () => { setGameType('racing');  switchAppMode('game'); closeControlDeck(); });
+
+bindModeBtn(btnPresentModeDeck,  () => {
+  hideGameSubmenu();
+  switchAppMode('present');
+});
 
 bindModeBtn(btnDeckUpgradePro, () => {
   closeControlDeck();
