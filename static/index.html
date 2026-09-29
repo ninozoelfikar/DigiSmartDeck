@@ -3159,7 +3159,7 @@ function playClickSound(force = false) {
     osc1.type = 'triangle';
     osc1.frequency.setValueAtTime(1500, now);
     osc1.frequency.exponentialRampToValueAtTime(350, now + 0.016);
-    gain1.gain.setValueAtTime(0.7 * vol, now);
+    gain1.gain.setValueAtTime(2.8 * vol, now);
     gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.016);
     osc1.connect(gain1);
     gain1.connect(audioCtx.destination);
@@ -3172,7 +3172,7 @@ function playClickSound(force = false) {
     osc2.type = 'sine';
     osc2.frequency.setValueAtTime(300, now);
     osc2.frequency.exponentialRampToValueAtTime(90, now + 0.022);
-    gain2.gain.setValueAtTime(0.5 * vol, now);
+    gain2.gain.setValueAtTime(2.0 * vol, now);
     gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
     osc2.connect(gain2);
     gain2.connect(audioCtx.destination);
