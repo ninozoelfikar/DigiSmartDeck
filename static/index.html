@@ -1145,19 +1145,30 @@ body.is-fullscreen {
   border-bottom: 1px solid var(--key-border);
 }
 .modal-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 .modal-close {
   background: transparent;
   border: none;
   color: var(--text-dim);
-  font-size: 18px;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 4px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
 }
-.modal-close:hover { color: var(--text); }
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
 .modal-body {
   padding: 16px 18px;
   overflow-y: auto;
@@ -1175,6 +1186,9 @@ body.is-fullscreen {
   font-weight: 700;
   color: var(--text);
   letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .os-grid {
   display: grid;
@@ -1205,8 +1219,11 @@ body.is-fullscreen {
   box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
 }
 .os-icon {
-  font-size: 22px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  color: var(--accent);
 }
 .os-text {
   display: flex;
@@ -1317,6 +1334,10 @@ body.is-fullscreen {
 }
 .size-preset-btn, .pos-option-btn {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
   color: var(--text);
@@ -3104,7 +3125,7 @@ body.is-fullscreen {
     <!-- Top Game Utility Bar -->
     <div class="gp-top-bar">
       <div class="gp-left-meta">
-        <span class="gp-badge">🎮 GAMEPAD</span>
+        <span class="gp-badge"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg> GAMEPAD</span>
         <select id="gp-preset-select" class="gp-select" title="Pilih Profil Pemetaan Emulator">
           <option value="retroarch">RetroArch / SNES (Default)</option>
           <option value="gba">GBA (VisualBoyAdvance)</option>
@@ -3116,16 +3137,16 @@ body.is-fullscreen {
 
       <!-- Quick Emulator Hotkeys -->
       <div class="gp-quick-hotkeys">
-        <button class="gp-hk-btn" id="gp-hk-turbo" data-hk="turbo" title="Fast Forward (Spasi)">⏩ Turbo</button>
-        <button class="gp-hk-btn" id="gp-hk-save" data-hk="save" title="Quick Save (F2)">💾 Save</button>
-        <button class="gp-hk-btn" id="gp-hk-load" data-hk="load" title="Quick Load (F4)">📂 Load</button>
-        <button class="gp-hk-btn" id="gp-hk-menu" data-hk="menu" title="Menu / Pause (Esc)">⏸️ Menu</button>
+        <button class="gp-hk-btn" id="gp-hk-turbo" data-hk="turbo" title="Fast Forward (Spasi)"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg> Turbo</button>
+        <button class="gp-hk-btn" id="gp-hk-save" data-hk="save" title="Quick Save (F2)"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
+        <button class="gp-hk-btn" id="gp-hk-load" data-hk="load" title="Quick Load (F4)"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Load</button>
+        <button class="gp-hk-btn" id="gp-hk-menu" data-hk="menu" title="Menu / Pause (Esc)"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg> Menu</button>
       </div>
 
       <div class="gp-right-meta">
-        <button class="gp-btn-switch" id="btn-switch-dpad-stick" title="Tukar antara D-Pad 8-Arah atau Analog Stick">🕹️ Stick</button>
-        <button class="gp-btn-switch" id="btn-gp-remap" title="Atur Mapping Tombol Kustom">⚙️ Remap</button>
-        <button class="gp-btn-exit" id="btn-exit-game" title="Kembali ke Mode Keyboard">⌨️ Keyboard</button>
+        <button class="gp-btn-switch" id="btn-switch-dpad-stick" title="Tukar antara D-Pad 8-Arah atau Analog Stick"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg> Stick</button>
+        <button class="gp-btn-switch" id="btn-gp-remap" title="Atur Mapping Tombol Kustom"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Remap</button>
+        <button class="gp-btn-exit" id="btn-exit-game" title="Kembali ke Mode Keyboard"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg> Keyboard</button>
       </div>
     </div>
 
@@ -3184,7 +3205,10 @@ body.is-fullscreen {
   <div class="modal-backdrop hidden" id="gamepad-remap-modal">
     <div class="modal-dialog" style="max-width:540px;">
       <div class="modal-header">
-        <div class="modal-title">🎮 Kustomisasi Mapping Gamepad</div>
+        <div class="modal-title">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
+          <span>Kustomisasi Mapping Gamepad</span>
+        </div>
         <button class="modal-close" id="btn-close-gp-remap">✕</button>
       </div>
       <div class="modal-body" style="max-height:65vh;overflow-y:auto;">
@@ -3207,7 +3231,7 @@ body.is-fullscreen {
     <!-- Presenter Top Bar -->
     <div class="pr-top-bar">
       <div class="pr-left-meta">
-        <span class="pr-badge">📽️ PRESENTASI</span>
+        <span class="pr-badge"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="12" x2="12" y1="17" y2="21"/></svg> PRESENTASI</span>
         <select id="pr-app-select" class="pr-select" title="Pilih Software Presentasi">
           <option value="ppt">PowerPoint / Impress</option>
           <option value="gslides">Google Slides / Web</option>
@@ -3219,22 +3243,22 @@ body.is-fullscreen {
       <!-- Quick Meeting Shortcuts -->
       <div class="pr-meeting-bar">
         <button class="pr-btn-meeting" id="pr-btn-mic" title="Toggle Mute Mikrofon (Zoom Alt+A / Meet Ctrl+D)">
-          <span class="pr-m-icon">🎙️</span><span class="pr-m-txt">Mic</span>
+          <span class="pr-m-icon"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg></span><span class="pr-m-txt">Mic</span>
         </button>
         <button class="pr-btn-meeting" id="pr-btn-cam" title="Toggle Kamera Video (Zoom Alt+V / Meet Ctrl+E)">
-          <span class="pr-m-icon">📷</span><span class="pr-m-txt">Kamera</span>
+          <span class="pr-m-icon"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></span><span class="pr-m-txt">Kamera</span>
         </button>
         <button class="pr-btn-meeting" id="pr-btn-hand" title="Angkat Tangan (Zoom Alt+Y / Meet Ctrl+Alt+H)">
-          <span class="pr-m-icon">✋</span><span class="pr-m-txt">Tangan</span>
+          <span class="pr-m-icon"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></span><span class="pr-m-txt">Tangan</span>
         </button>
         <button class="pr-btn-meeting" id="pr-btn-share" title="Bagikan Layar (Zoom Alt+S / Meet Ctrl+Alt+C)">
-          <span class="pr-m-icon">💻</span><span class="pr-m-txt">Share</span>
+          <span class="pr-m-icon"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span><span class="pr-m-txt">Share</span>
         </button>
       </div>
 
       <div class="pr-right-meta">
-        <button class="pr-btn-aux" id="btn-pr-gyro" title="Air Mouse: Gerakkan kursor dengan memiringkan HP (Device Orientation)">📡 Gyro Air</button>
-        <button class="pr-btn-exit" id="btn-exit-present" title="Kembali ke Mode Keyboard">⌨️ Keyboard</button>
+        <button class="pr-btn-aux" id="btn-pr-gyro" title="Air Mouse: Gerakkan kursor dengan memiringkan HP (Device Orientation)"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M4.93 4.93a10 10 0 0 1 14.14 0"/><path d="M7.76 7.76a6 6 0 0 1 8.48 0"/></svg> Gyro Air</button>
+        <button class="pr-btn-exit" id="btn-exit-present" title="Kembali ke Mode Keyboard"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg> Keyboard</button>
       </div>
     </div>
 
@@ -3243,8 +3267,8 @@ body.is-fullscreen {
       <div class="pr-timer-box">
         <div class="pr-timer-display" id="pr-timer-display">15:00</div>
         <div class="pr-timer-actions">
-          <button class="pr-t-btn" id="btn-timer-toggle" title="Mulai / Jeda Timer">▶ Mulai</button>
-          <button class="pr-t-btn" id="btn-timer-reset" title="Reset Timer">🔄</button>
+          <button class="pr-t-btn" id="btn-timer-toggle" title="Mulai / Jeda Timer"><svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Mulai</button>
+          <button class="pr-t-btn" id="btn-timer-reset" title="Reset Timer"><svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
           <select id="pr-timer-preset" class="pr-t-select" title="Preset Waktu">
             <option value="5">5 Mnt</option>
             <option value="10">10 Mnt</option>
@@ -3266,9 +3290,9 @@ body.is-fullscreen {
       </div>
 
       <div class="pr-hud-shortcuts">
-        <button class="pr-hk-btn" id="pr-btn-start-show" title="Mulai Slide Show dari Awal (F5)">▶ Mulai Show</button>
-        <button class="pr-hk-btn" id="pr-btn-current-show" title="Mulai dari Slide Aktif (Shift+F5)">⏩ Slide Aktif</button>
-        <button class="pr-hk-btn danger" id="pr-btn-end-show" title="Hentikan Slide Show (Esc)">⏹️ Stop</button>
+        <button class="pr-hk-btn" id="pr-btn-start-show" title="Mulai Slide Show dari Awal (F5)"><svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Mulai Show</button>
+        <button class="pr-hk-btn" id="pr-btn-current-show" title="Mulai dari Slide Aktif (Shift+F5)"><svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg> Slide Aktif</button>
+        <button class="pr-hk-btn danger" id="pr-btn-end-show" title="Hentikan Slide Show (Esc)"><svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> Stop</button>
       </div>
     </div>
 
@@ -3277,12 +3301,12 @@ body.is-fullscreen {
       <!-- Left Controls: Prev & First/Last -->
       <div class="pr-deck-left">
         <button class="pr-btn-nav pr-btn-prev" id="pr-btn-prev" title="Slide Sebelumnya (Panah Kiri)">
-          <span class="pr-nav-arrow">⬅</span>
+          <span class="pr-nav-arrow"><svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>
           <span class="pr-nav-label">PREV SLIDE</span>
         </button>
         <div class="pr-sub-nav">
-          <button class="pr-btn-sub" id="pr-btn-first" title="Slide Pertama (Home)">⏮ First</button>
-          <button class="pr-btn-sub" id="pr-btn-last" title="Slide Terakhir (End)">⏭ Last</button>
+          <button class="pr-btn-sub" id="pr-btn-first" title="Slide Pertama (Home)">First</button>
+          <button class="pr-btn-sub" id="pr-btn-last" title="Slide Terakhir (End)">Last</button>
         </div>
       </div>
 
@@ -3290,27 +3314,27 @@ body.is-fullscreen {
       <div class="pr-deck-center">
         <div class="pr-screen-tools">
           <button class="pr-tool-btn" id="pr-btn-black" title="Layar Hitam / Blank Screen (B)">
-            <span class="pr-tool-icon">⬛</span>
+            <span class="pr-tool-icon" style="background:#000;border:1px solid #555;width:14px;height:14px;display:inline-block;border-radius:2px;"></span>
             <span class="pr-tool-name">Layar Hitam</span>
           </button>
           <button class="pr-tool-btn" id="pr-btn-white" title="Layar Putih (W)">
-            <span class="pr-tool-icon">⬜</span>
+            <span class="pr-tool-icon" style="background:#fff;border:1px solid #aaa;width:14px;height:14px;display:inline-block;border-radius:2px;"></span>
             <span class="pr-tool-name">Layar Putih</span>
           </button>
           <button class="pr-tool-btn" id="pr-btn-laser" title="Laser Pointer PowerPoint (Ctrl+L)">
-            <span class="pr-tool-icon">🔴</span>
+            <span class="pr-tool-icon" style="background:#f85149;border-radius:50%;width:12px;height:12px;display:inline-block;"></span>
             <span class="pr-tool-name">Laser Mode</span>
           </button>
           <button class="pr-tool-btn" id="pr-btn-pen" title="Mode Spidol Pen Tool (Ctrl+P)">
-            <span class="pr-tool-icon">🖊️</span>
+            <span class="pr-tool-icon"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></span>
             <span class="pr-tool-name">Spidol / Pen</span>
           </button>
           <button class="pr-tool-btn" id="pr-btn-arrow" title="Kembali ke Pointer Panah Biasa (Ctrl+A)">
-            <span class="pr-tool-icon">↖️</span>
+            <span class="pr-tool-icon"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="7" x2="17" y1="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
             <span class="pr-tool-name">Kursor Panah</span>
           </button>
           <button class="pr-tool-btn" id="pr-btn-erase" title="Hapus Semua Coretan Spidol (E)">
-            <span class="pr-tool-icon">🧹</span>
+            <span class="pr-tool-icon"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/><path d="m5 18 5 3h10"/></svg></span>
             <span class="pr-tool-name">Hapus Catatan</span>
           </button>
         </div>
@@ -3320,7 +3344,7 @@ body.is-fullscreen {
       <div class="pr-deck-right">
         <button class="pr-btn-nav pr-btn-next" id="pr-btn-next" title="Slide Berikutnya (Panah Kanan)">
           <span class="pr-nav-label">NEXT SLIDE</span>
-          <span class="pr-nav-arrow">➡</span>
+          <span class="pr-nav-arrow"><svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </button>
       </div>
     </div>
@@ -3328,7 +3352,7 @@ body.is-fullscreen {
     <!-- Mini Laser Trackpad / Gyro Pointer Area -->
     <div class="pr-laser-deck">
       <div class="pr-laser-header">
-        <span class="pr-laser-title">🎯 Laser &amp; Pointer Trackpad (Geser untuk sorot di layar)</span>
+        <span class="pr-laser-title"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> Laser &amp; Pointer Trackpad (Geser untuk sorot di layar)</span>
         <span id="pr-gyro-status" class="pr-gyro-badge">Sensor Mati</span>
       </div>
       <div class="pr-laser-touchpad" id="pr-laser-pad">
@@ -3456,31 +3480,43 @@ body.is-fullscreen {
   <div class="modal-backdrop hidden" id="settings-modal">
     <div class="modal-dialog">
       <div class="modal-header">
-        <div class="modal-title">⚙️ Pengaturan Tampilan</div>
+        <div class="modal-title">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Pengaturan Tampilan</span>
+        </div>
         <button class="modal-close" id="btn-close-settings">✕</button>
       </div>
 
       <div class="modal-body">
         <!-- TARGET OS SELECTION SECTION -->
         <div class="setting-group">
-          <div class="setting-title">💻 Sistem Operasi (Target OS)</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+            <span>Sistem Operasi (Target OS)</span>
+          </div>
           <div class="os-grid">
             <button class="os-card active" data-os="win" type="button">
-              <div class="os-icon">🪟</div>
+              <div class="os-icon">
+                <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M3 5.5 10.5 4.5v6.5H3V5.5zm8.5-1.2L21 3v8h-9.5V4.3zM3 13h7.5v6.5L3 18.5V13zm8.5 0H21v8l-9.5-1.3V13z"/></svg>
+              </div>
               <div class="os-text">
                 <span class="os-name">Windows</span>
                 <span class="os-sub">Ctrl • ⊞ Win • Alt</span>
               </div>
             </button>
             <button class="os-card" data-os="mac" type="button">
-              <div class="os-icon">🍎</div>
+              <div class="os-icon">
+                <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.84.94-2.91-.91.04-2.02.61-2.67 1.37-.58.67-1.08 1.76-.94 2.81 1.02.08 2.04-.5 2.67-1.27z"/></svg>
+              </div>
               <div class="os-text">
                 <span class="os-name">macOS</span>
                 <span class="os-sub">control • ⌥ opt • ⌘ cmd</span>
               </div>
             </button>
             <button class="os-card" data-os="ubuntu" type="button">
-              <div class="os-icon">🐧</div>
+              <div class="os-icon">
+                <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="3"/><path d="m7 10 3 2-3 2"/><line x1="13" x2="17" y1="14" y2="14"/></svg>
+              </div>
               <div class="os-text">
                 <span class="os-name">Ubuntu / Linux</span>
                 <span class="os-sub">Ctrl • ❖ Super • Alt</span>
@@ -3491,7 +3527,10 @@ body.is-fullscreen {
 
         <!-- THEME / SKIN SECTION -->
         <div class="setting-group">
-          <div class="setting-title">🎨 Tema / Skin Keyboard</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
+            <span>Tema / Skin Keyboard</span>
+          </div>
           <div class="theme-grid">
             <button class="theme-card active" data-theme="os-native" type="button">
               <div class="theme-preview tp-os-native"></div>
@@ -3522,7 +3561,10 @@ body.is-fullscreen {
 
         <!-- FONT / TYPOGRAPHY SECTION -->
         <div class="setting-group">
-          <div class="setting-title">🔤 Font / Tipografi Tombol</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+            <span>Font / Tipografi Tombol</span>
+          </div>
           <div class="font-grid">
             <button class="font-card active" data-font="default" type="button">
               <span class="font-preview" style="font-family: inherit;">Aa 123</span>
@@ -3579,7 +3621,10 @@ body.is-fullscreen {
 
         <!-- KEYBOARD SIZE SECTION -->
         <div class="setting-group">
-          <div class="setting-title">📏 Ukuran Tombol Keyboard</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M21.3 8.7 8.7 21.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15.3 2.7c1-1 2.5-1 3.4 0l2.6 2.6c1 1 1 2.5 0 3.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/></svg>
+            <span>Ukuran Tombol Keyboard</span>
+          </div>
           <div class="size-presets">
             <button class="size-preset-btn key-preset-btn" data-size="compact">Kecil</button>
             <button class="size-preset-btn key-preset-btn active" data-size="normal">Normal</button>
@@ -3594,11 +3639,14 @@ body.is-fullscreen {
 
         <!-- TRACKPAD POSITION & SIZE -->
         <div class="setting-group">
-          <div class="setting-title">🖱️ Pengaturan Trackpad Laptop</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="14" x="3" y="5" rx="3"/><line x1="12" x2="12" y1="14" y2="19"/><line x1="3" x2="21" y1="14" y2="14"/></svg>
+            <span>Pengaturan Trackpad Laptop</span>
+          </div>
           <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Status Dek Trackpad:</div>
           <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
-            <button class="pos-option-btn active" id="opt-tp-on" type="button">🟢 Aktif (Tampilkan)</button>
-            <button class="pos-option-btn" id="opt-tp-off" type="button">⚪ Nonaktif (Matikan)</button>
+            <button class="pos-option-btn active" id="opt-tp-on" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:#3fb950;"><polyline points="20 6 9 17 4 12"/></svg> <span>Aktif (Tampilkan)</span></button>
+            <button class="pos-option-btn" id="opt-tp-off" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:var(--text-dim);"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg> <span>Nonaktif (Matikan)</span></button>
           </div>
           <div id="tp-config-controls" style="transition: opacity 0.2s ease;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Posisi Dek:</div>
@@ -3626,21 +3674,27 @@ body.is-fullscreen {
 
         <!-- MODIFIER LOCK BEHAVIOR -->
         <div class="setting-group">
-          <div class="setting-title">🔒 Penguncian Tombol Modifier (Shift / Ctrl / Alt / Win)</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Penguncian Tombol Modifier (Shift / Ctrl / Alt / Win)</span>
+          </div>
           <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Pilih bagaimana tombol Shift, Ctrl, Alt &amp; Win beroperasi saat dipencet:</div>
           <div class="size-presets" id="mod-lock-presets">
-            <button type="button" class="size-preset-btn mod-lock-btn active" data-modmode="lock">🔒 Aktif Terus</button>
-            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="oneshot">⚡ Kunci 1x</button>
-            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="hold">🖐️ Tahan Manual</button>
+            <button type="button" class="size-preset-btn mod-lock-btn active" data-modmode="lock"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>Aktif Terus</span></button>
+            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="oneshot"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Kunci 1x</span></button>
+            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="hold"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg> <span>Tahan Manual</span></button>
           </div>
           <div id="mod-lock-desc" style="font-size:11px;color:var(--text);margin-top:6px;line-height:1.4;">
-            💡 <b>Aktif Terus (Bawaan):</b> Tombol Shift/Ctrl/Alt/Win akan tetap aktif terus sampai ditekan kembali. Operasi sama persis dengan menahan tombol keyboard fisik untuk blok teks, shortcut multi-tuts, atau seleksi.
+            <b>Aktif Terus (Bawaan):</b> Tombol Shift/Ctrl/Alt/Win akan tetap aktif terus sampai ditekan kembali. Operasi sama persis dengan menahan tombol keyboard fisik untuk blok teks, shortcut multi-tuts, atau seleksi.
           </div>
         </div>
 
         <!-- HAPTIC / VIBRATION SECTION -->
         <div class="setting-group">
-          <div class="setting-title">📳 Efek Getar Tombol (Haptic Feedback)</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/><path d="M2 8v8"/><path d="M22 8v8"/></svg>
+            <span>Efek Getar Tombol (Haptic Feedback)</span>
+          </div>
           <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;margin-bottom:8px;">
             <input type="checkbox" id="chk-haptic" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
             <span>Getar saat tombol keyboard &amp; trackpad berhasil diklik</span>
@@ -3653,14 +3707,14 @@ body.is-fullscreen {
               <button class="size-preset-btn haptic-preset-btn" data-vibe="strong">Kuat (50ms)</button>
             </div>
             <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;">🧪 Uji Getaran Sekarang</button>
+              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Uji Getaran Sekarang</span></button>
             </div>
             <div id="haptic-device-notice" style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4;"></div>
           </div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
             <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:2px 0;">
               <input type="checkbox" id="chk-sound" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
-              <span>🔊 Suara Klik Mekanikal (Renyah di HP, Tablet &amp; PC)</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Suara Klik Mekanikal (Renyah di HP, Tablet &amp; PC)</span>
             </label>
             <div id="sound-controls" style="margin-top:8px;">
               <div class="setting-slider-row" style="margin-bottom:6px;">
@@ -3673,18 +3727,21 @@ body.is-fullscreen {
                 <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="100">Keras (100%)</button>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
-                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;">🧪 Uji Suara Klik</button>
+                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <span>Uji Suara Klik</span></button>
               </div>
             </div>
             <div style="font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.4;">
-              💡 <i>Pastikan volume Media di HP menyala (tidak dalam mode senyap/silent). Pengaturan suara &amp; getar tersimpan mandiri di tiap peramban/perangkat.</i>
+              <i>Pastikan volume Media di HP menyala (tidak dalam mode senyap/silent). Pengaturan suara &amp; getar tersimpan mandiri di tiap peramban/perangkat.</i>
             </div>
           </div>
         </div>
 
         <!-- DISPLAY OPTIONS -->
         <div class="setting-group">
-          <div class="setting-title">ℹ️ Opsi Tampilan</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+            <span>Opsi Tampilan</span>
+          </div>
           <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;">
             <input type="checkbox" id="chk-show-tip" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
             <span>Tampilkan baris teks petunjuk (Tip) di bawah</span>
@@ -3693,17 +3750,20 @@ body.is-fullscreen {
 
         <!-- PWA / STANDALONE INSTALLATION -->
         <div class="setting-group" id="pwa-install-group">
-          <div class="setting-title">📲 Solusi Layar Penuh Bebas Pop-up Chrome</div>
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            <span>Solusi Layar Penuh Bebas Pop-up Chrome</span>
+          </div>
           <div style="font-size:11px;color:var(--text);margin-bottom:8px;line-height:1.4;">
             Untuk pengalaman mengetik terbaik tanpa pop-up peringatan Chrome dan tanpa bilah alamat:
           </div>
           <div style="font-size:11px;color:var(--text);margin-bottom:10px;line-height:1.4;background:rgba(255,255,255,0.04);padding:8px 10px;border-radius:6px;border:1px solid var(--border);">
-            🤖 <b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiKeyboard APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br>
-            🌐 <b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>"Tambahkan ke Layar Utama" (Add shortcut)</b>.
+            <b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiKeyboard APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br>
+            <b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>"Tambahkan ke Layar Utama" (Add shortcut)</b>.
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <a href="/static/DigiKeyboard.apk" download="DigiKeyboard.apk" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:6px 14px;background:#0969da;color:#fff;border:1px solid #1f6feb;border-radius:6px;cursor:pointer;font-weight:600;">🤖 Unduh DigiKeyboard.apk</a>
-            <button type="button" class="btn-primary" id="btn-pwa-install" style="font-size:11px;padding:6px 14px;background:#238636;color:#fff;border:1px solid #2ea043;border-radius:6px;cursor:pointer;font-weight:600;">📥 Pasang Pintasan ke Layar Utama</button>
+            <a href="/static/DigiKeyboard.apk" download="DigiKeyboard.apk" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:6px 14px;background:#0969da;color:#fff;border:1px solid #1f6feb;border-radius:6px;cursor:pointer;font-weight:600;"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Unduh DigiKeyboard.apk</a>
+            <button type="button" class="btn-primary" id="btn-pwa-install" style="font-size:11px;padding:6px 14px;background:#238636;color:#fff;border:1px solid #2ea043;border-radius:6px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> Pasang Pintasan ke Layar Utama</button>
           </div>
         </div>
       </div>
@@ -3720,7 +3780,10 @@ body.is-fullscreen {
 <div class="modal-backdrop hidden" id="modal-reconnect">
   <div class="modal-dialog">
     <div class="modal-header">
-      <div class="modal-title">🔄 Pemulihan Koneksi Wi-Fi</div>
+      <div class="modal-title">
+        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
+        <span>Pemulihan Koneksi Wi-Fi</span>
+      </div>
       <button class="modal-close" id="btn-close-reconnect" type="button">✕</button>
     </div>
     <div class="modal-body">
@@ -3733,19 +3796,22 @@ body.is-fullscreen {
         <div style="font-size:11px;color:var(--text-dim);">Tujuan Host Saat Ini:</div>
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
           <code id="lbl-current-host" style="font-size:13px;font-weight:700;color:var(--accent);font-family:monospace;">--</code>
-          <button type="button" class="btn-primary" id="btn-modal-retry" style="font-size:11px;padding:5px 12px;">⚡ Hubungkan Sekarang</button>
+          <button type="button" class="btn-primary" id="btn-modal-retry" style="font-size:11px;padding:5px 12px;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> <span>Hubungkan Sekarang</span></button>
         </div>
       </div>
 
       <!-- AUTO SUBNET SCANNER -->
       <div class="setting-group" style="margin-top:4px;">
-        <div class="setting-title">🔍 Pindai PC Otomatis di Jaringan Wi-Fi</div>
+        <div class="setting-title">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
+          <span>Pindai PC Otomatis di Jaringan Wi-Fi</span>
+        </div>
         <div style="font-size:11px;color:var(--text-dim);line-height:1.4;">
           Memindai alamat IP lokal (subnet) pada port 8080 untuk mendeteksi IP baru PC DigiKeyboard.
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
           <input type="text" id="input-scan-subnet" placeholder="Misal: 192.168.1." style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
-          <button type="button" class="btn-primary" id="btn-start-scan" style="font-size:11px;padding:7px 14px;white-space:nowrap;">🔍 Mulai Pindai</button>
+          <button type="button" class="btn-primary" id="btn-start-scan" style="font-size:11px;padding:7px 14px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg> <span>Mulai Pindai</span></button>
         </div>
         <div class="scan-progress-bar">
           <div class="scan-progress-fill" id="scan-progress"></div>
@@ -3755,7 +3821,7 @@ body.is-fullscreen {
         <!-- FOUND PC CARD -->
         <div id="scan-found-box" class="scan-found-card hidden">
           <div>
-            <div style="font-size:12px;font-weight:700;color:#3fb950;">🎉 DigiKeyboard Ditemukan!</div>
+            <div style="font-size:12px;font-weight:700;color:#3fb950;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> DigiKeyboard Ditemukan!</div>
             <div id="scan-found-text" style="font-size:11px;color:var(--text);margin-top:2px;">Host: <b id="scan-found-host">--</b></div>
           </div>
           <button type="button" class="btn-primary" id="btn-jump-found" style="background:#238636;border-color:#2ea043;font-size:11px;padding:6px 12px;white-space:nowrap;">Buka Sekarang</button>
@@ -3764,13 +3830,16 @@ body.is-fullscreen {
 
       <!-- MANUAL IP / HOSTNAME -->
       <div class="setting-group" style="margin-top:4px;">
-        <div class="setting-title">✏️ Beralih ke IP / Hostname Baru</div>
+        <div class="setting-title">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          <span>Beralih ke IP / Hostname Baru</span>
+        </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <input type="text" id="input-manual-host" placeholder="Misal: 192.168.1.45 atau Jarvis.local" style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
           <button type="button" class="btn-primary" id="btn-apply-manual-host" style="font-size:11px;padding:7px 14px;white-space:nowrap;">Buka</button>
         </div>
         <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">
-          💡 <i>Jika perangkat Anda mendukung mDNS, Anda juga bisa memasukkan nama hostname seperti <b>jarvis.local:8080</b> tanpa perlu mengingat angka IP.</i>
+          <i>Jika perangkat Anda mendukung mDNS, Anda juga bisa memasukkan nama hostname seperti <b>jarvis.local:8080</b> tanpa perlu mengingat angka IP.</i>
         </div>
       </div>
     </div>
@@ -4497,7 +4566,7 @@ function showFoundHost(targetHost, version) {
   const statusEl = $('scan-status');
   const progEl = $('scan-progress');
   if (progEl) progEl.style.width = '100%';
-  if (statusEl) statusEl.textContent = `✅ DigiKeyboard ditemukan di ${targetHost}!`;
+  if (statusEl) statusEl.textContent = `DigiKeyboard ditemukan di ${targetHost}!`;
   if (foundHost) foundHost.textContent = `${targetHost} (v${version})`;
   if (foundBox) foundBox.classList.remove('hidden');
 
@@ -5609,11 +5678,11 @@ const isTabletOrIos = /iPad|Macintosh/i.test(navigator.userAgent) || (!('vibrate
 const hapticNotice = $('haptic-device-notice');
 if (hapticNotice) {
   if (!('vibrate' in navigator)) {
-    hapticNotice.innerHTML = '⚠️ <i>Perangkat ini (misal iPad/iPhone) tidak mendukung motor getar web oleh Apple. Anda dapat mengaktifkan <b>Suara Klik Mekanikal</b> di bawah sebagai alternatif umpan balik sentuhan.</i>';
+    hapticNotice.innerHTML = '<i>Perangkat ini (misal iPad/iPhone) tidak mendukung motor getar web oleh Apple. Anda dapat mengaktifkan <b>Suara Klik Mekanikal</b> di bawah sebagai alternatif umpan balik sentuhan.</i>';
   } else if (!isMobileDevice) {
-    hapticNotice.innerHTML = 'ℹ️ <i>Perangkat ini terdeteksi sebagai PC/Laptop (tidak memiliki motor getar fisik).</i>';
+    hapticNotice.innerHTML = '<i>Perangkat ini terdeteksi sebagai PC/Laptop (tidak memiliki motor getar fisik).</i>';
   } else {
-    hapticNotice.innerHTML = '💡 <i>Tip Tablet: Banyak tablet Android/iPad dari pabrik tidak dipasang motor getar fisik. Jika tablet Anda tidak bergetar, aktifkan <b>Suara Klik Mekanikal</b> di bawah.</i>';
+    hapticNotice.innerHTML = '<i>Catatan Tablet: Banyak tablet Android/iPad dari pabrik tidak dipasang motor getar fisik. Jika tablet Anda tidak bergetar, aktifkan <b>Suara Klik Mekanikal</b> di bawah.</i>';
   }
 }
 
@@ -5872,11 +5941,11 @@ function updateStickModeUI() {
   if (isStickMode) {
     if (gpDpadEl) gpDpadEl.classList.add('hidden');
     if (gpStickContainer) gpStickContainer.classList.remove('hidden');
-    if (btnSwitchStick) btnSwitchStick.textContent = '✝️ D-Pad';
+    if (btnSwitchStick) btnSwitchStick.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg> D-Pad';
   } else {
     if (gpDpadEl) gpDpadEl.classList.remove('hidden');
     if (gpStickContainer) gpStickContainer.classList.add('hidden');
-    if (btnSwitchStick) btnSwitchStick.textContent = '🕹️ Stick';
+    if (btnSwitchStick) btnSwitchStick.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg> Stick';
   }
 }
 
@@ -6710,7 +6779,7 @@ function tickTimer() {
 function startTimer() {
   if (prTimerRunning) return;
   prTimerRunning = true;
-  if (btnTimerToggle) btnTimerToggle.textContent = '⏸ Jeda';
+  if (btnTimerToggle) btnTimerToggle.innerHTML = '<svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg> Jeda';
   prTimerInterval = setInterval(tickTimer, 1000);
   vibe(15);
 }
@@ -6718,7 +6787,7 @@ function startTimer() {
 function pauseTimer() {
   if (!prTimerRunning) return;
   prTimerRunning = false;
-  if (btnTimerToggle) btnTimerToggle.textContent = '▶ Lanjut';
+  if (btnTimerToggle) btnTimerToggle.innerHTML = '<svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Lanjut';
   clearInterval(prTimerInterval);
   prTimerInterval = null;
   vibe(15);
@@ -6887,7 +6956,7 @@ function enableGyroListener() {
   window.addEventListener('deviceorientation', handleOrientation);
   if (btnPrGyro) btnPrGyro.classList.add('on');
   if (prGyroStatus) {
-    prGyroStatus.textContent = 'Sensor Aktif 🔴';
+    prGyroStatus.textContent = 'Sensor Aktif';
     prGyroStatus.classList.add('active');
   }
   vibe(25);
