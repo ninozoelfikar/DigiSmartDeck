@@ -149,6 +149,10 @@ public class BluetoothHidHelper {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
     }
 
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
     @SuppressLint("MissingPermission")
     public void register() {
         if (!isSupported()) {
