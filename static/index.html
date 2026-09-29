@@ -224,10 +224,8 @@ html, body {
   height: 100dvh;
   width: 100%;
   overflow: hidden;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
+  padding: 0;
+  margin: 0;
 }
 
 /* ─── TOP BAR ─── */
@@ -338,33 +336,42 @@ html, body {
 /* ─── KEYBOARD CONTAINER ─── */
 .kb-wrap {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  justify-content: center;
-  padding: 5px 6px;
-  gap: 6px;
+  justify-content: stretch;
+  padding: 3px 4px;
+  gap: 4px;
   background: var(--bg);
-  overflow: auto;
+  overflow: hidden;
+  width: 100%;
 }
 .kb-main {
   flex: 1;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: stretch;
   gap: 3px;
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
 }
 .kb-row {
   display: flex;
   gap: 3px;
   flex: 1;
+  min-height: 0;
+  align-items: stretch;
 }
 
 /* ─── KEY BUTTON ─── */
 .k {
   position: relative;
   flex: 1;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -380,7 +387,6 @@ html, body {
   font-weight: 600;
   cursor: pointer;
   transition: transform .05s, background .08s, box-shadow .05s;
-  min-height: var(--key-min-height, 38px);
   line-height: 1.2;
   -webkit-touch-callout: none;
 }
@@ -459,8 +465,15 @@ body.is-fullscreen {
   height: 100dvh !important;
   overflow: hidden !important;
   margin: 0 !important;
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0) !important;
+  padding: 0 !important;
   box-sizing: border-box !important;
+}
+
+/* Sembunyikan footer di layar landscape mobile atau fullscreen agar ruang terisi 100% */
+@media (max-height: 520px) {
+  .footer, #footer-tip {
+    display: none !important;
+  }
 }
 
 /* Otomatis sembunyikan tip di mode fullscreen agar ruang keyboard maksimal */
@@ -2103,9 +2116,6 @@ body.is-fullscreen {
         <span id="badge-txt">Menghubungkan...</span>
       </span>
       <span id="ping" class="ping">-- ms</span>
-      <span id="controller-badge" class="status-badge" style="display:none;font-size:10px;padding:2px 8px;border-radius:12px;cursor:pointer;margin-left:4px;user-select:none;">
-        <span id="controller-txt">👑 Pengendali</span>
-      </span>
     </div>
     <div class="right-controls">
       <button class="tbtn" id="btn-bt" title="Mode Bluetooth HID Hardware" style="display:none;">📶 BT</button>
@@ -3221,26 +3231,10 @@ function connect() {
           refreshMods();
         }
       } else if (d.type === 'controller_status') {
-        const cBadge = $('controller-badge');
-        const cTxt = $('controller-txt');
-        if (cBadge && cTxt) {
-          if (d.role === 'active') {
-            cBadge.style.display = 'none';
-            document.body.classList.remove('controller-standby');
-          } else {
-            cBadge.style.display = 'inline-flex';
-            cBadge.style.background = 'rgba(210,153,34,0.25)';
-            cBadge.style.borderColor = '#d29922';
-            cBadge.style.color = '#f0883e';
-            cTxt.innerHTML = '⚡ Siaga (Ambil Alih)';
-            cBadge.title = 'PC sedang dikendalikan oleh ' + (d.active_name || 'perangkat lain') + '. Klik untuk mengambil alih kendali.';
-            cBadge.onclick = () => {
-              if (confirm('Ambil alih kendali PC sekarang?')) {
-                send({ type: 'takeover' });
-              }
-            };
-            document.body.classList.add('controller-standby');
-          }
+        if (d.role === 'active') {
+          document.body.classList.remove('controller-standby');
+        } else {
+          document.body.classList.add('controller-standby');
         }
       }
     } catch(err) {}
