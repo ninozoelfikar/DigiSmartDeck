@@ -5550,8 +5550,14 @@ function switchAppMode(targetMode) {
   if (targetMode !== 'present' && typeof stopGyroAirMouse === 'function') {
     stopGyroAirMouse();
   }
-  if (targetMode !== 'ai' && typeof stopAiSpeechRecognition === 'function') {
-    stopAiSpeechRecognition();
+  if (targetMode !== 'ai') {
+    try {
+      if (typeof stopAiSpeechRecognition === 'function') {
+        stopAiSpeechRecognition();
+      }
+    } catch(err) {
+      console.warn('Error stopping AI speech:', err);
+    }
   }
 
   isGameModeActive = (targetMode === 'game');
@@ -8875,6 +8881,7 @@ let isAiRecording = false;
 let aiSpeechWanted = false; // Keinginan user: apakah mic harus terus aktif
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
+let lastProcessedFinalIndex = -1;
 let aiAccumulatedText = '';
 
 function clearTranscriptUI() {
@@ -8902,15 +8909,19 @@ function updateTranscriptUI(interimText) {
 
 function stopAiSpeechRecognition() {
   aiSpeechWanted = false;
-  if (aiSpeechRecognition) {
-    try {
-      aiSpeechRecognition.abort();
-    } catch(e) {}
-    aiSpeechRecognition = null;
-  }
+  try {
+    if (aiSpeechRecognition) {
+      try {
+        aiSpeechRecognition.abort();
+      } catch(e) {}
+      aiSpeechRecognition = null;
+    }
+  } catch(e) {}
   isAiRecording = false;
   lastProcessedFinalIndex = -1;
-  updateAiMicUI();
+  try {
+    updateAiMicUI();
+  } catch(e) {}
 }
 
 function createAndStartSpeechRecognition() {
@@ -9031,9 +9042,7 @@ function toggleAiSpeech() {
   }
 
   if (!SpeechRecognition) {
-    if (statusEl) statusEl.textContent = 'Browser ini tidak mendukung Web Speech API. Gunakan mic keyboard HP di kolom teks.';
-    const previewEl = $('ai-transcript-preview');
-    if (previewEl) previewEl.focus();
+    if (statusEl) statusEl.textContent = 'Browser tidak mendukung Web Speech API atau diblokir pada origin HTTP.';
     vibe(20);
     return;
   }
