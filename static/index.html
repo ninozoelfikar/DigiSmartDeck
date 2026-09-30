@@ -1506,8 +1506,9 @@ body.is-fullscreen {
   background: #161b22;
   border: 1px solid rgba(248, 81, 73, 0.4);
   border-radius: 14px;
-  width: min(390px, 92vw);
-  padding: 22px 18px 18px 18px;
+  width: min(540px, 94vw);
+  max-width: 580px;
+  padding: 24px 22px 20px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1561,7 +1562,7 @@ body.is-fullscreen {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   width: 100%;
 }
 
@@ -1579,7 +1580,7 @@ body.is-fullscreen {
 }
 
 .rc-modal-hint {
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--text-dim);
   line-height: 1.4;
   margin-top: 3px;
@@ -1590,19 +1591,26 @@ body.is-fullscreen {
   gap: 8px;
   width: 100%;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .rc-btn {
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
   color: var(--text);
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 8px 13px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
-  flex: 1;
+  white-space: nowrap !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1 1 auto;
 }
 
 .rc-btn:active {
@@ -4179,9 +4187,13 @@ body.is-fullscreen {
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           <span>Mode USB</span>
         </button>
+        <button type="button" class="rc-btn" id="btn-rc-bt" title="Gunakan Bluetooth HID Hardware">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
+          <span>Bluetooth</span>
+        </button>
         <button type="button" class="rc-btn" id="btn-rc-scan" title="Pindai IP PC di jaringan Wi-Fi">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span>Bantuan</span>
+          <span>Pindai PC</span>
         </button>
         <button type="button" class="rc-btn rc-close-btn" id="btn-rc-close" title="Tutup Popup">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -6441,11 +6453,19 @@ if (badge) {
 
 // Banner Action Buttons
 const btnRcRetry = $('btn-rc-retry');
-if (btnRcRetry) btnRcRetry.onclick = () => scheduleReconnect(true);
+if (btnRcRetry) {
+  btnRcRetry.onclick = () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(15);
+    scheduleReconnect(true);
+  };
+}
 
 const btnRcUsb = $('btn-rc-usb');
 if (btnRcUsb) {
   btnRcUsb.onclick = () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(15);
     const isCurrentUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     if (!isCurrentUsb && confirm("Beralih ke Koneksi Kabel USB?\n\nPastikan kabel USB sudah terhubung dari HP ke PC.\nBuka DigiKeyboard via USB (http://localhost:8080)?")) {
       window.location.href = 'http://localhost:' + (window.location.port || '8080');
@@ -6466,14 +6486,41 @@ if (btnRcUsb) {
   };
 }
 
+const btnRcBt = $('btn-rc-bt');
+if (btnRcBt) {
+  btnRcBt.onclick = () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(15);
+    if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.enableBluetoothHid === 'function') {
+      window.DigiAndroidBridge.enableBluetoothHid();
+    } else {
+      alert(
+        "PANDUAN KONEKSI BLUETOOTH HID:\n\n" +
+        "1. Mode Bluetooth HID Hardware didukung penuh pada aplikasi resmi DigiKeyboard Android (.apk).\n" +
+        "2. Melalui aplikasi Android, HP Anda akan terdeteksi langsung sebagai keyboard & mouse Bluetooth native tanpa kabel atau jaringan Wi-Fi.\n" +
+        "3. Untuk mengaktifkan, buka DigiKeyboard melalui aplikasi APK dan izinkan akses Bluetooth."
+      );
+    }
+  };
+}
+
 const btnRcScan = $('btn-rc-scan');
-if (btnRcScan) btnRcScan.onclick = () => openReconnectModal();
+if (btnRcScan) btnRcScan.onclick = () => {
+  if (typeof playClickSound === 'function') playClickSound();
+  openReconnectModal();
+};
 
 const btnRcHost = $('btn-rc-host');
 if (btnRcHost) btnRcHost.onclick = () => openReconnectModal();
 
 const btnRcClose = $('btn-rc-close');
-if (btnRcClose) btnRcClose.onclick = () => hideReconnectBanner();
+if (btnRcClose) {
+  btnRcClose.onclick = () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(10);
+    hideReconnectBanner();
+  };
+}
 
 // Modal Action Buttons
 const btnCloseReconnect = $('btn-close-reconnect');
