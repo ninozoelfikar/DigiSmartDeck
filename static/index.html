@@ -2974,6 +2974,43 @@ body.is-fullscreen {
   text-align: center;
 }
 
+/* Voice input wrap for native mobile keyboard dictation */
+.ai-voice-input-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+}
+.ai-voice-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 11.5px;
+  padding: 6px 9px;
+  outline: none;
+  min-width: 0;
+  transition: border-color 0.15s ease;
+}
+.ai-voice-input:focus {
+  border-color: var(--accent);
+}
+.ai-btn-input-send {
+  background: #238636;
+  border: 1px solid #2ea043;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ai-btn-input-send:active {
+  transform: translateY(1px);
+}
+
 /* Transcript preview box */
 .ai-transcript-box {
   flex: 1;
@@ -4604,6 +4641,12 @@ body.is-fullscreen {
           </button>
           <div class="ai-mic-status-label" id="ai-mic-status">Ketuk Mic untuk Mulai Dikte</div>
           <div class="ai-mic-hint">Bicara langsung ke mikrofon HP, teks otomatis diketik ke kursor PC</div>
+        </div>
+
+        <!-- Input Cepat Suara / Keyboard HP -->
+        <div class="ai-voice-input-wrap">
+          <input type="text" id="ai-voice-input" class="ai-voice-input" placeholder="Atau ketuk di sini untuk mic keyboard HP..." autocomplete="off">
+          <button type="button" class="ai-btn-input-send" id="btn-ai-input-send">Kirim</button>
         </div>
 
         <div class="ai-transcript-box">
@@ -8838,112 +8881,122 @@ function updateAiMicUI() {
 }
 
 function stopAiSpeechRecognition() {
-  if (aiSpeechRecognition && isAiRecording) {
+  if (aiSpeechRecognition) {
     try {
-      aiSpeechRecognition.stop();
+      aiSpeechRecognition.abort();
     } catch(e) {}
+    aiSpeechRecognition = null;
   }
   isAiRecording = false;
   updateAiMicUI();
 }
 
-function initAiSpeechRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    const statusEl = $('ai-mic-status');
-    if (statusEl) statusEl.textContent = 'Browser tidak mendukung Speech API';
-    return null;
-  }
-
-  const recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = aiSpeechLang;
-
-  recognition.onstart = () => {
-    isAiRecording = true;
-    updateAiMicUI();
-    vibe(25);
-  };
-
-  recognition.onresult = (event) => {
-    let interimText = '';
-    let finalText = '';
-
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      const t = event.results[i][0].transcript;
-      if (event.results[i].isFinal) {
-        finalText += t;
-      } else {
-        interimText += t;
-      }
-    }
-
-    const previewEl = $('ai-transcript-preview');
-    const displayStr = (finalText || interimText).trim();
-    if (previewEl && displayStr) {
-      previewEl.textContent = displayStr;
-      previewEl.classList.remove('empty');
-    }
-
-    if (finalText.trim()) {
-      aiAccumulatedText += (aiAccumulatedText ? ' ' : '') + finalText.trim();
-      if (aiAutoSend) {
-        sendAiText(finalText.trim() + ' ');
-      }
-    }
-  };
-
-  recognition.onerror = (err) => {
-    console.warn('[AI Speech Error]:', err.error);
-    isAiRecording = false;
-    updateAiMicUI();
-    const statusEl = $('ai-mic-status');
-    if (statusEl) {
-      if (err.error === 'not-allowed') {
-        statusEl.textContent = 'Izin Mic Ditolak di Browser';
-      } else if (err.error === 'no-speech') {
-        statusEl.textContent = 'Suara tidak terdeteksi, coba lagi';
-      } else {
-        statusEl.textContent = 'Status Mic: ' + err.error;
-      }
-    }
-  };
-
-  recognition.onend = () => {
-    isAiRecording = false;
-    updateAiMicUI();
-  };
-
-  return recognition;
-}
-
 function toggleAiSpeech() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert('Fitur Dikte Suara (Web Speech API) membutuhkan browser seperti Google Chrome, Safari, atau Edge.');
-    return;
-  }
+  const statusEl = $('ai-mic-status');
 
   if (isAiRecording) {
     stopAiSpeechRecognition();
-  } else {
-    if (!aiSpeechRecognition) {
-      aiSpeechRecognition = initAiSpeechRecognition();
-    }
-    if (aiSpeechRecognition) {
-      aiSpeechRecognition.lang = aiSpeechLang;
-      try {
-        aiSpeechRecognition.start();
-      } catch(e) {
-        try {
-          aiSpeechRecognition.stop();
-          setTimeout(() => {
-            try { aiSpeechRecognition.start(); } catch(e3) {}
-          }, 150);
-        } catch(e2) {}
+    return;
+  }
+
+  // Jika Web Speech API tidak didukung pada browser ini
+  if (!SpeechRecognition) {
+    if (statusEl) statusEl.textContent = 'Browser ini tidak mendukung Web Speech API. Gunakan mic keyboard HP di bawah.';
+    const inputEl = $('ai-voice-input');
+    if (inputEl) inputEl.focus();
+    vibe(20);
+    return;
+  }
+
+  // Hentikan sesi sebelumnya jika ada
+  if (aiSpeechRecognition) {
+    try { aiSpeechRecognition.abort(); } catch(e) {}
+    aiSpeechRecognition = null;
+  }
+
+  try {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = aiSpeechLang;
+
+    recognition.onstart = () => {
+      isAiRecording = true;
+      updateAiMicUI();
+      vibe(30);
+    };
+
+    recognition.onresult = (event) => {
+      let interimText = '';
+      let finalText = '';
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const t = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalText += t;
+        } else {
+          interimText += t;
+        }
       }
-    }
+
+      const previewEl = $('ai-transcript-preview');
+      const displayStr = (finalText || interimText).trim();
+      if (previewEl && displayStr) {
+        previewEl.textContent = displayStr;
+        previewEl.classList.remove('empty');
+      }
+
+      const voiceInput = $('ai-voice-input');
+      if (voiceInput && displayStr) {
+        voiceInput.value = displayStr;
+      }
+
+      if (finalText.trim()) {
+        aiAccumulatedText += (aiAccumulatedText ? ' ' : '') + finalText.trim();
+        if (aiAutoSend) {
+          sendAiText(finalText.trim() + ' ');
+        }
+      }
+    };
+
+    recognition.onerror = (err) => {
+      console.warn('[AI Speech Error]:', err.error);
+      isAiRecording = false;
+      updateAiMicUI();
+      if (statusEl) {
+        if (err.error === 'not-allowed') {
+          statusEl.textContent = 'Izin mic ditolak atau origin HTTP. Gunakan input mic keyboard HP di bawah.';
+          const inputEl = $('ai-voice-input');
+          if (inputEl) inputEl.focus();
+        } else if (err.error === 'no-speech') {
+          statusEl.textContent = 'Suara tidak terdeteksi. Silakan coba lagi.';
+        } else if (err.error === 'network') {
+          statusEl.textContent = 'Koneksi speech gagal. Gunakan input mic keyboard HP di bawah.';
+          const inputEl = $('ai-voice-input');
+          if (inputEl) inputEl.focus();
+        } else {
+          statusEl.textContent = 'Status Mic: ' + err.error;
+        }
+      }
+    };
+
+    recognition.onend = () => {
+      isAiRecording = false;
+      updateAiMicUI();
+    };
+
+    aiSpeechRecognition = recognition;
+    recognition.start();
+    isAiRecording = true;
+    updateAiMicUI();
+  } catch (err) {
+    console.error('[SpeechRecognition Start Exception]:', err);
+    isAiRecording = false;
+    updateAiMicUI();
+    if (statusEl) statusEl.textContent = 'Gagal memulai mic. Gunakan input mic keyboard HP di bawah.';
+    const inputEl = $('ai-voice-input');
+    if (inputEl) inputEl.focus();
   }
 }
 
@@ -8971,12 +9024,43 @@ function bindAiKey(btnId, action) {
   });
 }
 
-// Pasang kontrol tombol AI Workstation
-const btnAiMic = $('btn-ai-mic');
-if (btnAiMic) {
-  btnAiMic.addEventListener('click', (e) => {
+// Pasang kontrol tombol mic AI Workstation (touch & click)
+bindAiKey('btn-ai-mic', toggleAiSpeech);
+
+// Input Suara Keyboard HP Alternatif
+const voiceInput = $('ai-voice-input');
+const btnInputSend = $('btn-ai-input-send');
+
+if (voiceInput) {
+  voiceInput.addEventListener('input', () => {
+    const text = voiceInput.value;
+    const previewEl = $('ai-transcript-preview');
+    if (previewEl && text.trim()) {
+      previewEl.textContent = text;
+      previewEl.classList.remove('empty');
+    }
+  });
+
+  voiceInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const text = voiceInput.value.trim();
+      if (text) {
+        sendAiText(text + '\n');
+        voiceInput.value = '';
+      }
+    }
+  });
+}
+
+if (btnInputSend) {
+  btnInputSend.addEventListener('click', (e) => {
     e.stopPropagation();
-    toggleAiSpeech();
+    const text = voiceInput ? voiceInput.value.trim() : '';
+    if (text) {
+      sendAiText(text + ' ');
+      if (voiceInput) voiceInput.value = '';
+    }
   });
 }
 
