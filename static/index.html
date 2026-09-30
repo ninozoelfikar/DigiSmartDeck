@@ -4583,11 +4583,11 @@ body.is-fullscreen {
     <!-- Top Utility Bar -->
     <div class="ai-top-bar">
       <div class="ai-left-meta">
-        <span class="ai-badge">
+        <span class="ai-badge" id="ai-main-badge">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
-          AI WORKSTATION
+          <span id="ai-badge-text">AI WORKSTATION</span>
         </span>
-        <span class="ai-title-sub">Prompt &amp; Terminal Deck</span>
+        <span class="ai-title-sub" id="ai-title-sub">Prompt &amp; Terminal Deck</span>
       </div>
 
       <div class="ai-center-meta">
@@ -5852,6 +5852,9 @@ function connect() {
         if (typeof d.caps_lock === 'boolean') {
           mods.caps_lock = d.caps_lock;
           refreshMods();
+        }
+        if (typeof applyPortComparisonSettings === 'function' && d.connected_port) {
+          applyPortComparisonSettings(d.connected_port);
         }
       } else if (d.type === 'controller_status') {
         if (d.role === 'active') {
@@ -8903,7 +8906,8 @@ window.addEventListener('resize', () => {
 */
 
 // ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & DUAL-ENGINE VOICE DECK) ───
-let aiSttEngine = localStorage.getItem('digi_ai_engine') || 'whisper'; // 'whisper' (AI Mic) atau 'browser' (Web Speech API)
+let currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+let aiSttEngine = (currentPort === '8081') ? 'browser' : (localStorage.getItem('digi_ai_engine') || 'whisper');
 let whisperAvailable = false;
 let whisperLoading = false;
 let whisperStream = null;
@@ -8929,6 +8933,33 @@ let aiAccumulatedText = '';
 let currentSessionFinal = '';
 let currentSessionInterim = '';
 let lastSentLength = 0;
+
+function applyPortComparisonSettings(port) {
+  const pStr = String(port || window.location.port || '8080');
+  const badgeText = $('ai-badge-text');
+  const titleSub = $('ai-title-sub');
+  const btnWhisper = $('btn-ai-engine-whisper');
+  const btnBrowser = $('btn-ai-engine-browser');
+
+  if (pStr === '8081') {
+    aiSttEngine = 'browser';
+    if (badgeText) badgeText.textContent = 'AI WORKSTATION (GOOGLE - PORT 8081)';
+    if (titleSub) titleSub.textContent = 'Uji Coba: Google Speech API';
+    if (btnWhisper) btnWhisper.classList.remove('active');
+    if (btnBrowser) btnBrowser.classList.add('active');
+  } else {
+    aiSttEngine = 'whisper';
+    if (badgeText) badgeText.textContent = 'AI WORKSTATION (WHISPER - PORT 8080)';
+    if (titleSub) titleSub.textContent = 'Uji Coba: Whisper AI Mic (Bebas Bunyi & Timeout)';
+    if (btnWhisper) btnWhisper.classList.add('active');
+    if (btnBrowser) btnBrowser.classList.remove('active');
+  }
+  updateAiMicUI();
+}
+
+setTimeout(() => {
+  applyPortComparisonSettings(currentPort);
+}, 60);
 
 // Fungsi pembersih kata dari tanda baca untuk komparasi overlap
 function cleanAiWord(w) {
@@ -9002,9 +9033,9 @@ function updateAiMicUI() {
       } else {
         if (aiSttEngine === 'whisper') {
           const modelLabel = (whisperActiveModel || 'small').toUpperCase();
-          statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (AI Whisper ${modelLabel} Pro)`;
+          statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (Port 8080 - Whisper ${modelLabel} Pro)`;
         } else {
-          statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Browser)';
+          statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Port 8081 - Google Speech)';
         }
         statusEl.style.color = '';
       }

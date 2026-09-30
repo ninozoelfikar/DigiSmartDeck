@@ -699,6 +699,9 @@ async def websocket_handler(request):
     device_label = get_device_label(request)
     print(f"[+] Client terhubung: {client_ip} | {device_label} (Total terhubung: {len(CONNECTED_CLIENTS)})")
 
+    connected_port = 8081 if ':8081' in str(request.host) else 8080
+    default_engine = 'browser' if connected_port == 8081 else 'whisper'
+
     # Kirim handshake inisialisasi ke client (Semua client langsung aktif sebagai pengendali)
     try:
         await ws.send_str(json.dumps({
@@ -707,12 +710,14 @@ async def websocket_handler(request):
             'host_os': get_host_os(),
             'platform': sys.platform,
             'uinput_active': UINPUT_AVAILABLE,
-            'caps_lock': is_caps_lock_on()
+            'caps_lock': is_caps_lock_on(),
+            'connected_port': connected_port,
+            'default_engine': default_engine
         }))
         await ws.send_str(json.dumps({
             'type': 'controller_status',
             'role': 'active',
-            'message': '🟢 Perangkat terhubung sebagai Pengendali PC.'
+            'message': 'Perangkat terhubung sebagai Pengendali PC.'
         }))
     except Exception:
         pass
@@ -933,18 +938,25 @@ async def index_handler(request):
     return web.FileResponse(os.path.join(static_dir, 'index.html'))
 
 
-def print_banner(port, ips):
-    primary_url = f"http://{ips[0]}:{port}"
+def print_banner(ports, ips):
+    if isinstance(ports, int):
+        ports = [ports]
+    primary_url = f"http://{ips[0]}:{ports[0]}"
     print("=" * 60)
-    print(f"  ⌨️  REMOTE PC KEYBOARD SERVER v{__version__}  ⌨️")
+    print(f"  REMOTE PC KEYBOARD SERVER v{__version__}")
     print("=" * 60)
-    print("Aplikasi siap digunakan!")
+    print("Aplikasi siap digunakan untuk perbandingan performa mic:")
+    print("  Port 8080 : Edisi Whisper AI Mic (Bebas Bunyi & Timeout)")
+    print("  Port 8081 : Edisi Google Speech Mic (Presisi Google)")
+    print("-" * 60)
     print("Buka browser di HP/Tablet Anda yang terhubung ke Wi-Fi yang sama:")
     for ip in ips:
-        print(f"  👉 http://{ip}:{port}")
+        print(f"  [Whisper] http://{ip}:8080")
+        print(f"  [Google]  http://{ip}:8081")
     print("-" * 60)
-    print("🔌 KONEKSI KABEL USB (Ultra-Low Latency <1ms):")
-    print(f"  👉 http://localhost:{port}  (Buka di browser HP via kabel USB & ADB)")
+    print("KONEKSI KABEL USB (Ultra-Low Latency <1ms):")
+    print("  [Whisper] http://localhost:8080")
+    print("  [Google]  http://localhost:8081")
     print("-" * 60)
 
     if HAS_QR:
@@ -962,8 +974,10 @@ def print_banner(port, ips):
     print("=" * 60)
 
 
-async def adb_reverse_watcher(port):
+async def adb_reverse_watcher(ports):
     """Mendeteksi perangkat Android via kabel USB dan otomatis mengaktifkan port reverse forwarding (<1ms)"""
+    if isinstance(ports, int):
+        ports = [ports]
     adb_cmd = shutil.which('adb')
     if not adb_cmd:
         return
@@ -985,13 +999,14 @@ async def adb_reverse_watcher(port):
 
             new_devices = current_devices - known_devices
             for dev in new_devices:
-                r_proc = await asyncio.create_subprocess_exec(
-                    adb_cmd, '-s', dev, 'reverse', f'tcp:{port}', f'tcp:{port}',
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE
-                )
-                await r_proc.communicate()
-                print(f"[🔌 USB] Terdeteksi kabel USB terhubung: {dev} -> Port reverse aktif (http://localhost:{port})")
+                for p in ports:
+                    r_proc = await asyncio.create_subprocess_exec(
+                        adb_cmd, '-s', dev, 'reverse', f'tcp:{p}', f'tcp:{p}',
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
+                    await r_proc.communicate()
+                print(f"[USB] Terdeteksi kabel USB terhubung: {dev} -> Port reverse aktif (8080 & 8081)")
 
             known_devices = current_devices
         except Exception:
@@ -1000,8 +1015,8 @@ async def adb_reverse_watcher(port):
 
 
 async def start_background_tasks(app):
-    port = app.get('server_port', 8080)
-    app['adb_watcher_task'] = asyncio.create_task(adb_reverse_watcher(port))
+    ports = app.get('server_ports', [8080, 8081])
+    app['adb_watcher_task'] = asyncio.create_task(adb_reverse_watcher(ports))
 
 
 async def cleanup_background_tasks(app):
@@ -1039,9 +1054,9 @@ async def options_handler(request):
     })
 
 
-def create_app(port=8080):
+def create_app(ports=[8080, 8081]):
     app = web.Application()
-    app['server_port'] = port
+    app['server_ports'] = ports
     app.on_startup.append(start_background_tasks)
     app.on_cleanup.append(cleanup_background_tasks)
 
@@ -1069,26 +1084,47 @@ def create_app(port=8080):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
-    try:
-        import system_checker
-        check_result = system_checker.run_preflight_check(interactive=sys.stdin.isatty(), port=port)
-        if check_result.get('status') == 'already_running':
-            sys.exit(0)
-        port = check_result.get('port', port)
-    except Exception:
-        pass
+    ports = [8080, 8081]
+    env_port = os.environ.get('PORT')
+    if env_port:
+        try:
+            ports = [int(env_port)]
+        except ValueError:
+            pass
 
     ips = get_local_ip_addresses()
-    print_banner(port, ips)
+    print_banner(ports, ips)
 
-    app = create_app(port)
+    app = create_app(ports)
+
+    async def run_dual_server():
+        runner = web.AppRunner(app)
+        await runner.setup()
+        for p in ports:
+            site = web.TCPSite(runner, '0.0.0.0', p)
+            await site.start()
+        print(f"[OK] Dual Server aktif di port {', '.join(str(p) for p in ports)}.")
+
+        stop_event = asyncio.Event()
+        loop = asyncio.get_running_loop()
+        import signal
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            try:
+                loop.add_signal_handler(sig, stop_event.set)
+            except (NotImplementedError, RuntimeError):
+                pass
+
+        await stop_event.wait()
+        print("\n[*] Mematikan server secara aman...")
+        await runner.cleanup()
+
     try:
-        web.run_app(app, host='0.0.0.0', port=port, print=None)
+        asyncio.run(run_dual_server())
+    except KeyboardInterrupt:
+        print("\n[*] Server dihentikan oleh pengguna.")
     except OSError as e:
         if getattr(e, 'errno', None) in (98, 10048):  # Linux 98, Windows 10048
-            print(f"\n[!] Port {port} sedang digunakan oleh program lain.")
-            print(f"    Tips: Anda dapat menjalankan dengan port lain, contoh: PORT={port+1} python3 server.py")
+            print(f"\n[!] Port sedang digunakan oleh program lain: {e}")
         else:
             print(f"\n[!] Gagal menjalankan server: {e}")
         sys.exit(1)
