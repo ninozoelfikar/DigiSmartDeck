@@ -310,26 +310,6 @@ html, body {
 }
 .ping { font-size: 10px; color: var(--text-dim); font-family: monospace; }
 .right-controls { display: flex; gap: 5px; align-items: center; }
-.btn-top-ai {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(210, 153, 34, 0.15);
-  border: 1px solid rgba(210, 153, 34, 0.45);
-  color: #d29922;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  height: 28px;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-.btn-top-ai:active {
-  background: rgba(210, 153, 34, 0.35);
-  transform: translateY(1px);
-}
 .left-controls { display: flex; gap: 6px; align-items: center; }
 .tbtn {
   background: var(--key-bg);
@@ -3704,10 +3684,6 @@ body.is-fullscreen {
       <span id="ping" class="ping">-- ms</span>
     </div>
     <div class="right-controls">
-      <button type="button" class="btn-top-ai" id="btn-top-ai" title="Buka Mode AI Workstation">
-        <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
-        <span>AI Mode</span>
-      </button>
       <button type="button" class="deck-trigger-btn" id="btn-control-deck" title="Menu" aria-label="Menu">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
       </button>
@@ -3766,7 +3742,7 @@ body.is-fullscreen {
           </button>
           <button class="deck-card" id="btn-ai-mode" type="button" title="AI Workstation: Prompt Engineering, Tuts Enter Ekstra Besar, Voice Typing, dan Navigasi Terminal">
             <span class="dc-icon">
-              <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
+              <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
             </span>
             <div class="dc-text">
               <span class="dc-name">AI Workstation</span>
@@ -4580,7 +4556,7 @@ body.is-fullscreen {
     <div class="ai-top-bar">
       <div class="ai-left-meta">
         <span class="ai-badge" id="ai-main-badge">
-          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
           <span id="ai-badge-text">AI WORKSTATION</span>
         </span>
         <span class="ai-title-sub" id="ai-title-sub">Prompt &amp; Terminal Deck</span>
@@ -4614,10 +4590,6 @@ body.is-fullscreen {
           <span>Pintasan AI &amp; Edit</span>
         </div>
         <div class="ai-shortcuts-grid">
-          <button type="button" class="ai-btn-sh span-2" id="ai-btn-newline" title="Baris baru di ChatGPT/Claude tanpa submit (Shift+Enter)">
-            <span>Shift + Enter</span>
-            <span class="sh-sub">Baris Baru</span>
-          </button>
           <button type="button" class="ai-btn-sh" id="ai-btn-copy" title="Salin Jawaban / Batal Terminal (Ctrl+C)">
             <span>Ctrl + C</span>
             <span class="sh-sub">Salin / Batal</span>
@@ -4625,10 +4597,6 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-sh" id="ai-btn-paste" title="Tempel Konteks (Ctrl+V)">
             <span>Ctrl + V</span>
             <span class="sh-sub">Tempel</span>
-          </button>
-          <button type="button" class="ai-btn-sh" id="ai-btn-selectall" title="Pilih Semua Teks Prompt (Ctrl+A)">
-            <span>Ctrl + A</span>
-            <span class="sh-sub">Pilih Semua</span>
           </button>
           <button type="button" class="ai-btn-sh" id="ai-btn-stop" title="Hentikan Generasi LLM / Clear (Esc)">
             <span>Esc</span>
@@ -4638,12 +4606,9 @@ body.is-fullscreen {
             <span>Tab</span>
             <span class="sh-sub">Indentasi</span>
           </button>
-          <button type="button" class="ai-btn-sh" id="ai-btn-backspace" title="Hapus Karakter Sebelumnya (Backspace)">
+          <button type="button" class="ai-btn-sh span-2" id="ai-btn-backspace" title="Hapus Karakter Sebelumnya (Backspace)">
             <span>Backspace</span>
             <span class="sh-sub">Hapus</span>
-          </button>
-          <button type="button" class="ai-btn-sh span-2" id="ai-btn-space" title="Spasi (Spacebar)">
-            <span>Spasi (Space)</span>
           </button>
         </div>
       </div>
@@ -9350,11 +9315,6 @@ bindAiKey('ai-btn-enter', () => {
   vibe(25);
   playClickSound();
 });
-bindAiKey('ai-btn-newline', () => {
-  send({ type: 'combo', keys: ['shift', 'enter'] });
-  vibe(20);
-  playClickSound();
-});
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });
   vibe(15);
@@ -9362,11 +9322,6 @@ bindAiKey('ai-btn-copy', () => {
 });
 bindAiKey('ai-btn-paste', () => {
   send({ type: 'combo', keys: ['ctrl', 'shift', 'v'] });
-  vibe(15);
-  playClickSound();
-});
-bindAiKey('ai-btn-selectall', () => {
-  send({ type: 'combo', keys: ['ctrl', 'a'] });
   vibe(15);
   playClickSound();
 });
@@ -9384,12 +9339,6 @@ bindAiKey('ai-btn-tab', () => {
 // Tombol Backspace dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-btn-backspace', () => {
   send({ type: 'keypress', key: 'backspace' });
-  vibe(12);
-  playClickSound();
-});
-
-bindAiRepeatKey('ai-btn-space', () => {
-  send({ type: 'keypress', key: 'space' });
   vibe(12);
   playClickSound();
 });
@@ -9472,13 +9421,7 @@ bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
 bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
 bindModeBtn(btnAiModeDeck,       () => switchAppMode('ai'));
 
-const btnTopAi = $('btn-top-ai');
-if (btnTopAi) {
-  btnTopAi.addEventListener('click', (e) => {
-    e.stopPropagation();
-    switchAppMode('ai');
-  });
-}
+
 
 bindModeBtn(btnDeckUpgradePro, () => {
   closeControlDeck();
