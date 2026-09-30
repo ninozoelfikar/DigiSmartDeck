@@ -83,6 +83,8 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - Klien komersial (pembeli APK Android) tidak perlu menyetel port di `chrome://flags` karena aplikasi Android resmi (`DigiKeyboard.apk`) menggunakan WebView dengan izin mikrofon internal native.
 - Sesi dikte berhenti secara wajar saat jeda hening tanpa memicu bunyi notifikasi berulang-ulang.
 - Efek suara klik mekanikal (`playClickSound()`) selalu dipertahankan di setiap interaksi tombol.
+- Saat opsi `Auto-Kirim` aktif, menekan tombol `ENTER` otomatis mengirim prompt dan mengosongkan box teks di layar ponsel.
+- Panel pintasan kiri AI Workstation menampung tombol prompt instan di bawah Backspace: `Lanjutkan`, `Proceed`, `Perbaiki Bug`, `Buat Dokumen`, `Jadikan Check Point`. Bar template bawah telah dihapus untuk menghemat ruang vertikal layar.
 
 ---
 
