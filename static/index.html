@@ -2828,11 +2828,6 @@ body.is-fullscreen {
   border-color: rgba(248, 81, 73, 0.4);
   color: #f85149;
 }
-.ai-btn-exit.active {
-  background: rgba(88, 166, 255, 0.18);
-  border-color: var(--accent);
-  color: var(--accent);
-}
 
 /* Main Grid Layout */
 .ai-main-grid {
@@ -4574,10 +4569,6 @@ body.is-fullscreen {
       </div>
 
       <div class="ai-right-meta">
-        <button type="button" class="ai-btn-exit" id="btn-ai-fs" title="Layar Penuh (Fullscreen)">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-          <span id="txt-ai-fs">Fullscreen</span>
-        </button>
         <button type="button" class="ai-btn-exit" id="btn-exit-ai" title="Kembali ke Mode Keyboard">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
           <span>Keyboard</span>
@@ -5374,12 +5365,6 @@ function updateFsState() {
   document.body.classList.toggle('is-fullscreen', active);
   const btn = $('btn-fs');
   if (btn) btn.classList.toggle('on', active);
-  const btnAiFs = $('btn-ai-fs');
-  if (btnAiFs) {
-    btnAiFs.classList.toggle('active', active);
-    const txt = $('txt-ai-fs');
-    if (txt) txt.textContent = active ? 'Exit FS' : 'Fullscreen';
-  }
 }
 
 document.addEventListener('fullscreenchange', updateFsState);
@@ -5387,88 +5372,21 @@ document.addEventListener('webkitfullscreenchange', updateFsState);
 document.addEventListener('mozfullscreenchange', updateFsState);
 document.addEventListener('MSFullscreenChange', updateFsState);
 
-function toggleFullscreen(e) {
-  if (e) {
-    e.stopPropagation();
-    if (e.cancelable && e.type !== 'click') e.preventDefault();
-  }
-  playClickSound();
-  vibe(20);
+$('btn-fs').onclick = () => {
+  const willBeFs = !isFs();
+  document.body.classList.toggle('is-fullscreen', willBeFs);
+  const btn = $('btn-fs');
+  if (btn) btn.classList.toggle('on', willBeFs);
 
-  if (isFs()) {
-    try {
-      if (document.exitFullscreen) {
-        const p = document.exitFullscreen();
-        if (p && typeof p.catch === 'function') p.catch(() => {});
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    } catch(err) {
-      console.warn('Exit FS error:', err);
-    }
+  if (willBeFs) {
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if (req) req.call(el).catch(() => {});
   } else {
-    const el = document.documentElement || document.body;
-    try {
-      let p;
-      if (el.requestFullscreen) {
-        p = el.requestFullscreen({ navigationUI: 'hide' });
-      } else if (el.webkitRequestFullscreen) {
-        p = el.webkitRequestFullscreen();
-      } else if (el.mozRequestFullScreen) {
-        p = el.mozRequestFullScreen();
-      } else if (el.msRequestFullscreen) {
-        p = el.msRequestFullscreen();
-      }
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {
-          try {
-            if (el.requestFullscreen) {
-              const p2 = el.requestFullscreen();
-              if (p2 && typeof p2.catch === 'function') p2.catch(() => {});
-            }
-          } catch(e2) {}
-        });
-      }
-    } catch(err) {
-      console.warn('Request FS error:', err);
-      try {
-        if (el.requestFullscreen) el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      } catch(e3) {}
-    }
+    const ex = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (ex) ex.call(document).catch(() => {});
   }
-  setTimeout(updateFsState, 150);
-}
-
-function bindFullscreenBtn(btnId, closeDeckOnAction) {
-  const btn = $(btnId);
-  if (!btn) return;
-  let touchHandled = false;
-  btn.addEventListener('touchstart', (e) => {
-    e.stopPropagation();
-  }, { passive: true });
-  btn.addEventListener('touchend', (e) => {
-    e.stopPropagation();
-    if (e.cancelable) e.preventDefault();
-    touchHandled = true;
-    toggleFullscreen(e);
-    if (closeDeckOnAction) setTimeout(closeControlDeck, 120);
-    setTimeout(() => { touchHandled = false; }, 400);
-  }, { passive: false });
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (touchHandled) return;
-    toggleFullscreen(e);
-    if (closeDeckOnAction) setTimeout(closeControlDeck, 120);
-  });
-}
-
-bindFullscreenBtn('btn-fs', true);
-bindFullscreenBtn('btn-ai-fs', false);
+};
 
 // ── Floating Control Deck Controller (Pilihan A) ──
 const controlDeck = $('control-deck');
@@ -5572,7 +5490,7 @@ document.addEventListener('click', handleUniversalClose);
 document.addEventListener('touchend', handleUniversalClose, { passive: false });
 
 // Auto-tutup saat memilih layer atau utilitas agar layar langsung siap dipakai
-['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-store'].forEach(id => {
+['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-fs', 'btn-store'].forEach(id => {
   const el = $(id);
   if (el) {
     el.addEventListener('click', () => {
