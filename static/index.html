@@ -1619,8 +1619,8 @@ body.is-fullscreen {
 .header-modes {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-right: 4px;
+  gap: 4px;
+  margin-right: 6px;
 }
 
 .header-mode-btn {
@@ -1629,32 +1629,49 @@ body.is-fullscreen {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--key-border);
+  background: transparent;
+  border: none;
   border-radius: 6px;
   color: var(--text-dim);
+  opacity: 0.55;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
   padding: 0;
   outline: none;
+  position: relative;
 }
 
 .header-mode-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.2);
+  opacity: 0.95;
+}
+
+.header-mode-btn:active {
+  transform: scale(0.92);
 }
 
 .header-mode-btn.active {
-  background: rgba(88, 166, 255, 0.2);
-  border-color: var(--accent);
+  background: transparent;
   color: var(--accent);
-  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+  opacity: 1;
+  filter: drop-shadow(0 0 5px rgba(88, 166, 255, 0.4));
+}
+
+.header-mode-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  width: 14px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  box-shadow: 0 0 5px var(--accent);
 }
 
 .header-mode-btn svg {
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
 }
 
 .rc-close-btn {
