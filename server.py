@@ -885,16 +885,21 @@ async def websocket_handler(request):
                             audio_bytes = base64.b64decode(audio_b64)
                             def _do_transcribe():
                                 buf = io.BytesIO(audio_bytes)
-                                initial_prompt = "Dikte percakapan bahasa Indonesia yang jelas, akurat, dan tepat." if lang_code == 'id' else "Clear, accurate prompt engineering commands and natural speech."
+                                initial_prompt = "Dikte kalimat bahasa Indonesia dengan ejaan yang benar dan jelas." if lang_code == 'id' else "Clear, accurate prompt engineering commands and natural speech."
                                 segments, _ = whisper_model.transcribe(
                                     buf,
                                     language=lang_code,
                                     beam_size=5,
+                                    best_of=5,
+                                    temperature=0.0,
+                                    condition_on_previous_text=False,
                                     vad_filter=True,
+                                    vad_parameters=dict(min_silence_duration_ms=600, speech_pad_ms=400),
                                     initial_prompt=initial_prompt
                                 )
                                 return ' '.join(s.text.strip() for s in segments).strip()
                             result_text = await asyncio.to_thread(_do_transcribe)
+                            print(f"[STT] ({lang_code}) Size: {len(audio_bytes)}B -> Result: '{result_text}'")
                             await ws.send_json({
                                 'type': 'ai_stt_result',
                                 'text': result_text or '',

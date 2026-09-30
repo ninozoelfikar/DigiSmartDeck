@@ -9137,8 +9137,10 @@ async function startWhisperMicSession() {
     // Ambil stream mikrofon tanpa memanggil Google Voice Recognizer Android (0% Beep)
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
+        channelCount: 1,
+        sampleRate: 16000,
         echoCancellation: true,
-        noiseSuppression: true,
+        noiseSuppression: false,
         autoGainControl: true
       }
     });
@@ -9176,7 +9178,9 @@ async function startWhisperMicSession() {
     function createAndStartRecorder() {
       if (!whisperStream || !aiSpeechWanted) return;
       whisperChunks = [];
-      const rec = mimeType ? new MediaRecorder(whisperStream, { mimeType }) : new MediaRecorder(whisperStream);
+      const recOptions = { audioBitsPerSecond: 128000 };
+      if (mimeType) recOptions.mimeType = mimeType;
+      const rec = new MediaRecorder(whisperStream, recOptions);
       rec.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) {
           whisperChunks.push(e.data);
@@ -9219,8 +9223,8 @@ async function startWhisperMicSession() {
       const avgVol = sum / bufLen;
       const now = Date.now();
 
-      // Ambang batas desibel ucapan manusia
-      if (avgVol > 14) {
+      // Ambang batas desibel ucapan manusia (lebih peka terhadap suara pelan & ujung kata)
+      if (avgVol > 9) {
         whisperHasSpoken = true;
         whisperLastSpeechTime = now;
         if (statusEl && whisperPendingRequests === 0) {
@@ -9229,13 +9233,14 @@ async function startWhisperMicSession() {
         }
       } else {
         // User sedang hening / jeda berpikir
-        if (whisperHasSpoken && (now - whisperLastSpeechTime > 1100)) {
+        // Berikan waktu jeda hening lebih panjang (2200ms) agar kalimat mengalir utuh tidak terpotong saat berpikir
+        if (whisperHasSpoken && (now - whisperLastSpeechTime > 2200)) {
           // Jeda berpikir terdeteksi setelah bicara -> potong dan kirim segmen kalimat ini
           if (whisperRecorder && whisperRecorder.state === 'recording') {
             whisperRecorder.stop();
           }
-        } else if (!whisperHasSpoken && (now - whisperSessionStartTime > 10000)) {
-          // Bersihkan buffer keheningan berkala setiap 10 detik agar memori HP tetap enteng
+        } else if (!whisperHasSpoken && (now - whisperSessionStartTime > 15000)) {
+          // Daur ulang buffer keheningan berkala setiap 15 detik jika benar-benar tidak ada suara
           if (whisperRecorder && whisperRecorder.state === 'recording') {
             whisperRecorder.stop();
           }
@@ -9247,8 +9252,8 @@ async function startWhisperMicSession() {
         }
       }
 
-      // Hindari durasi satu file melebihi 15 detik
-      if (whisperHasSpoken && (now - whisperSessionStartTime > 15000)) {
+      // Hindari durasi satu file melebihi 25 detik (Whisper optimal hingga 30 detik)
+      if (whisperHasSpoken && (now - whisperSessionStartTime > 25000)) {
         if (whisperRecorder && whisperRecorder.state === 'recording') {
           whisperRecorder.stop();
         }
