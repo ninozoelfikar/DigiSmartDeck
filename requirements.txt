@@ -2,3 +2,5 @@ aiohttp>=3.8.0
 pynput>=1.7.6
 qrcode>=7.4
 evdev>=1.6.0; sys_platform == "linux"
+faster-whisper>=1.0.0
+av<14

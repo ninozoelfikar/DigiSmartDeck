@@ -184,6 +184,38 @@ try:
 except ImportError:
     pass
 
+# ── Local AI Speech-to-Text (Faster-Whisper Tiny) ──
+WHISPER_AVAILABLE = False
+whisper_model = None
+whisper_loading = False
+
+def init_whisper_engine():
+    global WHISPER_AVAILABLE, whisper_model, whisper_loading
+    if WHISPER_AVAILABLE and whisper_model:
+        return True
+    if whisper_loading:
+        return False
+    whisper_loading = True
+    try:
+        from faster_whisper import WhisperModel
+        print("[*] Menginisialisasi model AI Whisper Tiny...")
+        whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+        WHISPER_AVAILABLE = True
+        whisper_loading = False
+        print("[OK] Local AI Whisper STT Engine siap (Bebas Timeout & Bebas Beep).")
+        return True
+    except Exception as e:
+        whisper_loading = False
+        print(f"[i] Whisper STT lokal belum aktif / tidak tersedia: {e}")
+        return False
+
+# Inisialisasi awal di thread terpisah agar server langsung up instan
+try:
+    import threading
+    threading.Thread(target=init_whisper_engine, daemon=True).start()
+except Exception:
+    pass
+
 # Key Mapping dictionary from client to pynput
 KEY_MAPPINGS = {}
 if Key is not None:
@@ -817,6 +849,49 @@ async def websocket_handler(request):
                             for ch in text_content:
                                 simulate_tap(ch)
                                 await asyncio.sleep(0.003)
+
+                elif msg_type == 'get_stt_status':
+                    await ws.send_json({
+                        'type': 'stt_status',
+                        'available': WHISPER_AVAILABLE,
+                        'loading': whisper_loading,
+                        'engine': 'whisper_tiny'
+                    })
+
+                elif msg_type == 'init_whisper':
+                    if not WHISPER_AVAILABLE and not whisper_loading:
+                        asyncio.create_task(asyncio.to_thread(init_whisper_engine))
+                    await ws.send_json({
+                        'type': 'stt_status',
+                        'available': WHISPER_AVAILABLE,
+                        'loading': whisper_loading,
+                        'engine': 'whisper_tiny'
+                    })
+
+                elif msg_type == 'ai_stt_audio':
+                    audio_b64 = data.get('audio', '')
+                    lang = data.get('lang', 'id-ID')
+                    lang_code = 'id' if 'id' in str(lang).lower() else 'en'
+                    session_id = data.get('session_id', '')
+                    is_final = data.get('is_final', False)
+                    if audio_b64 and WHISPER_AVAILABLE and whisper_model:
+                        import base64
+                        import io
+                        try:
+                            audio_bytes = base64.b64decode(audio_b64)
+                            def _do_transcribe():
+                                buf = io.BytesIO(audio_bytes)
+                                segments, _ = whisper_model.transcribe(buf, language=lang_code, beam_size=1)
+                                return ' '.join(s.text.strip() for s in segments).strip()
+                            result_text = await asyncio.to_thread(_do_transcribe)
+                            await ws.send_json({
+                                'type': 'ai_stt_result',
+                                'text': result_text or '',
+                                'session_id': session_id,
+                                'is_final': is_final
+                            })
+                        except Exception as stt_err:
+                            print(f"[!] STT processing error: {stt_err}")
 
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")
