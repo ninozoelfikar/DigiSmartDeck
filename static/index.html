@@ -310,6 +310,26 @@ html, body {
 }
 .ping { font-size: 10px; color: var(--text-dim); font-family: monospace; }
 .right-controls { display: flex; gap: 5px; align-items: center; }
+.btn-top-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(210, 153, 34, 0.15);
+  border: 1px solid rgba(210, 153, 34, 0.45);
+  color: #d29922;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 28px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.btn-top-ai:active {
+  background: rgba(210, 153, 34, 0.35);
+  transform: translateY(1px);
+}
 .left-controls { display: flex; gap: 6px; align-items: center; }
 .tbtn {
   background: var(--key-bg);
@@ -3627,6 +3647,10 @@ body.is-fullscreen {
       <span id="ping" class="ping">-- ms</span>
     </div>
     <div class="right-controls">
+      <button type="button" class="btn-top-ai" id="btn-top-ai" title="Buka Mode AI Workstation">
+        <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
+        <span>AI Mode</span>
+      </button>
       <button type="button" class="deck-trigger-btn" id="btn-control-deck" title="Menu" aria-label="Menu">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
       </button>
@@ -3653,15 +3677,6 @@ body.is-fullscreen {
         <div class="deck-section-title">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
           <span>PILIH MODE KERJA</span>
-        </div>
-
-        <!-- Banner Upgrade Pro untuk Pengguna Belum Pro -->
-        <div class="deck-pro-banner" id="deck-pro-banner">
-          <div class="dpb-left">
-            <span class="pro-tag">PRO</span>
-            <span class="dpb-text">Buka <b>Mode AI Workstation</b> &amp; Voice Typing</span>
-          </div>
-          <button type="button" class="dpb-btn" id="btn-deck-upgrade-pro">Buka Pro</button>
         </div>
 
         <div class="deck-grid deck-grid-modes">
@@ -3692,8 +3707,7 @@ body.is-fullscreen {
               <span class="dc-sub">Meeting &amp; PPT</span>
             </div>
           </button>
-          <button class="deck-card deck-card-pro" id="btn-ai-mode" type="button" title="AI Workstation: Prompt Engineering, Tuts Enter Ekstra Besar, Voice Typing, dan Navigasi Terminal">
-            <span class="badge-card-pro">PRO</span>
+          <button class="deck-card" id="btn-ai-mode" type="button" title="AI Workstation: Prompt Engineering, Tuts Enter Ekstra Besar, Voice Typing, dan Navigasi Terminal">
             <span class="dc-icon">
               <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
             </span>
@@ -4517,8 +4531,8 @@ body.is-fullscreen {
 
       <div class="ai-center-meta">
         <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
-          <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">🇮🇩 ID</button>
-          <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">🇺🇸 EN</button>
+          <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
+          <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
         </div>
         <label class="ai-autosend-label" title="Kirim teks otomatis ke PC setiap selesai berbicara">
           <input type="checkbox" id="ai-autosend-chk" checked>
@@ -4564,12 +4578,12 @@ body.is-fullscreen {
             <span class="sh-sub">Stop / Reset</span>
           </button>
           <button type="button" class="ai-btn-sh" id="ai-btn-tab" title="Indentasi Kode / Tab (Tab)">
-            <span>Tab ⇥</span>
+            <span>Tab</span>
             <span class="sh-sub">Indentasi</span>
           </button>
           <button type="button" class="ai-btn-sh" id="ai-btn-backspace" title="Hapus Karakter Sebelumnya (Backspace)">
-            <span>⌫ Hapus</span>
-            <span class="sh-sub">Backspace</span>
+            <span>Backspace</span>
+            <span class="sh-sub">Hapus</span>
           </button>
           <button type="button" class="ai-btn-sh span-2" id="ai-btn-space" title="Spasi (Spacebar)">
             <span>Spasi (Space)</span>
@@ -4581,7 +4595,7 @@ body.is-fullscreen {
       <div class="ai-col-center">
         <div class="ai-panel-title">
           <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-          <span>Dikte Suara Nirkabel (Mic HP → PC)</span>
+          <span>Dikte Suara Nirkabel (Mic HP ke PC)</span>
         </div>
 
         <div class="ai-mic-section">
@@ -4606,7 +4620,7 @@ body.is-fullscreen {
         <button type="button" class="ai-btn-giant-enter" id="ai-btn-enter" title="Kirim Prompt / Eksekusi Perintah (Enter)">
           <div class="ai-enter-label">
             <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
-            <span>ENTER ↵</span>
+            <span>ENTER</span>
           </div>
           <div class="ai-enter-sub">Kirim Prompt / Run</div>
         </button>
@@ -4617,10 +4631,10 @@ body.is-fullscreen {
         </div>
 
         <div class="ai-nav-pad">
-          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Prompt Sebelumnya di Terminal/Chat (Panah Atas)">▲</button>
-          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Geser Kursor ke Kiri (Panah Kiri)">◀</button>
-          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Prompt Berikutnya di Terminal/Chat (Panah Bawah)">▼</button>
-          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Geser Kursor ke Kanan (Panah Kanan)">▶</button>
+          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Prompt Sebelumnya di Terminal/Chat (Panah Atas)">Atas</button>
+          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Geser Kursor ke Kiri (Panah Kiri)">Kiri</button>
+          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Prompt Berikutnya di Terminal/Chat (Panah Bawah)">Bawah</button>
+          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Geser Kursor ke Kanan (Panah Kanan)">Kanan</button>
         </div>
       </div>
     </div>
@@ -4629,25 +4643,25 @@ body.is-fullscreen {
     <div class="ai-bottom-bar">
       <span class="ai-chip-title">TEMPLATE PROMPT CEPAT:</span>
       <button type="button" class="ai-prompt-chip" data-prompt="Jelaskan kode/konsep berikut secara ringkas dan mudah dipahami:\n">
-        <span>⚡ Jelaskan Ini</span>
+        <span>Jelaskan Ini</span>
       </button>
       <button type="button" class="ai-prompt-chip" data-prompt="Temukan bug atau kesalahan pada kode berikut dan berikan solusinya:\n">
-        <span>🐛 Perbaiki Bug</span>
+        <span>Perbaiki Bug</span>
       </button>
       <button type="button" class="ai-prompt-chip" data-prompt="Optimalkan performa dan efisiensi memori dari kode berikut:\n">
-        <span>🚀 Refactor &amp; Optimasi</span>
+        <span>Refactor &amp; Optimasi</span>
       </button>
       <button type="button" class="ai-prompt-chip" data-prompt="Buatkan dokumentasi teknis dan cara penggunaan fungsi ini:\n">
-        <span>📝 Buat Dokumentasi</span>
+        <span>Buat Dokumentasi</span>
       </button>
       <button type="button" class="ai-prompt-chip" data-prompt="Buatkan unit test lengkap dengan edge case untuk kode berikut:\n">
-        <span>🧪 Buat Unit Test</span>
+        <span>Buat Unit Test</span>
       </button>
       <button type="button" class="ai-prompt-chip" data-prompt="Lanjutkan penjelasan atau kode dari bagian terakhir:\n">
-        <span>💬 Lanjutkan</span>
+        <span>Lanjutkan</span>
       </button>
       <button type="button" class="ai-prompt-chip" data-prompt="Sederhanakan kode berikut agar lebih bersih dan mudah dibaca:\n">
-        <span>✨ Sederhanakan</span>
+        <span>Sederhanakan</span>
       </button>
     </div>
   </section>
@@ -5543,7 +5557,7 @@ function switchAppMode(targetMode) {
 
 
 function isProUser() {
-  return localStorage.getItem('digi_pro_license') === 'active' || localStorage.getItem('digi_pro_unlocked') === 'true';
+  return true;
 }
 
 function updateDeckModesUI() {
@@ -9145,12 +9159,20 @@ bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
 bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
 bindModeBtn(btnAiModeDeck,       () => switchAppMode('ai'));
 
+const btnTopAi = $('btn-top-ai');
+if (btnTopAi) {
+  btnTopAi.addEventListener('click', (e) => {
+    e.stopPropagation();
+    switchAppMode('ai');
+  });
+}
+
 bindModeBtn(btnDeckUpgradePro, () => {
   closeControlDeck();
   openStore('all');
 });
 
-// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=ai / ?mode=kb)
+// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=standard / ?mode=ai)
 try {
   const urlParams = new URLSearchParams(window.location.search);
   const initMode = urlParams.get('mode');
@@ -9158,13 +9180,14 @@ try {
     switchAppMode('game');
   } else if (initMode === 'present' || initMode === 'slide') {
     switchAppMode('present');
-  } else if (initMode === 'ai' || initMode === 'ai_workstation') {
-    switchAppMode('ai');
-  } else {
+  } else if (initMode === 'standard' || initMode === 'kb') {
     switchAppMode('standard');
+  } else {
+    // Mode AI aktif sebagai mode utama
+    switchAppMode('ai');
   }
 } catch(e) {
-  switchAppMode('standard');
+  switchAppMode('ai');
 }
 
 connect();
