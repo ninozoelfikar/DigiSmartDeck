@@ -184,39 +184,6 @@ try:
 except ImportError:
     pass
 
-# ── Local AI Speech-to-Text (Faster-Whisper Tiny) ──
-WHISPER_AVAILABLE = False
-whisper_model = None
-whisper_loading = False
-current_whisper_model_name = os.environ.get("WHISPER_MODEL", "small")
-
-def init_whisper_engine(model_name=None):
-    global WHISPER_AVAILABLE, whisper_model, whisper_loading, current_whisper_model_name
-    target_model = model_name or current_whisper_model_name
-    if WHISPER_AVAILABLE and whisper_model and current_whisper_model_name == target_model:
-        return True
-    whisper_loading = True
-    try:
-        from faster_whisper import WhisperModel
-        print(f"[*] Menginisialisasi model AI Whisper ({target_model})...")
-        whisper_model = WhisperModel(target_model, device="cpu", compute_type="int8", cpu_threads=6)
-        current_whisper_model_name = target_model
-        WHISPER_AVAILABLE = True
-        whisper_loading = False
-        print(f"[OK] Local AI Whisper STT Engine ({target_model}) siap (Bebas Timeout & Bebas Beep).")
-        return True
-    except Exception as e:
-        whisper_loading = False
-        print(f"[i] Whisper STT lokal gagal dimuat: {e}")
-        return False
-
-# Inisialisasi awal di thread terpisah agar server langsung up instan
-try:
-    import threading
-    threading.Thread(target=init_whisper_engine, daemon=True).start()
-except Exception:
-    pass
-
 # Key Mapping dictionary from client to pynput
 KEY_MAPPINGS = {}
 if Key is not None:
@@ -699,9 +666,6 @@ async def websocket_handler(request):
     device_label = get_device_label(request)
     print(f"[+] Client terhubung: {client_ip} | {device_label} (Total terhubung: {len(CONNECTED_CLIENTS)})")
 
-    connected_port = 8081 if ':8081' in str(request.host) else 8080
-    default_engine = 'browser'
-
     # Kirim handshake inisialisasi ke client (Semua client langsung aktif sebagai pengendali)
     try:
         await ws.send_str(json.dumps({
@@ -710,9 +674,7 @@ async def websocket_handler(request):
             'host_os': get_host_os(),
             'platform': sys.platform,
             'uinput_active': UINPUT_AVAILABLE,
-            'caps_lock': is_caps_lock_on(),
-            'connected_port': connected_port,
-            'default_engine': default_engine
+            'caps_lock': is_caps_lock_on()
         }))
         await ws.send_str(json.dumps({
             'type': 'controller_status',
@@ -856,63 +818,7 @@ async def websocket_handler(request):
                                 simulate_tap(ch)
                                 await asyncio.sleep(0.003)
 
-                elif msg_type == 'get_stt_status':
-                    await ws.send_json({
-                        'type': 'stt_status',
-                        'available': WHISPER_AVAILABLE,
-                        'loading': whisper_loading,
-                        'engine': f'whisper_{current_whisper_model_name}',
-                        'model': current_whisper_model_name
-                    })
 
-                elif msg_type == 'init_whisper' or msg_type == 'set_whisper_model':
-                    target_m = data.get('model', current_whisper_model_name)
-                    if not whisper_loading:
-                        asyncio.create_task(asyncio.to_thread(init_whisper_engine, target_m))
-                    await ws.send_json({
-                        'type': 'stt_status',
-                        'available': WHISPER_AVAILABLE,
-                        'loading': whisper_loading,
-                        'engine': f'whisper_{target_m}',
-                        'model': target_m
-                    })
-
-                elif msg_type == 'ai_stt_audio':
-                    audio_b64 = data.get('audio', '')
-                    lang = data.get('lang', 'id-ID')
-                    lang_code = 'id' if 'id' in str(lang).lower() else 'en'
-                    session_id = data.get('session_id', '')
-                    is_final = data.get('is_final', False)
-                    if audio_b64 and WHISPER_AVAILABLE and whisper_model:
-                        import base64
-                        import io
-                        try:
-                            audio_bytes = base64.b64decode(audio_b64)
-                            def _do_transcribe():
-                                buf = io.BytesIO(audio_bytes)
-                                initial_prompt = "Dikte kalimat bahasa Indonesia dengan ejaan yang benar dan jelas." if lang_code == 'id' else "Clear, accurate prompt engineering commands and natural speech."
-                                segments, _ = whisper_model.transcribe(
-                                    buf,
-                                    language=lang_code,
-                                    beam_size=5,
-                                    best_of=5,
-                                    temperature=0.0,
-                                    condition_on_previous_text=False,
-                                    vad_filter=True,
-                                    vad_parameters=dict(min_silence_duration_ms=600, speech_pad_ms=400),
-                                    initial_prompt=initial_prompt
-                                )
-                                return ' '.join(s.text.strip() for s in segments).strip()
-                            result_text = await asyncio.to_thread(_do_transcribe)
-                            print(f"[STT] ({lang_code}) Size: {len(audio_bytes)}B -> Result: '{result_text}'")
-                            await ws.send_json({
-                                'type': 'ai_stt_result',
-                                'text': result_text or '',
-                                'session_id': session_id,
-                                'is_final': is_final
-                            })
-                        except Exception as stt_err:
-                            print(f"[!] STT processing error: {stt_err}")
 
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")
@@ -941,22 +847,17 @@ async def index_handler(request):
 def print_banner(ports, ips):
     if isinstance(ports, int):
         ports = [ports]
-    primary_url = f"http://{ips[0]}:{ports[0]}"
+    port = ports[0]
+    primary_url = f"http://{ips[0]}:{port}"
     print("=" * 60)
     print(f"  REMOTE PC KEYBOARD SERVER v{__version__}")
     print("=" * 60)
-    print("Aplikasi siap digunakan untuk perbandingan performa mic:")
-    print("  Port 8080 : Edisi Whisper AI Mic (Bebas Bunyi & Timeout)")
-    print("  Port 8081 : Edisi Google Speech Mic (Presisi Google)")
-    print("-" * 60)
     print("Buka browser di HP/Tablet Anda yang terhubung ke Wi-Fi yang sama:")
     for ip in ips:
-        print(f"  [Whisper] http://{ip}:8080")
-        print(f"  [Google]  http://{ip}:8081")
+        print(f"  http://{ip}:{port}")
     print("-" * 60)
     print("KONEKSI KABEL USB (Ultra-Low Latency <1ms):")
-    print("  [Whisper] http://localhost:8080")
-    print("  [Google]  http://localhost:8081")
+    print(f"  http://localhost:{port}")
     print("-" * 60)
 
     if HAS_QR:
@@ -1006,7 +907,7 @@ async def adb_reverse_watcher(ports):
                         stderr=asyncio.subprocess.PIPE
                     )
                     await r_proc.communicate()
-                print(f"[USB] Terdeteksi kabel USB terhubung: {dev} -> Port reverse aktif (8080 & 8081)")
+                print(f"[USB] Terdeteksi kabel USB terhubung: {dev} -> Port reverse aktif ({', '.join(str(p) for p in ports)})")
 
             known_devices = current_devices
         except Exception:
@@ -1015,7 +916,7 @@ async def adb_reverse_watcher(ports):
 
 
 async def start_background_tasks(app):
-    ports = app.get('server_ports', [8080, 8081])
+    ports = app.get('server_ports', [8080])
     app['adb_watcher_task'] = asyncio.create_task(adb_reverse_watcher(ports))
 
 
@@ -1054,7 +955,7 @@ async def options_handler(request):
     })
 
 
-def create_app(ports=[8080, 8081]):
+def create_app(ports=[8080]):
     app = web.Application()
     app['server_ports'] = ports
     app.on_startup.append(start_background_tasks)
@@ -1084,7 +985,7 @@ def create_app(ports=[8080, 8081]):
 
 
 if __name__ == '__main__':
-    ports = [8080, 8081]
+    ports = [8080]
     env_port = os.environ.get('PORT')
     if env_port:
         try:
@@ -1097,13 +998,13 @@ if __name__ == '__main__':
 
     app = create_app(ports)
 
-    async def run_dual_server():
+    async def run_server():
         runner = web.AppRunner(app)
         await runner.setup()
         for p in ports:
             site = web.TCPSite(runner, '0.0.0.0', p)
             await site.start()
-        print(f"[OK] Dual Server aktif di port {', '.join(str(p) for p in ports)}.")
+        print(f"[OK] Server aktif di port {', '.join(str(p) for p in ports)}.")
 
         stop_event = asyncio.Event()
         loop = asyncio.get_running_loop()
@@ -1119,7 +1020,7 @@ if __name__ == '__main__':
         await runner.cleanup()
 
     try:
-        asyncio.run(run_dual_server())
+        asyncio.run(run_server())
     except KeyboardInterrupt:
         print("\n[*] Server dihentikan oleh pengguna.")
     except OSError as e:

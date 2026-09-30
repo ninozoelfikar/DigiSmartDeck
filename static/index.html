@@ -2777,8 +2777,8 @@ body.is-fullscreen {
   .ai-title-sub { display: inline-block; }
 }
 
-/* Engine, Language and Auto-send switches */
-.ai-engine-toggle, .ai-lang-toggle {
+/* Language and Auto-send switches */
+.ai-lang-toggle {
   display: inline-flex;
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
@@ -2786,7 +2786,7 @@ body.is-fullscreen {
   padding: 2px;
   gap: 2px;
 }
-.ai-btn-engine, .ai-btn-lang {
+.ai-btn-lang {
   background: transparent;
   border: none;
   color: var(--text-dim);
@@ -2801,10 +2801,6 @@ body.is-fullscreen {
 .ai-btn-lang.active {
   background: rgba(88, 166, 255, 0.2);
   color: var(--accent);
-}
-.ai-btn-engine.active {
-  background: rgba(63, 185, 80, 0.2);
-  color: #3fb950;
 }
 .ai-autosend-label {
   display: inline-flex;
@@ -4591,10 +4587,6 @@ body.is-fullscreen {
       </div>
 
       <div class="ai-center-meta">
-        <div class="ai-engine-toggle" title="Pilih Mesin Dikte: Google Mic (Presisi Tinggi) atau AI Mic Lokal">
-          <button type="button" class="ai-btn-engine active" id="btn-ai-engine-browser">Google</button>
-          <button type="button" class="ai-btn-engine" id="btn-ai-engine-whisper">AI Mic</button>
-        </div>
         <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
           <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
           <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
@@ -5567,19 +5559,12 @@ function switchAppMode(targetMode) {
   }
   if (targetMode !== 'ai') {
     try {
-      if (typeof stopWhisperMicSession === 'function') {
-        stopWhisperMicSession();
-      }
       if (typeof stopAiSpeechRecognition === 'function') {
         stopAiSpeechRecognition();
       }
     } catch(err) {
       console.warn('Error stopping AI speech:', err);
     }
-  } else {
-    try {
-      send({ type: 'get_stt_status' });
-    } catch(e) {}
   }
 
   isGameModeActive = (targetMode === 'game');
@@ -5824,7 +5809,6 @@ function connect() {
     setStatus(true, 'Terhubung');
     hideReconnectBanner();
     startHeartbeatAndWatchdog();
-    send({ type: 'get_stt_status' });
   };
 
   ws.onmessage = (e) => {
@@ -5853,19 +5837,12 @@ function connect() {
           mods.caps_lock = d.caps_lock;
           refreshMods();
         }
-        if (typeof applyPortComparisonSettings === 'function' && d.connected_port) {
-          applyPortComparisonSettings(d.connected_port);
-        }
       } else if (d.type === 'controller_status') {
         if (d.role === 'active') {
           document.body.classList.remove('controller-standby');
         } else {
           document.body.classList.add('controller-standby');
         }
-      } else if (d.type === 'stt_status') {
-        if (typeof onWhisperStatus === 'function') onWhisperStatus(d);
-      } else if (d.type === 'ai_stt_result') {
-        if (typeof onWhisperResult === 'function') onWhisperResult(d);
       }
     } catch(err) {}
   };
@@ -8906,27 +8883,11 @@ window.addEventListener('resize', () => {
 */
 
 // ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & DUAL-ENGINE VOICE DECK) ───
-let currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
-let aiSttEngine = localStorage.getItem('digi_ai_engine') || 'browser'; // Default utama: Google Web Speech API
-let whisperAvailable = false;
-let whisperLoading = false;
-let whisperStream = null;
-let whisperRecorder = null;
-let whisperAudioCtx = null;
-let whisperAnalyser = null;
-let whisperVadInterval = null;
-let whisperChunks = [];
-let whisperHasSpoken = false;
-let whisperLastSpeechTime = 0;
-let whisperSessionStartTime = 0;
-let whisperSessionCounter = 0;
-let whisperPendingRequests = 0;
-let whisperMimeType = '';
-
+// ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & VOICE DECK) ───
 let aiSpeechRecognition = null;
 let isAiRecording = false;
 let isAiStarting = false;
-let aiSpeechWanted = false; // Status apakah mic harus terus mendengarkan
+let aiSpeechWanted = false; // Status apakah mic harus mendengarkan
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
 let aiAccumulatedText = '';
@@ -8934,33 +8895,12 @@ let currentSessionFinal = '';
 let currentSessionInterim = '';
 let lastSentLength = 0;
 
-function applyPortComparisonSettings(port) {
-  const pStr = String(port || window.location.port || '8080');
+setTimeout(() => {
   const badgeText = $('ai-badge-text');
   const titleSub = $('ai-title-sub');
-  const btnWhisper = $('btn-ai-engine-whisper');
-  const btnBrowser = $('btn-ai-engine-browser');
-
-  if (pStr === '8081') {
-    aiSttEngine = 'browser';
-    if (badgeText) badgeText.textContent = 'AI WORKSTATION (GOOGLE - PORT 8081)';
-    if (titleSub) titleSub.textContent = 'Edisi Google Speech API';
-    if (btnWhisper) btnWhisper.classList.remove('active');
-    if (btnBrowser) btnBrowser.classList.add('active');
-  } else {
-    // Port 8080 (Primary): Google Speech sebagai metode presisi utama
-    const saved = localStorage.getItem('digi_ai_engine');
-    aiSttEngine = saved || 'browser';
-    if (badgeText) badgeText.textContent = 'AI WORKSTATION';
-    if (titleSub) titleSub.textContent = 'Prompt & Terminal Deck';
-    if (btnWhisper) btnWhisper.classList.toggle('active', aiSttEngine === 'whisper');
-    if (btnBrowser) btnBrowser.classList.toggle('active', aiSttEngine === 'browser');
-  }
+  if (badgeText) badgeText.textContent = 'AI WORKSTATION';
+  if (titleSub) titleSub.textContent = 'Prompt & Terminal Deck';
   updateAiMicUI();
-}
-
-setTimeout(() => {
-  applyPortComparisonSettings(currentPort);
 }, 60);
 
 // Fungsi pembersih kata dari tanda baca untuk komparasi overlap
@@ -9013,32 +8953,14 @@ function updateAiMicUI() {
   if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
   if (statusEl) {
     if (aiSpeechWanted) {
-      if (aiSttEngine === 'whisper') {
-        if (whisperPendingRequests > 0) {
-          statusEl.textContent = 'AI Whisper menerjemahkan...';
-          statusEl.style.color = '#58a6ff';
-        } else if (whisperHasSpoken) {
-          statusEl.textContent = 'Mendengar ucapan...';
-          statusEl.style.color = '#3fb950';
-        } else {
-          statusEl.textContent = 'Mendengarkan... (Bebas berpikir tanpa batas jeda)';
-          statusEl.style.color = '#3fb950';
-        }
-      } else {
-        statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
-        statusEl.style.color = '#3fb950';
-      }
+      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+      statusEl.style.color = '#3fb950';
     } else {
       if (aiAccumulatedText.trim()) {
         statusEl.textContent = 'Hasil tersimpan. Ketuk Mic untuk lanjut bicara';
         statusEl.style.color = '#58a6ff';
       } else {
-        if (aiSttEngine === 'whisper') {
-          const modelLabel = (whisperActiveModel || 'small').toUpperCase();
-          statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (AI Whisper ${modelLabel})`;
-        } else {
-          statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Google Voice)';
-        }
+        statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
         statusEl.style.color = '';
       }
     }
@@ -9083,270 +9005,7 @@ function renderTranscriptPreview(fullText) {
   }
 }
 
-// ─── LOCAL PRO AI MIC (WHISPER ENGINE) ───
-// Menggunakan getUserMedia murni yang tidak pernah membunyikan chime OS Android
-// dan tidak pernah mati saat pengguna berhenti berbicara untuk berpikir.
-
-let whisperActiveModel = 'small';
-
-function onWhisperStatus(d) {
-  whisperAvailable = !!d.available;
-  whisperLoading = !!d.loading;
-  if (d.model) whisperActiveModel = d.model;
-  if (!whisperAvailable && !whisperLoading && aiSttEngine === 'whisper') {
-    send({ type: 'init_whisper' });
-  }
-  const statusEl = $('ai-mic-status');
-  if (statusEl && !aiSpeechWanted && aiSttEngine === 'whisper') {
-    const modelLabel = (whisperActiveModel || 'small').toUpperCase();
-    statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (AI Whisper ${modelLabel} Pro)`;
-  }
-}
-
-function onWhisperResult(d) {
-  if (whisperPendingRequests > 0) whisperPendingRequests--;
-  const text = (d.text || '').trim();
-  const statusEl = $('ai-mic-status');
-
-  if (text) {
-    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, text);
-    renderTranscriptPreview(aiAccumulatedText);
-
-    // Auto-kirim jika fitur diaktifkan
-    if (aiAutoSend && aiAccumulatedText.length > lastSentLength) {
-      const diff = aiAccumulatedText.slice(lastSentLength).trim();
-      if (diff) {
-        sendAiText(diff + ' ');
-        lastSentLength = aiAccumulatedText.length;
-      }
-    }
-  }
-
-  if (statusEl && aiSpeechWanted) {
-    if (whisperPendingRequests === 0) {
-      statusEl.textContent = 'Mendengarkan... (Bebas berpikir tanpa batas jeda)';
-      statusEl.style.color = '#3fb950';
-    }
-  }
-}
-
-function sendWhisperAudioBlob(blob) {
-  if (!blob || blob.size < 400) return;
-  const statusEl = $('ai-mic-status');
-  whisperPendingRequests++;
-  if (statusEl && aiSpeechWanted) {
-    statusEl.textContent = 'AI Whisper menerjemahkan...';
-    statusEl.style.color = '#58a6ff';
-  }
-
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    const base64Data = (reader.result || '').split(',')[1];
-    if (base64Data) {
-      whisperSessionCounter++;
-      send({
-        type: 'ai_stt_audio',
-        audio: base64Data,
-        lang: aiSpeechLang,
-        session_id: 'w_' + whisperSessionCounter
-      });
-    }
-  };
-  reader.readAsDataURL(blob);
-}
-
-async function startWhisperMicSession() {
-  if (!aiSpeechWanted) return;
-  const statusEl = $('ai-mic-status');
-
-  try {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      if (statusEl) statusEl.textContent = 'Browser tidak mengizinkan akses mikrofon.';
-      aiSpeechWanted = false;
-      updateAiMicUI();
-      return;
-    }
-
-    // Ambil stream mikrofon tanpa memanggil Google Voice Recognizer Android (0% Beep)
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        channelCount: 1,
-        sampleRate: 16000,
-        echoCancellation: true,
-        noiseSuppression: false,
-        autoGainControl: true
-      }
-    });
-
-    if (!aiSpeechWanted) {
-      stream.getTracks().forEach(t => t.stop());
-      return;
-    }
-
-    whisperStream = stream;
-
-    // Analyser Node untuk Voice Activity Detection (VAD)
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    whisperAudioCtx = new AudioCtx();
-    const source = whisperAudioCtx.createMediaStreamSource(stream);
-    whisperAnalyser = whisperAudioCtx.createAnalyser();
-    whisperAnalyser.fftSize = 512;
-    source.connect(whisperAnalyser);
-
-    // Deteksi MIME WebM / Opus yang didukung perangkat
-    let mimeType = 'audio/webm;codecs=opus';
-    if (!MediaRecorder.isTypeSupported(mimeType)) {
-      if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
-      else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mimeType = 'audio/ogg;codecs=opus';
-      else if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-      else mimeType = '';
-    }
-    whisperMimeType = mimeType;
-
-    whisperChunks = [];
-    whisperHasSpoken = false;
-    whisperLastSpeechTime = 0;
-    whisperSessionStartTime = Date.now();
-
-    function createAndStartRecorder() {
-      if (!whisperStream || !aiSpeechWanted) return;
-      whisperChunks = [];
-      const recOptions = { audioBitsPerSecond: 128000 };
-      if (mimeType) recOptions.mimeType = mimeType;
-      const rec = new MediaRecorder(whisperStream, recOptions);
-      rec.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) {
-          whisperChunks.push(e.data);
-        }
-      };
-      rec.onstop = () => {
-        const chunksToSend = whisperChunks.slice();
-        whisperChunks = [];
-        const hadSpeech = whisperHasSpoken;
-        whisperHasSpoken = false;
-
-        if (chunksToSend.length > 0 && hadSpeech) {
-          const blob = new Blob(chunksToSend, { type: mimeType || 'audio/webm' });
-          sendWhisperAudioBlob(blob);
-        }
-
-        // Jika user masih mengaktifkan mic, langsung lanjutkan segmen rekaman baru pada stream yang sama
-        if (aiSpeechWanted && whisperStream && whisperStream.active) {
-          whisperSessionStartTime = Date.now();
-          createAndStartRecorder();
-        }
-      };
-      rec.start();
-      whisperRecorder = rec;
-    }
-
-    createAndStartRecorder();
-
-    // VAD Loop: memantau level suara setiap 60ms tanpa menghentikan mikrofon
-    const bufLen = whisperAnalyser.frequencyBinCount;
-    const freqData = new Uint8Array(bufLen);
-
-    whisperVadInterval = setInterval(() => {
-      if (!aiSpeechWanted || !whisperAnalyser) return;
-      whisperAnalyser.getByteFrequencyData(freqData);
-      let sum = 0;
-      for (let i = 0; i < bufLen; i++) {
-        sum += freqData[i];
-      }
-      const avgVol = sum / bufLen;
-      const now = Date.now();
-
-      // Ambang batas desibel ucapan manusia (lebih peka terhadap suara pelan & ujung kata)
-      if (avgVol > 9) {
-        whisperHasSpoken = true;
-        whisperLastSpeechTime = now;
-        if (statusEl && whisperPendingRequests === 0) {
-          statusEl.textContent = 'Mendengar ucapan...';
-          statusEl.style.color = '#3fb950';
-        }
-      } else {
-        // User sedang hening / jeda berpikir
-        // Berikan waktu jeda hening lebih panjang (2200ms) agar kalimat mengalir utuh tidak terpotong saat berpikir
-        if (whisperHasSpoken && (now - whisperLastSpeechTime > 2200)) {
-          // Jeda berpikir terdeteksi setelah bicara -> potong dan kirim segmen kalimat ini
-          if (whisperRecorder && whisperRecorder.state === 'recording') {
-            whisperRecorder.stop();
-          }
-        } else if (!whisperHasSpoken && (now - whisperSessionStartTime > 15000)) {
-          // Daur ulang buffer keheningan berkala setiap 15 detik jika benar-benar tidak ada suara
-          if (whisperRecorder && whisperRecorder.state === 'recording') {
-            whisperRecorder.stop();
-          }
-        } else if (whisperPendingRequests === 0) {
-          if (statusEl) {
-            statusEl.textContent = 'Mendengarkan... (Bebas berpikir tanpa batas jeda)';
-            statusEl.style.color = '#3fb950';
-          }
-        }
-      }
-
-      // Hindari durasi satu file melebihi 25 detik (Whisper optimal hingga 30 detik)
-      if (whisperHasSpoken && (now - whisperSessionStartTime > 25000)) {
-        if (whisperRecorder && whisperRecorder.state === 'recording') {
-          whisperRecorder.stop();
-        }
-      }
-    }, 60);
-
-    isAiRecording = true;
-    updateAiMicUI();
-  } catch (err) {
-    console.warn('[Whisper Mic Start Error]:', err);
-    aiSpeechWanted = false;
-    isAiRecording = false;
-    updateAiMicUI();
-    if (statusEl) {
-      statusEl.textContent = 'Gagal mengakses mikrofon: ' + (err.message || 'Izin ditolak');
-    }
-  }
-}
-
-function stopWhisperMicSession() {
-  aiSpeechWanted = false;
-  isAiRecording = false;
-
-  if (whisperVadInterval) {
-    clearInterval(whisperVadInterval);
-    whisperVadInterval = null;
-  }
-
-  if (whisperRecorder) {
-    try {
-      if (whisperRecorder.state !== 'inactive') {
-        whisperRecorder.stop();
-      }
-    } catch(e) {}
-    whisperRecorder = null;
-  }
-
-  if (whisperStream) {
-    try {
-      whisperStream.getTracks().forEach(t => t.stop());
-    } catch(e) {}
-    whisperStream = null;
-  }
-
-  if (whisperAudioCtx) {
-    try {
-      whisperAudioCtx.close();
-    } catch(e) {}
-    whisperAudioCtx = null;
-  }
-
-  whisperAnalyser = null;
-  whisperChunks = [];
-  whisperHasSpoken = false;
-  whisperPendingRequests = 0;
-
-  updateAiMicUI();
-}
-
-// ─── BROWSER WEB SPEECH API (FALLBACK ENGINE) ───
+// ─── GOOGLE WEB SPEECH API ENGINE ───
 function stopAiSpeechRecognition() {
   aiSpeechWanted = false;
   if (aiSpeechRecognition) {
@@ -9479,55 +9138,18 @@ function startAiSpeechSession() {
   }
 }
 
-// ─── TOGGLE MIC UTAMA (BERDASARKAN ENGINE PILIHAN) ───
+// ─── TOGGLE MIC UTAMA (GOOGLE WEB SPEECH API) ───
 function toggleAiSpeech() {
   playClickSound();
 
   if (aiSpeechWanted) {
-    if (aiSttEngine === 'whisper') {
-      stopWhisperMicSession();
-    } else {
-      stopAiSpeechRecognition();
-    }
+    stopAiSpeechRecognition();
     return;
   }
 
   aiSpeechWanted = true;
   updateAiMicUI();
-
-  if (aiSttEngine === 'whisper') {
-    startWhisperMicSession();
-  } else {
-    startAiSpeechSession();
-  }
-}
-
-function setAiEngine(engine) {
-  if (aiSttEngine === engine) return;
-  playClickSound();
-  if (aiSpeechWanted) {
-    if (aiSttEngine === 'whisper') stopWhisperMicSession();
-    else stopAiSpeechRecognition();
-  }
-  aiSttEngine = engine;
-  localStorage.setItem('digi_ai_engine', engine);
-
-  const btnWhisper = $('btn-ai-engine-whisper');
-  const btnBrowser = $('btn-ai-engine-browser');
-  if (btnWhisper) btnWhisper.classList.toggle('active', engine === 'whisper');
-  if (btnBrowser) btnBrowser.classList.toggle('active', engine === 'browser');
-
-  const statusEl = $('ai-mic-status');
-  if (statusEl && !aiSpeechWanted) {
-    if (engine === 'whisper') {
-      statusEl.textContent = 'AI Mic aktif (Bebas bunyi sistem & bebas jeda berpikir)';
-      statusEl.style.color = '#3fb950';
-    } else {
-      statusEl.textContent = 'Browser Mic aktif (Gunakan Google Voice browser)';
-      statusEl.style.color = '#58a6ff';
-    }
-  }
-  vibe(10);
+  startAiSpeechSession();
 }
 
 function sendAiText(txt) {
@@ -9635,18 +9257,6 @@ bindAiKey('btn-exit-ai', () => {
   switchAppMode('standard');
 });
 
-// Engine Dikte (AI Mic vs Browser Mic)
-bindAiKey('btn-ai-engine-whisper', () => setAiEngine('whisper'));
-bindAiKey('btn-ai-engine-browser', () => setAiEngine('browser'));
-
-// Sinkronkan visual tombol engine saat inisialisasi
-const btnEngineWhisper = $('btn-ai-engine-whisper');
-const btnEngineBrowser = $('btn-ai-engine-browser');
-if (btnEngineWhisper && btnEngineBrowser) {
-  btnEngineWhisper.classList.toggle('active', aiSttEngine === 'whisper');
-  btnEngineBrowser.classList.toggle('active', aiSttEngine === 'browser');
-}
-
 // Bahasa Dikte
 function setAiLang(lang) {
   playClickSound();
@@ -9657,13 +9267,7 @@ function setAiLang(lang) {
   if (btnId) btnId.classList.toggle('active', lang === 'id-ID');
   if (btnEn) btnEn.classList.toggle('active', lang === 'en-US');
   if (aiSpeechWanted) {
-    if (aiSttEngine === 'whisper') {
-      stopWhisperMicSession();
-      aiSpeechWanted = true;
-      startWhisperMicSession();
-    } else {
-      startAiSpeechSession();
-    }
+    startAiSpeechSession();
   }
   vibe(10);
 }

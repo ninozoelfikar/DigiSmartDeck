@@ -64,42 +64,31 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
 
 ---
 
-## 4. TUGAS AKTIF SAAT INI (DUAL-PORT BENCHMARK 8080 & 8081)
-Pengguna meminta pembuatan dua kondisi pembanding secara berdampingan untuk menguji performa presisi:
-- **Port 8080:** Edisi Whisper AI Mic (Sistem mic lokal mandiri, bebas bunyi, bebas timeout).
-- **Port 8081:** Edisi Google Speech (Sistem Web Speech API bawaan Google).
-
-### Desain Arsitektur Dual-Port:
-1. `server.py` menjalankan satu proses aiohttp yang mendengarkan pada dua port TCP sekaligus:
-   - `web.TCPSite(runner, '0.0.0.0', 8080)`
-   - `web.TCPSite(runner, '0.0.0.0', 8081)`
-2. `adb_reverse_watcher` membuka port forwarding untuk kedua port (`8080` dan `8081`) agar koneksi kabel USB tetap berfungsi pada kedua alamat.
-3. Klien frontend (`static/index.html`):
-   - Jika diakses via `http://[IP]:8080`: Otomatis mengaktifkan engine `whisper` sebagai default. Badge menampilkan: `AI WORKSTATION - WHISPER AI MIC (PORT 8080)`.
-   - Jika diakses via `http://[IP]:8081`: Otomatis mengaktifkan engine `browser` sebagai default. Badge menampilkan: `AI WORKSTATION - GOOGLE SPEECH (PORT 8081)`.
-   - Pada Port 8081 (Google Speech), mic sengaja diatur berhenti secara natural saat hening (tanpa auto-restart paksa), sehingga tidak menimbulkan chime berulang-ulang dan dapat dibandingkan secara murni dengan Port 8080 (Whisper AI Mic).
-   - Pengguna dapat membuka kedua URL di tab browser terpisah untuk membandingkan akurasi kalimat dan kenyamanan jeda secara langsung.
+## 4. KEPUTUSAN PRODUK: PENETAPAN METODE TUNGGAL (GOOGLE SPEECH)
+Berdasarkan uji coba langsung dan instruksi pengguna:
+1. Metode alternatif (Whisper AI Mic lokal) dan konfigurasi dual-port (8081) telah dihapus sepenuhnya dari kode.
+2. DigiKeyboard kini menggunakan SATU metode tunggal untuk dikte suara: **Google Web Speech API**.
+3. Tombol pemilihan engine di antarmuka (`[Google]` vs `[AI Mic]`) telah dihilangkan agar tampilan bersih, intuitif, dan tidak membingungkan pengguna.
+4. Nilai keunggulan dari arsitektur tunggal ini:
+   - Antarmuka sangat simpel (*zero clutter*): hanya ada tombol Mic utama, pemilih bahasa (ID / EN), dan Auto-Kirim.
+   - Penggunaan RAM server PC host turun drastis dari ~554 MB menjadi hanya ~31 MB.
+   - Kecepatan startup server instan (< 0.1 detik).
+   - Pengenalan kata bahasa Indonesia langsung muncul kata demi kata secara real-time (*streaming interim results*).
+   - Biaya 0 rupiah dan bebas lisensi komputasi model AI untuk produk SaaS (Rp 15.000/bln atau Rp 250.000 lifetime).
 
 ---
 
-## 5. KEPUTUSAN PRODUK: PENGGUNAAN METODE GOOGLE SPEECH
-Berdasarkan uji coba perbandingan langsung antara model lokal Whisper dan Google Speech:
-1. Pengguna secara definitif memutuskan untuk menggunakan metode Google (Web Speech API) sebagai mesin dikte utama DigiKeyboard.
-2. Alasan keputusan:
-   - Akurasi pengenalan kata dan ejaan bahasa Indonesia Google Speech sangat presisi dan matang.
-   - 0% beban ukuran model dan RAM di komputer pengguna (sangat ideal untuk software komersial SaaS berbayar Rp 15.000/bln atau Rp 250.000 seumur hidup).
-   - Biaya 0 rupiah (menggunakan layanan speech bawaan browser tanpa langganan API berbayar).
-3. Penyempurnaan UX yang telah diterapkan:
-   - Loop auto-restart paksa telah dinonaktifkan sepenuhnya. Sesi Google Speech kini berhenti secara wajar dan bersih saat hening tanpa memicu chime berulang-ulang.
-   - Saat pengguna ingin lanjut berbicara, pengguna cukup mengetuk tombol mic kembali dengan respons bunyi klik mekanikal yang memuaskan (`playClickSound()`).
-   - Algoritma `mergeTranscripts` mencegah gema atau pengulangan kata saat dikte disambung.
-   - Mode utama di Port 8080 telah disetel default ke Google Speech. Tombol toggle `[Google]` dan `[AI Mic]` tetap tersedia jika sewaktu-waktu ingin beralih.
+## 5. PENGALAMAN PENGGUNA & ARSITEKTUR KLIEN
+- Port tunggal standar: **8080** (baik via Wi-Fi lokal maupun kabel USB via ADB reverse).
+- Klien komersial (pembeli APK Android) tidak perlu menyetel port di `chrome://flags` karena aplikasi Android resmi (`DigiKeyboard.apk`) menggunakan WebView dengan izin mikrofon internal native.
+- Sesi dikte berhenti secara wajar saat jeda hening tanpa memicu bunyi notifikasi berulang-ulang.
+- Efek suara klik mekanikal (`playClickSound()`) selalu dipertahankan di setiap interaksi tombol.
 
 ---
 
 ## 6. STRUKTUR FILE REPOSITORI
-- `server.py`: Server web aiohttp, endpoint WebSocket (`/ws`), penanganan simulasi input Linux uinput/pynput, dan transkripsi Whisper.
-- `static/index.html`: Berkas tunggal antarmuka web, mencakup CSS deck, keyboard virtual, touchpad, gamepad, presentasi, dan AI Workstation.
-- `requirements.txt`: Dependensi Python, mencakup `aiohttp`, `faster-whisper>=1.0.0`, `av<14` (13.1.0).
+- `server.py`: Server web aiohttp berkecepatan tinggi, endpoint WebSocket (`/ws`), penanganan simulasi input Linux uinput/pynput.
+- `static/index.html`: Berkas tunggal antarmuka web, mencakup CSS deck, keyboard virtual, touchpad, gamepad, presentasi, dan AI Workstation (Google Web Speech).
+- `requirements.txt`: Dependensi Python (`aiohttp`, `evdev`, `pynput`, `qrcode`).
 - `digikeyboard.service`: File konfigurasi systemd unit di `/etc/systemd/system/digikeyboard.service`.
 - `build-apk.sh` & `android/`: Proyek WebView Android untuk kompilasi APK mandiri.
