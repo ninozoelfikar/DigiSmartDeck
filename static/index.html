@@ -2839,12 +2839,12 @@ body.is-fullscreen {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 160px 1fr 180px;
+  grid-template-columns: 135px 1fr 145px;
   gap: 6px;
 }
 @media (max-width: 768px) {
   .ai-main-grid {
-    grid-template-columns: 140px 1fr 160px;
+    grid-template-columns: 125px 1fr 135px;
     gap: 5px;
   }
 }
@@ -2940,9 +2940,8 @@ body.is-fullscreen {
   border: 1px solid var(--key-border);
   border-radius: 6px;
   padding: 4px 6px;
-  gap: 4px;
+  gap: 5px;
   min-height: 0;
-  justify-content: space-between;
 }
 .ai-mic-section {
   display: flex;
@@ -3085,7 +3084,9 @@ body.is-fullscreen {
     display: flex;
   }
   .ai-transcript-box {
-    max-height: 140px;
+    flex: 1;
+    min-height: 100px;
+    max-height: none;
   }
 }
 
