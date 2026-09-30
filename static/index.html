@@ -2919,6 +2919,12 @@ body.is-fullscreen {
 .ai-btn-sh.span-2 {
   grid-column: span 2;
 }
+/* Tombol tool kecil (Copy, Paste, Esc, Tab, Backspace, Delete) */
+.ai-btn-sh.tool {
+  font-size: 8px;
+  padding: 0px 2px;
+  max-height: 22px;
+}
 .ai-btn-sh.ai-prompt-chip {
   background: rgba(88, 166, 255, 0.08);
   border-color: rgba(88, 166, 255, 0.25);
@@ -3077,8 +3083,9 @@ body.is-fullscreen {
   min-height: 0;
 }
 .ai-btn-giant-enter {
-  flex: 1;
+  flex: 0 0 auto;
   min-height: 38px;
+  max-height: 52px;
   background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
   border: 1px solid #3fb950;
   border-radius: 6px;
@@ -3099,7 +3106,7 @@ body.is-fullscreen {
   filter: brightness(0.9);
 }
 .ai-enter-label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.5px;
   display: flex;
@@ -3107,14 +3114,43 @@ body.is-fullscreen {
   gap: 5px;
 }
 .ai-enter-label svg {
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 13px;
 }
 .ai-enter-sub {
-  font-size: 8.5px;
+  font-size: 7.5px;
   opacity: 0.9;
   font-weight: 600;
   margin-top: 1px;
+}
+
+/* Trackpad area di bawah arrow */
+.ai-trackpad {
+  flex: 1;
+  min-height: 60px;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.ai-trackpad::after {
+  content: 'Trackpad';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.25;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
 }
 
 /* Navigation D-pad */
@@ -4598,22 +4634,22 @@ body.is-fullscreen {
           <span>Pintasan AI &amp; Edit</span>
         </div>
         <div class="ai-shortcuts-grid">
-          <button type="button" class="ai-btn-sh" id="ai-btn-copy" title="Ctrl+C">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-copy" title="Ctrl+C">
             <span>Copy</span>
           </button>
-          <button type="button" class="ai-btn-sh" id="ai-btn-paste" title="Ctrl+V">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-paste" title="Ctrl+V">
             <span>Paste</span>
           </button>
-          <button type="button" class="ai-btn-sh" id="ai-btn-stop" title="Esc">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-stop" title="Esc">
             <span>Esc</span>
           </button>
-          <button type="button" class="ai-btn-sh" id="ai-btn-tab" title="Tab">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-tab" title="Tab">
             <span>Tab</span>
           </button>
-          <button type="button" class="ai-btn-sh span-2" id="ai-btn-backspace" title="Backspace">
+          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-backspace" title="Backspace">
             <span>Backspace</span>
           </button>
-          <button type="button" class="ai-btn-sh span-2" id="ai-btn-delete" title="Delete">
+          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-delete" title="Delete">
             <span>Delete</span>
           </button>
           <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="lanjutkan" title="Ketik prompt: lanjutkan">
@@ -4683,6 +4719,7 @@ body.is-fullscreen {
           <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Panah Bawah"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
           <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Panah Kanan"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
+        <div class="ai-trackpad" id="ai-trackpad"></div>
       </div>
     </div>
 
@@ -9412,6 +9449,53 @@ bindAiRepeatKey('ai-nav-left', () => {
 bindAiRepeatKey('ai-nav-right', () => {
   send({ type: 'keypress', key: 'right' });
 });
+
+// ── AI Workstation Trackpad ──
+(function() {
+  const tp = $('ai-trackpad');
+  if (!tp) return;
+  const SENSITIVITY = 1.8;
+  let lastX = null, lastY = null;
+  let tapStartX, tapStartY, tapStartTime;
+
+  tp.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const t = e.touches[0];
+    lastX = t.clientX;
+    lastY = t.clientY;
+    tapStartX = t.clientX;
+    tapStartY = t.clientY;
+    tapStartTime = Date.now();
+  }, { passive: false });
+
+  tp.addEventListener('touchmove', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const t = e.touches[0];
+    const dx = (t.clientX - lastX) * SENSITIVITY;
+    const dy = (t.clientY - lastY) * SENSITIVITY;
+    lastX = t.clientX;
+    lastY = t.clientY;
+    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+      send({ type: 'mousemove', dx: Math.round(dx), dy: Math.round(dy) });
+    }
+  }, { passive: false });
+
+  tp.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const dt = Date.now() - tapStartTime;
+    const moved = Math.abs(e.changedTouches[0].clientX - tapStartX) + Math.abs(e.changedTouches[0].clientY - tapStartY);
+    if (dt < 200 && moved < 8) {
+      // tap singkat = klik kiri
+      playClickSound();
+      vibe(15);
+      send({ type: 'mouseclick', button: 'left' });
+    }
+    lastX = null; lastY = null;
+  }, { passive: false });
+})();
 
 // Prompt Chips
 document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
