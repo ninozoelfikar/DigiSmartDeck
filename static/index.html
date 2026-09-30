@@ -3065,6 +3065,97 @@ body.is-fullscreen {
   color: #fff;
 }
 
+/* ─── Android-style Soft QWERTY Keyboard (Tablet AI Workstation) ─── */
+.ai-tablet-keyboard {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(22, 27, 34, 0.7);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+@media (min-height: 480px) and (min-width: 680px) {
+  .ai-tablet-keyboard {
+    display: flex;
+  }
+  .ai-transcript-box {
+    max-height: 140px;
+  }
+}
+
+.ai-tk-row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.ai-tk-key {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.08s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.ai-tk-key:active {
+  background: rgba(88, 166, 255, 0.25);
+  border-color: var(--accent);
+  transform: translateY(1px);
+}
+
+.ai-tk-key.ai-tk-fn {
+  flex: 1.4;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.ai-tk-key.ai-tk-fn.active {
+  background: rgba(88, 166, 255, 0.28);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ai-tk-key.ai-tk-space {
+  flex: 4.5;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.ai-tk-key.ai-tk-enter {
+  flex: 1.6;
+  background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
+  border-color: #3fb950;
+  color: #fff;
+}
+
+.ai-tk-key.ai-tk-enter:active {
+  filter: brightness(0.9);
+}
+
 /* Right Column: Giant Enter & Navigation */
 .ai-col-right {
   display: flex;
@@ -4691,6 +4782,57 @@ body.is-fullscreen {
           <div class="ai-transcript-actions">
             <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Bersihkan</button>
             <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
+          </div>
+        </div>
+
+        <!-- Android-Style Soft QWERTY Keyboard (Tablet Only) -->
+        <div class="ai-tablet-keyboard" id="ai-tablet-keyboard">
+          <div class="ai-tk-row" id="ai-tk-row1">
+            <button type="button" class="ai-tk-key" data-key="q">q</button>
+            <button type="button" class="ai-tk-key" data-key="w">w</button>
+            <button type="button" class="ai-tk-key" data-key="e">e</button>
+            <button type="button" class="ai-tk-key" data-key="r">r</button>
+            <button type="button" class="ai-tk-key" data-key="t">t</button>
+            <button type="button" class="ai-tk-key" data-key="y">y</button>
+            <button type="button" class="ai-tk-key" data-key="u">u</button>
+            <button type="button" class="ai-tk-key" data-key="i">i</button>
+            <button type="button" class="ai-tk-key" data-key="o">o</button>
+            <button type="button" class="ai-tk-key" data-key="p">p</button>
+          </div>
+          <div class="ai-tk-row" id="ai-tk-row2">
+            <button type="button" class="ai-tk-key" data-key="a">a</button>
+            <button type="button" class="ai-tk-key" data-key="s">s</button>
+            <button type="button" class="ai-tk-key" data-key="d">d</button>
+            <button type="button" class="ai-tk-key" data-key="f">f</button>
+            <button type="button" class="ai-tk-key" data-key="g">g</button>
+            <button type="button" class="ai-tk-key" data-key="h">h</button>
+            <button type="button" class="ai-tk-key" data-key="j">j</button>
+            <button type="button" class="ai-tk-key" data-key="k">k</button>
+            <button type="button" class="ai-tk-key" data-key="l">l</button>
+          </div>
+          <div class="ai-tk-row" id="ai-tk-row3">
+            <button type="button" class="ai-tk-key ai-tk-fn" id="ai-tk-btn-shift" title="Shift / Kapital">
+              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 4L4 12h5v8h6v-8h5L12 4z"/></svg>
+            </button>
+            <button type="button" class="ai-tk-key" data-key="z">z</button>
+            <button type="button" class="ai-tk-key" data-key="x">x</button>
+            <button type="button" class="ai-tk-key" data-key="c">c</button>
+            <button type="button" class="ai-tk-key" data-key="v">v</button>
+            <button type="button" class="ai-tk-key" data-key="b">b</button>
+            <button type="button" class="ai-tk-key" data-key="n">n</button>
+            <button type="button" class="ai-tk-key" data-key="m">m</button>
+            <button type="button" class="ai-tk-key ai-tk-fn" id="ai-tk-btn-backspace" title="Hapus">
+              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" x2="12" y1="9" y2="15"/><line x1="12" x2="18" y1="9" y2="15"/></svg>
+            </button>
+          </div>
+          <div class="ai-tk-row" id="ai-tk-row4">
+            <button type="button" class="ai-tk-key ai-tk-fn" id="ai-tk-btn-mode">?123</button>
+            <button type="button" class="ai-tk-key" data-key=",">,</button>
+            <button type="button" class="ai-tk-key ai-tk-space" data-key=" ">Spasi</button>
+            <button type="button" class="ai-tk-key" data-key=".">.</button>
+            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-enter" id="ai-tk-btn-enter" title="Enter / Kirim">
+              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -9514,6 +9656,127 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     }
   });
 });
+
+// ── Android-style Soft QWERTY Keyboard Controller (Tablet View) ──
+(function initTabletKeyboard() {
+  const kbEl = $('ai-tablet-keyboard');
+  if (!kbEl) return;
+
+  let isShift = false;
+  let isSymbolMode = false;
+
+  const normalKeys = {
+    row1: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+    row2: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+    row3: ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+  };
+
+  const symbolKeys = {
+    row1: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+    row2: ['@', '#', '$', '%', '&', '*', '-', '+', '!'],
+    row3: ['=', '<', '>', '/', '"', ':', ';']
+  };
+
+  const btnShift = $('ai-tk-btn-shift');
+  const btnMode = $('ai-tk-btn-mode');
+  const btnBackspace = $('ai-tk-btn-backspace');
+  const btnEnter = $('ai-tk-btn-enter');
+
+  function updateKeyLabels() {
+    const keys = isSymbolMode ? symbolKeys : normalKeys;
+    ['row1', 'row2', 'row3'].forEach((rowId) => {
+      const rowEl = $(`ai-tk-${rowId}`);
+      if (!rowEl) return;
+      const keyBtns = rowEl.querySelectorAll('.ai-tk-key:not(.ai-tk-fn)');
+      const keyList = keys[rowId];
+      keyBtns.forEach((btn, bIdx) => {
+        if (bIdx < keyList.length) {
+          const char = keyList[bIdx];
+          const displayChar = (!isSymbolMode && isShift) ? char.toUpperCase() : char;
+          btn.textContent = displayChar;
+          btn.setAttribute('data-key', displayChar);
+        }
+      });
+    });
+
+    if (btnShift) {
+      btnShift.classList.toggle('active', isShift);
+      btnShift.style.opacity = isSymbolMode ? '0.4' : '1';
+      btnShift.style.pointerEvents = isSymbolMode ? 'none' : 'auto';
+    }
+    if (btnMode) {
+      btnMode.textContent = isSymbolMode ? 'ABC' : '?123';
+    }
+  }
+
+  function handleCharInput(char) {
+    playClickSound();
+    vibe(12);
+
+    aiAccumulatedText += char;
+    renderTranscriptPreview(aiAccumulatedText);
+
+    if (aiAutoSend) {
+      sendAiText(char);
+    }
+
+    if (isShift && !isSymbolMode) {
+      isShift = false;
+      updateKeyLabels();
+    }
+  }
+
+  kbEl.querySelectorAll('.ai-tk-key:not(.ai-tk-fn)').forEach(btn => {
+    bindAiKey(btn, () => {
+      const char = btn.getAttribute('data-key');
+      if (char !== null && char !== undefined) {
+        handleCharInput(char);
+      }
+    });
+  });
+
+  if (btnShift) {
+    bindAiKey(btnShift, () => {
+      if (isSymbolMode) return;
+      isShift = !isShift;
+      updateKeyLabels();
+    });
+  }
+
+  if (btnMode) {
+    bindAiKey(btnMode, () => {
+      isSymbolMode = !isSymbolMode;
+      isShift = false;
+      updateKeyLabels();
+    });
+  }
+
+  if (btnBackspace) {
+    bindAiRepeatKey(btnBackspace, () => {
+      if (aiAccumulatedText && aiAccumulatedText.length > 0) {
+        aiAccumulatedText = aiAccumulatedText.slice(0, -1);
+        renderTranscriptPreview(aiAccumulatedText);
+        if (aiAutoSend) {
+          send({ type: 'keypress', key: 'backspace' });
+        }
+      } else {
+        send({ type: 'keypress', key: 'backspace' });
+      }
+    });
+  }
+
+  if (btnEnter) {
+    bindAiKey(btnEnter, () => {
+      commitCurrentSession();
+      const textToSend = aiAccumulatedText.trim();
+      if (textToSend) {
+        sendAiText(textToSend + ' ');
+        clearTranscriptUI();
+      }
+      send({ type: 'keypress', key: 'enter' });
+    });
+  }
+})();
 
 // ── Inisialisasi Tombol Bluetooth HID (jika berjalan di Android App) ──
 try {
