@@ -700,7 +700,7 @@ async def websocket_handler(request):
     print(f"[+] Client terhubung: {client_ip} | {device_label} (Total terhubung: {len(CONNECTED_CLIENTS)})")
 
     connected_port = 8081 if ':8081' in str(request.host) else 8080
-    default_engine = 'browser' if connected_port == 8081 else 'whisper'
+    default_engine = 'browser'
 
     # Kirim handshake inisialisasi ke client (Semua client langsung aktif sebagai pengendali)
     try:

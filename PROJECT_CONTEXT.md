@@ -82,7 +82,22 @@ Pengguna meminta pembuatan dua kondisi pembanding secara berdampingan untuk meng
 
 ---
 
-## 5. STRUKTUR FILE REPOSITORI
+## 5. KEPUTUSAN PRODUK: PENGGUNAAN METODE GOOGLE SPEECH
+Berdasarkan uji coba perbandingan langsung antara model lokal Whisper dan Google Speech:
+1. Pengguna secara definitif memutuskan untuk menggunakan metode Google (Web Speech API) sebagai mesin dikte utama DigiKeyboard.
+2. Alasan keputusan:
+   - Akurasi pengenalan kata dan ejaan bahasa Indonesia Google Speech sangat presisi dan matang.
+   - 0% beban ukuran model dan RAM di komputer pengguna (sangat ideal untuk software komersial SaaS berbayar Rp 15.000/bln atau Rp 250.000 seumur hidup).
+   - Biaya 0 rupiah (menggunakan layanan speech bawaan browser tanpa langganan API berbayar).
+3. Penyempurnaan UX yang telah diterapkan:
+   - Loop auto-restart paksa telah dinonaktifkan sepenuhnya. Sesi Google Speech kini berhenti secara wajar dan bersih saat hening tanpa memicu chime berulang-ulang.
+   - Saat pengguna ingin lanjut berbicara, pengguna cukup mengetuk tombol mic kembali dengan respons bunyi klik mekanikal yang memuaskan (`playClickSound()`).
+   - Algoritma `mergeTranscripts` mencegah gema atau pengulangan kata saat dikte disambung.
+   - Mode utama di Port 8080 telah disetel default ke Google Speech. Tombol toggle `[Google]` dan `[AI Mic]` tetap tersedia jika sewaktu-waktu ingin beralih.
+
+---
+
+## 6. STRUKTUR FILE REPOSITORI
 - `server.py`: Server web aiohttp, endpoint WebSocket (`/ws`), penanganan simulasi input Linux uinput/pynput, dan transkripsi Whisper.
 - `static/index.html`: Berkas tunggal antarmuka web, mencakup CSS deck, keyboard virtual, touchpad, gamepad, presentasi, dan AI Workstation.
 - `requirements.txt`: Dependensi Python, mencakup `aiohttp`, `faster-whisper>=1.0.0`, `av<14` (13.1.0).

@@ -4591,9 +4591,9 @@ body.is-fullscreen {
       </div>
 
       <div class="ai-center-meta">
-        <div class="ai-engine-toggle" title="Pilih Mesin Dikte: AI Mic (Bebas Bunyi & Timeout) atau Browser Mic">
-          <button type="button" class="ai-btn-engine active" id="btn-ai-engine-whisper">AI Mic</button>
-          <button type="button" class="ai-btn-engine" id="btn-ai-engine-browser">Browser</button>
+        <div class="ai-engine-toggle" title="Pilih Mesin Dikte: Google Mic (Presisi Tinggi) atau AI Mic Lokal">
+          <button type="button" class="ai-btn-engine active" id="btn-ai-engine-browser">Google</button>
+          <button type="button" class="ai-btn-engine" id="btn-ai-engine-whisper">AI Mic</button>
         </div>
         <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
           <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
@@ -8907,7 +8907,7 @@ window.addEventListener('resize', () => {
 
 // ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & DUAL-ENGINE VOICE DECK) ───
 let currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
-let aiSttEngine = (currentPort === '8081') ? 'browser' : (localStorage.getItem('digi_ai_engine') || 'whisper');
+let aiSttEngine = localStorage.getItem('digi_ai_engine') || 'browser'; // Default utama: Google Web Speech API
 let whisperAvailable = false;
 let whisperLoading = false;
 let whisperStream = null;
@@ -8944,15 +8944,17 @@ function applyPortComparisonSettings(port) {
   if (pStr === '8081') {
     aiSttEngine = 'browser';
     if (badgeText) badgeText.textContent = 'AI WORKSTATION (GOOGLE - PORT 8081)';
-    if (titleSub) titleSub.textContent = 'Uji Coba: Google Speech API';
+    if (titleSub) titleSub.textContent = 'Edisi Google Speech API';
     if (btnWhisper) btnWhisper.classList.remove('active');
     if (btnBrowser) btnBrowser.classList.add('active');
   } else {
-    aiSttEngine = 'whisper';
-    if (badgeText) badgeText.textContent = 'AI WORKSTATION (WHISPER - PORT 8080)';
-    if (titleSub) titleSub.textContent = 'Uji Coba: Whisper AI Mic (Bebas Bunyi & Timeout)';
-    if (btnWhisper) btnWhisper.classList.add('active');
-    if (btnBrowser) btnBrowser.classList.remove('active');
+    // Port 8080 (Primary): Google Speech sebagai metode presisi utama
+    const saved = localStorage.getItem('digi_ai_engine');
+    aiSttEngine = saved || 'browser';
+    if (badgeText) badgeText.textContent = 'AI WORKSTATION';
+    if (titleSub) titleSub.textContent = 'Prompt & Terminal Deck';
+    if (btnWhisper) btnWhisper.classList.toggle('active', aiSttEngine === 'whisper');
+    if (btnBrowser) btnBrowser.classList.toggle('active', aiSttEngine === 'browser');
   }
   updateAiMicUI();
 }
@@ -9033,9 +9035,9 @@ function updateAiMicUI() {
       } else {
         if (aiSttEngine === 'whisper') {
           const modelLabel = (whisperActiveModel || 'small').toUpperCase();
-          statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (Port 8080 - Whisper ${modelLabel} Pro)`;
+          statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (AI Whisper ${modelLabel})`;
         } else {
-          statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Port 8081 - Google Speech)';
+          statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Google Voice)';
         }
         statusEl.style.color = '';
       }
