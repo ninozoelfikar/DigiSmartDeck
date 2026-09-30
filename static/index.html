@@ -9339,59 +9339,72 @@ bindAiKey('btn-ai-tr-send', () => {
 bindAiKey('ai-btn-enter', () => {
   send({ type: 'keypress', key: 'enter' });
   vibe(25);
+  playClickSound();
 });
 bindAiKey('ai-btn-newline', () => {
   send({ type: 'combo', keys: ['shift', 'enter'] });
   vibe(20);
+  playClickSound();
 });
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });
   vibe(15);
+  playClickSound();
 });
 bindAiKey('ai-btn-paste', () => {
   send({ type: 'combo', keys: ['ctrl', 'shift', 'v'] });
   vibe(15);
+  playClickSound();
 });
 bindAiKey('ai-btn-selectall', () => {
   send({ type: 'combo', keys: ['ctrl', 'a'] });
   vibe(15);
+  playClickSound();
 });
 bindAiKey('ai-btn-stop', () => {
   send({ type: 'keypress', key: 'esc' });
   vibe(15);
+  playClickSound();
 });
 bindAiKey('ai-btn-tab', () => {
   send({ type: 'keypress', key: 'tab' });
   vibe(15);
+  playClickSound();
 });
 
 // Tombol Backspace dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-btn-backspace', () => {
   send({ type: 'keypress', key: 'backspace' });
   vibe(12);
+  playClickSound();
 });
 
 bindAiRepeatKey('ai-btn-space', () => {
   send({ type: 'keypress', key: 'space' });
   vibe(12);
+  playClickSound();
 });
 
 // Tombol Navigasi Kursor dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-nav-up', () => {
   send({ type: 'keypress', key: 'up' });
   vibe(12);
+  playClickSound();
 });
 bindAiRepeatKey('ai-nav-down', () => {
   send({ type: 'keypress', key: 'down' });
   vibe(12);
+  playClickSound();
 });
 bindAiRepeatKey('ai-nav-left', () => {
   send({ type: 'keypress', key: 'left' });
   vibe(12);
+  playClickSound();
 });
 bindAiRepeatKey('ai-nav-right', () => {
   send({ type: 'keypress', key: 'right' });
   vibe(12);
+  playClickSound();
 });
 
 // Prompt Chips
