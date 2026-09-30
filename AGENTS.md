@@ -8,3 +8,4 @@ Whenever you start a session in this repository, you MUST read `PROJECT_CONTEXT.
 3. Mobile client must stay lightweight (~20 MB Android APK). Do not bundle AI models in the mobile client.
 4. Active working branch: `test/concept-a-deck`.
 5. Background service: `digikeyboard.service` (restart via `pkill -f "/home/nino/digikeyboard/server.py"`).
+6. Respon pasca-tugas: Cukup jawab 'Selesai' atau 'Done' setelah tugas selesai, KECUALI jika pengguna secara eksplisit meminta penjelasan.
