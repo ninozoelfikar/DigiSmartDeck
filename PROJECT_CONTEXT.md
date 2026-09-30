@@ -115,3 +115,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Tombol `Bersihkan` dan `Kirim ke PC` diperbesar 30% dengan font 12.5px.
   - Checklist `Auto-Kirim` dipindahkan ke sisi kiri footer kolom transkrip berdampingan dengan tombol aksi.
 
+---
+
+## 8. CATATAN CHECKPOINT (v0.9.4 - AI Workstation Finalized, Centered Deck, & Refined OS Logos)
+- **AI Workstation Siap Produksi (Finalized):**
+  - Tata letak prompt deck, tuts enter besar, kontrol audio/mic, dan tombol transkripsi telah matang dan ergonomis.
+  - Mode siap untuk proses finishing komersial.
+- **Menu Deck Mengambang Rata Tengah (Center Modal):**
+  - Pop-up Menu Deck (`#control-deck`) kini rata tengah sempurna (vertikal & horizontal) dengan border keliling 16px dan backdrop blur elegan. Tampilan proporsional di tablet maupun ponsel pintar tanpa ruang kosong menganga.
+  - Bagian "Pilih Mode Kerja" di dalam menu telah dihapus karena sudah tersedia sebagai pintasan ghost icon di header bar atas.
+- **Scanner Multi-Kanal Pemulihan Koneksi Otomatis:**
+  - Modal reconnecting beroperasi 100% otomatis tanpa tombol manual membingungkan, memindai seluruh kanal (Wi-Fi LAN, Kabel USB, Bluetooth, Scan QR) dengan animasi radar pulse elegan.
+- **Kejernihan Garis Logo OS di Pengaturan:**
+  - Logo target sistem operasi (Windows, Apple, dan Linux Tux) disetel dengan ketebalan garis tipis (`stroke-width: 0.5px`) sehingga kontur, tekstur, dan bentuk khasnya tajam dan mudah dikenali.
+
+
