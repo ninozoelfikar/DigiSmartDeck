@@ -2883,7 +2883,7 @@ body.is-fullscreen {
 .ai-shortcuts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 28px 28px 28px 28px 1fr 1fr 1fr;
+  grid-template-rows: repeat(7, 1fr);
   gap: 3px;
   flex: 1;
   min-height: 0;
@@ -2918,11 +2918,6 @@ body.is-fullscreen {
 }
 .ai-btn-sh.span-2 {
   grid-column: span 2;
-}
-/* Tombol tool kecil (Copy, Paste, Esc, Tab, Backspace, Delete) */
-.ai-btn-sh.tool {
-  font-size: 8px;
-  padding: 0px 2px;
 }
 .ai-btn-sh.ai-prompt-chip {
   background: rgba(88, 166, 255, 0.08);
@@ -3123,8 +3118,8 @@ body.is-fullscreen {
 
 /* Trackpad area di bawah arrow */
 .ai-trackpad {
-  flex: 1;
-  min-height: 50px;
+  flex: 0 0 65px;
+  min-height: 65px;
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
   border-radius: 6px;
