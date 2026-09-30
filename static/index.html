@@ -2853,6 +2853,8 @@ body.is-fullscreen {
   border-radius: 8px;
   padding: 8px;
   gap: 6px;
+  overflow-y: auto;
+  min-height: 0;
 }
 .ai-panel-title {
   font-size: 10px;
@@ -2899,6 +2901,18 @@ body.is-fullscreen {
 }
 .ai-btn-sh.span-2 {
   grid-column: span 2;
+}
+.ai-btn-sh.ai-prompt-chip {
+  background: rgba(88, 166, 255, 0.08);
+  border-color: rgba(88, 166, 255, 0.25);
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
+}
+.ai-btn-sh.ai-prompt-chip:active {
+  background: rgba(88, 166, 255, 0.25);
+  border-color: var(--accent);
 }
 
 /* Center Column: Voice Typing / STT */
@@ -3149,51 +3163,7 @@ body.is-fullscreen {
   grid-row: 2;
 }
 
-/* Bottom Bar: Quick AI Prompt Starters */
-.ai-bottom-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 4px 2px;
-  background: var(--panel-bg);
-  border: 1px solid var(--key-border);
-  border-radius: 8px;
-  flex-shrink: 0;
-  scrollbar-width: none;
-}
-.ai-bottom-bar::-webkit-scrollbar {
-  display: none;
-}
-.ai-chip-title {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--text-dim);
-  padding: 0 6px;
-  white-space: nowrap;
-}
-.ai-prompt-chip {
-  background: var(--key-bg);
-  border: 1px solid var(--key-border);
-  color: var(--text);
-  font-size: 10.5px;
-  font-weight: 600;
-  padding: 5px 9px;
-  border-radius: 6px;
-  white-space: nowrap;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-}
-.ai-prompt-chip:active {
-  transform: translateY(1px);
-  background: rgba(88, 166, 255, 0.15);
-  border-color: var(--accent);
-  color: var(--accent);
-}
+
 
 /* ─── MODE KUSTOM (CUSTOM PAD VIEW) ─── */
 .custom-pad-view {
@@ -4610,6 +4580,21 @@ body.is-fullscreen {
             <span>Backspace</span>
             <span class="sh-sub">Hapus</span>
           </button>
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="lanjutkan" title="Ketik prompt: lanjutkan">
+            <span>Lanjutkan</span>
+          </button>
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="proceed" title="Ketik prompt: proceed">
+            <span>Proceed</span>
+          </button>
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="perbaiki bug" title="Ketik prompt: perbaiki bug">
+            <span>Perbaiki Bug</span>
+          </button>
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="buat dokumentasi" title="Ketik prompt: buat dokumentasi">
+            <span>Buat Dokumen</span>
+          </button>
+          <button type="button" class="ai-btn-sh ai-prompt-chip span-2" data-prompt="jadikan check point" title="Ketik prompt: jadikan check point">
+            <span>Jadikan Check Point</span>
+          </button>
         </div>
       </div>
 
@@ -4665,31 +4650,7 @@ body.is-fullscreen {
       </div>
     </div>
 
-    <!-- Bottom Bar: Template & Prefix Prompt Cepat -->
-    <div class="ai-bottom-bar">
-      <span class="ai-chip-title">TEMPLATE PROMPT CEPAT:</span>
-      <button type="button" class="ai-prompt-chip" data-prompt="Jelaskan kode/konsep berikut secara ringkas dan mudah dipahami:\n">
-        <span>Jelaskan Ini</span>
-      </button>
-      <button type="button" class="ai-prompt-chip" data-prompt="Temukan bug atau kesalahan pada kode berikut dan berikan solusinya:\n">
-        <span>Perbaiki Bug</span>
-      </button>
-      <button type="button" class="ai-prompt-chip" data-prompt="Optimalkan performa dan efisiensi memori dari kode berikut:\n">
-        <span>Refactor &amp; Optimasi</span>
-      </button>
-      <button type="button" class="ai-prompt-chip" data-prompt="Buatkan dokumentasi teknis dan cara penggunaan fungsi ini:\n">
-        <span>Buat Dokumentasi</span>
-      </button>
-      <button type="button" class="ai-prompt-chip" data-prompt="Buatkan unit test lengkap dengan edge case untuk kode berikut:\n">
-        <span>Buat Unit Test</span>
-      </button>
-      <button type="button" class="ai-prompt-chip" data-prompt="Lanjutkan penjelasan atau kode dari bagian terakhir:\n">
-        <span>Lanjutkan</span>
-      </button>
-      <button type="button" class="ai-prompt-chip" data-prompt="Sederhanakan kode berikut agar lebih bersih dan mudah dibaca:\n">
-        <span>Sederhanakan</span>
-      </button>
-    </div>
+
   </section>
 
 
@@ -9314,6 +9275,9 @@ bindAiKey('ai-btn-enter', () => {
   send({ type: 'keypress', key: 'enter' });
   vibe(25);
   playClickSound();
+  if (aiAutoSend) {
+    clearTranscriptUI();
+  }
 });
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });
@@ -9372,7 +9336,9 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     vibe(15);
     const promptText = chip.getAttribute('data-prompt');
     if (promptText) {
-      sendAiText(promptText);
+      sendAiText(promptText + ' ');
+      renderTranscriptPreview(promptText);
+      aiAccumulatedText = promptText;
     }
   });
 });
