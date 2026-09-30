@@ -188,25 +188,26 @@ except ImportError:
 WHISPER_AVAILABLE = False
 whisper_model = None
 whisper_loading = False
+current_whisper_model_name = os.environ.get("WHISPER_MODEL", "small")
 
-def init_whisper_engine():
-    global WHISPER_AVAILABLE, whisper_model, whisper_loading
-    if WHISPER_AVAILABLE and whisper_model:
+def init_whisper_engine(model_name=None):
+    global WHISPER_AVAILABLE, whisper_model, whisper_loading, current_whisper_model_name
+    target_model = model_name or current_whisper_model_name
+    if WHISPER_AVAILABLE and whisper_model and current_whisper_model_name == target_model:
         return True
-    if whisper_loading:
-        return False
     whisper_loading = True
     try:
         from faster_whisper import WhisperModel
-        print("[*] Menginisialisasi model AI Whisper Tiny...")
-        whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+        print(f"[*] Menginisialisasi model AI Whisper ({target_model})...")
+        whisper_model = WhisperModel(target_model, device="cpu", compute_type="int8", cpu_threads=6)
+        current_whisper_model_name = target_model
         WHISPER_AVAILABLE = True
         whisper_loading = False
-        print("[OK] Local AI Whisper STT Engine siap (Bebas Timeout & Bebas Beep).")
+        print(f"[OK] Local AI Whisper STT Engine ({target_model}) siap (Bebas Timeout & Bebas Beep).")
         return True
     except Exception as e:
         whisper_loading = False
-        print(f"[i] Whisper STT lokal belum aktif / tidak tersedia: {e}")
+        print(f"[i] Whisper STT lokal gagal dimuat: {e}")
         return False
 
 # Inisialisasi awal di thread terpisah agar server langsung up instan
@@ -855,17 +856,20 @@ async def websocket_handler(request):
                         'type': 'stt_status',
                         'available': WHISPER_AVAILABLE,
                         'loading': whisper_loading,
-                        'engine': 'whisper_tiny'
+                        'engine': f'whisper_{current_whisper_model_name}',
+                        'model': current_whisper_model_name
                     })
 
-                elif msg_type == 'init_whisper':
-                    if not WHISPER_AVAILABLE and not whisper_loading:
-                        asyncio.create_task(asyncio.to_thread(init_whisper_engine))
+                elif msg_type == 'init_whisper' or msg_type == 'set_whisper_model':
+                    target_m = data.get('model', current_whisper_model_name)
+                    if not whisper_loading:
+                        asyncio.create_task(asyncio.to_thread(init_whisper_engine, target_m))
                     await ws.send_json({
                         'type': 'stt_status',
                         'available': WHISPER_AVAILABLE,
                         'loading': whisper_loading,
-                        'engine': 'whisper_tiny'
+                        'engine': f'whisper_{target_m}',
+                        'model': target_m
                     })
 
                 elif msg_type == 'ai_stt_audio':
@@ -881,7 +885,14 @@ async def websocket_handler(request):
                             audio_bytes = base64.b64decode(audio_b64)
                             def _do_transcribe():
                                 buf = io.BytesIO(audio_bytes)
-                                segments, _ = whisper_model.transcribe(buf, language=lang_code, beam_size=1)
+                                initial_prompt = "Dikte percakapan bahasa Indonesia yang jelas, akurat, dan tepat." if lang_code == 'id' else "Clear, accurate prompt engineering commands and natural speech."
+                                segments, _ = whisper_model.transcribe(
+                                    buf,
+                                    language=lang_code,
+                                    beam_size=5,
+                                    vad_filter=True,
+                                    initial_prompt=initial_prompt
+                                )
                                 return ' '.join(s.text.strip() for s in segments).strip()
                             result_text = await asyncio.to_thread(_do_transcribe)
                             await ws.send_json({

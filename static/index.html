@@ -9001,7 +9001,8 @@ function updateAiMicUI() {
         statusEl.style.color = '#58a6ff';
       } else {
         if (aiSttEngine === 'whisper') {
-          statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Bebas Bunyi & Timeout)';
+          const modelLabel = (whisperActiveModel || 'small').toUpperCase();
+          statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (AI Whisper ${modelLabel} Pro)`;
         } else {
           statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte (Browser)';
         }
@@ -9053,11 +9054,19 @@ function renderTranscriptPreview(fullText) {
 // Menggunakan getUserMedia murni yang tidak pernah membunyikan chime OS Android
 // dan tidak pernah mati saat pengguna berhenti berbicara untuk berpikir.
 
+let whisperActiveModel = 'small';
+
 function onWhisperStatus(d) {
   whisperAvailable = !!d.available;
   whisperLoading = !!d.loading;
+  if (d.model) whisperActiveModel = d.model;
   if (!whisperAvailable && !whisperLoading && aiSttEngine === 'whisper') {
     send({ type: 'init_whisper' });
+  }
+  const statusEl = $('ai-mic-status');
+  if (statusEl && !aiSpeechWanted && aiSttEngine === 'whisper') {
+    const modelLabel = (whisperActiveModel || 'small').toUpperCase();
+    statusEl.textContent = `Ketuk Mic untuk Mulai Dikte (AI Whisper ${modelLabel} Pro)`;
   }
 }
 
