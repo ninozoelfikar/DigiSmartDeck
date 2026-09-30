@@ -2959,15 +2959,21 @@ body.is-fullscreen {
   height: 28px;
 }
 .ai-btn-mic.recording {
-  background: rgba(248, 81, 73, 0.2);
-  border-color: #f85149;
-  color: #f85149;
-  animation: ai-pulse 1.4s infinite;
+  background: rgba(46, 160, 67, 0.16);
+  border-color: #3fb950;
+  color: #3fb950;
+  animation: ai-pulse-green 1.8s infinite ease-in-out;
 }
-@keyframes ai-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.5); }
-  70% { box-shadow: 0 0 0 14px rgba(248, 81, 73, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+@keyframes ai-pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.65), 0 0 10px rgba(63, 185, 80, 0.4);
+  }
+  60% {
+    box-shadow: 0 0 0 14px rgba(63, 185, 80, 0), 0 0 16px rgba(63, 185, 80, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0), 0 0 8px rgba(63, 185, 80, 0.15);
+  }
 }
 .ai-mic-status-label {
   font-size: 11px;
@@ -8884,6 +8890,21 @@ let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
 let lastProcessedFinalIndex = -1;
 let aiAccumulatedText = '';
 
+function updateAiMicUI() {
+  const micBtn = $('btn-ai-mic');
+  const statusEl = $('ai-mic-status');
+  if (micBtn) micBtn.classList.toggle('recording', isAiRecording);
+  if (statusEl) {
+    if (isAiRecording) {
+      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+      statusEl.style.color = '#3fb950';
+    } else {
+      statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
+      statusEl.style.color = '';
+    }
+  }
+}
+
 function clearTranscriptUI() {
   aiAccumulatedText = '';
   const previewEl = $('ai-transcript-preview');
@@ -8963,10 +8984,10 @@ function createAndStartSpeechRecognition() {
       if (statusEl && isAiRecording) {
         if (interimText.trim()) {
           statusEl.textContent = 'Mendengar: ' + interimText.trim();
-          statusEl.style.color = '#58a6ff';
+          statusEl.style.color = '#3fb950';
         } else {
           statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
-          statusEl.style.color = '#f85149';
+          statusEl.style.color = '#3fb950';
         }
       }
 
@@ -8989,7 +9010,7 @@ function createAndStartSpeechRecognition() {
         isAiRecording = false;
         updateAiMicUI();
         if (statusEl) {
-          statusEl.textContent = 'Izin mic ditolak atau origin HTTP. Gunakan mic keyboard HP di kolom teks.';
+          statusEl.textContent = 'Izin mic ditolak atau origin HTTP.';
         }
       } else if (err.error === 'no-speech') {
         // Hening sesaat - biarkan tetap on melalui auto-restart onend
@@ -9026,7 +9047,7 @@ function createAndStartSpeechRecognition() {
     isAiRecording = false;
     updateAiMicUI();
     const statusEl = $('ai-mic-status');
-    if (statusEl) statusEl.textContent = 'Gagal memulai mic. Gunakan mic keyboard HP di kolom teks.';
+    if (statusEl) statusEl.textContent = 'Gagal memulai mic.';
     return null;
   }
 }
@@ -9037,27 +9058,22 @@ function toggleAiSpeech() {
 
   if (aiSpeechWanted || isAiRecording) {
     stopAiSpeechRecognition();
-    vibe(15);
     return;
   }
 
   if (!SpeechRecognition) {
     if (statusEl) statusEl.textContent = 'Browser tidak mendukung Web Speech API atau diblokir pada origin HTTP.';
-    vibe(20);
     return;
   }
 
   aiSpeechWanted = true;
   lastProcessedFinalIndex = -1;
   createAndStartSpeechRecognition();
-  vibe(30);
 }
 
 function sendAiText(txt) {
   if (!txt) return;
   send({ type: 'type_text', text: txt });
-  vibe(18);
-  playClickSound();
 }
 
 function bindAiKey(btnId, action) {
