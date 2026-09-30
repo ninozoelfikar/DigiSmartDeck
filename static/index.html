@@ -4634,17 +4634,20 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-sh tool" id="ai-btn-paste" title="Ctrl+V">
             <span>Paste</span>
           </button>
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-stop" title="Esc">
-            <span>Esc</span>
-          </button>
           <button type="button" class="ai-btn-sh tool" id="ai-btn-tab" title="Tab">
             <span>Tab</span>
           </button>
-          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-backspace" title="Backspace">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-shift-tab" title="Shift+Tab (Ubah Mode Acc/Edit/Plan)">
+            <span>Shift + Tab</span>
+          </button>
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-backspace" title="Backspace">
             <span>Backspace</span>
           </button>
-          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-delete" title="Delete">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-delete" title="Delete">
             <span>Delete</span>
+          </button>
+          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-stop" title="Esc">
+            <span>Esc</span>
           </button>
           <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="lanjutkan" title="Ketik prompt: lanjutkan">
             <span>Lanjutkan</span>
@@ -9416,6 +9419,11 @@ bindAiKey('ai-btn-stop', () => {
 });
 bindAiKey('ai-btn-tab', () => {
   send({ type: 'keypress', key: 'tab' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-shift-tab', () => {
+  send({ type: 'combo', keys: ['shift', 'tab'] });
   vibe(15);
   playClickSound();
 });
