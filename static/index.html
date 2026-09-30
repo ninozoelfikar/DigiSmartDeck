@@ -3039,22 +3039,16 @@ body.is-fullscreen {
   font-size: 13px;
   line-height: 1.45;
   color: var(--text);
-  background: transparent;
-  border: none;
-  outline: none;
-  resize: none;
-  box-sizing: border-box;
-  font-family: inherit;
+  overflow-y: auto;
   word-break: break-word;
-  padding: 0;
+  white-space: pre-wrap;
+  user-select: text;
+  -webkit-user-select: text;
 }
-.ai-transcript-text::placeholder {
+.ai-transcript-text.empty {
   color: var(--text-dim);
   font-style: italic;
   font-size: 11.5px;
-}
-.ai-transcript-text:focus {
-  outline: none;
 }
 .ai-transcript-actions {
   display: flex;
@@ -4659,15 +4653,15 @@ body.is-fullscreen {
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
           </button>
           <div class="ai-mic-status-label" id="ai-mic-status">Ketuk Mic untuk Mulai Dikte</div>
-          <div class="ai-mic-hint">Bicara langsung ke mikrofon HP atau ketuk kolom teks di bawah untuk mic keyboard HP</div>
+          <div class="ai-mic-hint">Bicara langsung ke mikrofon HP, ucapan terekam terus menerus sampai tombol kirim ditekan</div>
         </div>
 
         <!-- Input Tersembunyi untuk Kompatibilitas -->
         <input type="hidden" id="ai-voice-input">
 
-        <!-- Kolom Hasil Ucapan yang Menampung Semua Karakter & Dapat Diedit Langsung -->
+        <!-- Kolom Hasil Ucapan yang Menampung Semua Karakter Secara Berkesinambungan -->
         <div class="ai-transcript-box">
-          <textarea id="ai-transcript-preview" class="ai-transcript-text" rows="3" placeholder="Hasil ucapan akan tertampung di sini. Anda dapat mengetik, mengedit, atau menggunakan mic keyboard HP sebelum dikirim..."></textarea>
+          <div class="ai-transcript-text empty" id="ai-transcript-preview">Hasil ucapan Anda akan muncul di sini secara berkesinambungan...</div>
           <div class="ai-transcript-actions">
             <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Kosongkan</button>
             <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
@@ -8881,30 +8875,29 @@ let isAiRecording = false;
 let aiSpeechWanted = false; // Keinginan user: apakah mic harus terus aktif
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
-let lastProcessedFinalIndex = -1;
+let aiAccumulatedText = '';
 
-function updateAiMicUI() {
-  const micBtn = $('btn-ai-mic');
-  const statusEl = $('ai-mic-status');
-  if (micBtn) micBtn.classList.toggle('recording', isAiRecording);
-  if (statusEl) {
-    if (isAiRecording) {
-      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
-      statusEl.style.color = '#f85149';
-    } else {
-      statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
-      statusEl.style.color = '';
-    }
+function clearTranscriptUI() {
+  aiAccumulatedText = '';
+  const previewEl = $('ai-transcript-preview');
+  if (previewEl) {
+    previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara berkesinambungan...';
+    previewEl.classList.add('empty');
   }
 }
 
-function appendTranscriptText(text) {
-  if (!text) return;
+function updateTranscriptUI(interimText) {
   const previewEl = $('ai-transcript-preview');
   if (!previewEl) return;
-  const cur = previewEl.value.trim();
-  previewEl.value = cur ? (cur + ' ' + text) : text;
-  previewEl.scrollTop = previewEl.scrollHeight;
+  const fullText = (aiAccumulatedText + (interimText ? (' ' + interimText) : '')).trim();
+  if (fullText) {
+    previewEl.textContent = fullText;
+    previewEl.classList.remove('empty');
+    previewEl.scrollTop = previewEl.scrollHeight;
+  } else {
+    previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara berkesinambungan...';
+    previewEl.classList.add('empty');
+  }
 }
 
 function stopAiSpeechRecognition() {
@@ -8967,11 +8960,14 @@ function createAndStartSpeechRecognition() {
       }
 
       if (newlyFinalText.trim()) {
-        appendTranscriptText(newlyFinalText.trim());
+        aiAccumulatedText += (aiAccumulatedText ? ' ' : '') + newlyFinalText.trim();
         if (aiAutoSend) {
           sendAiText(newlyFinalText.trim() + ' ');
         }
       }
+
+      // Update tampilan box ucapan secara berkesinambungan
+      updateTranscriptUI(interimText.trim());
     };
 
     recognition.onerror = (err) => {
@@ -9150,21 +9146,6 @@ function bindAiRepeatKey(btnId, action) {
 // Pasang kontrol tombol mic AI Workstation (touch & click)
 bindAiKey('btn-ai-mic', toggleAiSpeech);
 
-// Event listener textarea pratinjau transkrip
-const transcriptPreview = $('ai-transcript-preview');
-if (transcriptPreview) {
-  transcriptPreview.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      const val = transcriptPreview.value.trim();
-      if (val) {
-        sendAiText(val + ' ');
-        transcriptPreview.value = '';
-      }
-    }
-  });
-}
-
 bindAiKey('btn-exit-ai', () => switchAppMode('standard'));
 
 // Bahasa Dikte
@@ -9237,26 +9218,18 @@ if (lblAutoSend) {
 
 // Tombol Transcript (Kosongkan & Kirim ke PC)
 bindAiKey('btn-ai-tr-clear', () => {
-  const previewEl = $('ai-transcript-preview');
-  if (previewEl) {
-    previewEl.value = '';
-  }
-  const voiceInput = $('ai-voice-input');
-  if (voiceInput) {
-    voiceInput.value = '';
-  }
+  clearTranscriptUI();
   vibe(10);
 });
 
 bindAiKey('btn-ai-tr-send', () => {
-  const previewEl = $('ai-transcript-preview');
-  if (previewEl) {
-    const text = previewEl.value.trim();
-    if (text) {
-      sendAiText(text + ' ');
-      previewEl.value = '';
-    }
+  const textToSend = aiAccumulatedText.trim();
+  if (textToSend) {
+    sendAiText(textToSend + ' ');
   }
+  // Box otomatis dikosongkan setelah kirim
+  clearTranscriptUI();
+  vibe(10);
 });
 
 // Enter & Navigasi
