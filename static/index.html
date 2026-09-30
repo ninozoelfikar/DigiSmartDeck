@@ -2839,13 +2839,13 @@ body.is-fullscreen {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 135px 1fr 145px;
-  gap: 6px;
+  grid-template-columns: 152px 1fr 168px;
+  gap: 8px;
 }
 @media (max-width: 768px) {
   .ai-main-grid {
-    grid-template-columns: 125px 1fr 135px;
-    gap: 5px;
+    grid-template-columns: 138px 1fr 150px;
+    gap: 7px;
   }
 }
 @media (max-width: 580px) {
@@ -2953,8 +2953,8 @@ body.is-fullscreen {
   flex-shrink: 0;
 }
 .ai-btn-mic {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: rgba(88, 166, 255, 0.12);
   border: 2px solid var(--accent);
@@ -2969,8 +2969,8 @@ body.is-fullscreen {
   flex-shrink: 0;
 }
 .ai-btn-mic svg {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
 }
 .ai-btn-mic.recording {
   background: rgba(46, 160, 67, 0.16);
@@ -3080,8 +3080,17 @@ body.is-fullscreen {
 }
 
 @media (min-height: 480px) and (min-width: 680px) {
+  .ai-btn-mic {
+    width: 60px;
+    height: 60px;
+  }
+  .ai-btn-mic svg {
+    width: 30px;
+    height: 30px;
+  }
   .ai-tablet-keyboard {
     display: flex;
+    margin-top: 8px;
   }
   .ai-transcript-box {
     flex: 1;
