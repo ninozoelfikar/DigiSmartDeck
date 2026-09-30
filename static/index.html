@@ -1506,8 +1506,8 @@ body.is-fullscreen {
   background: #161b22;
   border: 1px solid rgba(248, 81, 73, 0.4);
   border-radius: 14px;
-  width: min(540px, 94vw);
-  max-width: 580px;
+  width: min(450px, 92vw);
+  max-width: 460px;
   padding: 24px 22px 20px 22px;
   display: flex;
   flex-direction: column;
@@ -1588,21 +1588,20 @@ body.is-fullscreen {
 
 .rc-modal-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .rc-btn {
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
   color: var(--text);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 8px 13px;
-  border-radius: 6px;
+  padding: 9px 16px;
+  border-radius: 7px;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap !important;
@@ -1610,7 +1609,7 @@ body.is-fullscreen {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  flex: 1 1 auto;
+  flex: 1;
 }
 
 .rc-btn:active {
@@ -4180,23 +4179,15 @@ body.is-fullscreen {
       </div>
       <div class="rc-modal-actions">
         <button type="button" class="rc-btn primary" id="btn-rc-retry" title="Coba hubungkan sekarang">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
           <span>Coba Lagi</span>
         </button>
         <button type="button" class="rc-btn" id="btn-rc-usb" title="Gunakan Kabel USB">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           <span>Mode USB</span>
         </button>
-        <button type="button" class="rc-btn" id="btn-rc-bt" title="Gunakan Bluetooth HID Hardware">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
-          <span>Bluetooth</span>
-        </button>
-        <button type="button" class="rc-btn" id="btn-rc-scan" title="Pindai IP PC di jaringan Wi-Fi">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span>Pindai PC</span>
-        </button>
         <button type="button" class="rc-btn rc-close-btn" id="btn-rc-close" title="Tutup Popup">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
       </div>
     </div>
