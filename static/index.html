@@ -9713,12 +9713,8 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     playClickSound();
     vibe(12);
 
-    aiAccumulatedText += char;
-    renderTranscriptPreview(aiAccumulatedText);
-
-    if (aiAutoSend) {
-      sendAiText(char);
-    }
+    // Ketik langsung ke PC target (terminal, editor, ChatGPT, dll)
+    send({ type: 'type_text', text: char });
 
     if (isShift && !isSymbolMode) {
       isShift = false;
@@ -9753,26 +9749,16 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
   if (btnBackspace) {
     bindAiRepeatKey(btnBackspace, () => {
-      if (aiAccumulatedText && aiAccumulatedText.length > 0) {
-        aiAccumulatedText = aiAccumulatedText.slice(0, -1);
-        renderTranscriptPreview(aiAccumulatedText);
-        if (aiAutoSend) {
-          send({ type: 'keypress', key: 'backspace' });
-        }
-      } else {
-        send({ type: 'keypress', key: 'backspace' });
-      }
+      // Hapus karakter langsung di PC target
+      send({ type: 'keypress', key: 'backspace' });
     });
   }
 
   if (btnEnter) {
     bindAiKey(btnEnter, () => {
-      commitCurrentSession();
-      const textToSend = aiAccumulatedText.trim();
-      if (textToSend) {
-        sendAiText(textToSend + ' ');
-        clearTranscriptUI();
-      }
+      // Eksekusi Enter langsung di PC target
+      playClickSound();
+      vibe(20);
       send({ type: 'keypress', key: 'enter' });
     });
   }
