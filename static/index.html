@@ -3021,7 +3021,7 @@ body.is-fullscreen {
 /* Transcript preview box */
 .ai-transcript-box {
   flex: 1;
-  min-height: 50px;
+  min-height: 80px;
   background: var(--bg);
   border: 1px solid var(--key-border);
   border-radius: 6px;
@@ -3029,20 +3029,32 @@ body.is-fullscreen {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   overflow: hidden;
 }
 .ai-transcript-text {
-  font-size: 12px;
-  line-height: 1.4;
+  width: 100%;
+  flex: 1;
+  min-height: 60px;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--text);
-  max-height: 64px;
-  overflow-y: auto;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+  font-family: inherit;
   word-break: break-word;
+  padding: 0;
 }
-.ai-transcript-text.empty {
+.ai-transcript-text::placeholder {
   color: var(--text-dim);
   font-style: italic;
+  font-size: 11.5px;
+}
+.ai-transcript-text:focus {
+  outline: none;
 }
 .ai-transcript-actions {
   display: flex;
@@ -4579,7 +4591,7 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
         </div>
         <label class="ai-autosend-label" title="Kirim teks otomatis ke PC setiap selesai berbicara">
-          <input type="checkbox" id="ai-autosend-chk" checked>
+          <input type="checkbox" id="ai-autosend-chk">
           <span>Auto-Kirim</span>
         </label>
       </div>
@@ -4647,17 +4659,15 @@ body.is-fullscreen {
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
           </button>
           <div class="ai-mic-status-label" id="ai-mic-status">Ketuk Mic untuk Mulai Dikte</div>
-          <div class="ai-mic-hint">Bicara langsung ke mikrofon HP, teks otomatis diketik ke kursor PC</div>
+          <div class="ai-mic-hint">Bicara langsung ke mikrofon HP atau ketuk kolom teks di bawah untuk mic keyboard HP</div>
         </div>
 
-        <!-- Input Cepat Suara / Keyboard HP -->
-        <div class="ai-voice-input-wrap">
-          <input type="text" id="ai-voice-input" class="ai-voice-input" placeholder="Atau ketuk di sini untuk mic keyboard HP..." autocomplete="off">
-          <button type="button" class="ai-btn-input-send" id="btn-ai-input-send">Kirim</button>
-        </div>
+        <!-- Input Tersembunyi untuk Kompatibilitas -->
+        <input type="hidden" id="ai-voice-input">
 
+        <!-- Kolom Hasil Ucapan yang Menampung Semua Karakter & Dapat Diedit Langsung -->
         <div class="ai-transcript-box">
-          <div class="ai-transcript-text empty" id="ai-transcript-preview">Hasil ucapan Anda akan muncul di sini secara real-time...</div>
+          <textarea id="ai-transcript-preview" class="ai-transcript-text" rows="3" placeholder="Hasil ucapan akan tertampung di sini. Anda dapat mengetik, mengedit, atau menggunakan mic keyboard HP sebelum dikirim..."></textarea>
           <div class="ai-transcript-actions">
             <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Kosongkan</button>
             <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
@@ -4681,10 +4691,10 @@ body.is-fullscreen {
         </div>
 
         <div class="ai-nav-pad">
-          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Prompt Sebelumnya di Terminal/Chat (Panah Atas)">Atas</button>
-          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Geser Kursor ke Kiri (Panah Kiri)">Kiri</button>
-          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Prompt Berikutnya di Terminal/Chat (Panah Bawah)">Bawah</button>
-          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Geser Kursor ke Kanan (Panah Kanan)">Kanan</button>
+          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Panah Atas"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Panah Kiri"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Panah Bawah"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Panah Kanan"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
       </div>
     </div>
@@ -8868,9 +8878,10 @@ window.addEventListener('resize', () => {
 // ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & VOICE DECK) ───
 let aiSpeechRecognition = null;
 let isAiRecording = false;
+let aiSpeechWanted = false; // Keinginan user: apakah mic harus terus aktif
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
-let aiAutoSend = localStorage.getItem('digi_ai_autosend') !== 'false';
-let aiAccumulatedText = '';
+let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
+let lastProcessedFinalIndex = -1;
 
 function updateAiMicUI() {
   const micBtn = $('btn-ai-mic');
@@ -8887,7 +8898,17 @@ function updateAiMicUI() {
   }
 }
 
+function appendTranscriptText(text) {
+  if (!text) return;
+  const previewEl = $('ai-transcript-preview');
+  if (!previewEl) return;
+  const cur = previewEl.value.trim();
+  previewEl.value = cur ? (cur + ' ' + text) : text;
+  previewEl.scrollTop = previewEl.scrollHeight;
+}
+
 function stopAiSpeechRecognition() {
+  aiSpeechWanted = false;
   if (aiSpeechRecognition) {
     try {
       aiSpeechRecognition.abort();
@@ -8895,32 +8916,13 @@ function stopAiSpeechRecognition() {
     aiSpeechRecognition = null;
   }
   isAiRecording = false;
+  lastProcessedFinalIndex = -1;
   updateAiMicUI();
 }
 
-function toggleAiSpeech() {
+function createAndStartSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const statusEl = $('ai-mic-status');
-
-  if (isAiRecording) {
-    stopAiSpeechRecognition();
-    return;
-  }
-
-  // Jika Web Speech API tidak didukung pada browser ini
-  if (!SpeechRecognition) {
-    if (statusEl) statusEl.textContent = 'Browser ini tidak mendukung Web Speech API. Gunakan mic keyboard HP di bawah.';
-    const inputEl = $('ai-voice-input');
-    if (inputEl) inputEl.focus();
-    vibe(20);
-    return;
-  }
-
-  // Hentikan sesi sebelumnya jika ada
-  if (aiSpeechRecognition) {
-    try { aiSpeechRecognition.abort(); } catch(e) {}
-    aiSpeechRecognition = null;
-  }
+  if (!SpeechRecognition) return null;
 
   try {
     const recognition = new SpeechRecognition();
@@ -8931,80 +8933,119 @@ function toggleAiSpeech() {
     recognition.onstart = () => {
       isAiRecording = true;
       updateAiMicUI();
-      vibe(30);
     };
 
     recognition.onresult = (event) => {
       let interimText = '';
-      let finalText = '';
+      let newlyFinalText = '';
 
       for (let i = event.resultIndex; i < event.results.length; ++i) {
-        const t = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalText += t;
+        const item = event.results[i];
+        if (item.isFinal) {
+          // Hanya proses indeks final yang belum pernah diproses
+          if (i > lastProcessedFinalIndex) {
+            lastProcessedFinalIndex = i;
+            const piece = item[0].transcript.trim();
+            if (piece) {
+              newlyFinalText += (newlyFinalText ? ' ' : '') + piece;
+            }
+          }
         } else {
-          interimText += t;
+          interimText += item[0].transcript;
         }
       }
 
-      const previewEl = $('ai-transcript-preview');
-      const displayStr = (finalText || interimText).trim();
-      if (previewEl && displayStr) {
-        previewEl.textContent = displayStr;
-        previewEl.classList.remove('empty');
+      const statusEl = $('ai-mic-status');
+      if (statusEl && isAiRecording) {
+        if (interimText.trim()) {
+          statusEl.textContent = 'Mendengar: ' + interimText.trim();
+          statusEl.style.color = '#58a6ff';
+        } else {
+          statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+          statusEl.style.color = '#f85149';
+        }
       }
 
-      const voiceInput = $('ai-voice-input');
-      if (voiceInput && displayStr) {
-        voiceInput.value = displayStr;
-      }
-
-      if (finalText.trim()) {
-        aiAccumulatedText += (aiAccumulatedText ? ' ' : '') + finalText.trim();
+      if (newlyFinalText.trim()) {
+        appendTranscriptText(newlyFinalText.trim());
         if (aiAutoSend) {
-          sendAiText(finalText.trim() + ' ');
+          sendAiText(newlyFinalText.trim() + ' ');
         }
       }
     };
 
     recognition.onerror = (err) => {
       console.warn('[AI Speech Error]:', err.error);
-      isAiRecording = false;
-      updateAiMicUI();
-      if (statusEl) {
-        if (err.error === 'not-allowed') {
-          statusEl.textContent = 'Izin mic ditolak atau origin HTTP. Gunakan input mic keyboard HP di bawah.';
-          const inputEl = $('ai-voice-input');
-          if (inputEl) inputEl.focus();
-        } else if (err.error === 'no-speech') {
-          statusEl.textContent = 'Suara tidak terdeteksi. Silakan coba lagi.';
-        } else if (err.error === 'network') {
-          statusEl.textContent = 'Koneksi speech gagal. Gunakan input mic keyboard HP di bawah.';
-          const inputEl = $('ai-voice-input');
-          if (inputEl) inputEl.focus();
-        } else {
-          statusEl.textContent = 'Status Mic: ' + err.error;
+      const statusEl = $('ai-mic-status');
+      if (err.error === 'not-allowed') {
+        aiSpeechWanted = false;
+        isAiRecording = false;
+        updateAiMicUI();
+        if (statusEl) {
+          statusEl.textContent = 'Izin mic ditolak atau origin HTTP. Gunakan mic keyboard HP di kolom teks.';
         }
+      } else if (err.error === 'no-speech') {
+        // Hening sesaat - biarkan tetap on melalui auto-restart onend
+      } else if (err.error === 'network') {
+        if (statusEl) statusEl.textContent = 'Koneksi speech terputus. Mencoba menghubungkan kembali...';
       }
     };
 
     recognition.onend = () => {
-      isAiRecording = false;
-      updateAiMicUI();
+      if (aiSpeechWanted) {
+        // Biarkan mic on terus: otomatis sambung ulang jika berhenti sendiri
+        lastProcessedFinalIndex = -1;
+        setTimeout(() => {
+          if (aiSpeechWanted) {
+            try {
+              aiSpeechRecognition = createAndStartSpeechRecognition();
+            } catch(e) {
+              console.warn('[AI Speech Restart exception]:', e);
+            }
+          }
+        }, 200);
+      } else {
+        isAiRecording = false;
+        updateAiMicUI();
+      }
     };
 
-    aiSpeechRecognition = recognition;
     recognition.start();
-    isAiRecording = true;
-    updateAiMicUI();
-  } catch (err) {
+    aiSpeechRecognition = recognition;
+    return recognition;
+  } catch(err) {
     console.error('[SpeechRecognition Start Exception]:', err);
+    aiSpeechWanted = false;
     isAiRecording = false;
     updateAiMicUI();
-    if (statusEl) statusEl.textContent = 'Gagal memulai mic. Gunakan input mic keyboard HP di bawah.';
-    const inputEl = $('ai-voice-input');
-    if (inputEl) inputEl.focus();
+    const statusEl = $('ai-mic-status');
+    if (statusEl) statusEl.textContent = 'Gagal memulai mic. Gunakan mic keyboard HP di kolom teks.';
+    return null;
   }
+}
+
+function toggleAiSpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const statusEl = $('ai-mic-status');
+
+  if (aiSpeechWanted || isAiRecording) {
+    stopAiSpeechRecognition();
+    vibe(15);
+    return;
+  }
+
+  if (!SpeechRecognition) {
+    if (statusEl) statusEl.textContent = 'Browser ini tidak mendukung Web Speech API. Gunakan mic keyboard HP di kolom teks.';
+    const previewEl = $('ai-transcript-preview');
+    if (previewEl) previewEl.focus();
+    vibe(20);
+    return;
+  }
+
+  aiSpeechWanted = true;
+  lastProcessedFinalIndex = -1;
+  createAndStartSpeechRecognition();
+  vibe(30);
 }
 
 function sendAiText(txt) {
@@ -9034,51 +9075,95 @@ function bindAiKey(btnId, action) {
   });
 }
 
+// Handler khusus tombol yang bisa ditahan (repeat on hold: backspace, panah navigasi)
+function bindAiRepeatKey(btnId, action) {
+  const el = typeof btnId === 'string' ? $(btnId) : btnId;
+  if (!el) return;
+
+  let delayTimer = null;
+  let intervalTimer = null;
+  let isPressed = false;
+  let lastTouchTime = 0;
+
+  function doAction() {
+    action();
+  }
+
+  function start(e) {
+    if (e) {
+      e.stopPropagation();
+      if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+    }
+    if (isPressed) return;
+    isPressed = true;
+    el.classList.add('pressed');
+    doAction();
+
+    clearTimeout(delayTimer);
+    clearInterval(intervalTimer);
+
+    // Standar repeat PC: delay 350ms, kemudian interval 50ms (~20 kali per detik)
+    delayTimer = setTimeout(() => {
+      intervalTimer = setInterval(() => {
+        if (isPressed) {
+          doAction();
+        }
+      }, 50);
+    }, 350);
+  }
+
+  function stop(e) {
+    if (e) e.stopPropagation();
+    isPressed = false;
+    el.classList.remove('pressed');
+    if (delayTimer) { clearTimeout(delayTimer); delayTimer = null; }
+    if (intervalTimer) { clearInterval(intervalTimer); intervalTimer = null; }
+  }
+
+  el.addEventListener('touchstart', (e) => {
+    lastTouchTime = Date.now();
+    start(e);
+  }, { passive: false });
+
+  el.addEventListener('touchend', (e) => {
+    if (e.cancelable) e.preventDefault();
+    stop(e);
+  }, { passive: false });
+
+  el.addEventListener('touchcancel', stop, { passive: false });
+
+  el.addEventListener('mousedown', (e) => {
+    if (Date.now() - lastTouchTime < 450) return;
+    if (e.button !== 0) return;
+    start(e);
+  });
+
+  el.addEventListener('mouseup', stop);
+  el.addEventListener('mouseleave', stop);
+
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+  });
+}
+
 // Pasang kontrol tombol mic AI Workstation (touch & click)
 bindAiKey('btn-ai-mic', toggleAiSpeech);
 
-// Input Suara Keyboard HP Alternatif
-const voiceInput = $('ai-voice-input');
-
-if (voiceInput) {
-  voiceInput.addEventListener('input', () => {
-    const text = voiceInput.value;
-    const previewEl = $('ai-transcript-preview');
-    if (previewEl && text.trim()) {
-      previewEl.textContent = text;
-      previewEl.classList.remove('empty');
-    }
-  });
-
-  voiceInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+// Event listener textarea pratinjau transkrip
+const transcriptPreview = $('ai-transcript-preview');
+if (transcriptPreview) {
+  transcriptPreview.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      const text = voiceInput.value.trim();
-      if (text) {
-        sendAiText(text + '\n');
-        voiceInput.value = '';
-        const previewEl = $('ai-transcript-preview');
-        if (previewEl) {
-          previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
-          previewEl.classList.add('empty');
-        }
+      const val = transcriptPreview.value.trim();
+      if (val) {
+        sendAiText(val + ' ');
+        transcriptPreview.value = '';
       }
     }
   });
 }
-
-bindAiKey('btn-ai-input-send', () => {
-  const text = voiceInput ? voiceInput.value.trim() : '';
-  if (text) {
-    sendAiText(text + ' ');
-    if (voiceInput) voiceInput.value = '';
-    const previewEl = $('ai-transcript-preview');
-    if (previewEl) {
-      previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
-      previewEl.classList.add('empty');
-    }
-  }
-});
 
 bindAiKey('btn-exit-ai', () => switchAppMode('standard'));
 
@@ -9090,10 +9175,10 @@ function setAiLang(lang) {
   const btnEn = $('btn-ai-lang-en');
   if (btnId) btnId.classList.toggle('active', lang === 'id-ID');
   if (btnEn) btnEn.classList.toggle('active', lang === 'en-US');
-  if (aiSpeechRecognition) {
+  if (aiSpeechWanted && aiSpeechRecognition) {
     try {
-      aiSpeechRecognition.lang = lang;
-    } catch (e) {}
+      aiSpeechRecognition.abort();
+    } catch(e) {}
   }
   vibe(10);
 }
@@ -9154,22 +9239,22 @@ if (lblAutoSend) {
 bindAiKey('btn-ai-tr-clear', () => {
   const previewEl = $('ai-transcript-preview');
   if (previewEl) {
-    previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
-    previewEl.classList.add('empty');
+    previewEl.value = '';
   }
+  const voiceInput = $('ai-voice-input');
   if (voiceInput) {
     voiceInput.value = '';
   }
-  aiAccumulatedText = '';
   vibe(10);
 });
 
 bindAiKey('btn-ai-tr-send', () => {
   const previewEl = $('ai-transcript-preview');
-  if (previewEl && !previewEl.classList.contains('empty')) {
-    const text = previewEl.textContent.trim();
+  if (previewEl) {
+    const text = previewEl.value.trim();
     if (text) {
       sendAiText(text + ' ');
+      previewEl.value = '';
     }
   }
 });
@@ -9210,35 +9295,39 @@ bindAiKey('ai-btn-tab', () => {
   vibe(15);
   playClickSound();
 });
-bindAiKey('ai-btn-backspace', () => {
+
+// Tombol Backspace dengan dukungan repeat saat ditahan
+bindAiRepeatKey('ai-btn-backspace', () => {
   send({ type: 'keypress', key: 'backspace' });
-  vibe(15);
-  playClickSound();
-});
-bindAiKey('ai-btn-space', () => {
-  send({ type: 'keypress', key: 'space' });
-  vibe(15);
+  vibe(12);
   playClickSound();
 });
 
-bindAiKey('ai-nav-up', () => {
+bindAiRepeatKey('ai-btn-space', () => {
+  send({ type: 'keypress', key: 'space' });
+  vibe(12);
+  playClickSound();
+});
+
+// Tombol Navigasi Kursor dengan dukungan repeat saat ditahan
+bindAiRepeatKey('ai-nav-up', () => {
   send({ type: 'keypress', key: 'up' });
-  vibe(15);
+  vibe(12);
   playClickSound();
 });
-bindAiKey('ai-nav-down', () => {
+bindAiRepeatKey('ai-nav-down', () => {
   send({ type: 'keypress', key: 'down' });
-  vibe(15);
+  vibe(12);
   playClickSound();
 });
-bindAiKey('ai-nav-left', () => {
+bindAiRepeatKey('ai-nav-left', () => {
   send({ type: 'keypress', key: 'left' });
-  vibe(15);
+  vibe(12);
   playClickSound();
 });
-bindAiKey('ai-nav-right', () => {
+bindAiRepeatKey('ai-nav-right', () => {
   send({ type: 'keypress', key: 'right' });
-  vibe(15);
+  vibe(12);
   playClickSound();
 });
 
