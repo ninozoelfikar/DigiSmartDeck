@@ -77,6 +77,7 @@ Pengguna meminta pembuatan dua kondisi pembanding secara berdampingan untuk meng
 3. Klien frontend (`static/index.html`):
    - Jika diakses via `http://[IP]:8080`: Otomatis mengaktifkan engine `whisper` sebagai default. Badge menampilkan: `AI WORKSTATION - WHISPER AI MIC (PORT 8080)`.
    - Jika diakses via `http://[IP]:8081`: Otomatis mengaktifkan engine `browser` sebagai default. Badge menampilkan: `AI WORKSTATION - GOOGLE SPEECH (PORT 8081)`.
+   - Pada Port 8081 (Google Speech), mic sengaja diatur berhenti secara natural saat hening (tanpa auto-restart paksa), sehingga tidak menimbulkan chime berulang-ulang dan dapat dibandingkan secara murni dengan Port 8080 (Whisper AI Mic).
    - Pengguna dapat membuka kedua URL di tab browser terpisah untuk membandingkan akurasi kalimat dan kenyamanan jeda secara langsung.
 
 ---

@@ -9459,16 +9459,9 @@ function startAiSpeechSession() {
     recognition.onend = () => {
       isAiRecording = false;
       isAiStarting = false;
+      aiSpeechWanted = false; // Google Mic berhenti natural saat hening, tanpa auto-restart paksa
       commitCurrentSession();
-      if (aiSpeechWanted) {
-        setTimeout(() => {
-          if (aiSpeechWanted) {
-            startAiSpeechSession();
-          }
-        }, 120);
-      } else {
-        updateAiMicUI();
-      }
+      updateAiMicUI();
     };
 
     recognition.start();
@@ -9478,13 +9471,8 @@ function startAiSpeechSession() {
     console.warn('[SpeechRecognition Start Exception]:', err);
     isAiStarting = false;
     isAiRecording = false;
-    if (aiSpeechWanted) {
-      setTimeout(() => {
-        if (aiSpeechWanted) startAiSpeechSession();
-      }, 300);
-    } else {
-      updateAiMicUI();
-    }
+    aiSpeechWanted = false;
+    updateAiMicUI();
     return null;
   }
 }
