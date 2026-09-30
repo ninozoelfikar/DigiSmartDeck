@@ -3053,13 +3053,13 @@ body.is-fullscreen {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3px 2px;
-  gap: 4px;
+  padding: 4px 2px;
+  gap: 6px;
   flex-shrink: 0;
 }
 .ai-btn-mic {
-  width: 52px;
-  height: 52px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: rgba(88, 166, 255, 0.12);
   border: 2px solid var(--accent);
@@ -3074,8 +3074,8 @@ body.is-fullscreen {
   flex-shrink: 0;
 }
 .ai-btn-mic svg {
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
 }
 .ai-btn-mic.recording {
   background: rgba(46, 160, 67, 0.16);
@@ -3095,19 +3095,14 @@ body.is-fullscreen {
   }
 }
 .ai-mic-status-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text);
   text-align: center;
+  letter-spacing: 0.2px;
 }
 .ai-mic-hint {
-  font-size: 8.5px;
-  color: var(--text-dim);
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 95%;
+  display: none !important;
 }
 
 /* Transcript preview box */
@@ -3145,23 +3140,35 @@ body.is-fullscreen {
 }
 .ai-transcript-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   flex-shrink: 0;
+  padding-top: 2px;
+}
+.ai-tr-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .ai-btn-tr-act {
   background: var(--key-bg);
   border: 1px solid var(--key-border);
-  color: var(--text-dim);
-  font-size: 9.5px;
+  color: var(--text);
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 5px 12px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+.ai-btn-tr-act:active {
+  transform: translateY(1px);
 }
 .ai-btn-tr-act:hover {
-  color: var(--text);
+  color: #fff;
   border-color: var(--accent);
 }
 .ai-btn-tr-act.primary {
@@ -3476,12 +3483,16 @@ body.is-fullscreen {
     display: none;
   }
   .ai-btn-mic {
-    width: 38px;
-    height: 38px;
+    width: 50px;
+    height: 50px;
   }
   .ai-btn-mic svg {
-    width: 18px;
-    height: 18px;
+    width: 25px;
+    height: 25px;
+  }
+  .ai-btn-tr-act {
+    font-size: 11px;
+    padding: 4px 10px;
   }
   .ai-nav-pad {
     flex: 0 0 52px;
@@ -4886,10 +4897,6 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
           <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
         </div>
-        <label class="ai-autosend-label" title="Kirim teks otomatis ke PC setiap selesai berbicara">
-          <input type="checkbox" id="ai-autosend-chk">
-          <span>Auto-Kirim</span>
-        </label>
       </div>
 
       <div class="ai-right-meta">
@@ -4965,7 +4972,6 @@ body.is-fullscreen {
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
           </button>
           <div class="ai-mic-status-label" id="ai-mic-status">Ketuk Mic untuk Mulai Dikte</div>
-          <div class="ai-mic-hint">Bicara langsung ke mikrofon HP, ucapan terekam terus menerus sampai tombol kirim ditekan</div>
         </div>
 
         <!-- Input Tersembunyi untuk Kompatibilitas -->
@@ -4975,8 +4981,14 @@ body.is-fullscreen {
         <div class="ai-transcript-box">
           <div class="ai-transcript-text empty" id="ai-transcript-preview">Hasil ucapan Anda akan muncul di sini secara berkesinambungan...</div>
           <div class="ai-transcript-actions">
-            <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Bersihkan</button>
-            <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
+            <label class="ai-autosend-label" title="Kirim teks otomatis ke PC setiap selesai berbicara">
+              <input type="checkbox" id="ai-autosend-chk">
+              <span>Auto-Kirim</span>
+            </label>
+            <div class="ai-tr-btns">
+              <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Bersihkan</button>
+              <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
+            </div>
           </div>
         </div>
 
