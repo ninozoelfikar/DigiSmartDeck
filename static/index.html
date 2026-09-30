@@ -8942,10 +8942,10 @@ function mergeTranscripts(existing, incoming) {
 function updateAiMicUI() {
   const micBtn = $('btn-ai-mic');
   const statusEl = $('ai-mic-status');
-  if (micBtn) micBtn.classList.toggle('recording', isAiRecording);
+  if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
   if (statusEl) {
-    if (isAiRecording) {
-      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Jeda)';
+    if (aiSpeechWanted) {
+      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
       statusEl.style.color = '#3fb950';
     } else {
       if (aiAccumulatedText.trim()) {
@@ -9018,6 +9018,7 @@ function stopAiSpeechRecognition() {
 }
 
 function startAiSpeechSession() {
+  if (!aiSpeechWanted) return null;
   if (isAiStarting) return null;
   isAiStarting = true;
 
@@ -9071,12 +9072,12 @@ function startAiSpeechSession() {
       const confirmedSoFar = mergeTranscripts(aiAccumulatedText, sessionFinal);
 
       const statusEl = $('ai-mic-status');
-      if (statusEl && isAiRecording) {
+      if (statusEl && aiSpeechWanted) {
         if (sessionInterim.trim()) {
           statusEl.textContent = 'Mendengar: ' + sessionInterim.trim();
           statusEl.style.color = '#3fb950';
         } else {
-          statusEl.textContent = 'Mendengarkan... (Ketuk untuk Jeda)';
+          statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
           statusEl.style.color = '#3fb950';
         }
       }
@@ -9114,9 +9115,16 @@ function startAiSpeechSession() {
       isAiRecording = false;
       isAiStarting = false;
       commitCurrentSession();
-      // Saat jeda berpikir atau selesai frasa: berhenti dengan hening tanpa looping restart
-      aiSpeechWanted = false;
-      updateAiMicUI();
+      if (aiSpeechWanted) {
+        // Otomatis sambung kembali di latar belakang sehingga saat user melanjutkan bicara, mic langsung menangkap
+        setTimeout(() => {
+          if (aiSpeechWanted) {
+            startAiSpeechSession();
+          }
+        }, 120);
+      } else {
+        updateAiMicUI();
+      }
     };
 
     recognition.start();
@@ -9126,8 +9134,13 @@ function startAiSpeechSession() {
     console.warn('[SpeechRecognition Start Exception]:', err);
     isAiStarting = false;
     isAiRecording = false;
-    aiSpeechWanted = false;
-    updateAiMicUI();
+    if (aiSpeechWanted) {
+      setTimeout(() => {
+        if (aiSpeechWanted) startAiSpeechSession();
+      }, 300);
+    } else {
+      updateAiMicUI();
+    }
     return null;
   }
 }
@@ -9136,7 +9149,7 @@ function toggleAiSpeech() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const statusEl = $('ai-mic-status');
 
-  if (isAiRecording || aiSpeechWanted) {
+  if (aiSpeechWanted) {
     stopAiSpeechRecognition();
     return;
   }
@@ -9147,6 +9160,7 @@ function toggleAiSpeech() {
   }
 
   aiSpeechWanted = true;
+  updateAiMicUI();
   startAiSpeechSession();
 }
 
