@@ -1620,7 +1620,7 @@ body.is-fullscreen {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-left: 6px;
+  margin-right: 4px;
 }
 
 .header-mode-btn {
@@ -3984,7 +3984,17 @@ body.is-fullscreen {
         </span>
       </div>
 
-      <!-- Quick Mode Switcher (Beside Menu Logo) -->
+      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Status Koneksi">
+        <span class="dot"></span>
+        <span id="badge-icon">
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
+        </span>
+        <span id="badge-txt" style="display:none;"></span>
+      </span>
+      <span id="ping" class="ping">-- ms</span>
+    </div>
+    <div class="right-controls">
+      <!-- Quick Mode Switcher (Beside Menu Sandwich Button) -->
       <div class="header-modes" id="header-modes">
         <button type="button" class="header-mode-btn" id="quick-mode-standard" title="Keyboard PC">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
@@ -4000,16 +4010,6 @@ body.is-fullscreen {
         </button>
       </div>
 
-      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Status Koneksi">
-        <span class="dot"></span>
-        <span id="badge-icon">
-          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
-        </span>
-        <span id="badge-txt" style="display:none;"></span>
-      </span>
-      <span id="ping" class="ping">-- ms</span>
-    </div>
-    <div class="right-controls">
       <button type="button" class="deck-trigger-btn" id="btn-control-deck" title="Menu" aria-label="Menu">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
       </button>
