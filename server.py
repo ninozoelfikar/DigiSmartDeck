@@ -208,6 +208,9 @@ if Key is not None:
         'delete': Key.delete,
         'space': Key.space,
         ' ': Key.space,
+        '\n': Key.enter,
+        '\r': Key.enter,
+        '\t': Key.tab,
         'shift_l': getattr(Key, 'shift_l', Key.shift),
         'shift_r': getattr(Key, 'shift_r', Key.shift),
         'ctrl_l': getattr(Key, 'ctrl_l', Key.ctrl),
@@ -799,6 +802,21 @@ async def websocket_handler(request):
                     dx = data.get('dx', 0)
                     dy = data.get('dy', 0)
                     simulate_mouse_scroll(dx, dy)
+
+                elif msg_type == 'type_text':
+                    text_content = data.get('text', '')
+                    if text_content:
+                        if KEYBOARD_AVAILABLE and keyboard_controller and not UINPUT_AVAILABLE:
+                            try:
+                                keyboard_controller.type(text_content)
+                            except Exception:
+                                for ch in text_content:
+                                    simulate_tap(ch)
+                                    await asyncio.sleep(0.003)
+                        else:
+                            for ch in text_content:
+                                simulate_tap(ch)
+                                await asyncio.sleep(0.003)
 
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")

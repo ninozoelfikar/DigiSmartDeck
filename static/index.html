@@ -2694,6 +2694,450 @@ body.is-fullscreen {
   .pr-btn-prev .pr-nav-arrow { font-size: 22px; }
 }
 
+/* ─── AI WORKSTATION VIEW (PROMPT ENGINEERING & VOICE DECK) ─── */
+.ai-workstation-view {
+  order: 5;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 14px;
+  background: var(--bg);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overflow: hidden;
+  box-sizing: border-box;
+  gap: 8px;
+}
+.ai-workstation-view.hidden {
+  display: none !important;
+}
+
+/* AI Top Bar */
+.ai-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 10px;
+  background: var(--header-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 38px;
+}
+.ai-left-meta, .ai-right-meta, .ai-center-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #d29922;
+  background: rgba(210, 153, 34, 0.15);
+  border: 1px solid rgba(210, 153, 34, 0.35);
+  padding: 3px 8px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.ai-title-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  display: none;
+}
+@media (min-width: 650px) {
+  .ai-title-sub { display: inline-block; }
+}
+
+/* Language and Auto-send switches */
+.ai-lang-toggle {
+  display: inline-flex;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.ai-btn-lang {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-btn-lang.active {
+  background: rgba(88, 166, 255, 0.2);
+  color: var(--accent);
+}
+.ai-autosend-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-dim);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ai-autosend-label input {
+  accent-color: #2ea043;
+  cursor: pointer;
+}
+.ai-btn-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--key-border);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-btn-exit:hover {
+  background: rgba(248, 81, 73, 0.15);
+  border-color: rgba(248, 81, 73, 0.4);
+  color: #f85149;
+}
+
+/* Main Grid Layout */
+.ai-main-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 180px 1fr 220px;
+  gap: 10px;
+}
+@media (max-width: 768px) {
+  .ai-main-grid {
+    grid-template-columns: 140px 1fr 180px;
+    gap: 8px;
+  }
+}
+@media (max-width: 580px) {
+  .ai-main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    overflow-y: auto;
+  }
+}
+
+/* Left Column: AI Shortcuts */
+.ai-col-left {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 8px;
+  gap: 6px;
+}
+.ai-panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.ai-shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  flex: 1;
+}
+.ai-btn-sh {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  min-height: 38px;
+}
+.ai-btn-sh:active {
+  transform: translateY(2px);
+  background: rgba(88, 166, 255, 0.18);
+  border-color: var(--accent);
+}
+.ai-btn-sh .sh-sub {
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+.ai-btn-sh.span-2 {
+  grid-column: span 2;
+}
+
+/* Center Column: Voice Typing / STT */
+.ai-col-center {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  gap: 8px;
+  justify-content: space-between;
+}
+.ai-mic-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  gap: 6px;
+}
+.ai-btn-mic {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(88, 166, 255, 0.12);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.ai-btn-mic svg {
+  width: 28px;
+  height: 28px;
+}
+.ai-btn-mic.recording {
+  background: rgba(248, 81, 73, 0.2);
+  border-color: #f85149;
+  color: #f85149;
+  animation: ai-pulse 1.4s infinite;
+}
+@keyframes ai-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(248, 81, 73, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+}
+.ai-mic-status-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+}
+.ai-mic-hint {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* Transcript preview box */
+.ai-transcript-box {
+  flex: 1;
+  min-height: 50px;
+  background: var(--bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  overflow: hidden;
+}
+.ai-transcript-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text);
+  max-height: 64px;
+  overflow-y: auto;
+  word-break: break-word;
+}
+.ai-transcript-text.empty {
+  color: var(--text-dim);
+  font-style: italic;
+}
+.ai-transcript-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.ai-btn-tr-act {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-btn-tr-act:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+.ai-btn-tr-act.primary {
+  background: #238636;
+  border-color: #2ea043;
+  color: #fff;
+}
+
+/* Right Column: Giant Enter & Navigation */
+.ai-col-right {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 8px;
+  gap: 8px;
+}
+.ai-btn-giant-enter {
+  flex: 1.1;
+  min-height: 68px;
+  background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
+  border: 1px solid #3fb950;
+  border-radius: 8px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(35, 134, 54, 0.35);
+  transition: all 0.1s ease;
+  user-select: none;
+}
+.ai-btn-giant-enter:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 4px rgba(35, 134, 54, 0.2);
+  filter: brightness(0.9);
+}
+.ai-enter-label {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ai-enter-sub {
+  font-size: 10px;
+  opacity: 0.9;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Navigation D-pad */
+.ai-nav-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 38px);
+  gap: 4px;
+}
+.ai-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.ai-nav-btn:active {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: var(--accent);
+}
+.ai-nav-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+.ai-nav-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.ai-nav-down {
+  grid-column: 2;
+  grid-row: 2;
+}
+.ai-nav-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+/* Bottom Bar: Quick AI Prompt Starters */
+.ai-bottom-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.ai-bottom-bar::-webkit-scrollbar {
+  display: none;
+}
+.ai-chip-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-dim);
+  padding: 0 6px;
+  white-space: nowrap;
+}
+.ai-prompt-chip {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  color: var(--text);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.ai-prompt-chip:active {
+  transform: translateY(1px);
+  background: rgba(88, 166, 255, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ─── MODE KUSTOM (CUSTOM PAD VIEW) ─── */
 .custom-pad-view {
   flex: 1;
@@ -3248,14 +3692,14 @@ body.is-fullscreen {
               <span class="dc-sub">Meeting &amp; PPT</span>
             </div>
           </button>
-          <button class="deck-card deck-card-pro" id="btn-ai-mode" type="button" title="Mode AI Workstation: Tuts Enter, 4 Panah, dan Voice Typing (Fitur Eksklusif Pro)">
+          <button class="deck-card deck-card-pro" id="btn-ai-mode" type="button" title="AI Workstation: Prompt Engineering, Tuts Enter Ekstra Besar, Voice Typing, dan Navigasi Terminal">
             <span class="badge-card-pro">PRO</span>
             <span class="dc-icon">
               <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
             </span>
             <div class="dc-text">
-              <span class="dc-name">Mode AI</span>
-              <span class="dc-sub">Enter, Panah, Voice</span>
+              <span class="dc-name">AI Workstation</span>
+              <span class="dc-sub">Prompt &amp; Voice Deck</span>
             </div>
           </button>
         </div>
@@ -4059,6 +4503,157 @@ body.is-fullscreen {
   </section>
   </template>
 
+  <!-- AI WORKSTATION VIEW (PROMPT ENGINEERING & VOICE DECK) -->
+  <section id="ai-workstation-view" class="ai-workstation-view hidden">
+    <!-- Top Utility Bar -->
+    <div class="ai-top-bar">
+      <div class="ai-left-meta">
+        <span class="ai-badge">
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.36 2.07 6.24 5 7.42V19a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.58c2.93-1.18 5-4.06 5-7.42a8 8 0 0 0-8-8z"/><line x1="9" x2="15" y1="21" y2="21"/></svg>
+          AI WORKSTATION
+        </span>
+        <span class="ai-title-sub">Prompt &amp; Terminal Deck</span>
+      </div>
+
+      <div class="ai-center-meta">
+        <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
+          <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">🇮🇩 ID</button>
+          <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">🇺🇸 EN</button>
+        </div>
+        <label class="ai-autosend-label" title="Kirim teks otomatis ke PC setiap selesai berbicara">
+          <input type="checkbox" id="ai-autosend-chk" checked>
+          <span>Auto-Kirim</span>
+        </label>
+      </div>
+
+      <div class="ai-right-meta">
+        <button type="button" class="ai-btn-exit" id="btn-exit-ai" title="Kembali ke Mode Keyboard">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
+          <span>Keyboard</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Grid: 3 Ergonomic Functional Columns -->
+    <div class="ai-main-grid">
+      <!-- Kolom 1: Pintasan Prompt & Kontrol Edit -->
+      <div class="ai-col-left">
+        <div class="ai-panel-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Pintasan AI &amp; Edit</span>
+        </div>
+        <div class="ai-shortcuts-grid">
+          <button type="button" class="ai-btn-sh span-2" id="ai-btn-newline" title="Baris baru di ChatGPT/Claude tanpa submit (Shift+Enter)">
+            <span>Shift + Enter</span>
+            <span class="sh-sub">Baris Baru</span>
+          </button>
+          <button type="button" class="ai-btn-sh" id="ai-btn-copy" title="Salin Jawaban / Batal Terminal (Ctrl+C)">
+            <span>Ctrl + C</span>
+            <span class="sh-sub">Salin / Batal</span>
+          </button>
+          <button type="button" class="ai-btn-sh" id="ai-btn-paste" title="Tempel Konteks (Ctrl+V)">
+            <span>Ctrl + V</span>
+            <span class="sh-sub">Tempel</span>
+          </button>
+          <button type="button" class="ai-btn-sh" id="ai-btn-selectall" title="Pilih Semua Teks Prompt (Ctrl+A)">
+            <span>Ctrl + A</span>
+            <span class="sh-sub">Pilih Semua</span>
+          </button>
+          <button type="button" class="ai-btn-sh" id="ai-btn-stop" title="Hentikan Generasi LLM / Clear (Esc)">
+            <span>Esc</span>
+            <span class="sh-sub">Stop / Reset</span>
+          </button>
+          <button type="button" class="ai-btn-sh" id="ai-btn-tab" title="Indentasi Kode / Tab (Tab)">
+            <span>Tab ⇥</span>
+            <span class="sh-sub">Indentasi</span>
+          </button>
+          <button type="button" class="ai-btn-sh" id="ai-btn-backspace" title="Hapus Karakter Sebelumnya (Backspace)">
+            <span>⌫ Hapus</span>
+            <span class="sh-sub">Backspace</span>
+          </button>
+          <button type="button" class="ai-btn-sh span-2" id="ai-btn-space" title="Spasi (Spacebar)">
+            <span>Spasi (Space)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Kolom 2: Voice Typing / Dikte Suara Nirkabel -->
+      <div class="ai-col-center">
+        <div class="ai-panel-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          <span>Dikte Suara Nirkabel (Mic HP → PC)</span>
+        </div>
+
+        <div class="ai-mic-section">
+          <button type="button" class="ai-btn-mic" id="btn-ai-mic" title="Ketuk untuk mulai/berhenti dikte suara">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </button>
+          <div class="ai-mic-status-label" id="ai-mic-status">Ketuk Mic untuk Mulai Dikte</div>
+          <div class="ai-mic-hint">Bicara langsung ke mikrofon HP, teks otomatis diketik ke kursor PC</div>
+        </div>
+
+        <div class="ai-transcript-box">
+          <div class="ai-transcript-text empty" id="ai-transcript-preview">Hasil ucapan Anda akan muncul di sini secara real-time...</div>
+          <div class="ai-transcript-actions">
+            <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Kosongkan</button>
+            <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kolom 3: Enter Ekstra Besar & Navigasi Arah -->
+      <div class="ai-col-right">
+        <button type="button" class="ai-btn-giant-enter" id="ai-btn-enter" title="Kirim Prompt / Eksekusi Perintah (Enter)">
+          <div class="ai-enter-label">
+            <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+            <span>ENTER ↵</span>
+          </div>
+          <div class="ai-enter-sub">Kirim Prompt / Run</div>
+        </button>
+
+        <div class="ai-panel-title">
+          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Navigasi Riwayat &amp; Kursor</span>
+        </div>
+
+        <div class="ai-nav-pad">
+          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Prompt Sebelumnya di Terminal/Chat (Panah Atas)">▲</button>
+          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Geser Kursor ke Kiri (Panah Kiri)">◀</button>
+          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Prompt Berikutnya di Terminal/Chat (Panah Bawah)">▼</button>
+          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Geser Kursor ke Kanan (Panah Kanan)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar: Template & Prefix Prompt Cepat -->
+    <div class="ai-bottom-bar">
+      <span class="ai-chip-title">TEMPLATE PROMPT CEPAT:</span>
+      <button type="button" class="ai-prompt-chip" data-prompt="Jelaskan kode/konsep berikut secara ringkas dan mudah dipahami:\n">
+        <span>⚡ Jelaskan Ini</span>
+      </button>
+      <button type="button" class="ai-prompt-chip" data-prompt="Temukan bug atau kesalahan pada kode berikut dan berikan solusinya:\n">
+        <span>🐛 Perbaiki Bug</span>
+      </button>
+      <button type="button" class="ai-prompt-chip" data-prompt="Optimalkan performa dan efisiensi memori dari kode berikut:\n">
+        <span>🚀 Refactor &amp; Optimasi</span>
+      </button>
+      <button type="button" class="ai-prompt-chip" data-prompt="Buatkan dokumentasi teknis dan cara penggunaan fungsi ini:\n">
+        <span>📝 Buat Dokumentasi</span>
+      </button>
+      <button type="button" class="ai-prompt-chip" data-prompt="Buatkan unit test lengkap dengan edge case untuk kode berikut:\n">
+        <span>🧪 Buat Unit Test</span>
+      </button>
+      <button type="button" class="ai-prompt-chip" data-prompt="Lanjutkan penjelasan atau kode dari bagian terakhir:\n">
+        <span>💬 Lanjutkan</span>
+      </button>
+      <button type="button" class="ai-prompt-chip" data-prompt="Sederhanakan kode berikut agar lebih bersih dan mudah dibaca:\n">
+        <span>✨ Sederhanakan</span>
+      </button>
+    </div>
+  </section>
+
+
+
 
 
   <!-- SETTINGS MODAL -->
@@ -4685,6 +5280,7 @@ const mods = { ctrl: false, alt: false, shift: false, cmd: false, caps_lock: fal
 // ── Work Mode Global States (Top-level scope, no TDZ) ──
 let isGameModeActive = false;
 let isPresentModeActive = false;
+let isAiModeActive = false;
 let isCustomModeActive = false;
 
 // ── DOM ──
@@ -4886,9 +5482,13 @@ function switchAppMode(targetMode) {
   if (targetMode !== 'present' && typeof stopGyroAirMouse === 'function') {
     stopGyroAirMouse();
   }
+  if (targetMode !== 'ai' && typeof stopAiSpeechRecognition === 'function') {
+    stopAiSpeechRecognition();
+  }
 
   isGameModeActive = (targetMode === 'game');
   isPresentModeActive = (targetMode === 'present');
+  isAiModeActive = (targetMode === 'ai');
   isCustomModeActive = false; // Mode kustom di-mute sementara
 
   const kbWrap = document.querySelector('.kb-wrap');
@@ -4896,17 +5496,21 @@ function switchAppMode(targetMode) {
   const scBar = $('sc-bar');
   const gamepadView = $('gamepad-view');
   const presentView = $('present-view');
+  const aiView = $('ai-workstation-view');
 
   const btnGameMode = $('btn-game-mode');
   const btnPresentMode = $('btn-present-mode');
+  const btnAiMode = $('btn-ai-mode');
 
   // Toggle view visibility secara tegas
   if (gamepadView) gamepadView.classList.toggle('hidden', !isGameModeActive);
   if (presentView) presentView.classList.toggle('hidden', !isPresentModeActive);
+  if (aiView) aiView.classList.toggle('hidden', !isAiModeActive);
 
   // Status visual tombol di Menu Deck
   if (btnGameMode) btnGameMode.classList.toggle('on', isGameModeActive);
   if (btnPresentMode) btnPresentMode.classList.toggle('on', isPresentModeActive);
+  if (btnAiMode) btnAiMode.classList.toggle('on', isAiModeActive);
 
   if (targetMode === 'standard') {
     // Mode Standard (Keyboard PC Utama)
@@ -4916,7 +5520,7 @@ function switchAppMode(targetMode) {
     }
     vibe(15);
   } else {
-    // Mode Khusus (Game / Presentasi)
+    // Mode Khusus (Game / Presentasi / AI Workstation)
     if (kbWrap) kbWrap.style.display = 'none';
     if (laptopDeck) laptopDeck.classList.add('hidden');
     if (scBar) scBar.classList.add('hidden');
@@ -4926,6 +5530,8 @@ function switchAppMode(targetMode) {
       if (typeof updateStickModeUI === 'function') updateStickModeUI();
       vibe(25);
     } else if (targetMode === 'present') {
+      vibe(25);
+    } else if (targetMode === 'ai') {
       vibe(25);
     }
   }
@@ -4942,12 +5548,14 @@ function isProUser() {
 
 function updateDeckModesUI() {
   if (btnModeStandard) {
-    btnModeStandard.classList.toggle('active', !isGameModeActive && !isPresentModeActive);
+    btnModeStandard.classList.toggle('active', !isGameModeActive && !isPresentModeActive && !isAiModeActive);
   }
   const btnGm = $('btn-game-mode');
   const btnPr = $('btn-present-mode');
+  const btnAi = $('btn-ai-mode');
   if (btnGm) btnGm.classList.toggle('active', isGameModeActive);
   if (btnPr) btnPr.classList.toggle('active', isPresentModeActive);
+  if (btnAi) btnAi.classList.toggle('active', isAiModeActive);
 
   // Perbarui visibilitas banner Pro di Menu Mode Kerja
   const proBanner = $('deck-pro-banner');
@@ -8193,6 +8801,306 @@ window.addEventListener('resize', () => {
 });
 */
 
+// ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & VOICE DECK) ───
+let aiSpeechRecognition = null;
+let isAiRecording = false;
+let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
+let aiAutoSend = localStorage.getItem('digi_ai_autosend') !== 'false';
+let aiAccumulatedText = '';
+
+function updateAiMicUI() {
+  const micBtn = $('btn-ai-mic');
+  const statusEl = $('ai-mic-status');
+  if (micBtn) micBtn.classList.toggle('recording', isAiRecording);
+  if (statusEl) {
+    if (isAiRecording) {
+      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+      statusEl.style.color = '#f85149';
+    } else {
+      statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
+      statusEl.style.color = '';
+    }
+  }
+}
+
+function stopAiSpeechRecognition() {
+  if (aiSpeechRecognition && isAiRecording) {
+    try {
+      aiSpeechRecognition.stop();
+    } catch(e) {}
+  }
+  isAiRecording = false;
+  updateAiMicUI();
+}
+
+function initAiSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    const statusEl = $('ai-mic-status');
+    if (statusEl) statusEl.textContent = 'Browser tidak mendukung Speech API';
+    return null;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = aiSpeechLang;
+
+  recognition.onstart = () => {
+    isAiRecording = true;
+    updateAiMicUI();
+    vibe(25);
+  };
+
+  recognition.onresult = (event) => {
+    let interimText = '';
+    let finalText = '';
+
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      const t = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalText += t;
+      } else {
+        interimText += t;
+      }
+    }
+
+    const previewEl = $('ai-transcript-preview');
+    const displayStr = (finalText || interimText).trim();
+    if (previewEl && displayStr) {
+      previewEl.textContent = displayStr;
+      previewEl.classList.remove('empty');
+    }
+
+    if (finalText.trim()) {
+      aiAccumulatedText += (aiAccumulatedText ? ' ' : '') + finalText.trim();
+      if (aiAutoSend) {
+        sendAiText(finalText.trim() + ' ');
+      }
+    }
+  };
+
+  recognition.onerror = (err) => {
+    console.warn('[AI Speech Error]:', err.error);
+    isAiRecording = false;
+    updateAiMicUI();
+    const statusEl = $('ai-mic-status');
+    if (statusEl) {
+      if (err.error === 'not-allowed') {
+        statusEl.textContent = 'Izin Mic Ditolak di Browser';
+      } else if (err.error === 'no-speech') {
+        statusEl.textContent = 'Suara tidak terdeteksi, coba lagi';
+      } else {
+        statusEl.textContent = 'Status Mic: ' + err.error;
+      }
+    }
+  };
+
+  recognition.onend = () => {
+    isAiRecording = false;
+    updateAiMicUI();
+  };
+
+  return recognition;
+}
+
+function toggleAiSpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Fitur Dikte Suara (Web Speech API) membutuhkan browser seperti Google Chrome, Safari, atau Edge.');
+    return;
+  }
+
+  if (isAiRecording) {
+    stopAiSpeechRecognition();
+  } else {
+    if (!aiSpeechRecognition) {
+      aiSpeechRecognition = initAiSpeechRecognition();
+    }
+    if (aiSpeechRecognition) {
+      aiSpeechRecognition.lang = aiSpeechLang;
+      try {
+        aiSpeechRecognition.start();
+      } catch(e) {
+        try {
+          aiSpeechRecognition.stop();
+          setTimeout(() => {
+            try { aiSpeechRecognition.start(); } catch(e3) {}
+          }, 150);
+        } catch(e2) {}
+      }
+    }
+  }
+}
+
+function sendAiText(txt) {
+  if (!txt) return;
+  send({ type: 'type_text', text: txt });
+  vibe(18);
+  playClickSound();
+}
+
+function bindAiKey(btnId, action) {
+  const el = $(btnId);
+  if (!el) return;
+  el.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+  }, { passive: true });
+  el.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+    action();
+  }, { passive: false });
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    action();
+  });
+}
+
+// Pasang kontrol tombol AI Workstation
+const btnAiMic = $('btn-ai-mic');
+if (btnAiMic) {
+  btnAiMic.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleAiSpeech();
+  });
+}
+
+const btnExitAi = $('btn-exit-ai');
+if (btnExitAi) {
+  btnExitAi.addEventListener('click', () => switchAppMode('standard'));
+}
+
+// Bahasa Dikte
+function setAiLang(lang) {
+  aiSpeechLang = lang;
+  localStorage.setItem('digi_ai_lang', lang);
+  const btnId = $('btn-ai-lang-id');
+  const btnEn = $('btn-ai-lang-en');
+  if (btnId) btnId.classList.toggle('active', lang === 'id-ID');
+  if (btnEn) btnEn.classList.toggle('active', lang === 'en-US');
+  if (aiSpeechRecognition) {
+    aiSpeechRecognition.lang = lang;
+  }
+  vibe(10);
+}
+const btnLangId = $('btn-ai-lang-id');
+const btnLangEn = $('btn-ai-lang-en');
+if (btnLangId) btnLangId.addEventListener('click', () => setAiLang('id-ID'));
+if (btnLangEn) btnLangEn.addEventListener('click', () => setAiLang('en-US'));
+
+// Checkbox Auto-Kirim
+const chkAutoSend = $('ai-autosend-chk');
+if (chkAutoSend) {
+  chkAutoSend.checked = aiAutoSend;
+  chkAutoSend.addEventListener('change', () => {
+    aiAutoSend = chkAutoSend.checked;
+    localStorage.setItem('digi_ai_autosend', aiAutoSend ? 'true' : 'false');
+    vibe(10);
+  });
+}
+
+// Tombol Transcript
+const btnTrClear = $('btn-ai-tr-clear');
+const btnTrSend = $('btn-ai-tr-send');
+if (btnTrClear) {
+  btnTrClear.addEventListener('click', () => {
+    const previewEl = $('ai-transcript-preview');
+    if (previewEl) {
+      previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
+      previewEl.classList.add('empty');
+    }
+    aiAccumulatedText = '';
+    vibe(10);
+  });
+}
+if (btnTrSend) {
+  btnTrSend.addEventListener('click', () => {
+    const previewEl = $('ai-transcript-preview');
+    if (previewEl && !previewEl.classList.contains('empty')) {
+      sendAiText(previewEl.textContent + ' ');
+    }
+  });
+}
+
+// Enter & Navigasi
+bindAiKey('ai-btn-enter', () => {
+  send({ type: 'keypress', key: 'enter' });
+  vibe(25);
+  playClickSound();
+});
+bindAiKey('ai-btn-newline', () => {
+  send({ type: 'combo', keys: ['shift', 'enter'] });
+  vibe(20);
+  playClickSound();
+});
+bindAiKey('ai-btn-copy', () => {
+  send({ type: 'combo', keys: ['ctrl', 'c'] });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-paste', () => {
+  send({ type: 'combo', keys: ['ctrl', 'v'] });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-selectall', () => {
+  send({ type: 'combo', keys: ['ctrl', 'a'] });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-stop', () => {
+  send({ type: 'keypress', key: 'esc' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-tab', () => {
+  send({ type: 'keypress', key: 'tab' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-backspace', () => {
+  send({ type: 'keypress', key: 'backspace' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-btn-space', () => {
+  send({ type: 'keypress', key: 'space' });
+  vibe(15);
+  playClickSound();
+});
+
+bindAiKey('ai-nav-up', () => {
+  send({ type: 'keypress', key: 'up' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-nav-down', () => {
+  send({ type: 'keypress', key: 'down' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-nav-left', () => {
+  send({ type: 'keypress', key: 'left' });
+  vibe(15);
+  playClickSound();
+});
+bindAiKey('ai-nav-right', () => {
+  send({ type: 'keypress', key: 'right' });
+  vibe(15);
+  playClickSound();
+});
+
+// Prompt Chips
+document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const promptText = chip.getAttribute('data-prompt');
+    if (promptText) {
+      sendAiText(promptText);
+    }
+  });
+});
+
 // ── Inisialisasi Tombol Bluetooth HID (jika berjalan di Android App) ──
 try {
   if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.isBluetoothAvailable === 'function' && window.DigiAndroidBridge.isBluetoothAvailable()) {
@@ -8235,24 +9143,14 @@ function bindModeBtn(btn, handler) {
 bindModeBtn(btnModeStandardDeck, () => switchAppMode('standard'));
 bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
 bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
+bindModeBtn(btnAiModeDeck,       () => switchAppMode('ai'));
 
 bindModeBtn(btnDeckUpgradePro, () => {
   closeControlDeck();
   openStore('all');
 });
 
-bindModeBtn(btnAiModeDeck, () => {
-  if (!isProUser()) {
-    vibe(25);
-    closeControlDeck();
-    openStore('all');
-  } else {
-    vibe(15);
-    alert('Mode AI Workstation (Tuts Enter besar, 4 Arrow, dan Voice Typing) sedang dipersiapkan dan segera hadir di pembaruan v1.18 Pro.');
-  }
-});
-
-// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=kb)
+// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=ai / ?mode=kb)
 try {
   const urlParams = new URLSearchParams(window.location.search);
   const initMode = urlParams.get('mode');
@@ -8260,6 +9158,8 @@ try {
     switchAppMode('game');
   } else if (initMode === 'present' || initMode === 'slide') {
     switchAppMode('present');
+  } else if (initMode === 'ai' || initMode === 'ai_workstation') {
+    switchAppMode('ai');
   } else {
     switchAppMode('standard');
   }
