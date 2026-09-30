@@ -85,6 +85,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - Efek suara klik mekanikal (`playClickSound()`) selalu dipertahankan di setiap interaksi tombol.
 - Saat opsi `Auto-Kirim` aktif, menekan tombol `ENTER` otomatis mengirim prompt dan mengosongkan box teks di layar ponsel.
 - Panel pintasan kiri AI Workstation menampung tombol prompt instan di bawah Backspace: `Lanjutkan`, `Proceed`, `Perbaiki Bug`, `Buat Dokumen`, `Jadikan Check Point`. Bar template bawah telah dihapus untuk menghemat ruang vertikal layar.
+- Tata letak responsif AI Workstation otomatis menyesuaikan tinggi layar HP (termasuk mode landscape < 420px): grid tombol pintasan kiri terbagi merata 6 baris (`repeat(6, 1fr)`), mic diperkecil secara ergonomis, transcript box fleksibel (`flex: 1`), dan tombol Enter ekstra besar serta D-pad pas di layar tanpa terpotong atau menimbulkan scrollbar vertikal.
 
 ---
 
