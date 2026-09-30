@@ -2804,15 +2804,22 @@ body.is-fullscreen {
 .ai-autosend-label {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 11px;
   color: var(--text-dim);
   cursor: pointer;
   white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  padding: 4px 6px;
+  border-radius: 6px;
 }
 .ai-autosend-label input {
   accent-color: #2ea043;
   cursor: pointer;
+  width: 15px;
+  height: 15px;
 }
 .ai-btn-exit {
   display: inline-flex;
@@ -6387,8 +6394,8 @@ function releaseKey(el) {
 const touches = new Map();
 
 document.getElementById('app').addEventListener('touchstart', (e) => {
-  // Allow toolbar buttons, shortcuts, laptop trackpad deck, modal dialogs, and gamepad to handle their own events
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view')) return;
+  // Allow toolbar buttons, shortcuts, laptop trackpad deck, modal dialogs, gamepad, present-view, and ai-workstation-view to handle their own events
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -6397,7 +6404,7 @@ document.getElementById('app').addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 document.getElementById('app').addEventListener('touchend', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     releaseKey(touches.get(t.identifier));
@@ -6418,7 +6425,7 @@ window.addEventListener('blur', clearAllRepeats);
 // ── Mouse Fallback (Desktop Testing) ──
 let mouseEl = null;
 document.getElementById('app').addEventListener('mousedown', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view')) return;
   mouseEl = e.target;
   pressKey(e.target);
 });
@@ -9008,18 +9015,21 @@ function sendAiText(txt) {
 }
 
 function bindAiKey(btnId, action) {
-  const el = $(btnId);
+  const el = typeof btnId === 'string' ? $(btnId) : btnId;
   if (!el) return;
+  let lastTouch = 0;
   el.addEventListener('touchstart', (e) => {
     e.stopPropagation();
   }, { passive: true });
   el.addEventListener('touchend', (e) => {
     e.stopPropagation();
     if (e.cancelable) e.preventDefault();
+    lastTouch = Date.now();
     action();
   }, { passive: false });
   el.addEventListener('click', (e) => {
     e.stopPropagation();
+    if (Date.now() - lastTouch < 450) return;
     action();
   });
 }
@@ -9029,7 +9039,6 @@ bindAiKey('btn-ai-mic', toggleAiSpeech);
 
 // Input Suara Keyboard HP Alternatif
 const voiceInput = $('ai-voice-input');
-const btnInputSend = $('btn-ai-input-send');
 
 if (voiceInput) {
   voiceInput.addEventListener('input', () => {
@@ -9048,26 +9057,30 @@ if (voiceInput) {
       if (text) {
         sendAiText(text + '\n');
         voiceInput.value = '';
+        const previewEl = $('ai-transcript-preview');
+        if (previewEl) {
+          previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
+          previewEl.classList.add('empty');
+        }
       }
     }
   });
 }
 
-if (btnInputSend) {
-  btnInputSend.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const text = voiceInput ? voiceInput.value.trim() : '';
-    if (text) {
-      sendAiText(text + ' ');
-      if (voiceInput) voiceInput.value = '';
+bindAiKey('btn-ai-input-send', () => {
+  const text = voiceInput ? voiceInput.value.trim() : '';
+  if (text) {
+    sendAiText(text + ' ');
+    if (voiceInput) voiceInput.value = '';
+    const previewEl = $('ai-transcript-preview');
+    if (previewEl) {
+      previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
+      previewEl.classList.add('empty');
     }
-  });
-}
+  }
+});
 
-const btnExitAi = $('btn-exit-ai');
-if (btnExitAi) {
-  btnExitAi.addEventListener('click', () => switchAppMode('standard'));
-}
+bindAiKey('btn-exit-ai', () => switchAppMode('standard'));
 
 // Bahasa Dikte
 function setAiLang(lang) {
@@ -9078,48 +9091,88 @@ function setAiLang(lang) {
   if (btnId) btnId.classList.toggle('active', lang === 'id-ID');
   if (btnEn) btnEn.classList.toggle('active', lang === 'en-US');
   if (aiSpeechRecognition) {
-    aiSpeechRecognition.lang = lang;
+    try {
+      aiSpeechRecognition.lang = lang;
+    } catch (e) {}
   }
   vibe(10);
 }
+bindAiKey('btn-ai-lang-id', () => setAiLang('id-ID'));
+bindAiKey('btn-ai-lang-en', () => setAiLang('en-US'));
+
+// Sinkronkan visual tombol bahasa saat inisialisasi
 const btnLangId = $('btn-ai-lang-id');
 const btnLangEn = $('btn-ai-lang-en');
-if (btnLangId) btnLangId.addEventListener('click', () => setAiLang('id-ID'));
-if (btnLangEn) btnLangEn.addEventListener('click', () => setAiLang('en-US'));
+if (btnLangId && btnLangEn) {
+  btnLangId.classList.toggle('active', aiSpeechLang === 'id-ID');
+  btnLangEn.classList.toggle('active', aiSpeechLang === 'en-US');
+}
 
 // Checkbox Auto-Kirim
 const chkAutoSend = $('ai-autosend-chk');
+const lblAutoSend = document.querySelector('.ai-autosend-label');
+
+function toggleAutoSend(forceVal) {
+  if (typeof forceVal === 'boolean') {
+    aiAutoSend = forceVal;
+  } else {
+    aiAutoSend = !aiAutoSend;
+  }
+  if (chkAutoSend) chkAutoSend.checked = aiAutoSend;
+  localStorage.setItem('digi_ai_autosend', aiAutoSend ? 'true' : 'false');
+  vibe(10);
+}
+
 if (chkAutoSend) {
   chkAutoSend.checked = aiAutoSend;
-  chkAutoSend.addEventListener('change', () => {
-    aiAutoSend = chkAutoSend.checked;
-    localStorage.setItem('digi_ai_autosend', aiAutoSend ? 'true' : 'false');
-    vibe(10);
+  chkAutoSend.addEventListener('change', (e) => {
+    e.stopPropagation();
+    toggleAutoSend(chkAutoSend.checked);
   });
 }
 
-// Tombol Transcript
-const btnTrClear = $('btn-ai-tr-clear');
-const btnTrSend = $('btn-ai-tr-send');
-if (btnTrClear) {
-  btnTrClear.addEventListener('click', () => {
-    const previewEl = $('ai-transcript-preview');
-    if (previewEl) {
-      previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
-      previewEl.classList.add('empty');
+if (lblAutoSend) {
+  let lastTouch = 0;
+  lblAutoSend.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    if (e.target !== chkAutoSend) {
+      if (e.cancelable) e.preventDefault();
+      lastTouch = Date.now();
+      toggleAutoSend();
     }
-    aiAccumulatedText = '';
-    vibe(10);
   });
-}
-if (btnTrSend) {
-  btnTrSend.addEventListener('click', () => {
-    const previewEl = $('ai-transcript-preview');
-    if (previewEl && !previewEl.classList.contains('empty')) {
-      sendAiText(previewEl.textContent + ' ');
+  lblAutoSend.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (Date.now() - lastTouch < 450) return;
+    if (e.target !== chkAutoSend) {
+      toggleAutoSend();
     }
   });
 }
+
+// Tombol Transcript (Kosongkan & Kirim ke PC)
+bindAiKey('btn-ai-tr-clear', () => {
+  const previewEl = $('ai-transcript-preview');
+  if (previewEl) {
+    previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara real-time...';
+    previewEl.classList.add('empty');
+  }
+  if (voiceInput) {
+    voiceInput.value = '';
+  }
+  aiAccumulatedText = '';
+  vibe(10);
+});
+
+bindAiKey('btn-ai-tr-send', () => {
+  const previewEl = $('ai-transcript-preview');
+  if (previewEl && !previewEl.classList.contains('empty')) {
+    const text = previewEl.textContent.trim();
+    if (text) {
+      sendAiText(text + ' ');
+    }
+  }
+});
 
 // Enter & Navigasi
 bindAiKey('ai-btn-enter', () => {
@@ -9191,7 +9244,7 @@ bindAiKey('ai-nav-right', () => {
 
 // Prompt Chips
 document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
+  bindAiKey(chip, () => {
     const promptText = chip.getAttribute('data-prompt');
     if (promptText) {
       sendAiText(promptText);
