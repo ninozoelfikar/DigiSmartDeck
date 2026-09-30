@@ -9348,12 +9348,16 @@ bindAiKey('btn-ai-tr-send', () => {
 
 // Enter & Navigasi
 bindAiKey('ai-btn-enter', () => {
-  send({ type: 'keypress', key: 'enter' });
-  vibe(25);
   playClickSound();
-  if (aiAutoSend) {
+  vibe(25);
+  // selalu: kirim teks yang ada di box, tekan Enter di PC, kosongkan box
+  commitCurrentSession();
+  const textToSend = aiAccumulatedText.trim();
+  if (textToSend) {
+    sendAiText(textToSend + ' ');
     clearTranscriptUI();
   }
+  send({ type: 'keypress', key: 'enter' });
 });
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });
