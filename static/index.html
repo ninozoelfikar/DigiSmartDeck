@@ -3145,15 +3145,66 @@ body.is-fullscreen {
   font-weight: 600;
 }
 
-.ai-tk-key.ai-tk-enter {
+.ai-tk-key.ai-tk-edit-prompt {
   flex: 1.6;
-  background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
-  border-color: #3fb950;
-  color: #fff;
+  background: rgba(88, 166, 255, 0.12);
+  border-color: rgba(88, 166, 255, 0.35);
+  color: var(--accent);
 }
 
-.ai-tk-key.ai-tk-enter:active {
-  filter: brightness(0.9);
+.ai-tk-key.ai-tk-edit-prompt:active {
+  background: rgba(88, 166, 255, 0.28);
+  border-color: var(--accent);
+  transform: translateY(1px);
+}
+
+/* Modal Kustomisasi Prompt AI */
+.ai-prompt-edit-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.ai-prompt-edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ai-prompt-edit-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.ai-prompt-input-label {
+  width: 120px;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 11px;
+  padding: 5px 7px;
+  outline: none;
+}
+.ai-prompt-input-text {
+  flex: 1;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 4px;
+  color: var(--accent);
+  font-size: 11px;
+  padding: 5px 7px;
+  outline: none;
+}
+.ai-prompt-input-label:focus, .ai-prompt-input-text:focus {
+  border-color: var(--accent);
 }
 
 /* Right Column: Giant Enter & Navigation */
@@ -4737,19 +4788,19 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-stop" title="Esc">
             <span>Esc</span>
           </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="lanjutkan" title="Ketik prompt: lanjutkan">
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="0" data-prompt="lanjutkan" title="Ketik prompt: lanjutkan">
             <span>Lanjutkan</span>
           </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="proceed" title="Ketik prompt: proceed">
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="1" data-prompt="proceed" title="Ketik prompt: proceed">
             <span>Proceed</span>
           </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="perbaiki bug" title="Ketik prompt: perbaiki bug">
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="2" data-prompt="perbaiki bug" title="Ketik prompt: perbaiki bug">
             <span>Perbaiki Bug</span>
           </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt="buat dokumentasi" title="Ketik prompt: buat dokumentasi">
+          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="3" data-prompt="buat dokumentasi" title="Ketik prompt: buat dokumentasi">
             <span>Buat Dokumen</span>
           </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip span-2" data-prompt="jadikan check point" title="Ketik prompt: jadikan check point">
+          <button type="button" class="ai-btn-sh ai-prompt-chip span-2" data-prompt-idx="4" data-prompt="jadikan check point" title="Ketik prompt: jadikan check point">
             <span>Jadikan Check Point</span>
           </button>
         </div>
@@ -4827,8 +4878,8 @@ body.is-fullscreen {
             <button type="button" class="ai-tk-key" data-key=",">,</button>
             <button type="button" class="ai-tk-key ai-tk-space" data-key=" ">Spasi</button>
             <button type="button" class="ai-tk-key" data-key=".">.</button>
-            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-enter" id="ai-tk-btn-enter" title="Enter / Kirim">
-              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-edit-prompt" id="ai-tk-btn-edit-prompt" title="Kustomisasi Shortcut Prompt AI">
+              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </button>
           </div>
         </div>
@@ -4862,9 +4913,32 @@ body.is-fullscreen {
 
   </section>
 
+  <!-- AI PROMPT SHORTCUT EDIT MODAL -->
+  <div class="modal-backdrop hidden" id="ai-prompt-edit-modal">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>Kustomisasi Shortcut Prompt AI</span>
+        </div>
+        <button class="modal-close" id="btn-close-ai-prompt-edit" type="button">✕</button>
+      </div>
 
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+          Ubah nama tombol dan teks prompt perintah otomatis sesuai kebutuhan workflow coding Anda:
+        </p>
+        <div id="ai-prompt-edit-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- 5 rows diisi secara otomatis oleh JavaScript -->
+        </div>
+      </div>
 
-
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+        <button class="cp-btn-aux" id="btn-reset-ai-prompts" type="button" style="padding: 6px 12px;">Reset Default</button>
+        <button class="btn-primary" id="btn-save-ai-prompts" type="button">Simpan &amp; Terapkan</button>
+      </div>
+    </div>
+  </div>
 
   <!-- SETTINGS MODAL -->
   <div class="modal-backdrop hidden" id="settings-modal">
@@ -9842,20 +9916,118 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     });
   }
 
-  if (btnEnter) {
-    bindAiKey(btnEnter, () => {
-      playClickSound();
-      vibe(25);
-      commitCurrentSession();
-      const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
-      if (textToSend) {
-        sendAiText(textToSend + ' ');
-        clearTranscriptUI();
-      }
-      send({ type: 'keypress', key: 'enter' });
+  const btnEditPrompt = $('ai-tk-btn-edit-prompt');
+  if (btnEditPrompt) {
+    bindAiKey(btnEditPrompt, () => {
+      openAiPromptEditModal();
     });
   }
 })();
+
+// ── Kustomisasi Shortcut Prompt AI ──
+const DEFAULT_AI_PROMPTS = [
+  { label: 'Lanjutkan', prompt: 'lanjutkan' },
+  { label: 'Proceed', prompt: 'proceed' },
+  { label: 'Perbaiki Bug', prompt: 'perbaiki bug' },
+  { label: 'Buat Dokumen', prompt: 'buat dokumentasi' },
+  { label: 'Jadikan Check Point', prompt: 'jadikan check point' }
+];
+
+function getCustomAiPrompts() {
+  try {
+    const raw = localStorage.getItem('digi_ai_custom_prompts');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length === 5) {
+        return parsed;
+      }
+    }
+  } catch(e) {}
+  return DEFAULT_AI_PROMPTS;
+}
+
+function applyAiPrompts(prompts) {
+  prompts.forEach((p, idx) => {
+    const btn = document.querySelector(`.ai-prompt-chip[data-prompt-idx="${idx}"]`);
+    if (btn) {
+      btn.setAttribute('data-prompt', p.prompt);
+      btn.setAttribute('title', `Ketik prompt: ${p.prompt}`);
+      const span = btn.querySelector('span');
+      if (span) span.textContent = p.label;
+    }
+  });
+}
+
+function openAiPromptEditModal() {
+  playClickSound();
+  vibe(15);
+  const container = $('ai-prompt-edit-list');
+  if (!container) return;
+  const current = getCustomAiPrompts();
+  container.innerHTML = '';
+  current.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'ai-prompt-edit-item';
+    item.innerHTML = `
+      <div class="ai-prompt-edit-header">
+        <span>Slot ${i + 1}${i === 4 ? ' (Lebar 2 Kolom)' : ''}</span>
+      </div>
+      <div class="ai-prompt-edit-row">
+        <input type="text" class="ai-prompt-input-label" id="ai-pe-label-${i}" value="${p.label.replace(/"/g, '&quot;')}" placeholder="Nama Tombol" title="Label Tombol">
+        <input type="text" class="ai-prompt-input-text" id="ai-pe-prompt-${i}" value="${p.prompt.replace(/"/g, '&quot;')}" placeholder="Teks Perintah Prompt" title="Teks Perintah Prompt">
+      </div>
+    `;
+    container.appendChild(item);
+  });
+  const modal = $('ai-prompt-edit-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeAiPromptEditModal() {
+  playClickSound();
+  vibe(10);
+  const modal = $('ai-prompt-edit-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function saveCustomAiPrompts() {
+  const saved = [];
+  for (let i = 0; i < 5; i++) {
+    const labelInput = $(`ai-pe-label-${i}`);
+    const promptInput = $(`ai-pe-prompt-${i}`);
+    const l = (labelInput ? labelInput.value : '').trim() || DEFAULT_AI_PROMPTS[i].label;
+    const pr = (promptInput ? promptInput.value : '').trim() || DEFAULT_AI_PROMPTS[i].prompt;
+    saved.push({ label: l, prompt: pr });
+  }
+  localStorage.setItem('digi_ai_custom_prompts', JSON.stringify(saved));
+  applyAiPrompts(saved);
+  closeAiPromptEditModal();
+  playClickSound();
+  vibe(20);
+}
+
+function resetCustomAiPrompts() {
+  localStorage.removeItem('digi_ai_custom_prompts');
+  applyAiPrompts(DEFAULT_AI_PROMPTS);
+  openAiPromptEditModal();
+  playClickSound();
+  vibe(15);
+}
+
+const btnCloseAiPromptEdit = $('btn-close-ai-prompt-edit');
+if (btnCloseAiPromptEdit) {
+  btnCloseAiPromptEdit.addEventListener('click', closeAiPromptEditModal);
+}
+const btnSaveAiPrompts = $('btn-save-ai-prompts');
+if (btnSaveAiPrompts) {
+  btnSaveAiPrompts.addEventListener('click', saveCustomAiPrompts);
+}
+const btnResetAiPrompts = $('btn-reset-ai-prompts');
+if (btnResetAiPrompts) {
+  btnResetAiPrompts.addEventListener('click', resetCustomAiPrompts);
+}
+
+applyAiPrompts(getCustomAiPrompts());
 
 // ── Inisialisasi Tombol Bluetooth HID (jika berjalan di Android App) ──
 try {
