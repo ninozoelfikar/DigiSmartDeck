@@ -9495,12 +9495,14 @@ bindAiRepeatKey('ai-nav-right', () => {
 document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
   bindAiKey(chip, () => {
     playClickSound();
-    vibe(15);
+    vibe(20);
     const promptText = chip.getAttribute('data-prompt');
     if (promptText) {
-      sendAiText(promptText + ' ');
-      renderTranscriptPreview(promptText);
-      aiAccumulatedText = promptText;
+      sendAiText(promptText);
+      setTimeout(() => {
+        send({ type: 'keypress', key: 'enter' });
+      }, 50);
+      clearTranscriptUI();
     }
   });
 });
