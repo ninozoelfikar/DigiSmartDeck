@@ -1480,94 +1480,199 @@ body.is-fullscreen {
   cursor: pointer;
 }
 
-/* ─── RECONNECTION ASSISTANT BANNER & MODAL ─── */
+/* ─── FULLSCREEN RECONNECT DIM OVERLAY & CENTER MODAL ─── */
 .reconnect-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: linear-gradient(90deg, rgba(248, 81, 73, 0.22) 0%, rgba(210, 153, 34, 0.22) 100%);
-  border-bottom: 1px solid rgba(248, 81, 73, 0.45);
-  padding: 6px 12px;
-  font-size: 11px;
-  z-index: 15;
-  flex-shrink: 0;
-  transition: all 0.25s ease;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  background: rgba(10, 12, 16, 0.85) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  transition: opacity 0.25s ease, visibility 0.25s ease !important;
 }
 .reconnect-banner.hidden {
   display: none !important;
 }
-.rc-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-.rc-icon {
-  font-size: 14px;
-  flex-shrink: 0;
-  animation: rc-pulse 1.5s infinite;
-}
-@keyframes rc-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
-}
-.rc-text {
+
+.reconnect-modal {
+  background: #161b22;
+  border: 1px solid rgba(248, 81, 73, 0.4);
+  border-radius: 14px;
+  width: min(390px, 92vw);
+  padding: 22px 18px 18px 18px;
   display: flex;
   flex-direction: column;
-  line-height: 1.25;
-  min-width: 0;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(248, 81, 73, 0.15);
+  animation: rc-modal-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.rc-title {
-  font-weight: 700;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+@keyframes rc-modal-pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
-.rc-sub {
-  font-size: 10px;
-  color: var(--text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.rc-actions {
+
+.rc-modal-pulse {
+  position: relative;
+  width: 54px;
+  height: 54px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  justify-content: center;
+  margin-bottom: 12px;
 }
+
+.rc-modal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(248, 81, 73, 0.12);
+  border: 1.5px solid rgba(248, 81, 73, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.rc-pulse-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(248, 81, 73, 0.5);
+  animation: rc-pulse-expand 2s infinite ease-out;
+}
+
+@keyframes rc-pulse-expand {
+  0% { transform: scale(0.85); opacity: 0.8; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.rc-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.rc-modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.rc-modal-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #f85149;
+}
+
+.rc-modal-hint {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin-top: 3px;
+}
+
+.rc-modal-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
 .rc-btn {
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
   color: var(--text);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
-  display: inline-flex;
+  transition: all 0.15s ease;
+  flex: 1;
+}
+
+.rc-btn:active {
+  transform: translateY(1px);
+}
+
+.rc-btn.primary, .rc-btn.rc-primary {
+  background: #238636;
+  border-color: #2ea043;
+  color: #fff;
+}
+
+/* Quick Mode Switcher in Header */
+.header-modes {
+  display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  margin-left: 6px;
 }
-.rc-btn:hover {
-  background: var(--key-active-bg);
-  color: #fff;
+
+.header-mode-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  outline: none;
 }
-.rc-btn.rc-primary {
-  background: var(--key-active-bg);
-  border-color: var(--key-active-border);
-  color: #fff;
+
+.header-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.2);
 }
-.rc-btn.rc-close {
-  padding: 4px 6px;
-  opacity: 0.75;
+
+.header-mode-btn.active {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
 }
-.rc-btn.rc-close:hover {
+
+.header-mode-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.rc-close-btn {
+  flex: 0 0 36px !important;
+  padding: 8px 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.8;
+}
+.rc-close-btn:hover {
   opacity: 1;
+}
+
+@media (max-width: 440px) {
+  .logo span {
+    display: none;
+  }
 }
 
 /* Subnet Scanner Progress & Found Card */
@@ -3860,11 +3965,30 @@ body.is-fullscreen {
 
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
-    <div class="left-controls" id="btn-brand-toggle" style="cursor:pointer;" title="Menu">
-      <span class="logo">
-        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
-        <span>DigiKeyboard</span>
-      </span>
+    <div class="left-controls">
+      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Menu">
+        <span class="logo">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
+          <span>DigiKeyboard</span>
+        </span>
+      </div>
+
+      <!-- Quick Mode Switcher (Beside Menu Logo) -->
+      <div class="header-modes" id="header-modes">
+        <button type="button" class="header-mode-btn" id="quick-mode-standard" title="Keyboard PC">
+          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
+        </button>
+        <button type="button" class="header-mode-btn" id="quick-mode-game" title="Game Console">
+          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
+        </button>
+        <button type="button" class="header-mode-btn" id="quick-mode-present" title="Slide Remote">
+          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+        </button>
+        <button type="button" class="header-mode-btn" id="quick-mode-ai" title="AI Workstation">
+          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+        </button>
+      </div>
+
       <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Status Koneksi">
         <span class="dot"></span>
         <span id="badge-icon">
@@ -4000,37 +4124,41 @@ body.is-fullscreen {
     </div>
   </div>
 
-  <!-- RECONNECTION ASSISTANT BANNER -->
+  <!-- FULLSCREEN RECONNECT POPUP MODAL & DIM OVERLAY -->
   <div id="reconnect-banner" class="reconnect-banner hidden">
-    <div class="rc-info">
-      <span class="rc-icon">
-        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" stroke="#f85149"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      </span>
-      <div class="rc-text">
-        <div class="rc-title" id="rc-title">Koneksi terputus</div>
-        <div class="rc-sub" id="rc-sub">Mencoba menghubungkan kembali...</div>
+    <div class="reconnect-modal">
+      <div class="rc-modal-pulse">
+        <div class="rc-pulse-ring"></div>
+        <div class="rc-modal-icon">
+          <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke="#f85149" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
       </div>
-    </div>
-    <div class="rc-actions">
-      <button type="button" class="rc-btn rc-primary" id="btn-rc-retry" title="Coba hubungkan sekarang">
-        <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-        <span>Coba Lagi</span>
-      </button>
-      <button type="button" class="rc-btn" id="btn-rc-usb" title="Gunakan Kabel USB">
-        <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        <span>Mode USB</span>
-      </button>
-      <button type="button" class="rc-btn" id="btn-rc-scan" title="Pindai IP PC di jaringan Wi-Fi">
-        <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <span>Pindai PC</span>
-      </button>
-      <button type="button" class="rc-btn" id="btn-rc-host" title="Ganti IP atau hostname secara manual">
-        <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-        <span>Ganti IP</span>
-      </button>
-      <button type="button" class="rc-btn rc-close" id="btn-rc-close" title="Tutup banner">
-        <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
+      <div class="rc-modal-content">
+        <div class="rc-modal-title" id="rc-title">Koneksi Terputus</div>
+        <div class="rc-modal-sub" id="rc-sub">Mencoba menghubungkan kembali...</div>
+        <div class="rc-modal-hint" id="rc-hint">Memeriksa jaringan PC atau server DigiKeyboard</div>
+      </div>
+      <div class="rc-modal-actions">
+        <button type="button" class="rc-btn primary" id="btn-rc-retry" title="Coba hubungkan sekarang">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          <span>Coba Lagi</span>
+        </button>
+        <button type="button" class="rc-btn" id="btn-rc-usb" title="Gunakan Kabel USB">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span>Mode USB</span>
+        </button>
+        <button type="button" class="rc-btn" id="btn-rc-scan" title="Pindai IP PC di jaringan Wi-Fi">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Bantuan</span>
+        </button>
+        <button type="button" class="rc-btn rc-close-btn" id="btn-rc-close" title="Tutup Popup">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -5907,8 +6035,9 @@ function isProUser() {
 }
 
 function updateDeckModesUI() {
+  const isStd = !isGameModeActive && !isPresentModeActive && !isAiModeActive;
   if (btnModeStandard) {
-    btnModeStandard.classList.toggle('active', !isGameModeActive && !isPresentModeActive && !isAiModeActive);
+    btnModeStandard.classList.toggle('active', isStd);
   }
   const btnGm = $('btn-game-mode');
   const btnPr = $('btn-present-mode');
@@ -5916,6 +6045,16 @@ function updateDeckModesUI() {
   if (btnGm) btnGm.classList.toggle('active', isGameModeActive);
   if (btnPr) btnPr.classList.toggle('active', isPresentModeActive);
   if (btnAi) btnAi.classList.toggle('active', isAiModeActive);
+
+  // Perbarui tombol mode di header
+  const qkStd = $('quick-mode-standard');
+  const qkGm  = $('quick-mode-game');
+  const qkPr  = $('quick-mode-present');
+  const qkAi  = $('quick-mode-ai');
+  if (qkStd) qkStd.classList.toggle('active', isStd);
+  if (qkGm)  qkGm.classList.toggle('active', isGameModeActive);
+  if (qkPr)  qkPr.classList.toggle('active', isPresentModeActive);
+  if (qkAi)  qkAi.classList.toggle('active', isAiModeActive);
 
   // Perbarui visibilitas banner Pro di Menu Mode Kerja
   const proBanner = $('deck-pro-banner');
@@ -6039,8 +6178,8 @@ function scheduleReconnect(immediate = false) {
     setStatus(false, `Menghubungkan (${retryCount})...`);
   }
 
-  // Tampilkan banner pemulihan jika gagal >= 3 kali (~6-8 detik tanpa koneksi)
-  if (retryCount >= 3) {
+  // Tampilkan popup modal pemulihan jika gagal >= 2 kali
+  if (retryCount >= 2) {
     showReconnectBanner();
   }
 
@@ -6225,8 +6364,10 @@ function showReconnectBanner() {
   if (!banner) return;
   const title = $('rc-title');
   const sub = $('rc-sub');
-  if (title) title.textContent = `Koneksi Terputus (${retryCount}x)`;
-  if (sub) sub.textContent = `Tujuan: ${window.location.host}. Router restart atau IP PC berganti?`;
+  const hint = $('rc-hint');
+  if (title) title.textContent = retryCount > 0 ? `Koneksi Terputus (${retryCount}x)` : 'Koneksi Terputus';
+  if (sub) sub.textContent = `Menghubungkan ke ${window.location.host}...`;
+  if (hint) hint.textContent = 'Memeriksa jaringan PC atau server DigiKeyboard';
   banner.classList.remove('hidden');
 }
 
@@ -10078,11 +10219,13 @@ function bindModeBtn(btn, handler) {
   btn.addEventListener('touchend', (e) => {
     e.stopPropagation();
     if (e.cancelable) e.preventDefault();
+    if (typeof playClickSound === 'function') playClickSound();
     handler();
   }, { passive: false });
   // fallback click (desktop / mouse)
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
+    if (typeof playClickSound === 'function') playClickSound();
     handler();
   });
 }
@@ -10091,6 +10234,17 @@ bindModeBtn(btnModeStandardDeck, () => switchAppMode('standard'));
 bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
 bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
 bindModeBtn(btnAiModeDeck,       () => switchAppMode('ai'));
+
+// Header Quick Mode Buttons (Di samping logo)
+const quickModeStandard = $('quick-mode-standard');
+const quickModeGame     = $('quick-mode-game');
+const quickModePresent  = $('quick-mode-present');
+const quickModeAi       = $('quick-mode-ai');
+
+bindModeBtn(quickModeStandard, () => switchAppMode('standard'));
+bindModeBtn(quickModeGame,     () => switchAppMode('game'));
+bindModeBtn(quickModePresent,  () => switchAppMode('present'));
+bindModeBtn(quickModeAi,       () => switchAppMode('ai'));
 
 
 
