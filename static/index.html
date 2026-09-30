@@ -9094,6 +9094,68 @@ function cleanAiWord(w) {
   return (w || '').toLowerCase().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
 }
 
+// Cek kemiripan dua kata (toleransi variasi imbuhan atau typo kecil 1-2 huruf)
+function areWordsSimilar(w1, w2) {
+  const c1 = cleanAiWord(w1);
+  const c2 = cleanAiWord(w2);
+  if (!c1 || !c2) return false;
+  if (c1 === c2) return true;
+  if (Math.abs(c1.length - c2.length) <= 2 && (c1.startsWith(c2) || c2.startsWith(c1))) return true;
+  return false;
+}
+
+// Deteksi dan bersihkan pengulangan frasa/kalimat beruntun (misal 'jadikan check point jadikan check point')
+function deduplicateRepeatedPhrases(text) {
+  if (!text) return '';
+  let words = text.trim().split(/\s+/);
+  if (words.length < 3) return text;
+
+  // 1. Deteksi pengulangan blok kata majemuk beruntun (dari 25 kata turun ke 2 kata)
+  let changed = true;
+  let iterations = 0;
+  while (changed && iterations < 10) {
+    changed = false;
+    iterations++;
+    const maxSpan = Math.min(25, Math.floor(words.length / 2));
+    for (let span = maxSpan; span >= 2; span--) {
+      for (let i = 0; i <= words.length - (span * 2); i++) {
+        let matchCount = 0;
+        for (let k = 0; k < span; k++) {
+          if (areWordsSimilar(words[i + k], words[i + span + k])) {
+            matchCount++;
+          }
+        }
+        // Jika tingkat kemiripan blok kata >= 80%
+        if (matchCount >= Math.ceil(span * 0.8)) {
+          words.splice(i, span);
+          changed = true;
+          break;
+        }
+      }
+      if (changed) break;
+    }
+  }
+
+  // 2. Deteksi pengulangan kata tunggal yang tidak wajar (kecuali kata ulang sah Bahasa Indonesia)
+  const commonIndoDuplication = new Set([
+    'masing', 'tiba', 'pelan', 'kira', 'sama', 'hati', 'pura', 'sia', 'kadang', 'benar', 'betul', 'kata', 'anak', 'orang'
+  ]);
+  const resultWords = [];
+  for (let i = 0; i < words.length; i++) {
+    const curr = words[i];
+    const prev = resultWords[resultWords.length - 1];
+    if (prev && cleanAiWord(curr) === cleanAiWord(prev)) {
+      const clean = cleanAiWord(curr);
+      if (!commonIndoDuplication.has(clean) && clean.length > 2) {
+        continue;
+      }
+    }
+    resultWords.push(curr);
+  }
+
+  return resultWords.join(' ');
+}
+
 // Fungsi penggabung transkrip cerdas: mencegah duplikasi/gema kata saat dikte berlanjut
 function mergeTranscripts(existing, incoming) {
   existing = (existing || '').trim();
@@ -9105,10 +9167,17 @@ function mergeTranscripts(existing, incoming) {
   const incLower = incoming.toLowerCase();
 
   // 1. Jika teks baru persis sama atau sudah berada di ujung teks lama
-  if (existLower.endsWith(incLower)) return existing;
+  if (existLower === incLower || existLower.endsWith(incLower)) return existing;
   if (incLower.startsWith(existLower)) return incoming;
+  if (existLower.includes(incLower)) return existing;
 
-  // 2. Deteksi tumpang tindih kata (word-level overlap) agar tidak menduplikasi kata yang diulang
+  // 2. Normalisasi kata gabung umum (misal 'jadi kan' vs 'jadikan')
+  const normExist = existLower.replace(/\bjadi\s+kan\b/g, 'jadikan');
+  const normInc = incLower.replace(/\bjadi\s+kan\b/g, 'jadikan');
+  if (normExist.endsWith(normInc)) return existing;
+  if (normInc.startsWith(normExist)) return incoming;
+
+  // 3. Deteksi tumpang tindih kata (suffix-to-prefix overlap cerdas)
   const existWords = existing.split(/\s+/);
   const incWords = incoming.split(/\s+/);
 
@@ -9116,21 +9185,36 @@ function mergeTranscripts(existing, incoming) {
   const incClean = incWords.map(cleanAiWord);
 
   const maxOverlap = Math.min(existWords.length, incWords.length);
-  for (let len = maxOverlap; len > 0; len--) {
-    let match = true;
+  for (let len = maxOverlap; len >= 1; len--) {
+    let matchCount = 0;
     for (let k = 0; k < len; k++) {
-      if (existClean[existWords.length - len + k] !== incClean[k]) {
-        match = false;
-        break;
+      if (areWordsSimilar(existClean[existWords.length - len + k], incClean[k])) {
+        matchCount++;
       }
     }
-    if (match) {
+    if (matchCount >= Math.ceil(len * 0.8) && matchCount >= 2) {
       const nonOverlapping = incWords.slice(len).join(' ');
-      return nonOverlapping ? (existing + ' ' + nonOverlapping) : existing;
+      const merged = nonOverlapping ? (existing + ' ' + nonOverlapping) : existing;
+      return deduplicateRepeatedPhrases(merged);
     }
   }
 
-  return existing + ' ' + incoming;
+  // 4. Deteksi apakah incoming mengulangi sebagian besar kalimat existing dari awal
+  // Kasus: Google STT mengulang buffer audio lama ditambah kata baru di ujung
+  let prefixMatch = 0;
+  for (let k = 0; k < maxOverlap; k++) {
+    if (areWordsSimilar(existClean[k], incClean[k])) {
+      prefixMatch++;
+    } else {
+      break;
+    }
+  }
+  if (prefixMatch >= 3 && prefixMatch >= Math.floor(existWords.length * 0.6)) {
+    return incoming.length >= existing.length ? incoming : existing;
+  }
+
+  const merged = existing + ' ' + incoming;
+  return deduplicateRepeatedPhrases(merged);
 }
 
 function updateAiMicUI() {
@@ -9162,6 +9246,7 @@ function commitCurrentSession() {
     aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionInterim);
     currentSessionInterim = '';
   }
+  aiAccumulatedText = deduplicateRepeatedPhrases(aiAccumulatedText);
 }
 
 function clearTranscriptUI() {
@@ -9255,9 +9340,9 @@ function startAiSpeechSession() {
         const piece = item[0].transcript.trim();
         if (!piece) continue;
         if (item.isFinal) {
-          sessionFinal = mergeTranscripts(sessionFinal, piece);
+          sessionFinal = sessionFinal ? mergeTranscripts(sessionFinal, piece) : piece;
         } else {
-          sessionInterim = mergeTranscripts(sessionInterim, piece);
+          sessionInterim = sessionInterim ? mergeTranscripts(sessionInterim, piece) : piece;
         }
       }
 
@@ -9284,7 +9369,7 @@ function startAiSpeechSession() {
         }
       }
 
-      const liveText = mergeTranscripts(confirmedSoFar, sessionInterim);
+      const liveText = deduplicateRepeatedPhrases(mergeTranscripts(confirmedSoFar, sessionInterim));
       renderTranscriptPreview(liveText);
     };
 
@@ -9519,7 +9604,7 @@ bindAiKey('btn-ai-tr-clear', () => {
 bindAiKey('btn-ai-tr-send', () => {
   playClickSound();
   commitCurrentSession();
-  const textToSend = aiAccumulatedText.trim();
+  const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
   if (textToSend) {
     sendAiText(textToSend + ' ');
   }
@@ -9534,7 +9619,7 @@ bindAiKey('ai-btn-enter', () => {
   vibe(25);
   // selalu: kirim teks yang ada di box, tekan Enter di PC, kosongkan box
   commitCurrentSession();
-  const textToSend = aiAccumulatedText.trim();
+  const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
   if (textToSend) {
     sendAiText(textToSend + ' ');
     clearTranscriptUI();
@@ -9762,7 +9847,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
       playClickSound();
       vibe(25);
       commitCurrentSession();
-      const textToSend = aiAccumulatedText.trim();
+      const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
       if (textToSend) {
         sendAiText(textToSend + ' ');
         clearTranscriptUI();
