@@ -83,9 +83,11 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - Klien komersial (pembeli APK Android) tidak perlu menyetel port di `chrome://flags` karena aplikasi Android resmi (`DigiKeyboard.apk`) menggunakan WebView dengan izin mikrofon internal native.
 - Sesi dikte berhenti secara wajar saat jeda hening tanpa memicu bunyi notifikasi berulang-ulang.
 - Efek suara klik mekanikal (`playClickSound()`) selalu dipertahankan di setiap interaksi tombol.
-- Saat opsi `Auto-Kirim` aktif, menekan tombol `ENTER` otomatis mengirim prompt dan mengosongkan box teks di layar ponsel.
-- Panel pintasan kiri AI Workstation menampung tombol prompt instan di bawah Backspace: `Lanjutkan`, `Proceed`, `Perbaiki Bug`, `Buat Dokumen`, `Jadikan Check Point`. Bar template bawah telah dihapus untuk menghemat ruang vertikal layar.
-- Tata letak responsif AI Workstation otomatis menyesuaikan tinggi layar HP (termasuk mode landscape < 420px): grid tombol pintasan kiri terbagi merata 6 baris (`repeat(6, 1fr)`), mic diperkecil secara ergonomis, transcript box fleksibel (`flex: 1`), dan tombol Enter ekstra besar serta D-pad pas di layar tanpa terpotong atau menimbulkan scrollbar vertikal.
+- Tombol `ENTER` di AI Workstation selalu mengirim teks transkrip ke PC, mengeksekusi Enter di PC, dan mengosongkan box di ponsel dalam satu ketukan efisien.
+- Tombol pintasan prompt instan (`Lanjutkan`, `Proceed`, `Perbaiki Bug`, `Buat Dokumen`, `Jadikan Check Point`) otomatis mengetik teks ke PC dan langsung mengeksekusi Enter tanpa perlu menekan tombol tambahan.
+- Kolom kiri AI Workstation menampung tombol editing (`Copy`, `Paste`, `Esc`, `Tab`, `Backspace`, `Delete`) dan pintasan prompt yang terbagi merata dalam 7 baris (`repeat(7, 1fr)`).
+- Kolom kanan AI Workstation mengisi tinggi layar secara penuh dan proporsional: Tombol Enter (~40%), Navigasi Riwayat & Kursor (~20%), serta Trackpad (~40%) yang mendukung gerakan kursor dan tap untuk klik kiri.
+- Header AI Workstation dilengkapi tombol `Fullscreen` dan `Reload` untuk kemudahan pengujian selama pengembangan di browser ponsel sebelum perilisan versi APK.
 
 ---
 
