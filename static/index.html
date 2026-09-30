@@ -9193,6 +9193,7 @@ function bindAiKey(btnId, action) {
 }
 
 // Handler khusus tombol yang bisa ditahan (repeat on hold: backspace, panah navigasi)
+// Bunyi dan haptic hanya satu kali saat pertama ditekan, repeat berikutnya silent
 function bindAiRepeatKey(btnId, action) {
   const el = typeof btnId === 'string' ? $(btnId) : btnId;
   if (!el) return;
@@ -9202,10 +9203,6 @@ function bindAiRepeatKey(btnId, action) {
   let isPressed = false;
   let lastTouchTime = 0;
 
-  function doAction() {
-    action();
-  }
-
   function start(e) {
     if (e) {
       e.stopPropagation();
@@ -9214,17 +9211,18 @@ function bindAiRepeatKey(btnId, action) {
     if (isPressed) return;
     isPressed = true;
     el.classList.add('pressed');
-    doAction();
+    // bunyi dan haptic hanya pada sentuhan pertama
+    playClickSound();
+    vibe(12);
+    action();
 
     clearTimeout(delayTimer);
     clearInterval(intervalTimer);
 
-    // Standar repeat PC: delay 350ms, kemudian interval 50ms (~20 kali per detik)
+    // repeat PC standar: delay 350ms lalu interval 50ms, tanpa bunyi
     delayTimer = setTimeout(() => {
       intervalTimer = setInterval(() => {
-        if (isPressed) {
-          doAction();
-        }
+        if (isPressed) action();
       }, 50);
     }, 350);
   }
@@ -9396,30 +9394,20 @@ bindAiKey('ai-btn-tab', () => {
 // Tombol Backspace dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-btn-backspace', () => {
   send({ type: 'keypress', key: 'backspace' });
-  vibe(12);
-  playClickSound();
 });
 
 // Tombol Navigasi Kursor dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-nav-up', () => {
   send({ type: 'keypress', key: 'up' });
-  vibe(12);
-  playClickSound();
 });
 bindAiRepeatKey('ai-nav-down', () => {
   send({ type: 'keypress', key: 'down' });
-  vibe(12);
-  playClickSound();
 });
 bindAiRepeatKey('ai-nav-left', () => {
   send({ type: 'keypress', key: 'left' });
-  vibe(12);
-  playClickSound();
 });
 bindAiRepeatKey('ai-nav-right', () => {
   send({ type: 'keypress', key: 'right' });
-  vibe(12);
-  playClickSound();
 });
 
 // Prompt Chips
