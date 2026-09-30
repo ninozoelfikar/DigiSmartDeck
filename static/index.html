@@ -8887,8 +8887,53 @@ let isAiRecording = false;
 let aiSpeechWanted = false; // Keinginan user: apakah mic harus terus aktif
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
-let lastProcessedFinalIndex = -1;
 let aiAccumulatedText = '';
+let currentSessionFinal = '';
+let lastSentLength = 0;
+
+// Fungsi pembersih kata dari tanda baca untuk komparasi overlap
+function cleanAiWord(w) {
+  return (w || '').toLowerCase().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
+}
+
+// Fungsi penggabung transkrip cerdas: mencegah duplikasi/gema kata saat browser mengirim chunk berulang
+function mergeTranscripts(existing, incoming) {
+  existing = (existing || '').trim();
+  incoming = (incoming || '').trim();
+  if (!existing) return incoming;
+  if (!incoming) return existing;
+
+  const existLower = existing.toLowerCase();
+  const incLower = incoming.toLowerCase();
+
+  // 1. Jika teks baru persis sama atau sudah berada di ujung teks lama
+  if (existLower.endsWith(incLower)) return existing;
+  if (incLower.startsWith(existLower)) return incoming;
+
+  // 2. Deteksi tumpang tindih kata (word-level overlap) agar tidak menduplikasi kata yang diulang browser
+  const existWords = existing.split(/\s+/);
+  const incWords = incoming.split(/\s+/);
+
+  const existClean = existWords.map(cleanAiWord);
+  const incClean = incWords.map(cleanAiWord);
+
+  const maxOverlap = Math.min(existWords.length, incWords.length);
+  for (let len = maxOverlap; len > 0; len--) {
+    let match = true;
+    for (let k = 0; k < len; k++) {
+      if (existClean[existWords.length - len + k] !== incClean[k]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) {
+      const nonOverlapping = incWords.slice(len).join(' ');
+      return nonOverlapping ? (existing + ' ' + nonOverlapping) : existing;
+    }
+  }
+
+  return existing + ' ' + incoming;
+}
 
 function updateAiMicUI() {
   const micBtn = $('btn-ai-mic');
@@ -8907,6 +8952,8 @@ function updateAiMicUI() {
 
 function clearTranscriptUI() {
   aiAccumulatedText = '';
+  currentSessionFinal = '';
+  lastSentLength = 0;
   const previewEl = $('ai-transcript-preview');
   if (previewEl) {
     previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara berkesinambungan...';
@@ -8914,12 +8961,12 @@ function clearTranscriptUI() {
   }
 }
 
-function updateTranscriptUI(interimText) {
+function renderTranscriptPreview(fullText) {
   const previewEl = $('ai-transcript-preview');
   if (!previewEl) return;
-  const fullText = (aiAccumulatedText + (interimText ? (' ' + interimText) : '')).trim();
-  if (fullText) {
-    previewEl.textContent = fullText;
+  const display = (fullText || '').trim();
+  if (display) {
+    previewEl.textContent = display;
     previewEl.classList.remove('empty');
     previewEl.scrollTop = previewEl.scrollHeight;
   } else {
@@ -8939,7 +8986,10 @@ function stopAiSpeechRecognition() {
     }
   } catch(e) {}
   isAiRecording = false;
-  lastProcessedFinalIndex = -1;
+  if (currentSessionFinal) {
+    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+    currentSessionFinal = '';
+  }
   try {
     updateAiMicUI();
   } catch(e) {}
@@ -8961,29 +9011,26 @@ function createAndStartSpeechRecognition() {
     };
 
     recognition.onresult = (event) => {
-      let interimText = '';
-      let newlyFinalText = '';
+      let sessionFinal = '';
+      let sessionInterim = '';
 
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
+      for (let i = 0; i < event.results.length; ++i) {
         const item = event.results[i];
+        const piece = item[0].transcript.trim();
         if (item.isFinal) {
-          // Hanya proses indeks final yang belum pernah diproses
-          if (i > lastProcessedFinalIndex) {
-            lastProcessedFinalIndex = i;
-            const piece = item[0].transcript.trim();
-            if (piece) {
-              newlyFinalText += (newlyFinalText ? ' ' : '') + piece;
-            }
-          }
+          sessionFinal += (sessionFinal ? ' ' : '') + piece;
         } else {
-          interimText += item[0].transcript;
+          sessionInterim += (sessionInterim ? ' ' : '') + piece;
         }
       }
 
+      currentSessionFinal = sessionFinal;
+      const confirmedSoFar = mergeTranscripts(aiAccumulatedText, sessionFinal);
+
       const statusEl = $('ai-mic-status');
       if (statusEl && isAiRecording) {
-        if (interimText.trim()) {
-          statusEl.textContent = 'Mendengar: ' + interimText.trim();
+        if (sessionInterim.trim()) {
+          statusEl.textContent = 'Mendengar: ' + sessionInterim.trim();
           statusEl.style.color = '#3fb950';
         } else {
           statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
@@ -8991,15 +9038,18 @@ function createAndStartSpeechRecognition() {
         }
       }
 
-      if (newlyFinalText.trim()) {
-        aiAccumulatedText += (aiAccumulatedText ? ' ' : '') + newlyFinalText.trim();
-        if (aiAutoSend) {
-          sendAiText(newlyFinalText.trim() + ' ');
+      // Auto-send jika fitur diaktifkan (hanya mengirim selisih baru)
+      if (aiAutoSend && confirmedSoFar.length > lastSentLength) {
+        const diff = confirmedSoFar.slice(lastSentLength).trim();
+        if (diff) {
+          sendAiText(diff + ' ');
+          lastSentLength = confirmedSoFar.length;
         }
       }
 
-      // Update tampilan box ucapan secara berkesinambungan
-      updateTranscriptUI(interimText.trim());
+      // Tampilkan hasil penggabungan utuh bebas dari gema/pengulangan kata
+      const liveText = mergeTranscripts(confirmedSoFar, sessionInterim.trim());
+      renderTranscriptPreview(liveText);
     };
 
     recognition.onerror = (err) => {
@@ -9020,9 +9070,13 @@ function createAndStartSpeechRecognition() {
     };
 
     recognition.onend = () => {
+      // Simpan hasil final sesi ini ke akumulasi riwayat sebelum sesi berikutnya
+      if (currentSessionFinal) {
+        aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+        currentSessionFinal = '';
+      }
       if (aiSpeechWanted) {
         // Biarkan mic on terus: otomatis sambung ulang jika berhenti sendiri
-        lastProcessedFinalIndex = -1;
         setTimeout(() => {
           if (aiSpeechWanted) {
             try {
@@ -9031,7 +9085,7 @@ function createAndStartSpeechRecognition() {
               console.warn('[AI Speech Restart exception]:', e);
             }
           }
-        }, 200);
+        }, 150);
       } else {
         isAiRecording = false;
         updateAiMicUI();
@@ -9067,7 +9121,6 @@ function toggleAiSpeech() {
   }
 
   aiSpeechWanted = true;
-  lastProcessedFinalIndex = -1;
   createAndStartSpeechRecognition();
 }
 
@@ -9248,6 +9301,10 @@ bindAiKey('btn-ai-tr-clear', () => {
 });
 
 bindAiKey('btn-ai-tr-send', () => {
+  if (currentSessionFinal) {
+    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+    currentSessionFinal = '';
+  }
   const textToSend = aiAccumulatedText.trim();
   if (textToSend) {
     sendAiText(textToSend + ' ');
