@@ -9276,7 +9276,7 @@ bindAiKey('ai-btn-copy', () => {
   playClickSound();
 });
 bindAiKey('ai-btn-paste', () => {
-  send({ type: 'combo', keys: ['ctrl', 'v'] });
+  send({ type: 'combo', keys: ['ctrl', 'shift', 'v'] });
   vibe(15);
   playClickSound();
 });
