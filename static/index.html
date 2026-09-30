@@ -3075,9 +3075,11 @@ body.is-fullscreen {
   padding: 4px 5px;
   gap: 4px;
   min-height: 0;
+  overflow: hidden;
 }
 .ai-btn-giant-enter {
-  flex: 0 0 80px;
+  flex: 1;
+  min-height: 0;
   background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
   border: 1px solid #3fb950;
   border-radius: 6px;
@@ -3098,7 +3100,7 @@ body.is-fullscreen {
   filter: brightness(0.9);
 }
 .ai-enter-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.5px;
   display: flex;
@@ -3106,11 +3108,11 @@ body.is-fullscreen {
   gap: 5px;
 }
 .ai-enter-label svg {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
 }
 .ai-enter-sub {
-  font-size: 7.5px;
+  font-size: 8px;
   opacity: 0.9;
   font-weight: 600;
   margin-top: 1px;
@@ -3118,8 +3120,8 @@ body.is-fullscreen {
 
 /* Trackpad area di bawah arrow */
 .ai-trackpad {
-  flex: 0 0 65px;
-  min-height: 65px;
+  flex: 1;
+  min-height: 0;
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
   border-radius: 6px;
@@ -3138,8 +3140,8 @@ body.is-fullscreen {
   transform: translate(-50%, -50%);
   pointer-events: none;
   opacity: 0.25;
-  font-size: 9px;
-  letter-spacing: 0.5px;
+  font-size: 10px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   font-weight: 700;
   color: var(--text-dim);
@@ -3151,9 +3153,9 @@ body.is-fullscreen {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 3px;
-  flex: 0 0 60px;
-  min-height: 52px;
-  max-height: 68px;
+  flex: 0 0 54px;
+  min-height: 48px;
+  max-height: 60px;
 }
 .ai-nav-btn {
   display: flex;
