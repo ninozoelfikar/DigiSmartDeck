@@ -8942,15 +8942,19 @@ function mergeTranscripts(existing, incoming) {
 function updateAiMicUI() {
   const micBtn = $('btn-ai-mic');
   const statusEl = $('ai-mic-status');
-  // Selama aiSpeechWanted aktif, tombol selalu menampilkan lingkaran cahaya hijau
-  if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
+  if (micBtn) micBtn.classList.toggle('recording', isAiRecording);
   if (statusEl) {
-    if (aiSpeechWanted) {
-      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+    if (isAiRecording) {
+      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Jeda)';
       statusEl.style.color = '#3fb950';
     } else {
-      statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
-      statusEl.style.color = '';
+      if (aiAccumulatedText.trim()) {
+        statusEl.textContent = 'Hasil tersimpan. Ketuk Mic untuk lanjut bicara';
+        statusEl.style.color = '#58a6ff';
+      } else {
+        statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
+        statusEl.style.color = '';
+      }
     }
   }
 }
@@ -8976,6 +8980,7 @@ function clearTranscriptUI() {
     previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara berkesinambungan...';
     previewEl.classList.add('empty');
   }
+  updateAiMicUI();
 }
 
 function renderTranscriptPreview(fullText) {
@@ -8992,40 +8997,8 @@ function renderTranscriptPreview(fullText) {
   }
 }
 
-function scheduleAiRestart(delay = 80) {
-  if (!aiSpeechWanted) return;
-  if (aiSpeechRestartTimer) clearTimeout(aiSpeechRestartTimer);
-  aiSpeechRestartTimer = setTimeout(() => {
-    aiSpeechRestartTimer = null;
-    if (aiSpeechWanted) {
-      startAiSpeechSession();
-    }
-  }, delay);
-}
-
-function startAiSpeechWatchdog() {
-  if (aiSpeechWatchdog) clearInterval(aiSpeechWatchdog);
-  aiSpeechWatchdog = setInterval(() => {
-    if (aiSpeechWanted && !isAiRecording && !isAiStarting) {
-      startAiSpeechSession();
-    }
-  }, 800);
-}
-
-function stopAiSpeechWatchdog() {
-  if (aiSpeechWatchdog) {
-    clearInterval(aiSpeechWatchdog);
-    aiSpeechWatchdog = null;
-  }
-}
-
 function stopAiSpeechRecognition() {
   aiSpeechWanted = false;
-  stopAiSpeechWatchdog();
-  if (aiSpeechRestartTimer) {
-    clearTimeout(aiSpeechRestartTimer);
-    aiSpeechRestartTimer = null;
-  }
   if (aiSpeechRecognition) {
     try {
       aiSpeechRecognition.onresult = null;
@@ -9045,7 +9018,6 @@ function stopAiSpeechRecognition() {
 }
 
 function startAiSpeechSession() {
-  if (!aiSpeechWanted) return null;
   if (isAiStarting) return null;
   isAiStarting = true;
 
@@ -9099,12 +9071,12 @@ function startAiSpeechSession() {
       const confirmedSoFar = mergeTranscripts(aiAccumulatedText, sessionFinal);
 
       const statusEl = $('ai-mic-status');
-      if (statusEl && aiSpeechWanted) {
+      if (statusEl && isAiRecording) {
         if (sessionInterim.trim()) {
           statusEl.textContent = 'Mendengar: ' + sessionInterim.trim();
           statusEl.style.color = '#3fb950';
         } else {
-          statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+          statusEl.textContent = 'Mendengarkan... (Ketuk untuk Jeda)';
           statusEl.style.color = '#3fb950';
         }
       }
@@ -9130,38 +9102,32 @@ function startAiSpeechSession() {
         aiSpeechWanted = false;
         isAiRecording = false;
         isAiStarting = false;
-        stopAiSpeechWatchdog();
         updateAiMicUI();
         if (statusEl) {
           statusEl.textContent = 'Izin mic ditolak di browser.';
         }
         return;
       }
-      // Error lain (no-speech, network, audio-capture, aborted): jangan matikan aiSpeechWanted
     };
 
     recognition.onend = () => {
       isAiRecording = false;
       isAiStarting = false;
       commitCurrentSession();
-      if (aiSpeechWanted) {
-        // Otomatis sambung ulang secepat mungkin
-        scheduleAiRestart(80);
-      } else {
-        updateAiMicUI();
-      }
+      // Saat jeda berpikir atau selesai frasa: berhenti dengan hening tanpa looping restart
+      aiSpeechWanted = false;
+      updateAiMicUI();
     };
 
     recognition.start();
     aiSpeechRecognition = recognition;
     return recognition;
   } catch(err) {
-    console.warn('[SpeechRecognition Start Exception, will retry]:', err);
+    console.warn('[SpeechRecognition Start Exception]:', err);
     isAiStarting = false;
     isAiRecording = false;
-    if (aiSpeechWanted) {
-      scheduleAiRestart(250);
-    }
+    aiSpeechWanted = false;
+    updateAiMicUI();
     return null;
   }
 }
@@ -9170,7 +9136,7 @@ function toggleAiSpeech() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const statusEl = $('ai-mic-status');
 
-  if (aiSpeechWanted) {
+  if (isAiRecording || aiSpeechWanted) {
     stopAiSpeechRecognition();
     return;
   }
@@ -9181,9 +9147,7 @@ function toggleAiSpeech() {
   }
 
   aiSpeechWanted = true;
-  updateAiMicUI();
   startAiSpeechSession();
-  startAiSpeechWatchdog();
 }
 
 function sendAiText(txt) {
@@ -9375,72 +9339,59 @@ bindAiKey('btn-ai-tr-send', () => {
 bindAiKey('ai-btn-enter', () => {
   send({ type: 'keypress', key: 'enter' });
   vibe(25);
-  playClickSound();
 });
 bindAiKey('ai-btn-newline', () => {
   send({ type: 'combo', keys: ['shift', 'enter'] });
   vibe(20);
-  playClickSound();
 });
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });
   vibe(15);
-  playClickSound();
 });
 bindAiKey('ai-btn-paste', () => {
   send({ type: 'combo', keys: ['ctrl', 'shift', 'v'] });
   vibe(15);
-  playClickSound();
 });
 bindAiKey('ai-btn-selectall', () => {
   send({ type: 'combo', keys: ['ctrl', 'a'] });
   vibe(15);
-  playClickSound();
 });
 bindAiKey('ai-btn-stop', () => {
   send({ type: 'keypress', key: 'esc' });
   vibe(15);
-  playClickSound();
 });
 bindAiKey('ai-btn-tab', () => {
   send({ type: 'keypress', key: 'tab' });
   vibe(15);
-  playClickSound();
 });
 
 // Tombol Backspace dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-btn-backspace', () => {
   send({ type: 'keypress', key: 'backspace' });
   vibe(12);
-  playClickSound();
 });
 
 bindAiRepeatKey('ai-btn-space', () => {
   send({ type: 'keypress', key: 'space' });
   vibe(12);
-  playClickSound();
 });
 
 // Tombol Navigasi Kursor dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-nav-up', () => {
   send({ type: 'keypress', key: 'up' });
   vibe(12);
-  playClickSound();
 });
 bindAiRepeatKey('ai-nav-down', () => {
   send({ type: 'keypress', key: 'down' });
   vibe(12);
-  playClickSound();
 });
 bindAiRepeatKey('ai-nav-left', () => {
   send({ type: 'keypress', key: 'left' });
   vibe(12);
-  playClickSound();
 });
 bindAiRepeatKey('ai-nav-right', () => {
   send({ type: 'keypress', key: 'right' });
   vibe(12);
-  playClickSound();
 });
 
 // Prompt Chips
