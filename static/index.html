@@ -5776,10 +5776,10 @@ body.is-fullscreen {
         </button>
 
         <div class="ai-nav-pad">
-          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Panah Atas"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
-          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Panah Kiri"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Panah Bawah"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Panah Kanan"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Panah Atas (PC)"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-left" id="ai-nav-left" title="Panah Kiri (PC)"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-down" id="ai-nav-down" title="Panah Bawah (PC)"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button type="button" class="ai-nav-btn ai-nav-right" id="ai-nav-right" title="Panah Kanan (PC)"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
 
         <div class="ai-trackpad-wrap">
@@ -11303,18 +11303,18 @@ bindAiRepeatKey('ai-btn-delete', () => {
   }
 });
 
-// Tombol Navigasi Kursor dengan dukungan repeat saat ditahan
+// Tombol Navigasi Arah Kolom Kanan (Di Bawah Enter - Khusus Langsung ke PC, Bebas dari Toggle Target)
 bindAiRepeatKey('ai-nav-up', () => {
-  moveAiCursorUp();
+  send({ type: 'keypress', key: 'up' });
 });
 bindAiRepeatKey('ai-nav-down', () => {
-  moveAiCursorDown();
+  send({ type: 'keypress', key: 'down' });
 });
 bindAiRepeatKey('ai-nav-left', () => {
-  moveAiCursorLeft();
+  send({ type: 'keypress', key: 'left' });
 });
 bindAiRepeatKey('ai-nav-right', () => {
-  moveAiCursorRight();
+  send({ type: 'keypress', key: 'right' });
 });
 
 // ── AI Workstation Trackpad (Kursor, 2-Jari Scroll, Klik Kiri & Kanan) ──

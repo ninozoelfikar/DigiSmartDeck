@@ -215,4 +215,15 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Tiga mode tambahan (Mode Slide Presentasi, Mode Media Controller, dan Mode Canvas Tablet) disembunyikan dari toolbar header (`display: none`).
   - Seluruh kode arsitektur backend Python (`server.py`), scancode evdev/pynput, simulasi absolut kursor (`mouseabs`), pengaturan volume, dan modul tampilan frontend tetap utuh dan tersimpan rapi, sehingga siap diaktifkan kembali pada pembaruan versi mendatang tanpa perlu menulis ulang dari awal.
 
+---
+
+## 13. CATATAN CHECKPOINT (v0.9.9 - Pemisahan Perilaku Tombol Panah AI Workstation)
+- **Tombol Panah Kolom Kanan (`#ai-nav-pad` di bawah tombol Enter):**
+  - Dikhususkan eksklusif hanya untuk navigasi langsung ke PC (`send({ type: 'keypress', key: 'up'/'down'/'left'/'right' })`).
+  - Tidak terpengaruh sama sekali oleh status toggle target ketik (`aiKbTarget` / HP vs PC). Kapan pun tombol panah di bawah Enter ditekan, kursor dan riwayat di PC selalu berpindah.
+  - Mempertahankan fitur tap dan tahan repeat interval dengan efek audio mekanikal `playClickSound()` dan getaran `vibe()`.
+- **Tombol Panah Keyboard Ketik AI (`#ai-tk-btn-*` pada row 4 keyboard bawah):**
+  - Tetap terikat dengan toggle target ketik (`aiKbTarget`), sehingga dapat menggeser kursor teks transkrip di HP (`moveAiCursor*()`) saat mode Device aktif, atau mengirim ke PC saat mode PC aktif.
+
+
 
