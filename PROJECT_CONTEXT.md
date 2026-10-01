@@ -203,3 +203,16 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Ikon ghost mode baru `quick-mode-media` dan `quick-mode-canvas` terpasang di bar atas.
   - Dukungan parameter URL otomatis: `?mode=media` dan `?mode=canvas`.
 
+---
+
+## 12. CATATAN CHECKPOINT (v0.9.8 - Penyederhanaan Tampilan untuk MVP)
+- **Fokus Tunggal pada 3 Mode Utama MVP:**
+  - Demi menjaga kesederhanaan, kematangan, dan stabilitas peluncuran produk pertama (Minimum Viable Product):
+    1. Keyboard PC Utama (`quick-mode-standard`)
+    2. Game Console (`quick-mode-game`)
+    3. AI Workstation (`quick-mode-ai`)
+- **Penyembunyian Mode Sekunder dari Antarmuka (Preserved for Future):**
+  - Tiga mode tambahan (Mode Slide Presentasi, Mode Media Controller, dan Mode Canvas Tablet) disembunyikan dari toolbar header (`display: none`).
+  - Seluruh kode arsitektur backend Python (`server.py`), scancode evdev/pynput, simulasi absolut kursor (`mouseabs`), pengaturan volume, dan modul tampilan frontend tetap utuh dan tersimpan rapi, sehingga siap diaktifkan kembali pada pembaruan versi mendatang tanpa perlu menulis ulang dari awal.
+
+
