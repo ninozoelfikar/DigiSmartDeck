@@ -2740,7 +2740,21 @@ body.is-fullscreen {
   align-items: center;
   gap: 6px;
 }
-.ai-badge, .ai-title-sub {
+.ai-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #d29922;
+  background: rgba(210, 153, 34, 0.15);
+  border: 1px solid rgba(210, 153, 34, 0.35);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.ai-title-sub {
   display: none !important;
 }
 
@@ -2849,16 +2863,7 @@ body.is-fullscreen {
   overflow: hidden;
 }
 .ai-panel-title {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  text-transform: uppercase;
-  margin-bottom: 1px;
-  flex-shrink: 0;
+  display: none !important;
 }
 .ai-shortcuts-grid {
   display: grid;
@@ -3052,7 +3057,7 @@ body.is-fullscreen {
   color: #fff;
 }
 
-/* ─── Android-style Soft QWERTY Keyboard (Tablet AI Workstation) ─── */
+/* ─── Android-style Soft QWERTY Keyboard (Tablet & Mobile AI Workstation) ─── */
 .ai-tablet-keyboard {
   display: none;
   flex-direction: column;
@@ -3067,31 +3072,23 @@ body.is-fullscreen {
   flex-shrink: 0;
 }
 
-@media (min-height: 480px) and (min-width: 680px) {
+@media (min-height: 440px) {
   .ai-col-center {
-    padding: 10px;
-    gap: 10px;
-  }
-  .ai-btn-mic {
-    width: 94px;
-    height: 94px;
-  }
-  .ai-btn-mic svg {
-    width: 46px;
-    height: 46px;
+    padding: 8px 10px;
+    gap: 8px;
   }
   .ai-tablet-keyboard {
     display: flex;
-    margin-top: 10px;
+    margin-top: 6px;
   }
   .ai-transcript-box {
     flex: 1;
-    min-height: 100px;
+    min-height: 80px;
     max-height: none;
-    padding: 10px 12px;
+    padding: 8px 10px;
   }
   .ai-transcript-text {
-    line-height: 1.55;
+    line-height: 1.5;
   }
 }
 
@@ -3131,7 +3128,7 @@ body.is-fullscreen {
 }
 
 .ai-tk-key.ai-tk-fn {
-  flex: 1.4;
+  flex: 1.3;
   background: rgba(255, 255, 255, 0.06);
   font-size: 13px;
   font-weight: 700;
@@ -3145,14 +3142,30 @@ body.is-fullscreen {
 }
 
 .ai-tk-key.ai-tk-space {
-  flex: 4.5;
+  flex: 2.8;
   font-size: 13px;
   color: var(--text-dim);
   font-weight: 600;
 }
 
+.ai-tk-key.ai-tk-arrow {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  padding: 0;
+}
+.ai-tk-key.ai-tk-arrow:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.ai-tk-key.ai-tk-arrow:active, .ai-tk-key.ai-tk-arrow.active {
+  background: rgba(88, 166, 255, 0.28);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .ai-tk-key.ai-tk-edit-prompt {
-  flex: 1.6;
+  flex: 1.3;
   background: rgba(88, 166, 255, 0.12);
   border-color: rgba(88, 166, 255, 0.35);
   color: var(--accent);
@@ -3162,6 +3175,20 @@ body.is-fullscreen {
   background: rgba(88, 166, 255, 0.28);
   border-color: var(--accent);
   transform: translateY(1px);
+}
+
+.ai-text-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.15em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  animation: ai-cursor-blink 1s infinite;
+  margin: 0 1px;
+}
+@keyframes ai-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 /* Modal Kustomisasi Prompt AI */
@@ -3233,7 +3260,6 @@ body.is-fullscreen {
   border-radius: 6px;
   color: #fff;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -3241,6 +3267,9 @@ body.is-fullscreen {
   transition: all 0.1s ease;
   user-select: none;
   padding: 4px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
 }
 .ai-btn-giant-enter:active {
   transform: translateY(1px);
@@ -3287,6 +3316,21 @@ body.is-fullscreen {
   -webkit-user-select: none;
   position: relative;
   overflow: hidden;
+}
+.ai-trackpad::after {
+  content: 'Trackpad';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.25;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  white-space: nowrap;
 }
 
 .ai-tp-buttons {
@@ -4739,10 +4783,6 @@ body.is-fullscreen {
     <div class="ai-main-grid">
       <!-- Kolom 1: Pintasan Prompt & Kontrol Edit -->
       <div class="ai-col-left">
-        <div class="ai-panel-title">
-          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span>Pintasan AI &amp; Edit</span>
-        </div>
         <div class="ai-shortcuts-grid">
           <button type="button" class="ai-btn-sh tool" id="ai-btn-copy" title="Ctrl+C">
             <span>Copy</span>
@@ -4782,11 +4822,6 @@ body.is-fullscreen {
 
       <!-- Kolom 2: Voice Typing / Dikte Suara Nirkabel -->
       <div class="ai-col-center">
-        <div class="ai-panel-title">
-          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-          <span>Dikte Suara Nirkabel (Mic HP ke PC)</span>
-        </div>
-
         <div class="ai-mic-section">
           <button type="button" class="ai-btn-mic" id="btn-ai-mic" title="Ketuk untuk mulai/berhenti dikte suara">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
@@ -4857,6 +4892,18 @@ body.is-fullscreen {
             <button type="button" class="ai-tk-key" data-key=",">,</button>
             <button type="button" class="ai-tk-key ai-tk-space" data-key=" ">Spasi</button>
             <button type="button" class="ai-tk-key" data-key=".">.</button>
+            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-arrow" id="ai-tk-btn-left" title="Kursor Kiri">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-arrow" id="ai-tk-btn-up" title="Kursor Atas">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-arrow" id="ai-tk-btn-down" title="Kursor Bawah">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-arrow" id="ai-tk-btn-right" title="Kursor Kanan">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
             <button type="button" class="ai-tk-key ai-tk-fn ai-tk-edit-prompt" id="ai-tk-btn-edit-prompt" title="Kustomisasi Shortcut Prompt AI">
               <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </button>
@@ -4867,17 +4914,8 @@ body.is-fullscreen {
       <!-- Kolom 3: Enter Ekstra Besar & Navigasi Arah -->
       <div class="ai-col-right">
         <button type="button" class="ai-btn-giant-enter" id="ai-btn-enter" title="Kirim Prompt / Eksekusi Perintah (Enter)">
-          <div class="ai-enter-label">
-            <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
-            <span>ENTER</span>
-          </div>
-          <div class="ai-enter-sub">Kirim Prompt / Run</div>
+          <span>Enter</span>
         </button>
-
-        <div class="ai-panel-title">
-          <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>Navigasi Riwayat &amp; Kursor</span>
-        </div>
 
         <div class="ai-nav-pad">
           <button type="button" class="ai-nav-btn ai-nav-up" id="ai-nav-up" title="Panah Atas"><svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
@@ -9147,6 +9185,16 @@ let aiAccumulatedText = '';
 let currentSessionFinal = '';
 let currentSessionInterim = '';
 let lastSentLength = 0;
+let aiCursorPos = 0;
+
+function escapeAiHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 setTimeout(() => {
   const badgeText = $('ai-badge-text');
@@ -9314,10 +9362,12 @@ function commitCurrentSession() {
     currentSessionInterim = '';
   }
   aiAccumulatedText = deduplicateRepeatedPhrases(aiAccumulatedText);
+  aiCursorPos = aiAccumulatedText.length;
 }
 
 function clearTranscriptUI() {
   aiAccumulatedText = '';
+  aiCursorPos = 0;
   currentSessionFinal = '';
   currentSessionInterim = '';
   lastSentLength = 0;
@@ -9332,12 +9382,17 @@ function clearTranscriptUI() {
 function renderTranscriptPreview(fullText) {
   const previewEl = $('ai-transcript-preview');
   if (!previewEl) return;
-  const display = (fullText || '').trim();
-  if (display) {
-    previewEl.textContent = display;
+  const raw = (fullText || '');
+  if (raw.length > 0) {
+    if (aiCursorPos < 0) aiCursorPos = 0;
+    if (aiCursorPos > raw.length) aiCursorPos = raw.length;
+    const before = escapeAiHtml(raw.slice(0, aiCursorPos));
+    const after = escapeAiHtml(raw.slice(aiCursorPos));
+    previewEl.innerHTML = before + '<span class="ai-text-cursor"></span>' + after;
     previewEl.classList.remove('empty');
     previewEl.scrollTop = previewEl.scrollHeight;
   } else {
+    aiCursorPos = 0;
     previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara berkesinambungan...';
     previewEl.classList.add('empty');
   }
@@ -9437,6 +9492,7 @@ function startAiSpeechSession() {
       }
 
       const liveText = deduplicateRepeatedPhrases(mergeTranscripts(confirmedSoFar, sessionInterim));
+      aiCursorPos = liveText.length;
       renderTranscriptPreview(liveText);
     };
 
@@ -9714,14 +9770,63 @@ bindAiKey('ai-btn-shift-tab', () => {
   playClickSound();
 });
 
+function moveAiCursorLeft() {
+  if (aiCursorPos > 0) {
+    aiCursorPos--;
+    renderTranscriptPreview(aiAccumulatedText);
+  }
+  send({ type: 'keypress', key: 'left' });
+}
+
+function moveAiCursorRight() {
+  if (aiCursorPos < aiAccumulatedText.length) {
+    aiCursorPos++;
+    renderTranscriptPreview(aiAccumulatedText);
+  }
+  send({ type: 'keypress', key: 'right' });
+}
+
+function moveAiCursorUp() {
+  const lastNl = aiAccumulatedText.lastIndexOf('\n', aiCursorPos - 1);
+  if (lastNl !== -1) {
+    const prevNl = aiAccumulatedText.lastIndexOf('\n', lastNl - 1);
+    const col = aiCursorPos - lastNl;
+    aiCursorPos = Math.max(0, prevNl === -1 ? Math.min(col, lastNl) : prevNl + col);
+  } else {
+    aiCursorPos = Math.max(0, aiCursorPos - 25);
+  }
+  renderTranscriptPreview(aiAccumulatedText);
+  send({ type: 'keypress', key: 'up' });
+}
+
+function moveAiCursorDown() {
+  const nextNl = aiAccumulatedText.indexOf('\n', aiCursorPos);
+  if (nextNl !== -1) {
+    const prevNl = aiAccumulatedText.lastIndexOf('\n', aiCursorPos - 1);
+    const col = prevNl === -1 ? aiCursorPos : (aiCursorPos - prevNl);
+    const afterNextNl = aiAccumulatedText.indexOf('\n', nextNl + 1);
+    const lineEnd = afterNextNl === -1 ? aiAccumulatedText.length : afterNextNl;
+    aiCursorPos = Math.min(lineEnd, nextNl + 1 + col);
+  } else {
+    aiCursorPos = Math.min(aiAccumulatedText.length, aiCursorPos + 25);
+  }
+  renderTranscriptPreview(aiAccumulatedText);
+  send({ type: 'keypress', key: 'down' });
+}
+
 // Tombol Delete & Backspace dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-btn-delete', () => {
+  if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos < aiAccumulatedText.length) {
+    aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + aiAccumulatedText.slice(aiCursorPos + 1);
+    renderTranscriptPreview(aiAccumulatedText);
+  }
   send({ type: 'keypress', key: 'delete' });
 });
 
 bindAiRepeatKey('ai-btn-backspace', () => {
-  if (aiAccumulatedText && aiAccumulatedText.length > 0) {
-    aiAccumulatedText = aiAccumulatedText.slice(0, -1);
+  if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+    aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+    aiCursorPos--;
     renderTranscriptPreview(aiAccumulatedText);
     if (aiAutoSend) {
       send({ type: 'keypress', key: 'backspace' });
@@ -9733,16 +9838,16 @@ bindAiRepeatKey('ai-btn-backspace', () => {
 
 // Tombol Navigasi Kursor dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-nav-up', () => {
-  send({ type: 'keypress', key: 'up' });
+  moveAiCursorUp();
 });
 bindAiRepeatKey('ai-nav-down', () => {
-  send({ type: 'keypress', key: 'down' });
+  moveAiCursorDown();
 });
 bindAiRepeatKey('ai-nav-left', () => {
-  send({ type: 'keypress', key: 'left' });
+  moveAiCursorLeft();
 });
 bindAiRepeatKey('ai-nav-right', () => {
-  send({ type: 'keypress', key: 'right' });
+  moveAiCursorRight();
 });
 
 // ── AI Workstation Trackpad (Kursor, 2-Jari Scroll, Klik Kiri & Kanan) ──
@@ -10008,7 +10113,11 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     playClickSound();
     vibe(12);
 
-    aiAccumulatedText += char;
+    if (aiCursorPos < 0 || aiCursorPos > aiAccumulatedText.length) {
+      aiCursorPos = aiAccumulatedText.length;
+    }
+    aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + char + aiAccumulatedText.slice(aiCursorPos);
+    aiCursorPos += char.length;
     renderTranscriptPreview(aiAccumulatedText);
 
     if (aiAutoSend) {
@@ -10048,8 +10157,9 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
   if (btnBackspace) {
     bindAiRepeatKey(btnBackspace, () => {
-      if (aiAccumulatedText && aiAccumulatedText.length > 0) {
-        aiAccumulatedText = aiAccumulatedText.slice(0, -1);
+      if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+        aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+        aiCursorPos--;
         renderTranscriptPreview(aiAccumulatedText);
         if (aiAutoSend) {
           send({ type: 'keypress', key: 'backspace' });
@@ -10057,6 +10167,33 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
       } else {
         send({ type: 'keypress', key: 'backspace' });
       }
+    });
+  }
+
+  // Tombol Panah Navigasi di Keyboard Mode AI
+  const btnLeft = $('ai-tk-btn-left');
+  const btnUp = $('ai-tk-btn-up');
+  const btnDown = $('ai-tk-btn-down');
+  const btnRight = $('ai-tk-btn-right');
+
+  if (btnLeft) {
+    bindAiRepeatKey(btnLeft, () => {
+      moveAiCursorLeft();
+    });
+  }
+  if (btnRight) {
+    bindAiRepeatKey(btnRight, () => {
+      moveAiCursorRight();
+    });
+  }
+  if (btnUp) {
+    bindAiRepeatKey(btnUp, () => {
+      moveAiCursorUp();
+    });
+  }
+  if (btnDown) {
+    bindAiRepeatKey(btnDown, () => {
+      moveAiCursorDown();
     });
   }
 
