@@ -348,14 +348,3 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Pemanfaatan Ruang Layar (Skala Tombol Diperbesar):**
   - Ukuran D-Pad dan Action Diamond diperbesar dari 170px menjadi 184px (mode ponsel) dan 230px (mode tablet) dengan tombol aksi 56px (tablet 70px) untuk mengisi ruang kosong yang sebelumnya terlalu renggang.
 
-
-
-
-
-
-
-
-
-
-
-
