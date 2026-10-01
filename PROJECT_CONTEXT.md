@@ -337,6 +337,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Pusat Gravitasi Kontroler Terpusat (Centered Controls Group):**
   - Seluruh grup tombol dibungkus ke dalam wadah fleksibel terpusat (`.gp-controls-group`) dengan `justify-content: center` sehingga tata letak gamepad seimbang sempurna di tengah layar tanpa rongga canggung.
 
+---
+
+## 22. CATATAN CHECKPOINT (v0.9.18 - Gamepad Deck Rata-Tengah & Penyesuaian Ruang Estetis)
+- **Rata-Tengah Tombol Kontrol Utama (D-Pad, Select/Start, Action Diamond):**
+  - Seluruh tombol selain tombol bahu (L1, L2, R1, R2) ditempatkan ke dalam `.gp-main-deck` yang otomatis rata-tengah (`align-items: center; justify-content: space-between;`) di tengah area layar.
+- **Penyatuan Baris Atas Bahu & Emblem (`.gp-top-row`):**
+  - Tombol bahu (L1/L2 di kiri dan R1/R2 di kanan) kini sejajar di baris atas bersama emblem gamepad di tengahnya.
+  - Diberikan jarak proporsional dari bar atas aplikasi (`margin-top: 14px; padding-top: 10px;`) sehingga tidak lagi mepet dan terlihat bersih serta lapang.
+- **Pemanfaatan Ruang Layar (Skala Tombol Diperbesar):**
+  - Ukuran D-Pad dan Action Diamond diperbesar dari 170px menjadi 184px (mode ponsel) dan 230px (mode tablet) dengan tombol aksi 56px (tablet 70px) untuk mengisi ruang kosong yang sebelumnya terlalu renggang.
+
+
 
 
 

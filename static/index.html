@@ -1989,7 +1989,7 @@ body.is-fullscreen {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 6px 16px 12px;
+  padding: 10px 18px 16px;
   background: var(--bg);
   user-select: none;
   -webkit-user-select: none;
@@ -2001,15 +2001,23 @@ body.is-fullscreen {
   display: none !important;
 }
 
-/* Gamepad Top Emblem (Tengah Atas dengan Jarak Proporsional) */
+/* Top Gamepad Row (Bahu L1/L2, Emblem Tengah, Bahu R1/R2) */
+.gp-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 16px;
+  margin-top: 14px;
+  flex-shrink: 0;
+}
 .gp-top-emblem {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 8px;
-  margin-bottom: 4px;
-  padding: 4px 14px;
+  margin-top: 4px;
+  padding: 5px 16px;
   color: var(--accent);
   background: rgba(88, 166, 255, 0.08);
   border: 1px solid rgba(88, 166, 255, 0.22);
@@ -2024,28 +2032,6 @@ body.is-fullscreen {
   width: 16px;
   height: 16px;
 }
-
-/* Centered Controls Container */
-.gp-controls-group {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: stretch;
-  gap: 12px;
-  min-height: 0;
-}
-
-/* Shoulder & Trigger Row (Vertical Stack: L1 over L2, R1 over R2 dengan Jarak Ekstra) */
-.gp-shoulders-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0 16px;
-  gap: 20px;
-  flex-shrink: 0;
-}
 .gp-sh-group {
   display: flex;
   flex-direction: column;
@@ -2059,8 +2045,8 @@ body.is-fullscreen {
   font-weight: 700;
   font-size: 13px;
   padding: 6px 20px;
-  min-width: 80px;
-  height: 34px;
+  min-width: 84px;
+  height: 36px;
   box-shadow: 0 3px 0 var(--key-shadow), 0 2px 4px rgba(0,0,0,0.3);
   cursor: pointer;
   touch-action: none;
@@ -2082,15 +2068,16 @@ body.is-fullscreen {
   box-shadow: 0 1px 0 var(--key-shadow);
 }
 
-/* Main Controller Deck */
+/* Main Controller Deck (Rata Tengah Secara Vertikal dan Horizontal) */
 .gp-main-deck {
   flex: 1;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 14px;
+  padding: 0 16px;
   gap: 20px;
-  min-height: 180px;
+  min-height: 200px;
 }
 
 /* D-PAD (8-Way Directional Pad) */
@@ -2103,8 +2090,8 @@ body.is-fullscreen {
 }
 .gp-dpad {
   position: relative;
-  width: 170px;
-  height: 170px;
+  width: 184px;
+  height: 184px;
   touch-action: none;
 }
 .gp-dpad.hidden {
@@ -2115,7 +2102,7 @@ body.is-fullscreen {
   background: var(--key-bg);
   border: 1px solid var(--key-border);
   color: var(--text);
-  font-size: 18px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2127,38 +2114,38 @@ body.is-fullscreen {
 }
 .dp-up {
   top: 0;
-  left: 58px;
-  width: 54px;
-  height: 60px;
+  left: 62px;
+  width: 60px;
+  height: 68px;
   border-radius: 12px 12px 4px 4px;
 }
 .dp-down {
   bottom: 0;
-  left: 58px;
-  width: 54px;
-  height: 60px;
+  left: 62px;
+  width: 60px;
+  height: 68px;
   border-radius: 4px 4px 12px 12px;
 }
 .dp-left {
-  top: 58px;
+  top: 62px;
   left: 0;
-  width: 60px;
-  height: 54px;
+  width: 68px;
+  height: 60px;
   border-radius: 12px 4px 4px 12px;
 }
 .dp-right {
-  top: 58px;
+  top: 62px;
   right: 0;
-  width: 60px;
-  height: 54px;
+  width: 68px;
+  height: 60px;
   border-radius: 4px 12px 12px 4px;
 }
 .gp-dp-center {
   position: absolute;
-  top: 58px;
-  left: 58px;
-  width: 54px;
-  height: 54px;
+  top: 62px;
+  left: 62px;
+  width: 60px;
+  height: 60px;
   background: var(--key-special);
   border-radius: 4px;
   box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
@@ -2255,16 +2242,16 @@ body.is-fullscreen {
 }
 .gp-action-diamond {
   position: relative;
-  width: 170px;
-  height: 170px;
+  width: 184px;
+  height: 184px;
   touch-action: none;
 }
 .gp-act-btn {
   position: absolute;
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -2279,25 +2266,25 @@ body.is-fullscreen {
 /* Action Button Colors (Retro / SNES / Arcade) */
 .gp-act-btn.btn-x {
   top: 0;
-  left: 59px;
+  left: 64px;
   background: linear-gradient(145deg, #1f6feb, #0d419d);
   border-color: #388bfd;
 }
 .gp-act-btn.btn-y {
-  top: 59px;
+  top: 64px;
   left: 0;
   background: linear-gradient(145deg, #238636, #196127);
   border-color: #3fb950;
 }
 .gp-act-btn.btn-a {
-  top: 59px;
+  top: 64px;
   right: 0;
   background: linear-gradient(145deg, #da3633, #a42624);
   border-color: #f85149;
 }
 .gp-act-btn.btn-b {
   bottom: 0;
-  left: 59px;
+  left: 64px;
   background: linear-gradient(145deg, #d29922, #9e6a03);
   border-color: #e3b341;
 }
@@ -2419,113 +2406,100 @@ body.is-fullscreen {
 /* Tablet / Wide Display Ergonomic Scaling */
 @media (min-width: 768px) and (min-height: 480px) {
   .gamepad-view {
-    padding: 12px 28px 16px;
+    padding: 14px 32px 20px;
+  }
+  .gp-top-row {
+    padding: 0 32px;
+    margin-top: 18px;
   }
   .gp-top-emblem {
-    margin-top: 12px;
-    margin-bottom: 8px;
-    padding: 6px 18px;
+    margin-top: 6px;
+    padding: 7px 20px;
     font-size: 13px;
   }
   .gp-top-emblem svg {
     width: 20px;
     height: 20px;
   }
-  .gp-controls-group {
-    gap: 16px;
-  }
-  .gp-shoulders-row {
-    padding: 0 32px;
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
   .gp-sh-group {
-    gap: 20px;
+    gap: 22px;
   }
   .gp-sh-btn {
-    height: 42px;
-    min-width: 110px;
+    height: 46px;
+    min-width: 116px;
     font-size: 15px;
     padding: 8px 30px;
     border-radius: 10px;
   }
   .gp-main-deck {
-    padding: 10px 24px;
-    min-height: 230px;
+    padding: 0 32px;
+    min-height: 250px;
   }
-  .gp-dpad, .gp-action-diamond, .gp-stick-container {
-    width: 210px;
-    height: 210px;
+  .gp-dpad, .gp-action-diamond {
+    width: 230px;
+    height: 230px;
   }
   .dp-up {
     top: 0;
-    left: 72px;
-    width: 66px;
-    height: 74px;
+    left: 78px;
+    width: 74px;
+    height: 84px;
   }
   .dp-down {
     bottom: 0;
-    left: 72px;
-    width: 66px;
-    height: 74px;
+    left: 78px;
+    width: 74px;
+    height: 84px;
   }
   .dp-left {
-    top: 72px;
+    top: 78px;
     left: 0;
-    width: 74px;
-    height: 66px;
+    width: 84px;
+    height: 74px;
   }
   .dp-right {
-    top: 72px;
+    top: 78px;
     right: 0;
-    width: 74px;
-    height: 66px;
+    width: 84px;
+    height: 74px;
   }
   .gp-dp-center {
-    top: 72px;
-    left: 72px;
-    width: 66px;
-    height: 66px;
+    top: 78px;
+    left: 78px;
+    width: 74px;
+    height: 74px;
   }
   .gp-dp-btn {
-    font-size: 22px;
+    font-size: 24px;
   }
   .gp-act-btn {
-    width: 64px;
-    height: 64px;
-    font-size: 22px;
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
   }
   .gp-act-btn.btn-x {
     top: 0;
-    left: 73px;
+    left: 80px;
   }
   .gp-act-btn.btn-y {
-    top: 73px;
+    top: 80px;
     left: 0;
   }
   .gp-act-btn.btn-a {
-    top: 73px;
+    top: 80px;
     right: 0;
   }
   .gp-act-btn.btn-b {
     bottom: 0;
-    left: 73px;
+    left: 80px;
   }
   .ps-symbol {
-    width: 32px;
-    height: 32px;
-  }
-  .gp-stick-base {
-    width: 190px;
-    height: 190px;
-  }
-  .gp-stick-thumb {
-    width: 84px;
-    height: 84px;
+    width: 36px;
+    height: 36px;
   }
   .gp-pill-btn {
-    font-size: 12px;
-    padding: 10px 22px;
+    font-size: 13px;
+    padding: 12px 24px;
   }
 }
 
@@ -5363,59 +5337,56 @@ body.is-fullscreen {
 
   <!-- GAMEPAD VIEW (VIRTUAL GAMEPAD UNTUK EMULATOR) -->
   <section id="gamepad-view" class="gamepad-view preset-psx hidden">
-    <!-- Top Gamepad Emblem (Tengah Atas dengan Jarak Proporsional) -->
-    <div class="gp-top-emblem" title="DigiGamepad">
-      <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/>
-        <line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/>
-        <rect width="20" height="12" x="2" y="6" rx="6"/>
-      </svg>
-      <span class="gp-emblem-text">GAMEPAD</span>
+    <!-- Top Gamepad Row: Shoulders L1/L2, Centered Emblem, and Shoulders R1/R2 -->
+    <div class="gp-top-row">
+      <div class="gp-sh-group left">
+        <button class="gp-sh-btn" data-gp="l1" id="gp-btn-l1">L1</button>
+        <button class="gp-sh-btn trigger" data-gp="l2" id="gp-btn-l2">L2</button>
+      </div>
+
+      <div class="gp-top-emblem" title="DigiGamepad">
+        <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/>
+          <line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/>
+          <rect width="20" height="12" x="2" y="6" rx="6"/>
+        </svg>
+        <span class="gp-emblem-text">GAMEPAD</span>
+      </div>
+
+      <div class="gp-sh-group right">
+        <button class="gp-sh-btn" data-gp="r1" id="gp-btn-r1">R1</button>
+        <button class="gp-sh-btn trigger" data-gp="r2" id="gp-btn-r2">R2</button>
+      </div>
     </div>
 
-    <!-- Centered Controls Group (Terpusat secara Vertikal dan Horizontal) -->
-    <div class="gp-controls-group">
-      <!-- Shoulders & Triggers Row (L1 over L2, R1 over R2 dengan Jarak Ekstra) -->
-      <div class="gp-shoulders-row">
-        <div class="gp-sh-group left">
-          <button class="gp-sh-btn" data-gp="l1" id="gp-btn-l1">L1</button>
-          <button class="gp-sh-btn trigger" data-gp="l2" id="gp-btn-l2">L2</button>
-        </div>
-        <div class="gp-sh-group right">
-          <button class="gp-sh-btn" data-gp="r1" id="gp-btn-r1">R1</button>
-          <button class="gp-sh-btn trigger" data-gp="r2" id="gp-btn-r2">R2</button>
+    <!-- Main Controller Deck (Rata Tengah: D-Pad, Select/Start, Action Diamond) -->
+    <div class="gp-main-deck">
+      <!-- Left Side: D-Pad -->
+      <div class="gp-deck-left">
+        <div class="gp-dpad" id="gp-dpad">
+          <button class="gp-dp-btn dp-up" data-gp="up" id="gp-btn-up">▲</button>
+          <button class="gp-dp-btn dp-left" data-gp="left" id="gp-btn-left">◀</button>
+          <div class="gp-dp-center"></div>
+          <button class="gp-dp-btn dp-right" data-gp="right" id="gp-btn-right">▶</button>
+          <button class="gp-dp-btn dp-down" data-gp="down" id="gp-btn-down">▼</button>
         </div>
       </div>
 
-      <!-- Main Controller Deck -->
-      <div class="gp-main-deck">
-        <!-- Left Side: D-Pad -->
-        <div class="gp-deck-left">
-          <div class="gp-dpad" id="gp-dpad">
-            <button class="gp-dp-btn dp-up" data-gp="up" id="gp-btn-up">▲</button>
-            <button class="gp-dp-btn dp-left" data-gp="left" id="gp-btn-left">◀</button>
-            <div class="gp-dp-center"></div>
-            <button class="gp-dp-btn dp-right" data-gp="right" id="gp-btn-right">▶</button>
-            <button class="gp-dp-btn dp-down" data-gp="down" id="gp-btn-down">▼</button>
-          </div>
+      <!-- Center: Standard (Select & Start) -->
+      <div class="gp-deck-center" id="gp-deck-center-std">
+        <div class="gp-center-buttons">
+          <button class="gp-pill-btn" data-gp="select" id="gp-btn-select">SELECT</button>
+          <button class="gp-pill-btn" data-gp="start" id="gp-btn-start">START</button>
         </div>
+      </div>
 
-        <!-- Center: Standard (Select & Start) -->
-        <div class="gp-deck-center" id="gp-deck-center-std">
-          <div class="gp-center-buttons">
-            <button class="gp-pill-btn" data-gp="select" id="gp-btn-select">SELECT</button>
-            <button class="gp-pill-btn" data-gp="start" id="gp-btn-start">START</button>
-          </div>
-        </div>
-
-        <!-- Right Side: Standard Action Diamond -->
-        <div class="gp-deck-right" id="gp-deck-right-std">
-          <div class="gp-action-diamond">
-            <button class="gp-act-btn btn-x" data-gp="x" id="gp-btn-x">X</button>
-            <button class="gp-act-btn btn-y" data-gp="y" id="gp-btn-y">Y</button>
-            <button class="gp-act-btn btn-b" data-gp="b" id="gp-btn-b">B</button>
-            <button class="gp-act-btn btn-a" data-gp="a" id="gp-btn-a">A</button>
-          </div>
+      <!-- Right Side: Standard Action Diamond -->
+      <div class="gp-deck-right" id="gp-deck-right-std">
+        <div class="gp-action-diamond">
+          <button class="gp-act-btn btn-x" data-gp="x" id="gp-btn-x">X</button>
+          <button class="gp-act-btn btn-y" data-gp="y" id="gp-btn-y">Y</button>
+          <button class="gp-act-btn btn-b" data-gp="b" id="gp-btn-b">B</button>
+          <button class="gp-act-btn btn-a" data-gp="a" id="gp-btn-a">A</button>
         </div>
       </div>
     </div>
