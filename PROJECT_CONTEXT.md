@@ -287,6 +287,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Tombol Keyboard di Gamepad View (`#btn-exit-game`):**
   - Disembunyikan (`display: none`) karena perpindahan mode sudah tersedia secara terpusat di bar navigasi atas.
 
+---
+
+## 19. CATATAN CHECKPOINT (v0.9.15 - Refinement Gamepad: Spacing, Emblem Tengah, Skala Tablet & Simbol Asli PS1)
+- **Jarak Proporsional Shoulder Bar (`.gp-shoulders-row`):**
+  - Ditambahkan `margin-top: 8px;` pada baris tombol bahu (L1, L2, R1, R2) sehingga tidak lagi menempel rapat dengan top utility bar gamepad.
+- **Emblem Gamepad Menggantikan Teks Tengah:**
+  - Teks "DIGI GAMEPAD" dan badge dihilangkan untuk tampilan yang bersih dan profesional.
+  - Digantikan dengan emblem ikon gamepad minimalis (`.gp-center-emblem`) dengan posisi tengah yang nyaman (`margin-top: 14px`) tanpa kesan berdesakan.
+- **Pemanfaatan Ruang Layar Tablet / Layar Lebar (Ergonomic Scaling):**
+  - Ditambahkan aturan responsif khusus `@media (min-width: 768px) and (min-height: 480px)`.
+  - Area kontrol D-Pad dan Action Diamond diperbesar dari 160px menjadi 210px x 210px.
+  - Tombol aksi diperbesar menjadi 64px x 64px (font 22px) dan tombol bahu menjadi tinggi 48px dengan lebar minimum 96px, memanfaatkan ruang kosong secara ergonomis untuk genggaman dua tangan pada tablet.
+- **Simbol Otentik PlayStation 1 (PSX Preset):**
+  - Menghilangkan teks simbol buatan sendiri dan mengadopsi standar originalitas Sony PlayStation:
+    - Atas (X): Segitiga Hijau (`#00e676`)
+    - Kanan (A): Lingkaran Merah (`#ff1744`)
+    - Bawah (B): Silang Biru (`#2979ff`)
+    - Kiri (Y): Kotak Pink (`#ff4081`)
+  - Simbol dirender menggunakan vektor SVG geometris presisi tinggi (`.ps-symbol`) dengan filter drop shadow warna menyala (*glow*) dan latar tombol bernuansa konsol retro (`#272c36`).
+
+
 
 
 

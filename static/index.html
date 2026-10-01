@@ -2070,6 +2070,7 @@ body.is-fullscreen {
   justify-content: space-between;
   align-items: center;
   padding: 4px 12px;
+  margin-top: 8px;
   gap: 16px;
   flex-shrink: 0;
 }
@@ -2271,12 +2272,17 @@ body.is-fullscreen {
   transform: rotate(-15deg) translateY(2px);
   box-shadow: 0 0 8px var(--accent);
 }
-.gp-brand-label {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2px;
+.gp-center-emblem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
   color: var(--text-dim);
   opacity: 0.6;
+}
+.gp-center-emblem svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Right Deck: Diamond Action Buttons */
@@ -2404,6 +2410,153 @@ body.is-fullscreen {
   .gp-act-btn.btn-b { left: 48px; }
   .gp-sh-btn { height: 36px; padding: 4px 16px; font-size: 12px; min-width: 58px; }
   .gp-top-bar { min-height: 32px; padding: 2px 8px; }
+}
+
+/* PlayStation 1 Authentic Button Styling */
+.gamepad-view.preset-psx .gp-act-btn {
+  background: linear-gradient(145deg, #272c36, #161a20) !important;
+  border: 2px solid #38404d !important;
+  box-shadow: 0 4px 0 #0f1216, 0 3px 6px rgba(0, 0, 0, 0.5) !important;
+}
+.gamepad-view.preset-psx .gp-act-btn.btn-x {
+  border-color: rgba(0, 230, 118, 0.4) !important;
+}
+.gamepad-view.preset-psx .gp-act-btn.btn-a {
+  border-color: rgba(255, 23, 68, 0.4) !important;
+}
+.gamepad-view.preset-psx .gp-act-btn.btn-b {
+  border-color: rgba(41, 121, 255, 0.4) !important;
+}
+.gamepad-view.preset-psx .gp-act-btn.btn-y {
+  border-color: rgba(255, 64, 129, 0.4) !important;
+}
+.gamepad-view.preset-psx .gp-act-btn.pressed,
+.gamepad-view.preset-psx .gp-act-btn:active {
+  transform: translateY(3px) scale(0.95);
+  box-shadow: 0 1px 0 #0f1216, 0 0 14px currentColor !important;
+  filter: brightness(1.25);
+}
+.ps-symbol {
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  display: block;
+}
+.ps-symbol.ps-triangle {
+  filter: drop-shadow(0 0 4px rgba(0, 230, 118, 0.6));
+}
+.ps-symbol.ps-circle {
+  filter: drop-shadow(0 0 4px rgba(255, 23, 68, 0.6));
+}
+.ps-symbol.ps-cross {
+  filter: drop-shadow(0 0 4px rgba(41, 121, 255, 0.6));
+}
+.ps-symbol.ps-square {
+  filter: drop-shadow(0 0 4px rgba(255, 64, 129, 0.6));
+}
+
+/* Tablet / Wide Display Ergonomic Scaling */
+@media (min-width: 768px) and (min-height: 480px) {
+  .gamepad-view {
+    padding: 12px 28px;
+  }
+  .gp-top-bar {
+    min-height: 42px;
+    padding: 6px 16px;
+  }
+  .gp-shoulders-row {
+    padding: 6px 24px;
+    margin-top: 14px;
+  }
+  .gp-sh-btn {
+    height: 48px;
+    min-width: 96px;
+    font-size: 14px;
+    padding: 10px 28px;
+    border-radius: 10px;
+  }
+  .gp-main-deck {
+    padding: 10px 24px;
+    min-height: 230px;
+  }
+  .gp-dpad, .gp-action-diamond, .gp-stick-container {
+    width: 210px;
+    height: 210px;
+  }
+  .dp-up {
+    top: 0;
+    left: 72px;
+    width: 66px;
+    height: 74px;
+  }
+  .dp-down {
+    bottom: 0;
+    left: 72px;
+    width: 66px;
+    height: 74px;
+  }
+  .dp-left {
+    top: 72px;
+    left: 0;
+    width: 74px;
+    height: 66px;
+  }
+  .dp-right {
+    top: 72px;
+    right: 0;
+    width: 74px;
+    height: 66px;
+  }
+  .gp-dp-center {
+    top: 72px;
+    left: 72px;
+    width: 66px;
+    height: 66px;
+  }
+  .gp-dp-btn {
+    font-size: 22px;
+  }
+  .gp-act-btn {
+    width: 64px;
+    height: 64px;
+    font-size: 22px;
+  }
+  .gp-act-btn.btn-x {
+    top: 0;
+    left: 73px;
+  }
+  .gp-act-btn.btn-y {
+    top: 73px;
+    left: 0;
+  }
+  .gp-act-btn.btn-a {
+    top: 73px;
+    right: 0;
+  }
+  .gp-act-btn.btn-b {
+    bottom: 0;
+    left: 73px;
+  }
+  .ps-symbol {
+    width: 32px;
+    height: 32px;
+  }
+  .gp-stick-base {
+    width: 190px;
+    height: 190px;
+  }
+  .gp-stick-thumb {
+    width: 84px;
+    height: 84px;
+  }
+  .gp-pill-btn {
+    font-size: 12px;
+    padding: 10px 22px;
+  }
+  .gp-center-emblem svg {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 /* ─── PRESENTATION & MEETING REMOTE VIEW ─── */
@@ -5243,7 +5396,6 @@ body.is-fullscreen {
     <!-- Top Game Utility Bar -->
     <div class="gp-top-bar">
       <div class="gp-left-meta">
-        <span class="gp-badge"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg> GAMEPAD</span>
         <select id="gp-preset-select" class="gp-select" title="Pilih Profil Pemetaan Emulator">
           <option value="retroarch">RetroArch / SNES (Default)</option>
           <option value="gba">GBA (VisualBoyAdvance)</option>
@@ -5299,7 +5451,13 @@ body.is-fullscreen {
           <button class="gp-pill-btn" data-gp="select" id="gp-btn-select">SELECT</button>
           <button class="gp-pill-btn" data-gp="start" id="gp-btn-start">START</button>
         </div>
-        <div class="gp-brand-label">DIGI GAMEPAD</div>
+        <div class="gp-center-emblem" title="DigiGamepad">
+          <svg class="svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/>
+            <line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/>
+            <rect width="20" height="12" x="2" y="6" rx="6"/>
+          </svg>
+        </div>
       </div>
 
       <!-- Right Side: Standard Action Diamond -->
@@ -9337,7 +9495,7 @@ const GP_PRESETS = {
     a: 'k', b: 'l', x: 'i', y: 'j',
     l1: 'u', r1: 'o', l2: '7', r2: '8',
     select: 'v', start: 'b',
-    labels: { a: '●', b: '✖', x: '▲', y: '■' }
+    labels: { a: '○', b: '✕', x: '△', y: '□' }
   },
   wasd: {
     name: 'Modern WASD / PC',
@@ -9371,16 +9529,27 @@ function getActiveMapping() {
 }
 
 function updateGamepadLabels() {
+  const isPsx = currentGpPreset === 'psx';
+  if (gamepadView) {
+    gamepadView.classList.toggle('preset-psx', isPsx);
+  }
   const mapping = getActiveMapping();
   const labels = mapping.labels || { a: 'A', b: 'B', x: 'X', y: 'Y' };
   const btnA = $('gp-btn-a');
   const btnB = $('gp-btn-b');
   const btnX = $('gp-btn-x');
   const btnY = $('gp-btn-y');
-  if (btnA) btnA.textContent = labels.a || 'A';
-  if (btnB) btnB.textContent = labels.b || 'B';
-  if (btnX) btnX.textContent = labels.x || 'X';
-  if (btnY) btnY.textContent = labels.y || 'Y';
+  if (isPsx) {
+    if (btnX) btnX.innerHTML = '<svg class="ps-symbol ps-triangle" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 4 21 19 3 19"/></svg>';
+    if (btnA) btnA.innerHTML = '<svg class="ps-symbol ps-circle" viewBox="0 0 24 24" fill="none" stroke="#ff1744" stroke-width="3"><circle cx="12" cy="12" r="7.5"/></svg>';
+    if (btnB) btnB.innerHTML = '<svg class="ps-symbol ps-cross" viewBox="0 0 24 24" fill="none" stroke="#2979ff" stroke-width="3" stroke-linecap="round"><line x1="5.5" y1="5.5" x2="18.5" y2="18.5"/><line x1="18.5" y1="5.5" x2="5.5" y2="18.5"/></svg>';
+    if (btnY) btnY.innerHTML = '<svg class="ps-symbol ps-square" viewBox="0 0 24 24" fill="none" stroke="#ff4081" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="4.5" width="15" height="15" rx="1"/></svg>';
+  } else {
+    if (btnA) btnA.textContent = labels.a || 'A';
+    if (btnB) btnB.textContent = labels.b || 'B';
+    if (btnX) btnX.textContent = labels.x || 'X';
+    if (btnY) btnY.textContent = labels.y || 'Y';
+  }
 }
 
 function sendGpKeyDown(pcKey) {
@@ -9449,6 +9618,7 @@ function updateStickModeUI() {
   }
 }
 updateStickModeUI();
+updateGamepadLabels();
 
 if (btnSwitchStick) {
   btnSwitchStick.addEventListener('click', () => {
