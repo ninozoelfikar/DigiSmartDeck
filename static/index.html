@@ -2758,8 +2758,8 @@ body.is-fullscreen {
   display: none !important;
 }
 
-/* Language and Auto-send switches */
-.ai-lang-toggle {
+/* Language and Keyboard Target switches */
+.ai-lang-toggle, .ai-target-toggle {
   display: inline-flex;
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
@@ -2767,21 +2767,36 @@ body.is-fullscreen {
   padding: 1px;
   gap: 2px;
 }
-.ai-btn-lang {
+.ai-btn-lang, .ai-btn-target {
   background: transparent;
   border: none;
   color: var(--text-dim);
   font-size: 9.5px;
   font-weight: 700;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 3px;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
-.ai-btn-lang.active {
-  background: rgba(88, 166, 255, 0.2);
+.ai-btn-lang.active, .ai-btn-target.active {
+  background: rgba(88, 166, 255, 0.22);
   color: var(--accent);
+}
+.ai-tk-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 3px 4px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ai-tk-ctrl-title {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 .ai-autosend-label {
   display: inline-flex;
@@ -4761,6 +4776,10 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
           <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
         </div>
+        <div class="ai-target-toggle" title="Target Kontrol Keyboard: PC atau Device (Kolom Teks)">
+          <button type="button" class="ai-btn-target" id="btn-target-pc">PC</button>
+          <button type="button" class="ai-btn-target active" id="btn-target-device">Device</button>
+        </div>
       </div>
 
       <div class="ai-right-meta">
@@ -4849,6 +4868,13 @@ body.is-fullscreen {
 
         <!-- Android-Style Soft QWERTY Keyboard (Tablet Only) -->
         <div class="ai-tablet-keyboard" id="ai-tablet-keyboard">
+          <div class="ai-tk-control-bar">
+            <span class="ai-tk-ctrl-title">Target Keyboard</span>
+            <div class="ai-target-toggle" title="Target Kontrol Keyboard: PC atau Device (Kolom Teks)">
+              <button type="button" class="ai-btn-target" id="btn-tk-target-pc">PC</button>
+              <button type="button" class="ai-btn-target active" id="btn-tk-target-device">Device</button>
+            </div>
+          </div>
           <div class="ai-tk-row" id="ai-tk-row1">
             <button type="button" class="ai-tk-key" data-key="q">q</button>
             <button type="button" class="ai-tk-key" data-key="w">w</button>
@@ -9182,6 +9208,7 @@ let isAiStarting = false;
 let aiSpeechWanted = false; // Status apakah mic harus mendengarkan
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
+let aiKbTarget = localStorage.getItem('digi_ai_kb_target') || 'device'; // 'device' | 'pc'
 let aiAccumulatedText = '';
 let currentSessionFinal = '';
 let currentSessionInterim = '';
@@ -9197,12 +9224,33 @@ function escapeAiHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+function setAiKbTarget(target) {
+  aiKbTarget = (target === 'pc') ? 'pc' : 'device';
+  localStorage.setItem('digi_ai_kb_target', aiKbTarget);
+  updateAiKbTargetUI();
+  playClickSound();
+  vibe(10);
+}
+
+function updateAiKbTargetUI() {
+  const isPC = aiKbTarget === 'pc';
+  ['btn-target-pc', 'btn-tk-target-pc'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('active', isPC);
+  });
+  ['btn-target-device', 'btn-tk-target-device'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('active', !isPC);
+  });
+}
+
 setTimeout(() => {
   const badgeText = $('ai-badge-text');
   const titleSub = $('ai-title-sub');
   if (badgeText) badgeText.textContent = 'AI WORKSTATION';
   if (titleSub) titleSub.textContent = 'Prompt & Terminal Deck';
   updateAiMicUI();
+  updateAiKbTargetUI();
 }, 60);
 
 // Fungsi pembersih kata dari tanda baca untuk komparasi overlap
@@ -9667,6 +9715,12 @@ function setAiLang(lang) {
 bindAiKey('btn-ai-lang-id', () => setAiLang('id-ID'));
 bindAiKey('btn-ai-lang-en', () => setAiLang('en-US'));
 
+// Target Input Keyboard (PC / Device)
+bindAiKey('btn-target-pc', () => setAiKbTarget('pc'));
+bindAiKey('btn-tk-target-pc', () => setAiKbTarget('pc'));
+bindAiKey('btn-target-device', () => setAiKbTarget('device'));
+bindAiKey('btn-tk-target-device', () => setAiKbTarget('device'));
+
 // Sinkronkan visual tombol bahasa saat inisialisasi
 const btnLangId = $('btn-ai-lang-id');
 const btnLangEn = $('btn-ai-lang-en');
@@ -9772,68 +9826,85 @@ bindAiKey('ai-btn-shift-tab', () => {
 });
 
 function moveAiCursorLeft() {
-  if (aiCursorPos > 0) {
-    aiCursorPos--;
-    renderTranscriptPreview(aiAccumulatedText);
+  if (aiKbTarget === 'pc') {
+    send({ type: 'keypress', key: 'left' });
+  } else {
+    if (aiCursorPos > 0) {
+      aiCursorPos--;
+      renderTranscriptPreview(aiAccumulatedText);
+    }
   }
-  send({ type: 'keypress', key: 'left' });
 }
 
 function moveAiCursorRight() {
-  if (aiCursorPos < aiAccumulatedText.length) {
-    aiCursorPos++;
-    renderTranscriptPreview(aiAccumulatedText);
+  if (aiKbTarget === 'pc') {
+    send({ type: 'keypress', key: 'right' });
+  } else {
+    if (aiCursorPos < aiAccumulatedText.length) {
+      aiCursorPos++;
+      renderTranscriptPreview(aiAccumulatedText);
+    }
   }
-  send({ type: 'keypress', key: 'right' });
 }
 
 function moveAiCursorUp() {
-  const lastNl = aiAccumulatedText.lastIndexOf('\n', aiCursorPos - 1);
-  if (lastNl !== -1) {
-    const prevNl = aiAccumulatedText.lastIndexOf('\n', lastNl - 1);
-    const col = aiCursorPos - lastNl;
-    aiCursorPos = Math.max(0, prevNl === -1 ? Math.min(col, lastNl) : prevNl + col);
+  if (aiKbTarget === 'pc') {
+    send({ type: 'keypress', key: 'up' });
   } else {
-    aiCursorPos = Math.max(0, aiCursorPos - 25);
+    const lastNl = aiAccumulatedText.lastIndexOf('\n', aiCursorPos - 1);
+    if (lastNl !== -1) {
+      const prevNl = aiAccumulatedText.lastIndexOf('\n', lastNl - 1);
+      const col = aiCursorPos - lastNl;
+      aiCursorPos = Math.max(0, prevNl === -1 ? Math.min(col, lastNl) : prevNl + col);
+    } else {
+      aiCursorPos = Math.max(0, aiCursorPos - 25);
+    }
+    renderTranscriptPreview(aiAccumulatedText);
   }
-  renderTranscriptPreview(aiAccumulatedText);
-  send({ type: 'keypress', key: 'up' });
 }
 
 function moveAiCursorDown() {
-  const nextNl = aiAccumulatedText.indexOf('\n', aiCursorPos);
-  if (nextNl !== -1) {
-    const prevNl = aiAccumulatedText.lastIndexOf('\n', aiCursorPos - 1);
-    const col = prevNl === -1 ? aiCursorPos : (aiCursorPos - prevNl);
-    const afterNextNl = aiAccumulatedText.indexOf('\n', nextNl + 1);
-    const lineEnd = afterNextNl === -1 ? aiAccumulatedText.length : afterNextNl;
-    aiCursorPos = Math.min(lineEnd, nextNl + 1 + col);
+  if (aiKbTarget === 'pc') {
+    send({ type: 'keypress', key: 'down' });
   } else {
-    aiCursorPos = Math.min(aiAccumulatedText.length, aiCursorPos + 25);
+    const nextNl = aiAccumulatedText.indexOf('\n', aiCursorPos);
+    if (nextNl !== -1) {
+      const prevNl = aiAccumulatedText.lastIndexOf('\n', aiCursorPos - 1);
+      const col = prevNl === -1 ? aiCursorPos : (aiCursorPos - prevNl);
+      const afterNextNl = aiAccumulatedText.indexOf('\n', nextNl + 1);
+      const lineEnd = afterNextNl === -1 ? aiAccumulatedText.length : afterNextNl;
+      aiCursorPos = Math.min(lineEnd, nextNl + 1 + col);
+    } else {
+      aiCursorPos = Math.min(aiAccumulatedText.length, aiCursorPos + 25);
+    }
+    renderTranscriptPreview(aiAccumulatedText);
   }
-  renderTranscriptPreview(aiAccumulatedText);
-  send({ type: 'keypress', key: 'down' });
 }
 
 // Tombol Delete & Backspace dengan dukungan repeat saat ditahan
 bindAiRepeatKey('ai-btn-delete', () => {
-  if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos < aiAccumulatedText.length) {
-    aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + aiAccumulatedText.slice(aiCursorPos + 1);
-    renderTranscriptPreview(aiAccumulatedText);
+  if (aiKbTarget === 'pc') {
+    send({ type: 'keypress', key: 'delete' });
+  } else {
+    if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos < aiAccumulatedText.length) {
+      aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + aiAccumulatedText.slice(aiCursorPos + 1);
+      renderTranscriptPreview(aiAccumulatedText);
+    }
   }
-  send({ type: 'keypress', key: 'delete' });
 });
 
 bindAiRepeatKey('ai-btn-backspace', () => {
-  if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
-    aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
-    aiCursorPos--;
-    renderTranscriptPreview(aiAccumulatedText);
-    if (aiAutoSend) {
-      send({ type: 'keypress', key: 'backspace' });
-    }
-  } else {
+  if (aiKbTarget === 'pc') {
     send({ type: 'keypress', key: 'backspace' });
+  } else {
+    if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+      aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+      aiCursorPos--;
+      renderTranscriptPreview(aiAccumulatedText);
+      if (aiAutoSend) {
+        send({ type: 'keypress', key: 'backspace' });
+      }
+    }
   }
 });
 
@@ -10114,15 +10185,19 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     playClickSound();
     vibe(12);
 
-    if (aiCursorPos < 0 || aiCursorPos > aiAccumulatedText.length) {
-      aiCursorPos = aiAccumulatedText.length;
-    }
-    aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + char + aiAccumulatedText.slice(aiCursorPos);
-    aiCursorPos += char.length;
-    renderTranscriptPreview(aiAccumulatedText);
-
-    if (aiAutoSend) {
+    if (aiKbTarget === 'pc') {
       sendAiText(char);
+    } else {
+      if (aiCursorPos < 0 || aiCursorPos > aiAccumulatedText.length) {
+        aiCursorPos = aiAccumulatedText.length;
+      }
+      aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + char + aiAccumulatedText.slice(aiCursorPos);
+      aiCursorPos += char.length;
+      renderTranscriptPreview(aiAccumulatedText);
+
+      if (aiAutoSend) {
+        sendAiText(char);
+      }
     }
 
     if (isShift && !isSymbolMode) {
@@ -10158,15 +10233,17 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
   if (btnBackspace) {
     bindAiRepeatKey(btnBackspace, () => {
-      if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
-        aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
-        aiCursorPos--;
-        renderTranscriptPreview(aiAccumulatedText);
-        if (aiAutoSend) {
-          send({ type: 'keypress', key: 'backspace' });
-        }
-      } else {
+      if (aiKbTarget === 'pc') {
         send({ type: 'keypress', key: 'backspace' });
+      } else {
+        if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+          aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+          aiCursorPos--;
+          renderTranscriptPreview(aiAccumulatedText);
+          if (aiAutoSend) {
+            send({ type: 'keypress', key: 'backspace' });
+          }
+        }
       }
     });
   }
