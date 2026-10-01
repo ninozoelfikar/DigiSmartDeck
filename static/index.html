@@ -1779,34 +1779,22 @@ body.is-fullscreen {
   from { transform: scale(0.92); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
-.splash-logo {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(88, 166, 255, 0.12);
-  border: 1px solid rgba(88, 166, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent, #58a6ff);
-  margin-bottom: 2px;
-}
 .splash-title {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--text, #c9d1d9);
+  color: var(--accent, #58a6ff);
   letter-spacing: 0.5px;
 }
 .splash-sub {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--accent, #58a6ff);
+  color: var(--text-dim, #8b949e);
   letter-spacing: 0.3px;
 }
 
 @media (max-width: 440px) {
-  .logo span {
-    display: none;
+  .logo {
+    font-size: 11.5px;
   }
 }
 
@@ -3991,12 +3979,9 @@ body.is-fullscreen {
 <body>
 <div id="app">
 
-  <!-- STARTUP FLASH / SPLASH SCREEN (0.3s) -->
+  <!-- STARTUP FLASH / SPLASH SCREEN (0.8s) -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
-      <div class="splash-logo">
-        <svg class="svg-icon" width="36" height="36" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
-      </div>
       <div class="splash-title">DigiKeyboard</div>
       <div class="splash-sub">by King Ali Studio</div>
     </div>
@@ -4005,9 +3990,8 @@ body.is-fullscreen {
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
     <div class="left-controls">
-      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Tentang DigiKeyboard - King Ali Studio">
+      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" title="Tentang DigiKeyboard - King Ali Studio">
         <span class="logo">
-          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
           <span>DigiKeyboard</span>
         </span>
       </div>
@@ -4037,6 +4021,14 @@ body.is-fullscreen {
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
         </button>
       </div>
+
+      <!-- Dev Controls (Fullscreen & Reload) di Bar Atas -->
+      <button type="button" class="header-mode-btn" id="btn-ai-fs" title="Layar Penuh (Fullscreen)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+      </button>
+      <button type="button" class="header-mode-btn" id="btn-ai-reload" title="Muat Ulang Halaman (Reload)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+      </button>
 
       <button type="button" class="deck-trigger-btn" id="btn-control-deck" title="Menu" aria-label="Menu">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
@@ -4842,21 +4834,6 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
         </div>
       </div>
-
-      <div class="ai-right-meta">
-        <button type="button" class="ai-btn-exit" id="btn-ai-fs" title="Layar Penuh">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-          <span id="txt-ai-fs">Fullscreen</span>
-        </button>
-        <button type="button" class="ai-btn-exit" id="btn-ai-reload" title="Muat Ulang Halaman">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-          <span>Reload</span>
-        </button>
-        <button type="button" class="ai-btn-exit" id="btn-exit-ai" title="Kembali ke Mode Keyboard">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
-          <span>Keyboard</span>
-        </button>
-      </div>
     </div>
 
     <!-- Main Grid: 3 Ergonomic Functional Columns -->
@@ -5637,10 +5614,7 @@ body.is-fullscreen {
     <div class="modal-body" style="gap:14px;">
       <!-- Hero / Branding Card -->
       <div style="text-align:center;padding:16px 12px 14px;background:linear-gradient(180deg, rgba(88,166,255,0.08) 0%, rgba(22,27,34,0.4) 100%);border:1px solid var(--border);border-radius:10px;">
-        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:rgba(88,166,255,0.15);border:1px solid rgba(88,166,255,0.35);color:var(--accent);margin-bottom:8px;">
-          <svg class="svg-icon" width="24" height="24" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
-        </div>
-        <div style="font-size:16px;font-weight:800;color:var(--text);letter-spacing:0.3px;">DigiKeyboard</div>
+        <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:0.3px;">DigiKeyboard</div>
         <div style="margin-top:4px;">
           <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);">DigiKeyboard v1.17.0</span>
         </div>
@@ -9903,11 +9877,6 @@ function bindAiRepeatKey(btnId, action) {
 // Pasang kontrol tombol mic AI Workstation (touch & click)
 bindAiKey('btn-ai-mic', toggleAiSpeech);
 
-bindAiKey('btn-exit-ai', () => {
-  playClickSound();
-  switchAppMode('standard');
-});
-
 // Bahasa Dikte
 function setAiLang(lang) {
   playClickSound();
@@ -10756,7 +10725,7 @@ try {
   switchAppMode('standard');
 }
 
-// ── Startup Splash / Flash Screen Controller (0.3s) ──
+// ── Startup Splash / Flash Screen Controller (0.8s) ──
 const splashScreen = $('splash-screen');
 if (splashScreen) {
   setTimeout(() => {
@@ -10764,7 +10733,7 @@ if (splashScreen) {
     setTimeout(() => {
       if (splashScreen.parentNode) splashScreen.remove();
     }, 280);
-  }, 300);
+  }, 800);
 }
 
 connect();
