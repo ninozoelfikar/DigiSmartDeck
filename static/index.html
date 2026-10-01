@@ -5987,16 +5987,41 @@ const CONN_ICONS = {
 
 function $(id) { return document.getElementById(id); }
 
-// ── Panels ──
-function togglePanel(panelId, btnId) {
+// ── Panels (Persistensi Otomatis untuk Keyboard Utama) ──
+function setPanelState(panelId, btnId, storageKey, isVisible) {
   const p = $(panelId), b = $(btnId);
-  p.classList.toggle('hidden');
-  b.classList.toggle('on', !p.classList.contains('hidden'));
+  if (!p) return;
+  p.classList.toggle('hidden', !isVisible);
+  if (b) b.classList.toggle('on', isVisible);
+  localStorage.setItem(storageKey, isVisible ? 'true' : 'false');
 }
-$('btn-fn').onclick    = () => togglePanel('fn-row', 'btn-fn');
-$('btn-nav').onclick   = () => togglePanel('nav-row', 'btn-nav');
-$('btn-num').onclick   = () => togglePanel('numpad', 'btn-num');
-$('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc');
+
+function togglePanel(panelId, btnId, storageKey) {
+  const p = $(panelId);
+  if (!p) return;
+  const willBeVisible = p.classList.contains('hidden');
+  setPanelState(panelId, btnId, storageKey, willBeVisible);
+}
+
+function restoreKeyboardPanels() {
+  const fnVisible = localStorage.getItem('digi_panel_fn') === 'true';
+  const navVisible = localStorage.getItem('digi_panel_nav') === 'true';
+  const numVisible = localStorage.getItem('digi_panel_num') === 'true';
+  const scVisible = localStorage.getItem('digi_panel_sc') === 'true';
+
+  setPanelState('fn-row', 'btn-fn', 'digi_panel_fn', fnVisible);
+  setPanelState('nav-row', 'btn-nav', 'digi_panel_nav', navVisible);
+  setPanelState('numpad', 'btn-num', 'digi_panel_num', numVisible);
+  setPanelState('sc-bar', 'btn-sc', 'digi_panel_sc', scVisible);
+}
+
+$('btn-fn').onclick    = () => togglePanel('fn-row', 'btn-fn', 'digi_panel_fn');
+$('btn-nav').onclick   = () => togglePanel('nav-row', 'btn-nav', 'digi_panel_nav');
+$('btn-num').onclick   = () => togglePanel('numpad', 'btn-num', 'digi_panel_num');
+$('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc', 'digi_panel_sc');
+
+// Pulihkan status settingan panel keyboard utama saat start
+restoreKeyboardPanels();
 $('btn-latch').onclick = () => {
   // Cycle mode: lock (aktif terus) -> oneshot (1-shot) -> hold (manual) -> lock
   if (modLockMode === 'lock') {
@@ -6288,6 +6313,9 @@ function switchAppMode(targetMode) {
     if (kbWrap) kbWrap.style.display = '';
     if (typeof tpEnabled !== 'undefined' && tpEnabled && laptopDeck) {
       laptopDeck.classList.remove('hidden');
+    }
+    if (typeof restoreKeyboardPanels === 'function') {
+      restoreKeyboardPanels();
     }
     vibe(15);
   } else {
