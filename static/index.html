@@ -234,7 +234,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   background: var(--header-bg);
-  border-bottom: 1px solid var(--key-border);
+  border-bottom: none;
   padding: 5px 10px;
   height: 44px;
   flex-shrink: 0;
@@ -4818,24 +4818,6 @@ body.is-fullscreen {
 
   <!-- AI WORKSTATION VIEW (PROMPT ENGINEERING & VOICE DECK) -->
   <section id="ai-workstation-view" class="ai-workstation-view hidden">
-    <!-- Top Utility Bar -->
-    <div class="ai-top-bar">
-      <div class="ai-left-meta">
-        <span class="ai-badge" id="ai-main-badge">
-          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
-          <span id="ai-badge-text">AI WORKSTATION</span>
-        </span>
-        <span class="ai-title-sub" id="ai-title-sub">Prompt &amp; Terminal Deck</span>
-      </div>
-
-      <div class="ai-center-meta">
-        <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
-          <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
-          <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Main Grid: 3 Ergonomic Functional Columns -->
     <div class="ai-main-grid">
       <!-- Kolom 1: Pintasan Prompt & Kontrol Edit -->
@@ -4875,6 +4857,13 @@ body.is-fullscreen {
             <span>Jadikan Check Point</span>
           </button>
         </div>
+        <div class="ai-col-left-footer" style="display:flex;align-items:center;justify-content:center;padding:4px 0 2px;">
+          <span class="ai-badge" id="ai-main-badge">
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            <span id="ai-badge-text">AI WORKSTATION</span>
+          </span>
+          <span class="ai-title-sub" id="ai-title-sub" style="display:none;"></span>
+        </div>
       </div>
 
       <!-- Kolom 2: Voice Typing / Dikte Suara Nirkabel -->
@@ -4888,6 +4877,14 @@ body.is-fullscreen {
 
         <!-- Input Tersembunyi untuk Kompatibilitas -->
         <input type="hidden" id="ai-voice-input">
+
+        <!-- Bar Bahasa di Sebelah Kiri Atas Box Text (di Luar Box Text) -->
+        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:flex-start;width:100%;margin-bottom:4px;">
+          <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
+            <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
+            <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
+          </div>
+        </div>
 
         <!-- Kolom Hasil Ucapan yang Menampung Semua Karakter Secara Berkesinambungan -->
         <div class="ai-transcript-box">
