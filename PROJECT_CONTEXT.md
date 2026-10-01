@@ -364,3 +364,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Seluruh kontrol utama (Stik Analog di kiri, Select & Start di tengah, dan 4 tombol aksi PS1 di kanan) berada pada garis tengah horizontal yang sejajar sempurna dan naik ke posisi tengah layar yang seimbang dan ergonomis.
   - Ukuran elemen tombol tetap dipertahankan sesuai skala asli yang sudah nyaman bagi pengguna.
 
+---
+
+## 24. CATATAN CHECKPOINT (v0.9.20 - Skala Lebih Besar, Pemisahan Bahu Anti-Double-Click, Emblem Kiri Bawah L2 & Audio Arah Instan)
+- **Pembesaran Skala Stik & Tombol Aksi:**
+  - Stik Analog diperbesar ke ukuran ergonomis: wadah 196px, base 174px, thumb 76px, dan radius jelajah `maxRadius = 52px`.
+  - Action Diamond diperbesar ke 196px dengan 4 tombol aksi PS1 (Segitiga, Bulat, Silang, Kotak) berdiameter 62px dan simbol SVG 30px untuk akurasi sentuhan tinggi.
+- **Pemindahan Emblem Gamepad ke Sisi Kiri Bawah L1/L2:**
+  - Emblem ikon gamepad ditempatkan secara teratur di bawah tombol L2 pada kolom kiri bahu, membebaskan ruang horizontal atas sepenuhnya.
+- **Pemisahan Jarak Bahu Proporsional (Anti-Double-Click):**
+  - Tombol L1/L2 dan R1/R2 diberi pemisah berjarak proporsional (`gap: 16px`, ukuran tombol 88px x 38px) sehingga jari dapat menekan tombol secara terpisah tanpa risiko memencet dua tombol sekaligus.
+- **Audio Feedback Arah & Stik Real-Time:**
+  - Memperbaiki inisialisasi dan penjadwalan `AudioContext` serta menambahkan pemicuan klik mekanikal instan pada `touchstart`/`mousedown` pertama stik dan D-Pad.
+  - Setiap perubahan arah gerak (Atas, Bawah, Kiri, Kanan) otomatis memicu bunyi klik mekanikal dan getaran haptik.
+  - Menambahkan dukungan event mouse/pointer penuh untuk D-Pad dan Stik Analog agar pengujian di peramban desktop berjalan mulus.
+
