@@ -953,13 +953,7 @@ body.is-fullscreen {
   background: radial-gradient(circle at 50% 30%, #252e3d 0%, #19202a 100%);
 }
 .tp-guide-content {
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  opacity: 0.65;
-  transition: opacity 0.2s;
+  display: none !important;
 }
 .tp-icon {
   font-size: 16px;
@@ -2926,6 +2920,23 @@ body.is-fullscreen {
   flex: 1;
   min-height: 0;
 }
+.ai-col-left-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 0 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.ai-col-left-footer .ai-badge {
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  border-radius: 4px;
+  height: 22px;
+  font-size: 9.5px;
+}
 .ai-btn-sh {
   display: flex;
   flex-direction: column;
@@ -2986,7 +2997,7 @@ body.is-fullscreen {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4px 2px;
+  padding: 30px 2px 10px;
   gap: 6px;
   flex-shrink: 0;
 }
@@ -3486,6 +3497,10 @@ body.is-fullscreen {
   }
   .ai-mic-hint {
     display: none;
+  }
+  .ai-mic-section {
+    padding: 8px 2px 4px;
+    gap: 4px;
   }
   .ai-btn-mic {
     width: 64px;
@@ -4181,13 +4196,6 @@ body.is-fullscreen {
 
     <div class="trackpad-container">
       <div class="trackpad-surface" id="trackpad-surface">
-        <div class="tp-guide-content">
-          <div class="tp-icon">
-            <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="7"/><line x1="12" y1="6" x2="12" y2="10"/></svg>
-          </div>
-          <div class="tp-label">Trackpad Multi-Touch</div>
-          <div class="tp-instructions">1 Jari: Kursor &amp; Klik • 2 Jari: Scroll &amp; Klik Kanan</div>
-        </div>
         <div class="tp-pointer-glow" id="tp-glow"></div>
       </div>
       <div class="trackpad-buttons">
@@ -4857,7 +4865,7 @@ body.is-fullscreen {
             <span>Jadikan Check Point</span>
           </button>
         </div>
-        <div class="ai-col-left-footer" style="display:flex;align-items:center;justify-content:center;padding:4px 0 2px;">
+        <div class="ai-col-left-footer">
           <span class="ai-badge" id="ai-main-badge">
             <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
             <span id="ai-badge-text">AI WORKSTATION</span>
@@ -10422,82 +10430,135 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
   if (btnBackspace) {
     let bsTapCount = 0;
-    let lastBsTapTime = 0;
+    let bsTapResetTimer = null;
+    let bsDelayTimer = null;
+    let bsIntervalTimer = null;
+    let bsIsPressed = false;
+    let bsHadRepeat = false;
 
-    bindAiRepeatKey(btnBackspace, (isRepeat) => {
-      if (isRepeat) {
-        // Tahan (repeat): hapus 1 karakter secara berulang
-        bsTapCount = 0;
-        if (aiKbTarget === 'pc') {
-          send({ type: 'keypress', key: 'backspace' });
-        } else {
-          if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
-            aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
-            aiCursorPos--;
-            renderTranscriptPreview(aiAccumulatedText);
-            if (aiAutoSend) {
-              send({ type: 'keypress', key: 'backspace' });
-            }
+    function doDeleteChar() {
+      if (aiKbTarget === 'pc') {
+        send({ type: 'keypress', key: 'backspace' });
+      } else {
+        if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+          aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+          aiCursorPos--;
+          renderTranscriptPreview(aiAccumulatedText);
+          if (aiAutoSend) {
+            send({ type: 'keypress', key: 'backspace' });
           }
         }
-        return;
       }
+    }
 
-      // Deteksi multi-klik:
-      // 1x = hapus 1 karakter
-      // 2x = otomatis hapus perkata
-      // 3x = otomatis hapus per 5 kata
-      const now = Date.now();
-      if (now - lastBsTapTime < 350) {
-        bsTapCount++;
+    function doDeleteWord() {
+      if (aiKbTarget === 'pc') {
+        send({ type: 'combo', keys: ['ctrl', 'backspace'] });
       } else {
-        bsTapCount = 1;
+        deleteWordsFromAiTranscript(1);
+        if (aiAutoSend) {
+          send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+        }
       }
-      lastBsTapTime = now;
+    }
+
+    function doDelete5Words() {
+      if (aiKbTarget === 'pc') {
+        for (let i = 0; i < 5; i++) {
+          send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+        }
+      } else {
+        deleteWordsFromAiTranscript(5);
+        if (aiAutoSend) {
+          for (let i = 0; i < 5; i++) {
+            send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+          }
+        }
+      }
+    }
+
+    function startBackspace(e) {
+      if (e) {
+        e.stopPropagation();
+        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
+      }
+      if (bsIsPressed) return;
+      bsIsPressed = true;
+      bsHadRepeat = false;
+      btnBackspace.classList.add('pressed');
+
+      clearTimeout(bsTapResetTimer);
+      clearTimeout(bsDelayTimer);
+      clearInterval(bsIntervalTimer);
+
+      bsTapCount++;
+      if (bsTapCount > 3) bsTapCount = 3;
+
+      playClickSound();
+
+      let repeatIntervalMs = 60;
+      let repeatAction = doDeleteChar;
 
       if (bsTapCount === 1) {
-        // 1x klik: hapus 1 karakter biasa
-        if (aiKbTarget === 'pc') {
-          send({ type: 'keypress', key: 'backspace' });
-        } else {
-          if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
-            aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
-            aiCursorPos--;
-            renderTranscriptPreview(aiAccumulatedText);
-            if (aiAutoSend) {
-              send({ type: 'keypress', key: 'backspace' });
-            }
-          }
-        }
+        vibe(12);
+        doDeleteChar();
+        repeatIntervalMs = 60;
+        repeatAction = doDeleteChar;
       } else if (bsTapCount === 2) {
-        // 2x klik: otomatis hapus 1 kata
         vibe(20);
-        if (aiKbTarget === 'pc') {
-          send({ type: 'combo', keys: ['ctrl', 'backspace'] });
-        } else {
-          deleteWordsFromAiTranscript(1);
-          if (aiAutoSend) {
-            send({ type: 'combo', keys: ['ctrl', 'backspace'] });
-          }
-        }
+        doDeleteWord();
+        repeatIntervalMs = 140;
+        repeatAction = doDeleteWord;
       } else if (bsTapCount >= 3) {
-        // 3x klik: otomatis hapus 5 kata (4 kata sisa + 1 kata sebelumnya)
         vibe(30);
-        if (aiKbTarget === 'pc') {
-          for (let i = 0; i < 4; i++) {
-            send({ type: 'combo', keys: ['ctrl', 'backspace'] });
-          }
-        } else {
-          deleteWordsFromAiTranscript(4);
-          if (aiAutoSend) {
-            for (let i = 0; i < 4; i++) {
-              send({ type: 'combo', keys: ['ctrl', 'backspace'] });
-            }
-          }
-        }
-        bsTapCount = 0;
+        doDelete5Words();
+        repeatIntervalMs = 240;
+        repeatAction = doDelete5Words;
       }
+
+      // Deteksi tahan (press and hold)
+      bsDelayTimer = setTimeout(() => {
+        if (!bsIsPressed) return;
+        bsHadRepeat = true;
+        bsIntervalTimer = setInterval(() => {
+          if (bsIsPressed) {
+            repeatAction();
+          } else {
+            clearInterval(bsIntervalTimer);
+          }
+        }, repeatIntervalMs);
+      }, 350);
+    }
+
+    function stopBackspace(e) {
+      if (e) e.stopPropagation();
+      bsIsPressed = false;
+      btnBackspace.classList.remove('pressed');
+
+      clearTimeout(bsDelayTimer);
+      clearInterval(bsIntervalTimer);
+
+      if (bsHadRepeat) {
+        // Jika pengguna baru saja menahan tombol, reset tap count agar ketukan berikutnya mulai dari 1 lagi
+        bsTapCount = 0;
+      } else {
+        // Jika hanya ketukan cepat, berikan jeda multi-tap 400ms sebelum reset ke 0
+        clearTimeout(bsTapResetTimer);
+        bsTapResetTimer = setTimeout(() => {
+          bsTapCount = 0;
+        }, 400);
+      }
+      bsHadRepeat = false;
+    }
+
+    btnBackspace.addEventListener('touchstart', startBackspace, { passive: false });
+    btnBackspace.addEventListener('touchend', stopBackspace);
+    btnBackspace.addEventListener('touchcancel', stopBackspace);
+    btnBackspace.addEventListener('mousedown', (e) => {
+      if (e.button === 0) startBackspace(e);
     });
+    btnBackspace.addEventListener('mouseup', stopBackspace);
+    btnBackspace.addEventListener('mouseleave', stopBackspace);
   }
 
   // Tombol Panah Navigasi di Keyboard Mode AI
