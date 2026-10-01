@@ -307,6 +307,24 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
     - Kiri (Y): Kotak Pink (`#ff4081`)
   - Simbol dirender menggunakan vektor SVG geometris presisi tinggi (`.ps-symbol`) dengan filter drop shadow warna menyala (*glow*) dan latar tombol bernuansa konsol retro (`#272c36`).
 
+---
+
+## 20. CATATAN CHECKPOINT (v0.9.16 - Layout Gamepad Vertikal, Penguncian PS1 & Bar Bawah Bersih)
+- **Susunan Vertikal Tombol Bahu (L1/L2 dan R1/R2):**
+  - Mengubah orientasi baris bahu menjadi kolom vertikal bertumpuk di masing-masing sisi:
+    - Sisi Kiri: L1 di atas, L2 di bawah.
+    - Sisi Kanan: R1 di atas, R2 di bawah.
+  - Bentuk kurva tombol disesuaikan secara ergonomis (L1/R1 membulat di sisi atas, L2/R2 membulat di sisi bawah).
+- **Pemindahan Utility Bar ke Bagian Bawah (`.gp-bottom-bar`):**
+  - Baris kontrol dipindahkan dari atas layar ke posisi paling bawah agar area permainan dan tombol kontrol atas lebih leluasa dan alami bagi jempol dan jari telunjuk.
+- **Restorasi Emblem + Teks Gamepad di Bar Bawah:**
+  - Emblem ikon gamepad beserta teks "GAMEPAD" dikembalikan ke sisi kiri baris utilitas bawah (`.gp-badge`).
+  - Bagian tengah kontroler (`.gp-deck-center`) dibersihkan dari emblem tengah sehingga hanya menyisakan tombol SELECT dan START yang bersih (*clean*).
+- **Penguncian Permanen Pemetaan PlayStation 1 (PSX):**
+  - Dropdown pemilihan preset emulator dihapus dari antarmuka pengguna.
+  - Gamepad dikunci secara eksklusif menggunakan profil PS1 (PSX) dengan simbol autentik (Segitiga, Lingkaran, Silang, Kotak).
+
+
 
 
 
