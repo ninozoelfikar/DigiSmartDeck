@@ -379,3 +379,13 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Setiap perubahan arah gerak (Atas, Bawah, Kiri, Kanan) otomatis memicu bunyi klik mekanikal dan getaran haptik.
   - Menambahkan dukungan event mouse/pointer penuh untuk D-Pad dan Stik Analog agar pengujian di peramban desktop berjalan mulus.
 
+---
+
+## 25. CATATAN CHECKPOINT (v0.9.21 - Relokasi Emblem Gamepad ke Bawah Tengah Antara Select/Start dan Border Bawah)
+- **Relokasi Emblem Gamepad (.gp-bottom-emblem):**
+  - Emblem gamepad dipindahkan dari kolom bahu kiri ke posisi tengah bawah (bottom center) gamepad view.
+  - Diposisikan secara presisi tepat di tengah-tengah ruang antara tombol SELECT / START dan batas bawah (border bawah) tampilan gamepad (`top: calc(75% + 10px); left: 50%; transform: translate(-50%, -50%);`).
+  - Kolom bahu kiri kini bersih dan simetris dengan kolom bahu kanan, hanya memuat tombol L1 dan L2 tanpa gangguan visual.
+  - Penataan gaya responsif otomatis menyesuaikan pada mode lanskap ponsel (`@media (max-height: 480px)`) maupun mode tablet (`@media (min-width: 768px)`).
+
+
