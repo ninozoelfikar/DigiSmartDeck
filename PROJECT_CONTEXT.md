@@ -265,6 +265,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Ditambahkan elemen `#orientation-landscape-guard` yang otomatis muncul saat `@media screen and (orientation: portrait)` dengan kartu panduan dan tombol instan `Kunci Mode Melintang (Landscape)`.
   - Media query `.ai-main-grid` dipertahankan tetap 3 kolom (`120px 1fr 130px`) sehingga tata letak deck tidak pernah roboh menjadi 1 kolom bertumpuk ke bawah.
 
+---
+
+## 17. CATATAN CHECKPOINT (v0.9.13 - Standardisasi Label Tombol Keyboard Utama)
+- **Penyesuaian Teks & Ikon Tombol Fungsi Utama:**
+  - `Tab`: Menggunakan teks murni `Tab` (ikon panah `⇥` dihilangkan).
+  - `Caps`: Menggunakan teks murni `Caps` (ikon panah `⇪` dihilangkan).
+  - `Enter`: Menggunakan teks murni `Enter` (ikon panah `↵` dihilangkan).
+  - `Shift` (Kiri & Kanan): Menggunakan teks murni `Shift` (ikon panah `⇧` dihilangkan).
+  - `Backspace`: Menggunakan ikon murni `⌫` (teks `Back` dihilangkan).
+- Seluruh tombol lainnya (Ctrl, Win, Alt, Space, Arrows, Esc, Fn, Nav) dipertahankan sesuai konfigurasi awal tanpa perubahan.
+
+
 
 
 
