@@ -3132,10 +3132,28 @@ body.is-fullscreen {
   font-size: 9.5px;
   font-weight: 700;
   text-align: center;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 .ai-btn-sh.ai-prompt-chip:active {
   background: rgba(88, 166, 255, 0.25);
   border-color: var(--accent);
+}
+.ai-btn-sh.ai-prompt-chip span {
+  display: block;
+  width: 100%;
+  text-align: center;
+  line-height: 1.15;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.ai-btn-sh.ai-prompt-chip:not(.span-2) {
+  padding: 2px 4px;
+  font-size: 9px;
+}
+.ai-btn-sh.ai-prompt-chip:not(.span-2) span {
+  line-height: 1.12;
 }
 
 /* Center Column: Voice Typing / STT */
@@ -5645,10 +5663,10 @@ body.is-fullscreen {
             <span>Proceed</span>
           </button>
           <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="2" data-prompt="perbaiki bug" title="Ketik prompt: perbaiki bug">
-            <span>Perbaiki Bug</span>
+            <span>Perbaiki<br>Bug</span>
           </button>
           <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="3" data-prompt="buat dokumentasi" title="Ketik prompt: buat dokumentasi">
-            <span>Buat Dokumen</span>
+            <span>Buat<br>Dokumen</span>
           </button>
           <button type="button" class="ai-btn-sh ai-prompt-chip span-2" data-prompt-idx="4" data-prompt="jadikan check point" title="Ketik prompt: jadikan check point">
             <span>Jadikan Check Point</span>
@@ -11881,7 +11899,22 @@ function applyAiPrompts(prompts) {
       btn.setAttribute('data-prompt', p.prompt);
       btn.setAttribute('title', `Ketik prompt: ${p.prompt}`);
       const span = btn.querySelector('span');
-      if (span) span.textContent = p.label;
+      if (span) {
+        const rawLabel = (p.label || '').trim();
+        if (!btn.classList.contains('span-2')) {
+          const words = rawLabel.split(/\s+/).filter(Boolean);
+          if (words.length === 2) {
+            span.innerHTML = escapeAiHtml(words[0]) + '<br>' + escapeAiHtml(words[1]);
+          } else if (words.length > 2) {
+            const mid = Math.ceil(words.length / 2);
+            span.innerHTML = escapeAiHtml(words.slice(0, mid).join(' ')) + '<br>' + escapeAiHtml(words.slice(mid).join(' '));
+          } else {
+            span.textContent = rawLabel;
+          }
+        } else {
+          span.textContent = rawLabel;
+        }
+      }
     }
   });
 }

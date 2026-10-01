@@ -242,6 +242,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Mengetik huruf (`handleCharInput`), menghapus huruf (`doDeleteChar`), menghapus kata (`doDeleteWord`/`doDelete5Words`), dan tombol Delete (`ai-btn-delete`) otomatis menyinkronkan `lastSentLength` saat Auto-Kirim aktif.
   - Mengaktifkan sakelar Auto-Kirim otomatis menyinkronkan batas `lastSentLength` ke panjang teks saat ini.
 
+---
+
+## 15. CATATAN CHECKPOINT (v0.9.11 - Optimasi Tombol Shortcut Prompt Dua Baris & Padding)
+- **Format Dua Baris untuk Tombol 1 Kolom (`.ai-prompt-chip:not(.span-2)`):**
+  - Tombol pintasan prompt yang berukuran 1 kolom dan memiliki 2 kata (misal: "Perbaiki Bug", "Buat Dokumen", atau kustomisasi lainnya) otomatis dipecah menjadi 2 baris terpisah (`<br>`) agar teks tampil rapi, proporsional, dan mudah dibaca.
+  - Jika pengguna memasukkan lebih dari 2 kata pada slot 1 kolom, teks otomatis dibagi seimbang menjadi 2 baris.
+  - Slot ke-5 (`span-2`) tetap berukuran lebar 2 kolom dan menampilkan teks dalam 1 baris penuh.
+- **Pemberian Padding & Tipografi Aman:**
+  - Menambahkan `padding: 2px 4px;` dan `box-sizing: border-box;` pada `.ai-prompt-chip` sehingga huruf tidak lagi mepet ke pinggir atau garis tepi tombol.
+  - Mengatur `line-height: 1.12;` dan `word-break: break-word;` agar kedua baris teks berada tepat di tengah tombol secara vertikal dan horizontal.
+
+
 
 
 
