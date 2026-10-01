@@ -381,7 +381,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 
 ---
 
-## 25. CATATAN CHECKPOINT (v0.9.21 - Relokasi Emblem Gamepad ke Bawah Tengah Antara Select/Start dan Border Bawah)
+## 25. CATATAN CHECKPOINT (v0.9.21 - Relokasi Emblem Gamepad & Stik Analog Hening/Silent)
 - **Relokasi Emblem Gamepad (.gp-bottom-emblem):**
   - Emblem gamepad dipindahkan dari kolom bahu kiri ke posisi tengah bawah (bottom center) gamepad view.
   - Diposisikan secara presisi tepat di tengah-tengah ruang antara tombol SELECT / START dan batas bawah (border bawah) tampilan gamepad (`top: calc(75% + 10px); left: 50%; transform: translate(-50%, -50%);`).
