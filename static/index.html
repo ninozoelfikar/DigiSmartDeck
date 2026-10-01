@@ -967,49 +967,43 @@ body.is-fullscreen {
   font-weight: 600;
 }
 
-/* Gear Button on Trackpad */
+/* Gear Button on Trackpad: Ghost icon, no box, no background, rotation motion only */
 .tp-gear-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 6px;
+  right: 6px;
   z-index: 25;
-  width: 26px;
-  height: 26px;
-  background: rgba(22, 27, 34, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   color: var(--text-dim);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
   touch-action: manipulation;
 }
 .tp-gear-btn:hover {
-  color: var(--text);
-  border-color: var(--accent);
+  opacity: 1;
 }
 .tp-gear-btn:active {
-  background: rgba(88, 166, 255, 0.2);
-  border-color: var(--accent);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 .tp-gear-btn svg {
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.tp-gear-btn.active {
-  color: var(--accent);
-  background: rgba(88, 166, 255, 0.2);
-  border-color: var(--accent);
 }
 .tp-gear-btn.active svg {
   transform: rotate(60deg);
 }
 
-/* Real-Time Trackpad Editor Overlay */
+/* Real-Time Trackpad Editor Overlay: Centered Across Trackpad Area */
 .tp-editor-overlay {
   position: absolute;
   inset: 0;
@@ -1019,9 +1013,8 @@ body.is-fullscreen {
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 38px 4px 8px;
-  gap: 8px;
+  justify-content: center;
+  padding: 6px 36px 6px 12px;
   box-sizing: border-box;
   animation: tp-fade-in 0.15s ease-out;
 }
@@ -1032,67 +1025,68 @@ body.is-fullscreen {
   from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
-.tp-editor-controls {
+
+.tp-editor-center-deck {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  justify-content: flex-end;
-}
-.tp-editor-btn {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  gap: 4px;
-  height: 26px;
-  padding: 0 8px;
-  background: rgba(33, 38, 45, 0.9);
-  border: 1px solid var(--key-border);
-  border-radius: 5px;
-  color: var(--text);
-  font-size: 10.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.12s ease;
-  touch-action: manipulation;
-  flex-shrink: 0;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 100%;
 }
-.tp-editor-btn:active {
-  transform: scale(0.96);
-}
-.tp-editor-close {
-  width: 26px;
-  padding: 0;
-  color: var(--danger);
-  border-color: rgba(218, 54, 51, 0.4);
-}
-.tp-editor-close:active {
-  background: rgba(218, 54, 51, 0.25);
-}
-.tp-editor-pos-btn {
-  color: var(--accent);
-  border-color: rgba(88, 166, 255, 0.4);
-}
-.tp-editor-pos-btn:active {
-  background: rgba(88, 166, 255, 0.2);
-}
-.tp-editor-slider-wrap {
+
+.tp-editor-item {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex: 1;
-  max-width: 220px;
-  min-width: 110px;
 }
-.tp-editor-slider-lbl {
-  font-size: 10px;
+
+.tp-editor-lbl {
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-dim);
   white-space: nowrap;
-  font-weight: 500;
 }
-.tp-editor-slider-lbl b {
+.tp-editor-lbl b {
   color: var(--accent);
   font-weight: 700;
+}
+
+/* Segmented Pill Toggles */
+.tp-toggle-group {
+  display: inline-flex;
+  background: rgba(33, 38, 45, 0.9);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.tp-toggle-btn {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  line-height: 1.3;
+}
+.tp-toggle-btn:active {
+  transform: scale(0.96);
+}
+.tp-toggle-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.tp-editor-slider-item {
+  min-width: 140px;
+  max-width: 220px;
+  flex: 1;
 }
 .tp-editor-slider {
   flex: 1;
@@ -4348,18 +4342,28 @@ body.is-fullscreen {
 
         <!-- Real-Time Trackpad Editor Overlay -->
         <div class="tp-editor-overlay hidden" id="tp-editor-overlay">
-          <button type="button" class="tp-editor-btn tp-editor-close" id="tp-editor-btn-close" title="Matikan Trackpad">
-            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+          <div class="tp-editor-center-deck">
+            <!-- Togel Trackpad: On / Off -->
+            <div class="tp-editor-item">
+              <span class="tp-editor-lbl">Trackpad:</span>
+              <div class="tp-toggle-group">
+                <button type="button" class="tp-toggle-btn active" id="tp-toggle-on">On</button>
+                <button type="button" class="tp-toggle-btn" id="tp-toggle-off">Off</button>
+              </div>
+            </div>
 
-          <div class="tp-editor-controls">
-            <button type="button" class="tp-editor-btn tp-editor-pos-btn" id="tp-editor-btn-pos" title="Pindah Posisi Trackpad (Atas / Bawah)">
-              <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-              <span id="tp-editor-pos-lbl">Atas</span>
-            </button>
+            <!-- Togel Posisi: Atas / Bawah -->
+            <div class="tp-editor-item">
+              <span class="tp-editor-lbl">Posisi:</span>
+              <div class="tp-toggle-group">
+                <button type="button" class="tp-toggle-btn active" id="tp-toggle-pos-top">Atas</button>
+                <button type="button" class="tp-toggle-btn" id="tp-toggle-pos-bottom">Bawah</button>
+              </div>
+            </div>
 
-            <div class="tp-editor-slider-wrap">
-              <span class="tp-editor-slider-lbl">Tinggi: <b id="tp-editor-scale-val">100%</b></span>
+            <!-- Pengaturan Tinggi Trackpad -->
+            <div class="tp-editor-item tp-editor-slider-item">
+              <span class="tp-editor-lbl">Tinggi: <b id="tp-editor-scale-val">100%</b></span>
               <input type="range" class="tp-editor-slider custom-slider" id="tp-editor-slider" min="60" max="180" step="5" value="100">
             </div>
           </div>
@@ -7214,6 +7218,10 @@ function setTpEnabled(enabled) {
   }
   if (optTpOn) optTpOn.classList.toggle('active', tpEnabled);
   if (optTpOff) optTpOff.classList.toggle('active', !tpEnabled);
+  const tpToggleOnEl = $('tp-toggle-on');
+  const tpToggleOffEl = $('tp-toggle-off');
+  if (tpToggleOnEl) tpToggleOnEl.classList.toggle('active', tpEnabled);
+  if (tpToggleOffEl) tpToggleOffEl.classList.toggle('active', !tpEnabled);
 
   if (tpConfigControls) {
     tpConfigControls.style.opacity = tpEnabled ? '1' : '0.45';
@@ -7274,8 +7282,10 @@ function applyTpPosition(pos) {
   }
   if (optTpTop) optTpTop.classList.toggle('active', pos === 'top');
   if (optTpBottom) optTpBottom.classList.toggle('active', pos === 'bottom');
-  const tpEditorPosLbl = $('tp-editor-pos-lbl');
-  if (tpEditorPosLbl) tpEditorPosLbl.textContent = pos === 'bottom' ? 'Bawah' : 'Atas';
+  const tpTogglePosTopEl = $('tp-toggle-pos-top');
+  const tpTogglePosBottomEl = $('tp-toggle-pos-bottom');
+  if (tpTogglePosTopEl) tpTogglePosTopEl.classList.toggle('active', pos === 'top');
+  if (tpTogglePosBottomEl) tpTogglePosBottomEl.classList.toggle('active', pos === 'bottom');
   localStorage.setItem('digi_tp_pos', pos);
 }
 
@@ -7916,11 +7926,25 @@ applyTpScale(savedTpScale);
 // ── Trackpad Real-Time Editor Controller ──
 const tpGearBtn = $('tp-gear-btn');
 const tpEditorOverlay = $('tp-editor-overlay');
-const tpEditorBtnClose = $('tp-editor-btn-close');
-const tpEditorBtnPos = $('tp-editor-btn-pos');
-const tpEditorPosLbl = $('tp-editor-pos-lbl');
+const tpToggleOn = $('tp-toggle-on');
+const tpToggleOff = $('tp-toggle-off');
+const tpTogglePosTop = $('tp-toggle-pos-top');
+const tpTogglePosBottom = $('tp-toggle-pos-bottom');
 const tpEditorSlider = $('tp-editor-slider');
 const tpEditorScaleVal = $('tp-editor-scale-val');
+
+function syncTpEditorUI() {
+  const isEnabled = (localStorage.getItem('digi_tp_enabled') !== 'false');
+  if (tpToggleOn) tpToggleOn.classList.toggle('active', isEnabled);
+  if (tpToggleOff) tpToggleOff.classList.toggle('active', !isEnabled);
+
+  if (tpTogglePosTop) tpTogglePosTop.classList.toggle('active', tpPos === 'top');
+  if (tpTogglePosBottom) tpTogglePosBottom.classList.toggle('active', tpPos === 'bottom');
+
+  const currentScale = parseInt(localStorage.getItem('digi_tp_scale'), 10) || 100;
+  if (tpEditorSlider) tpEditorSlider.value = currentScale;
+  if (tpEditorScaleVal) tpEditorScaleVal.textContent = currentScale + '%';
+}
 
 function toggleTpEditor(show) {
   if (!tpEditorOverlay || !tpGearBtn) return;
@@ -7928,11 +7952,7 @@ function toggleTpEditor(show) {
   const willOpen = (show !== undefined) ? show : !isCurrentlyOpen;
 
   if (willOpen) {
-    const currentScale = parseInt(localStorage.getItem('digi_tp_scale'), 10) || 100;
-    if (tpEditorSlider) tpEditorSlider.value = currentScale;
-    if (tpEditorScaleVal) tpEditorScaleVal.textContent = currentScale + '%';
-    if (tpEditorPosLbl) tpEditorPosLbl.textContent = (tpPos === 'bottom' ? 'Bawah' : 'Atas');
-
+    syncTpEditorUI();
     tpEditorOverlay.classList.remove('hidden');
     tpGearBtn.classList.add('active');
   } else {
@@ -7950,8 +7970,18 @@ if (tpGearBtn) {
   });
 }
 
-if (tpEditorBtnClose) {
-  tpEditorBtnClose.addEventListener('click', (e) => {
+if (tpToggleOn) {
+  tpToggleOn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playClickSound();
+    vibe(15);
+    setTpEnabled(true);
+    syncTpEditorUI();
+  });
+}
+
+if (tpToggleOff) {
+  tpToggleOff.addEventListener('click', (e) => {
     e.stopPropagation();
     playClickSound();
     vibe(15);
@@ -7960,13 +7990,23 @@ if (tpEditorBtnClose) {
   });
 }
 
-if (tpEditorBtnPos) {
-  tpEditorBtnPos.addEventListener('click', (e) => {
+if (tpTogglePosTop) {
+  tpTogglePosTop.addEventListener('click', (e) => {
     e.stopPropagation();
     playClickSound();
-    vibe(20);
-    const newPos = (tpPos === 'top') ? 'bottom' : 'top';
-    applyTpPosition(newPos);
+    vibe(15);
+    applyTpPosition('top');
+    syncTpEditorUI();
+  });
+}
+
+if (tpTogglePosBottom) {
+  tpTogglePosBottom.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playClickSound();
+    vibe(15);
+    applyTpPosition('bottom');
+    syncTpEditorUI();
   });
 }
 
