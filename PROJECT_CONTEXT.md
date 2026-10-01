@@ -276,6 +276,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - `Backspace`: Menggunakan ikon murni `⌫` (teks `Back` dihilangkan).
 - Seluruh tombol lainnya (Ctrl, Win, Alt, Space, Arrows, Esc, Fn, Nav) dipertahankan sesuai konfigurasi awal tanpa perubahan.
 
+---
+
+## 18. CATATAN CHECKPOINT (v0.9.14 - Pembersihan Elemen Redundan UI)
+- **Tombol Fullscreen di Menu Control Deck (`#btn-fs`):**
+  - Disembunyikan (`display: none`) untuk merapikan menu pop-up control deck.
+- **Kartu Scan QR pada Pop-up Reconnecting (`#reconnect-banner`):**
+  - Kartu "Scan QR" beserta ikonnya dihapus dari dialog pencarian koneksi PC saat terputus.
+  - Grid kanal koneksi (`.rc-channels-grid`) disesuaikan menjadi 3 kolom seimbang (`Wi-Fi LAN`, `Kabel USB`, `Bluetooth`).
+- **Tombol Keyboard di Gamepad View (`#btn-exit-game`):**
+  - Disembunyikan (`display: none`) karena perpindahan mode sudah tersedia secara terpusat di bar navigasi atas.
+
+
 
 
 
