@@ -6400,6 +6400,7 @@ function playClickSound(force = false, atTime = null, pitch = 1.0) {
     if (!audioCtx) return;
     const now = atTime !== null ? atTime : audioCtx.currentTime;
     const vol = soundVolume;
+    const bodyPitch = 1 + (pitch - 1) * 0.35;
 
     // 1. Transient click (frekuensi tajam 1500Hz -> 350Hz untuk speaker kecil HP)
     const osc1 = audioCtx.createOscillator();
@@ -6414,12 +6415,12 @@ function playClickSound(force = false, atTime = null, pitch = 1.0) {
     osc1.start(now);
     osc1.stop(now + 0.016);
 
-    // 2. Body tap (frekuensi rendah 300Hz -> 90Hz untuk tablet & PC)
+    // 2. Body tap (frekuensi rendah 300Hz -> 90Hz untuk tablet & PC, tergrounding mantap)
     const osc2 = audioCtx.createOscillator();
     const gain2 = audioCtx.createGain();
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(300 * pitch, now);
-    osc2.frequency.exponentialRampToValueAtTime(Math.max(20, 90 * pitch), now + 0.022);
+    osc2.frequency.setValueAtTime(300 * bodyPitch, now);
+    osc2.frequency.exponentialRampToValueAtTime(Math.max(20, 90 * bodyPitch), now + 0.022);
     gain2.gain.setValueAtTime(2.0 * vol, now);
     gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
     osc2.connect(gain2);
@@ -6444,20 +6445,20 @@ function playStartupTypingJingle() {
     splashJinglePlayed = true;
     const t0 = audioCtx.currentTime + 0.05;
 
-    // 5 Tuts Keystroke Rhythm (Natural Human Typing Cadence):
-    // Note 1 & 2: setengah ketukan masing-masing
-    // Jeda 1 ketukan
-    // Note 3: 1 ketukan
-    // Istirahat 1 ketukan
-    // Note 4 & 5: setengah ketukan masing-masing
-    // Progresi nada naik (ascending pitch) agar nada terakhir berakhir di nada tinggi
-    // Memberikan dorongan energi psikologis positif & semangat saat user mulai bekerja
+    // 5 Tuts Keystroke Rhythm:
+    // Note 1 & 2: setengah ketukan masing-masing (0ms, 90ms)
+    // Jeda 1 ketukan (180ms)
+    // Note 3: 1 ketukan (270ms)
+    // Istirahat 1 ketukan (durasi + rest = 360ms)
+    // Note 4 & 5: sama-sama satu ketukan (630ms, 810ms)
+    // Komposisi nada bergantian natural (seperti ketukan jari tangan kiri & kanan)
+    // dan berakhir secara alami di nada tinggi untuk energi positif
     const pattern = [
-      { delay: 0.000, pitch: 0.96 },
-      { delay: 0.092, pitch: 1.06 },
-      { delay: 0.275, pitch: 1.15 },
-      { delay: 0.638, pitch: 1.25 },
-      { delay: 0.730, pitch: 1.42 }
+      { delay: 0.000, pitch: 0.94 },
+      { delay: 0.090, pitch: 1.08 },
+      { delay: 0.270, pitch: 0.98 },
+      { delay: 0.630, pitch: 1.14 },
+      { delay: 0.810, pitch: 1.28 }
     ];
 
     pattern.forEach(p => {
@@ -11175,7 +11176,7 @@ if (splashScreen) {
     setTimeout(() => {
       if (splashScreen.parentNode) splashScreen.remove();
     }, 280);
-  }, 950);
+  }, 1050);
 }
 
 connect();
