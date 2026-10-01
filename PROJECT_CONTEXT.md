@@ -387,5 +387,9 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Diposisikan secara presisi tepat di tengah-tengah ruang antara tombol SELECT / START dan batas bawah (border bawah) tampilan gamepad (`top: calc(75% + 10px); left: 50%; transform: translate(-50%, -50%);`).
   - Kolom bahu kiri kini bersih dan simetris dengan kolom bahu kanan, hanya memuat tombol L1 dan L2 tanpa gangguan visual.
   - Penataan gaya responsif otomatis menyesuaikan pada mode lanskap ponsel (`@media (max-height: 480px)`) maupun mode tablet (`@media (min-width: 768px)`).
+- **Penonaktifan Suara Klik pada Stik Analog & D-Pad (Silent & Smooth):**
+  - Efek suara klik mekanikal dan getaran pada pergerakan arah stik analog dan D-pad dinonaktifkan sepenuhnya (`sendGpKeyDown(pcKey, true)`).
+  - Stik analog kini bergerak halus dan hening tanpa bunyi klik berulang saat diarahkan ke berbagai sudut.
+  - Efek suara klik mekanikal (`playClickSound()`) tetap dipertahankan penuh pada seluruh tombol aksi lainnya (L1, L2, R1, R2, Segitiga, Lingkaran, Silang, Kotak, Select, dan Start).
 
 

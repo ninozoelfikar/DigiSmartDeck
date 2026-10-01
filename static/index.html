@@ -9686,12 +9686,14 @@ function updateGamepadLabels() {
   if (btnY) btnY.innerHTML = '<svg class="ps-symbol ps-square" viewBox="0 0 24 24" fill="none" stroke="#ff4081" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="4.5" width="15" height="15" rx="1"/></svg>';
 }
 
-function sendGpKeyDown(pcKey) {
+function sendGpKeyDown(pcKey, silent = false) {
   if (!pcKey || activeGpKeys.has(pcKey)) return;
   activeGpKeys.add(pcKey);
   send({ type: 'keydown', key: pcKey });
-  vibe(18);
-  playClickSound(true);
+  if (!silent) {
+    vibe(18);
+    playClickSound(true);
+  }
 }
 
 function sendGpKeyUp(pcKey) {
@@ -9902,8 +9904,7 @@ function updateDpadFromCoords(clientX, clientY) {
     if (!activeDpadDirections.has(dir)) {
       const pcKey = mapping[dir];
       if (pcKey) {
-        sendGpKeyDown(pcKey);
-        playClickSound(true, null, 1.15);
+        sendGpKeyDown(pcKey, true);
       }
       const b = $(`gp-btn-${dir}`);
       if (b) b.classList.add('pressed');
@@ -9928,8 +9929,6 @@ if (gpDpadEl) {
   gpDpadEl.addEventListener('touchstart', (e) => {
     e.preventDefault();
     unlockAudio();
-    playClickSound(true, null, 1.0);
-    vibe(15);
     for (const t of e.changedTouches) {
       gpTouches.set(t.identifier, { type: 'dpad' });
       updateDpadFromCoords(t.clientX, t.clientY);
@@ -9964,8 +9963,6 @@ if (gpDpadEl) {
   gpDpadEl.addEventListener('mousedown', (e) => {
     e.preventDefault();
     unlockAudio();
-    playClickSound(true, null, 1.0);
-    vibe(15);
     isMouseDpadActive = true;
     updateDpadFromCoords(e.clientX, e.clientY);
   });
@@ -10038,8 +10035,7 @@ function updateStickFromCoords(clientX, clientY) {
     if (!activeStickDirections.has(dir)) {
       const pcKey = mapping[dir];
       if (pcKey) {
-        sendGpKeyDown(pcKey);
-        playClickSound(true, null, 1.15);
+        sendGpKeyDown(pcKey, true);
       }
     }
   });
@@ -10064,8 +10060,6 @@ if (gpStickBase) {
   gpStickBase.addEventListener('touchstart', (e) => {
     e.preventDefault();
     unlockAudio();
-    playClickSound(true, null, 1.0);
-    vibe(15);
     if (stickTouchId !== null) return;
     const t = e.changedTouches[0];
     stickTouchId = t.identifier;
@@ -10101,8 +10095,6 @@ if (gpStickBase) {
   gpStickBase.addEventListener('mousedown', (e) => {
     e.preventDefault();
     unlockAudio();
-    playClickSound(true, null, 1.0);
-    vibe(15);
     isMouseStickActive = true;
     updateStickFromCoords(e.clientX, e.clientY);
   });
