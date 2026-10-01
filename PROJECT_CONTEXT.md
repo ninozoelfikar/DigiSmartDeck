@@ -324,6 +324,20 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Dropdown pemilihan preset emulator dihapus dari antarmuka pengguna.
   - Gamepad dikunci secara eksklusif menggunakan profil PS1 (PSX) dengan simbol autentik (Segitiga, Lingkaran, Silang, Kotak).
 
+---
+
+## 21. CATATAN CHECKPOINT (v0.9.17 - Gamepad Minimalis: Emblem Tengah Atas, Jarak Ekstra Shoulder & Kontrol Terpusat)
+- **Pelebaran Jarak Antar-Tombol Bahu (L1/L2 dan R1/R2):**
+  - Jarak pemisah vertikal (`gap`) antara L1 dan L2 serta R1 dan R2 ditingkatkan secara signifikan menjadi 16px (20px pada mode tablet) untuk mencegah salah pencet saat dimainkan di ponsel.
+- **Pembersihan Bar Gamepad dan Opsi Analog Stick:**
+  - Bar utilitas bawah (`.gp-bottom-bar`) dan pengalih D-Pad/Stick dihapus sepenuhnya.
+  - Mengeliminasi elemen `#gp-stick-container` sehingga antarmuka 100% fokus pada directional pad murni bergaya retro PS1.
+- **Penempatan Emblem Gamepad di Tengah Atas (`.gp-top-emblem`):**
+  - Emblem ikon gamepad beserta teks "GAMEPAD" ditempatkan di tengah atas dengan jarak proporsional dan elegan dari bar atas aplikasi.
+- **Pusat Gravitasi Kontroler Terpusat (Centered Controls Group):**
+  - Seluruh grup tombol dibungkus ke dalam wadah fleksibel terpusat (`.gp-controls-group`) dengan `justify-content: center` sehingga tata letak gamepad seimbang sempurna di tengah layar tanpa rongga canggung.
+
+
 
 
 
