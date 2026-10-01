@@ -2052,27 +2052,32 @@ body.is-fullscreen {
   background: var(--key-special);
   border-color: rgba(255,255,255,0.15);
 }
-.gp-top-emblem {
+/* Gamepad Bottom Center Emblem (antara Select/Start dan border bawah) */
+.gp-bottom-emblem {
+  position: absolute;
+  top: calc(75% + 10px);
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 4px;
-  padding: 4px 12px;
+  padding: 5px 16px;
   color: var(--accent);
   background: rgba(88, 166, 255, 0.08);
   border: 1px solid rgba(88, 166, 255, 0.22);
-  border-radius: 16px;
+  border-radius: 20px;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.5px;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  pointer-events: auto;
+  pointer-events: none;
+  z-index: 10;
 }
-.gp-top-emblem svg {
-  width: 14px;
-  height: 14px;
+.gp-bottom-emblem svg {
+  width: 15px;
+  height: 15px;
 }
 .gp-sh-btn.pressed, .gp-sh-btn:active {
   background: var(--key-active-bg) !important;
@@ -2521,6 +2526,8 @@ body.is-fullscreen {
   .gp-act-btn.btn-b { bottom: 0; left: 54px; }
   .gp-sh-btn { height: 32px; padding: 3px 14px; font-size: 11px; min-width: 72px; }
   .ps-symbol { width: 26px; height: 26px; }
+  .gp-bottom-emblem { padding: 3px 12px; font-size: 9px; }
+  .gp-bottom-emblem svg { width: 12px; height: 12px; }
 }
 
 /* PlayStation 1 Authentic Button Styling */
@@ -2575,12 +2582,11 @@ body.is-fullscreen {
     top: 14px;
     padding: 0 32px;
   }
-  .gp-top-emblem {
-    margin-top: 6px;
+  .gp-bottom-emblem {
     padding: 7px 20px;
     font-size: 13px;
   }
-  .gp-top-emblem svg {
+  .gp-bottom-emblem svg {
     width: 20px;
     height: 20px;
   }
@@ -5513,14 +5519,6 @@ body.is-fullscreen {
       <div class="gp-sh-group left">
         <button class="gp-sh-btn" data-gp="l1" id="gp-btn-l1">L1</button>
         <button class="gp-sh-btn trigger" data-gp="l2" id="gp-btn-l2">L2</button>
-        <div class="gp-top-emblem" title="DigiGamepad">
-          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/>
-            <line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/>
-            <rect width="20" height="12" x="2" y="6" rx="6"/>
-          </svg>
-          <span class="gp-emblem-text">GAMEPAD</span>
-        </div>
       </div>
 
       <div class="gp-sh-group right">
@@ -5566,6 +5564,16 @@ body.is-fullscreen {
           <button class="gp-act-btn btn-a" data-gp="a" id="gp-btn-a">A</button>
         </div>
       </div>
+    </div>
+
+    <!-- Gamepad Bottom Center Emblem (antara Select/Start dan border bawah) -->
+    <div class="gp-bottom-emblem" title="DigiGamepad">
+      <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/>
+        <line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/>
+        <rect width="20" height="12" x="2" y="6" rx="6"/>
+      </svg>
+      <span class="gp-emblem-text">GAMEPAD</span>
     </div>
 
     <!-- Gear Button (Settings: Stick/Dpad toggle & Button Remap) -->
