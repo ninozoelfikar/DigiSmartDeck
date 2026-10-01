@@ -6450,13 +6450,14 @@ function playStartupTypingJingle() {
     // Note 3: 1 ketukan
     // Istirahat 1 ketukan
     // Note 4 & 5: setengah ketukan masing-masing
-    // Disertai variasi mikro tempo dan pitch tuts agar gerakannya natural dan tidak konstan seperti komputer
+    // Progresi nada naik (ascending pitch) agar nada terakhir berakhir di nada tinggi
+    // Memberikan dorongan energi psikologis positif & semangat saat user mulai bekerja
     const pattern = [
-      { delay: 0.000, pitch: 0.98 },
-      { delay: 0.092, pitch: 1.05 },
-      { delay: 0.275, pitch: 0.96 },
-      { delay: 0.638, pitch: 1.03 },
-      { delay: 0.730, pitch: 0.91 }
+      { delay: 0.000, pitch: 0.96 },
+      { delay: 0.092, pitch: 1.06 },
+      { delay: 0.275, pitch: 1.15 },
+      { delay: 0.638, pitch: 1.25 },
+      { delay: 0.730, pitch: 1.42 }
     ];
 
     pattern.forEach(p => {
