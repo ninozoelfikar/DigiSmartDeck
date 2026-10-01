@@ -1750,8 +1750,58 @@ body.is-fullscreen {
   justify-content: center !important;
   opacity: 0.8;
 }
-.rc-close-btn:hover {
+/* Startup Splash / Flash Screen */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg, #0d1117);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
   opacity: 1;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
+  pointer-events: auto;
+}
+.splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: splash-zoom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes splash-zoom {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.splash-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(88, 166, 255, 0.12);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent, #58a6ff);
+  margin-bottom: 2px;
+}
+.splash-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text, #c9d1d9);
+  letter-spacing: 0.5px;
+}
+.splash-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent, #58a6ff);
+  letter-spacing: 0.3px;
 }
 
 @media (max-width: 440px) {
@@ -3940,6 +3990,17 @@ body.is-fullscreen {
 </head>
 <body>
 <div id="app">
+
+  <!-- STARTUP FLASH / SPLASH SCREEN (0.3s) -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-logo">
+        <svg class="svg-icon" width="36" height="36" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
+      </div>
+      <div class="splash-title">DigiKeyboard</div>
+      <div class="splash-sub">by King Ali Studio</div>
+    </div>
+  </div>
 
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
@@ -9791,7 +9852,7 @@ function bindAiRepeatKey(btnId, action) {
     // bunyi dan haptic hanya pada sentuhan pertama
     playClickSound();
     vibe(12);
-    action();
+    action(false);
 
     clearTimeout(delayTimer);
     clearInterval(intervalTimer);
@@ -9799,7 +9860,7 @@ function bindAiRepeatKey(btnId, action) {
     // repeat PC standar: delay 350ms lalu interval 50ms, tanpa bunyi
     delayTimer = setTimeout(() => {
       intervalTimer = setInterval(() => {
-        if (isPressed) action();
+        if (isPressed) action(true);
       }, 50);
     }, 350);
   }
@@ -10370,19 +10431,105 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     });
   }
 
-  if (btnBackspace) {
-    bindAiRepeatKey(btnBackspace, () => {
-      if (aiKbTarget === 'pc') {
-        send({ type: 'keypress', key: 'backspace' });
+  function deleteWordsFromAiTranscript(numWords) {
+    if (!aiAccumulatedText || aiCursorPos <= 0) return;
+    let before = aiAccumulatedText.slice(0, aiCursorPos);
+    const after = aiAccumulatedText.slice(aiCursorPos);
+
+    for (let i = 0; i < numWords; i++) {
+      const trailingWs = before.match(/\s+$/);
+      if (trailingWs) {
+        before = before.slice(0, -trailingWs[0].length);
+      }
+      const prevWord = before.match(/\S+$/);
+      if (prevWord) {
+        before = before.slice(0, -prevWord[0].length);
       } else {
-        if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
-          aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
-          aiCursorPos--;
-          renderTranscriptPreview(aiAccumulatedText);
-          if (aiAutoSend) {
-            send({ type: 'keypress', key: 'backspace' });
+        break;
+      }
+    }
+
+    aiCursorPos = before.length;
+    aiAccumulatedText = before + after;
+    renderTranscriptPreview(aiAccumulatedText);
+  }
+
+  if (btnBackspace) {
+    let bsTapCount = 0;
+    let lastBsTapTime = 0;
+
+    bindAiRepeatKey(btnBackspace, (isRepeat) => {
+      if (isRepeat) {
+        // Tahan (repeat): hapus 1 karakter secara berulang
+        bsTapCount = 0;
+        if (aiKbTarget === 'pc') {
+          send({ type: 'keypress', key: 'backspace' });
+        } else {
+          if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+            aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+            aiCursorPos--;
+            renderTranscriptPreview(aiAccumulatedText);
+            if (aiAutoSend) {
+              send({ type: 'keypress', key: 'backspace' });
+            }
           }
         }
+        return;
+      }
+
+      // Deteksi multi-klik:
+      // 1x = hapus 1 karakter
+      // 2x = otomatis hapus perkata
+      // 3x = otomatis hapus per 5 kata
+      const now = Date.now();
+      if (now - lastBsTapTime < 350) {
+        bsTapCount++;
+      } else {
+        bsTapCount = 1;
+      }
+      lastBsTapTime = now;
+
+      if (bsTapCount === 1) {
+        // 1x klik: hapus 1 karakter biasa
+        if (aiKbTarget === 'pc') {
+          send({ type: 'keypress', key: 'backspace' });
+        } else {
+          if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
+            aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
+            aiCursorPos--;
+            renderTranscriptPreview(aiAccumulatedText);
+            if (aiAutoSend) {
+              send({ type: 'keypress', key: 'backspace' });
+            }
+          }
+        }
+      } else if (bsTapCount === 2) {
+        // 2x klik: otomatis hapus 1 kata
+        vibe(20);
+        if (aiKbTarget === 'pc') {
+          send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+        } else {
+          deleteWordsFromAiTranscript(1);
+          if (aiAutoSend) {
+            send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+          }
+        }
+      } else if (bsTapCount >= 3) {
+        // 3x klik: otomatis hapus 5 kata (4 kata sisa + 1 kata sebelumnya)
+        vibe(30);
+        if (aiKbTarget === 'pc') {
+          for (let i = 0; i < 4; i++) {
+            send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+          }
+        } else {
+          deleteWordsFromAiTranscript(4);
+          if (aiAutoSend) {
+            for (let i = 0; i < 4; i++) {
+              send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+            }
+          }
+        }
+        bsTapCount = 0;
       }
     });
   }
@@ -10602,11 +10749,22 @@ try {
   } else if (initMode === 'standard' || initMode === 'kb') {
     switchAppMode('standard');
   } else {
-    // Mode AI aktif sebagai mode utama
-    switchAppMode('ai');
+    // Mode Keyboard Standard aktif sebagai mode utama saat aplikasi dibuka
+    switchAppMode('standard');
   }
 } catch(e) {
-  switchAppMode('ai');
+  switchAppMode('standard');
+}
+
+// ── Startup Splash / Flash Screen Controller (0.3s) ──
+const splashScreen = $('splash-screen');
+if (splashScreen) {
+  setTimeout(() => {
+    splashScreen.classList.add('fade-out');
+    setTimeout(() => {
+      if (splashScreen.parentNode) splashScreen.remove();
+    }, 280);
+  }, 300);
 }
 
 connect();
