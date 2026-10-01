@@ -3047,10 +3047,8 @@ body.is-fullscreen {
 }
 @media (max-width: 580px) {
   .ai-main-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 6px;
-    overflow-y: auto;
+    grid-template-columns: 120px 1fr 130px;
+    gap: 5px;
   }
 }
 
@@ -4753,9 +4751,94 @@ body.is-fullscreen {
     grid-template-rows: repeat(3, 32px);
   }
 }
+/* Orientation Landscape Guard (Mencegah tampilan potret yang kacau) */
+.orientation-guard {
+  display: none;
+}
+@media screen and (orientation: portrait) {
+  .orientation-guard {
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: #0d1117;
+    z-index: 9999999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  .orientation-guard-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 26px 20px;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  }
+  .orientation-guard-icon {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+  }
+  .orientation-guard-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f0f6fc;
+    margin-bottom: 8px;
+  }
+  .orientation-guard-desc {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.45;
+    margin-bottom: 20px;
+  }
+  .orientation-guard-btn {
+    background: #238636;
+    border: 1px solid rgba(240, 246, 252, 0.1);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s ease;
+  }
+  .orientation-guard-btn:active {
+    background: #2ea043;
+  }
+}
   </style>
 </head>
 <body>
+<!-- LANDSCAPE ENFORCEMENT GUARD -->
+<div id="orientation-landscape-guard" class="orientation-guard">
+  <div class="orientation-guard-card">
+    <div class="orientation-guard-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+        <path d="M12 18h.01"/>
+        <path d="M17 6l3 3-3 3"/>
+        <path d="M20 9H13"/>
+      </svg>
+    </div>
+    <div class="orientation-guard-title">Gunakan Posisi Melintang</div>
+    <div class="orientation-guard-desc">DigiKeyboard didesain khusus untuk tampilan landscape mendatar. Silakan miringkan ponsel Anda ke posisi horizontal.</div>
+    <button type="button" class="orientation-guard-btn" id="btn-lock-landscape-fs">Kunci Mode Melintang (Landscape)</button>
+  </div>
+</div>
 <div id="app">
 
   <!-- STARTUP FLASH / SPLASH SCREEN (0.8s) -->
@@ -6906,6 +6989,17 @@ function isFs() {
   return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
 }
 
+function tryLockLandscape() {
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('landscape').catch(() => {});
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('touchstart', tryLockLandscape, { once: true, passive: true });
+document.addEventListener('click', tryLockLandscape, { once: true, passive: true });
+
 function updateFsState() {
   const active = isFs();
   document.body.classList.toggle('is-fullscreen', active);
@@ -6916,6 +7010,9 @@ function updateFsState() {
     btnAiFs.classList.toggle('active', active);
     const txt = $('txt-ai-fs');
     if (txt) txt.textContent = active ? 'Exit FS' : 'Fullscreen';
+  }
+  if (active) {
+    tryLockLandscape();
   }
 }
 
@@ -6939,6 +7036,7 @@ function toggleFullscreen() {
     if (txt) txt.textContent = willBeFs ? 'Exit FS' : 'Fullscreen';
   }
   if (willBeFs) {
+    tryLockLandscape();
     const el = document.documentElement;
     try {
       let p;
@@ -6982,6 +7080,19 @@ if (_btnAiReload) {
     playClickSound();
     vibe(15);
     location.reload();
+  });
+}
+
+const _btnLockLs = $('btn-lock-landscape-fs');
+if (_btnLockLs) {
+  _btnLockLs.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playClickSound();
+    vibe(20);
+    tryLockLandscape();
+    if (!isFs()) {
+      toggleFullscreen();
+    }
   });
 }
 

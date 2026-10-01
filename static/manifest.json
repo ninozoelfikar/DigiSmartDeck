@@ -6,7 +6,7 @@
   "scope": "/",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone", "window-controls-overlay"],
-  "orientation": "any",
+  "orientation": "landscape",
   "background_color": "#0d1117",
   "theme_color": "#0d1117",
   "categories": ["utilities", "productivity"],

@@ -253,6 +253,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Menambahkan `padding: 2px 4px;` dan `box-sizing: border-box;` pada `.ai-prompt-chip` sehingga huruf tidak lagi mepet ke pinggir atau garis tepi tombol.
   - Mengatur `line-height: 1.12;` dan `word-break: break-word;` agar kedua baris teks berada tepat di tengah tombol secara vertikal dan horizontal.
 
+---
+
+## 16. CATATAN CHECKPOINT (v0.9.12 - Penguncian Mode Melintang Landscape & Guard Potret)
+- **Penguncian Orientasi Landscape pada Web App & PWA:**
+  - File `manifest.json` diperbarui dari `"orientation": "any"` menjadi `"orientation": "landscape"` sehingga saat diinstal via Chrome (Add to Home screen / WebAPK), aplikasi secara otomatis terkunci pada mode horizontal di level sistem operasi.
+  - File proyek native Android (`AndroidManifest.xml`) tetap terjaga dengan `android:screenOrientation="sensorLandscape"`.
+  - Integrasi JavaScript Screen Orientation API (`screen.orientation.lock('landscape')`) dieksekusi otomatis pada gestur pertama, saat memasuki layar penuh (`toggleFullscreen`), maupun saat menekan tombol pengunci.
+- **Proteksi Tampilan Potret (Orientation Landscape Guard):**
+  - Mencegah kekacauan tata letak saat perangkat dibuka dalam posisi vertikal (potret).
+  - Ditambahkan elemen `#orientation-landscape-guard` yang otomatis muncul saat `@media screen and (orientation: portrait)` dengan kartu panduan dan tombol instan `Kunci Mode Melintang (Landscape)`.
+  - Media query `.ai-main-grid` dipertahankan tetap 3 kolom (`120px 1fr 130px`) sehingga tata letak deck tidak pernah roboh menjadi 1 kolom bertumpuk ke bawah.
+
+
 
 
 
