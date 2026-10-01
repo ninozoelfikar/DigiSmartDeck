@@ -11147,6 +11147,9 @@ function toggleAutoSend(forceVal) {
   }
   if (chkAutoSend) chkAutoSend.checked = aiAutoSend;
   localStorage.setItem('digi_ai_autosend', aiAutoSend ? 'true' : 'false');
+  if (aiAutoSend) {
+    lastSentLength = aiAccumulatedText.length;
+  }
   vibe(10);
 }
 
@@ -11180,19 +11183,32 @@ if (lblAutoSend) {
 // Tombol Transcript (Kosongkan & Kirim ke PC)
 bindAiKey('btn-ai-tr-clear', () => {
   playClickSound();
+  if (aiSpeechWanted || isAiRecording) {
+    stopAiSpeechRecognition();
+  }
   clearTranscriptUI();
   vibe(10);
 });
 
 bindAiKey('btn-ai-tr-send', () => {
   playClickSound();
-  commitCurrentSession();
-  const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
-  if (textToSend) {
-    sendAiText(textToSend + ' ');
+  if (aiSpeechWanted || isAiRecording) {
+    stopAiSpeechRecognition();
+  } else {
+    commitCurrentSession();
   }
-  // Box otomatis dikosongkan setelah kirim
-  clearTranscriptUI();
+  if (aiAutoSend) {
+    // Saat Auto-Kirim aktif, teks sudah dikirim real-time ke PC saat diucapkan/diketik.
+    // Cukup kosongkan box tanpa mengirim ulang teks agar tidak double di terminal.
+    clearTranscriptUI();
+  } else {
+    const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
+    if (textToSend) {
+      sendAiText(textToSend + ' ');
+    }
+    // Box otomatis dikosongkan setelah kirim
+    clearTranscriptUI();
+  }
   vibe(10);
 });
 
@@ -11200,14 +11216,25 @@ bindAiKey('btn-ai-tr-send', () => {
 bindAiKey('ai-btn-enter', () => {
   playClickSound();
   vibe(25);
-  // selalu: kirim teks yang ada di box, tekan Enter di PC, kosongkan box
-  commitCurrentSession();
-  const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
-  if (textToSend) {
-    sendAiText(textToSend + ' ');
-    clearTranscriptUI();
+  if (aiSpeechWanted || isAiRecording) {
+    stopAiSpeechRecognition();
+  } else {
+    commitCurrentSession();
   }
-  send({ type: 'keypress', key: 'enter' });
+  if (aiAutoSend) {
+    // Saat Auto-Kirim aktif, teks sudah mengalir langsung ke PC saat diucapkan/diketik.
+    // Kosongkan box di HP dan kirim keypress Enter ke PC tanpa mengirim ulang teks.
+    clearTranscriptUI();
+    send({ type: 'keypress', key: 'enter' });
+  } else {
+    // Mode normal: kirim teks yang ada di box, tekan Enter di PC, kosongkan box
+    const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
+    if (textToSend) {
+      sendAiText(textToSend + ' ');
+      clearTranscriptUI();
+    }
+    send({ type: 'keypress', key: 'enter' });
+  }
 });
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });
@@ -11299,6 +11326,10 @@ bindAiRepeatKey('ai-btn-delete', () => {
     if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos < aiAccumulatedText.length) {
       aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + aiAccumulatedText.slice(aiCursorPos + 1);
       renderTranscriptPreview(aiAccumulatedText);
+      if (aiAutoSend) {
+        send({ type: 'keypress', key: 'delete' });
+        lastSentLength = aiAccumulatedText.length;
+      }
     }
   }
 });
@@ -11592,6 +11623,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
       if (aiAutoSend) {
         sendAiText(char);
+        lastSentLength = aiAccumulatedText.length;
       }
     }
 
@@ -11667,6 +11699,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
           renderTranscriptPreview(aiAccumulatedText);
           if (aiAutoSend) {
             send({ type: 'keypress', key: 'backspace' });
+            lastSentLength = aiAccumulatedText.length;
           }
         }
       }
@@ -11679,6 +11712,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
         deleteWordsFromAiTranscript(1);
         if (aiAutoSend) {
           send({ type: 'combo', keys: ['ctrl', 'backspace'] });
+          lastSentLength = aiAccumulatedText.length;
         }
       }
     }
@@ -11694,6 +11728,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
           for (let i = 0; i < 5; i++) {
             send({ type: 'combo', keys: ['ctrl', 'backspace'] });
           }
+          lastSentLength = aiAccumulatedText.length;
         }
       }
     }

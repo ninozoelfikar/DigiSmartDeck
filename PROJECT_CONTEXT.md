@@ -225,5 +225,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Tombol Panah Keyboard Ketik AI (`#ai-tk-btn-*` pada row 4 keyboard bawah):**
   - Tetap terikat dengan toggle target ketik (`aiKbTarget`), sehingga dapat menggeser kursor teks transkrip di HP (`moveAiCursor*()`) saat mode Device aktif, atau mengirim ke PC saat mode PC aktif.
 
+---
+
+## 14. CATATAN CHECKPOINT (v0.9.10 - Optimasi Alur Auto-Kirim Tanpa Duplikasi)
+- **Visual Feedback Tetap Aktif di Layar HP:**
+  - Saat Auto-Kirim (`aiAutoSend`) aktif, teks ucapan dan ketikan tetap tampil di kotak teks preview ponsel (`#ai-transcript-preview`). Pengguna tetap dapat melihat kata-kata yang diucapkan secara real-time tanpa merasa buta di HP.
+- **Pencegahan Duplikasi Teks (Zero Double Entry):**
+  - Kata-kata yang diucapkan atau diketik dialirkan secara streaming langsung ke PC (`sendAiText`).
+  - Saat tombol `ENTER` raksasa (`#ai-btn-enter`) ditekan dengan Auto-Kirim aktif:
+    1. Teks tidak dikirim ulang ke PC (karena sudah terkirim saat bicara/ketik).
+    2. Kotak teks di ponsel langsung dibersihkan (`clearTranscriptUI()`).
+    3. Perintah `Enter` langsung dikirim ke PC untuk mengeksekusi prompt/perintah terminal secara instan.
+  - Saat tombol `Kirim ke PC` (`#btn-ai-tr-send`) ditekan dengan Auto-Kirim aktif:
+    - Kotak teks dibersihkan tanpa mengirim ulang teks, menghindari tumpukan duplikat.
+- **Sinkronisasi Presisi State Auto-Kirim:**
+  - Mengetik huruf (`handleCharInput`), menghapus huruf (`doDeleteChar`), menghapus kata (`doDeleteWord`/`doDelete5Words`), dan tombol Delete (`ai-btn-delete`) otomatis menyinkronkan `lastSentLength` saat Auto-Kirim aktif.
+  - Mengaktifkan sakelar Auto-Kirim otomatis menyinkronkan batas `lastSentLength` ke panjang teks saat ini.
+
+
 
 
