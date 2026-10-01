@@ -6393,20 +6393,20 @@ function unlockAudio() {
 window.addEventListener('touchstart', unlockAudio, { passive: true });
 window.addEventListener('pointerdown', unlockAudio, { passive: true });
 
-function playClickSound(force = false) {
+function playClickSound(force = false, atTime = null, pitch = 1.0) {
   if (!soundEnabled && !force) return;
   try {
     unlockAudio();
     if (!audioCtx) return;
-    const now = audioCtx.currentTime;
+    const now = atTime !== null ? atTime : audioCtx.currentTime;
     const vol = soundVolume;
 
     // 1. Transient click (frekuensi tajam 1500Hz -> 350Hz untuk speaker kecil HP)
     const osc1 = audioCtx.createOscillator();
     const gain1 = audioCtx.createGain();
     osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(1500, now);
-    osc1.frequency.exponentialRampToValueAtTime(350, now + 0.016);
+    osc1.frequency.setValueAtTime(1500 * pitch, now);
+    osc1.frequency.exponentialRampToValueAtTime(Math.max(40, 350 * pitch), now + 0.016);
     gain1.gain.setValueAtTime(2.8 * vol, now);
     gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.016);
     osc1.connect(gain1);
@@ -6418,70 +6418,14 @@ function playClickSound(force = false) {
     const osc2 = audioCtx.createOscillator();
     const gain2 = audioCtx.createGain();
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(300, now);
-    osc2.frequency.exponentialRampToValueAtTime(90, now + 0.022);
+    osc2.frequency.setValueAtTime(300 * pitch, now);
+    osc2.frequency.exponentialRampToValueAtTime(Math.max(20, 90 * pitch), now + 0.022);
     gain2.gain.setValueAtTime(2.0 * vol, now);
     gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
     osc2.connect(gain2);
     gain2.connect(audioCtx.destination);
     osc2.start(now);
     osc2.stop(now + 0.022);
-  } catch(e) {}
-}
-
-function playMechanicalKey(ctx, time, pitch = 1.0, isEnter = false, vol = 0.8) {
-  if (!ctx) return;
-  try {
-    // 1. Tactile Click (switch leaf snap - triangle sweep)
-    const clickOsc = ctx.createOscillator();
-    const clickGain = ctx.createGain();
-    clickOsc.type = 'triangle';
-    const startF = (isEnter ? 1900 : 2500) * pitch;
-    const endF = (isEnter ? 450 : 600) * pitch;
-    clickOsc.frequency.setValueAtTime(startF, time);
-    clickOsc.frequency.exponentialRampToValueAtTime(Math.max(40, endF), time + 0.014);
-
-    const cVol = (isEnter ? 2.2 : 1.6) * vol;
-    clickGain.gain.setValueAtTime(cVol, time);
-    clickGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.014);
-    clickOsc.connect(clickGain);
-    clickGain.connect(ctx.destination);
-    clickOsc.start(time);
-    clickOsc.stop(time + 0.014);
-
-    // 2. Plastic Clack (switch slider impact - short square chirp)
-    const clackOsc = ctx.createOscillator();
-    const clackGain = ctx.createGain();
-    clackOsc.type = 'square';
-    const clackF = (isEnter ? 750 : 1100) * pitch;
-    clackOsc.frequency.setValueAtTime(clackF, time);
-    clackOsc.frequency.exponentialRampToValueAtTime(180, time + 0.012);
-
-    const clackVol = (isEnter ? 0.8 : 0.5) * vol;
-    clackGain.gain.setValueAtTime(clackVol, time);
-    clackGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.012);
-    clackOsc.connect(clackGain);
-    clackGain.connect(ctx.destination);
-    clackOsc.start(time);
-    clackOsc.stop(time + 0.012);
-
-    // 3. Bottom-Out Thud (plate & desk resonance - sine body)
-    const thudOsc = ctx.createOscillator();
-    const thudGain = ctx.createGain();
-    thudOsc.type = 'sine';
-    const thudF = (isEnter ? 160 : 270) * pitch;
-    const thudEndF = (isEnter ? 60 : 90) * pitch;
-    const thudDur = isEnter ? 0.048 : 0.024;
-    thudOsc.frequency.setValueAtTime(thudF, time);
-    thudOsc.frequency.exponentialRampToValueAtTime(Math.max(25, thudEndF), time + thudDur);
-
-    const tVol = (isEnter ? 2.6 : 1.8) * vol;
-    thudGain.gain.setValueAtTime(tVol, time);
-    thudGain.gain.exponentialRampToValueAtTime(0.0001, time + thudDur);
-    thudOsc.connect(thudGain);
-    thudGain.connect(ctx.destination);
-    thudOsc.start(time);
-    thudOsc.stop(time + thudDur);
   } catch(e) {}
 }
 
@@ -6498,25 +6442,25 @@ function playStartupTypingJingle() {
     }
 
     splashJinglePlayed = true;
-    const t0 = audioCtx.currentTime + 0.04;
-    const vol = soundVolume || 0.7;
+    const t0 = audioCtx.currentTime + 0.05;
 
-    // Pattern: 8 fast keystrokes + 1 deliberate final Enter keystroke
-    // Natural human mechanical typing cadence (DigiKeyboard startup jingle)
+    // 5 Tuts Keystroke Rhythm (Natural Human Typing Cadence):
+    // Note 1 & 2: setengah ketukan masing-masing
+    // Jeda 1 ketukan
+    // Note 3: 1 ketukan
+    // Istirahat 1 ketukan
+    // Note 4 & 5: setengah ketukan masing-masing
+    // Disertai variasi mikro tempo dan pitch tuts agar gerakannya natural dan tidak konstan seperti komputer
     const pattern = [
-      { delay: 0.00, pitch: 0.97 },
-      { delay: 0.07, pitch: 1.05 },
-      { delay: 0.135, pitch: 0.93 },
-      { delay: 0.195, pitch: 1.08 },
-      { delay: 0.265, pitch: 0.99 },
-      { delay: 0.335, pitch: 1.04 },
-      { delay: 0.41, pitch: 0.95 },
-      { delay: 0.495, pitch: 1.07 },
-      { delay: 0.64, pitch: 0.82, isEnter: true }
+      { delay: 0.000, pitch: 0.98 },
+      { delay: 0.092, pitch: 1.05 },
+      { delay: 0.275, pitch: 0.96 },
+      { delay: 0.638, pitch: 1.03 },
+      { delay: 0.730, pitch: 0.91 }
     ];
 
     pattern.forEach(p => {
-      playMechanicalKey(audioCtx, t0 + p.delay, p.pitch, !!p.isEnter, vol);
+      playClickSound(true, t0 + p.delay, p.pitch);
     });
   } catch(e) {}
 }
