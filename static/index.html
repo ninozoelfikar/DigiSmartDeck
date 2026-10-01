@@ -6956,20 +6956,30 @@ function refreshMods() {
   const cap = document.getElementById('key-caps');
   if (cap) cap.classList.toggle('latched', mods.caps_lock);
 
-  // Swap displayed letter case when Shift or Caps active
+  // Swap displayed characters when Shift or Caps active:
+  // 1. Letters: uppercase vs lowercase
+  // 2. Symbols/Numbers: show ONLY the alternative character (data-shift) when Shift is active
   document.querySelectorAll('.k[data-char]').forEach(el => {
     const ch = el.dataset.char;
+    const shiftCh = el.dataset.shift;
+    const lbl = el.querySelector('.lbl') || el;
+    const sub = el.querySelector('.sub');
+
     if (ch && ch.length === 1 && /[a-z]/i.test(ch)) {
-      // find span.lbl or direct text
-      const lbl = el.querySelector('.lbl') || el;
-      if (!el.dataset.shift || el.dataset.shift.length === 1) {
-        const isUpper = (mods.caps_lock !== mods.shift);
-        lbl.textContent = isUpper ? ch.toUpperCase() : ch.toLowerCase();
+      const isUpper = (mods.caps_lock !== mods.shift);
+      lbl.textContent = isUpper ? ch.toUpperCase() : ch.toLowerCase();
+    } else if (shiftCh && shiftCh !== ch) {
+      if (mods.shift) {
+        if (sub) sub.style.display = 'none';
+        lbl.textContent = shiftCh;
+      } else {
+        if (sub) sub.style.display = '';
+        lbl.textContent = ch;
       }
     }
   });
 
-  // Shift Layer on Arrow keys: up=PgUp, down=PgDn, left=Home, right=End
+  // Shift Layer on Arrow keys: up=PgUp, down=PgDn, left=Home, right=End (sub hidden when shift active)
   const arrowShiftMap = { up: 'PgUp', down: 'PgDn', left: 'Home', right: 'End' };
   const arrowBaseMap = { up: '▲', down: '▼', left: '◀', right: '▶' };
   document.querySelectorAll('.k.arr[data-key]').forEach(el => {
@@ -6979,19 +6989,17 @@ function refreshMods() {
       const sub = el.querySelector('.sub');
       if (lbl && sub) {
         if (mods.shift) {
+          sub.style.display = 'none';
           lbl.textContent = arrowShiftMap[k];
           lbl.style.fontSize = '9.5px';
           lbl.style.fontWeight = '800';
           lbl.style.color = 'var(--accent)';
-          sub.textContent = arrowBaseMap[k];
-          sub.style.opacity = '0.35';
         } else {
+          sub.style.display = '';
           lbl.textContent = arrowBaseMap[k];
           lbl.style.fontSize = '';
           lbl.style.fontWeight = '';
           lbl.style.color = '';
-          sub.textContent = arrowShiftMap[k];
-          sub.style.opacity = '';
         }
       }
     }
