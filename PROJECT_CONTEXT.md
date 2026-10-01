@@ -348,3 +348,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Pemanfaatan Ruang Layar (Skala Tombol Diperbesar):**
   - Ukuran D-Pad dan Action Diamond diperbesar dari 170px menjadi 184px (mode ponsel) dan 230px (mode tablet) dengan tombol aksi 56px (tablet 70px) untuk mengisi ruang kosong yang sebelumnya terlalu renggang.
 
+---
+
+## 23. CATATAN CHECKPOINT (v0.9.19 - Stik Analog Default, Sound Feedback, Icon Gear Pengaturan & Penyelarasan Rata Tengah)
+- **Stik Analog Sebagai Kontrol Arah Default:**
+  - D-Pad retro digantikan dengan Stik Analog sebagai kontrol arah bawaan aktif dengan ukuran proporsional (wadah 170px, base 150px, thumb 68px).
+- **Efek Suara Klik Mekanikal Konsisten pada Arah & Tombol:**
+  - `sendGpKeyDown` kini memanggil `playClickSound(true)` sehingga bunyi klik mekanikal dan respon haptik (`vibe(18)`) selalu keluar saat stik digerakkan atau tombol ditekan.
+  - `unlockAudio()` dipanggil pada `touchstart` stik, D-Pad, dan gamepad view untuk memastikan audio browser tidak teredam.
+- **Tombol Ikon Gear Pengaturan di Kanan Bawah (`.gp-gear-btn`):**
+  - Ikon gear ditempatkan di pojok kanan bawah gamepad dengan animasi putar 60 derajat saat diklik (identik dengan trackpad gear).
+  - Membuka overlay pengaturan (`#gamepad-settings-overlay`) yang berisi tombol alih "Stik Analog" vs "Arah Panah" dan tombol konfigurasi pemetaan ("Atur Mapping...").
+- **Penyelarasan Sejajar Rata-Tengah Horizontal & Naik ke Posisi Tengah Layar:**
+  - Baris bahu atas (`.gp-top-row`) menggunakan pemosisian absolut di bagian atas sehingga `.gp-main-deck` memanfaatkan penuh ruang layar.
+  - Seluruh kontrol utama (Stik Analog di kiri, Select & Start di tengah, dan 4 tombol aksi PS1 di kanan) berada pada garis tengah horizontal yang sejajar sempurna dan naik ke posisi tengah layar yang seimbang dan ergonomis.
+  - Ukuran elemen tombol tetap dipertahankan sesuai skala asli yang sudah nyaman bagi pengguna.
+

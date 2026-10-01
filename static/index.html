@@ -1996,6 +1996,7 @@ body.is-fullscreen {
   touch-action: none;
   overflow: hidden;
   box-sizing: border-box;
+  position: relative;
 }
 .gamepad-view.hidden {
   display: none !important;
@@ -2003,13 +2004,18 @@ body.is-fullscreen {
 
 /* Top Gamepad Row (Bahu L1/L2, Emblem Tengah, Bahu R1/R2) */
 .gp-top-row {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
   padding: 0 16px;
-  margin-top: 14px;
-  flex-shrink: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 15;
 }
 .gp-top-emblem {
   display: inline-flex;
@@ -2027,6 +2033,7 @@ body.is-fullscreen {
   letter-spacing: 1.5px;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
 }
 .gp-top-emblem svg {
   width: 16px;
@@ -2035,7 +2042,8 @@ body.is-fullscreen {
 .gp-sh-group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  pointer-events: auto;
 }
 .gp-sh-btn {
   background: var(--key-bg);
@@ -2070,14 +2078,15 @@ body.is-fullscreen {
 
 /* Main Controller Deck (Rata Tengah Secara Vertikal dan Horizontal) */
 .gp-main-deck {
-  flex: 1;
   width: 100%;
+  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
-  gap: 20px;
-  min-height: 200px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 5;
 }
 
 /* D-PAD (8-Way Directional Pad) */
@@ -2176,7 +2185,7 @@ body.is-fullscreen {
   border-radius: 50%;
   background: radial-gradient(circle, var(--panel-bg) 60%, var(--key-special) 100%);
   border: 3px solid var(--key-border);
-  box-shadow: inset 0 4px 10px rgba(0,0,0,0.6), 0 0 15px rgba(0,0,0,0.3);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
   position: relative;
   display: flex;
   align-items: center;
@@ -2189,7 +2198,7 @@ body.is-fullscreen {
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #3a4454, #1c222d);
   border: 2px solid var(--accent);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.2);
   position: absolute;
   touch-action: none;
   cursor: pointer;
@@ -2197,13 +2206,14 @@ body.is-fullscreen {
   transition: transform 0.05s ease-out;
 }
 
-/* Center Deck: Select & Start */
+/* Center Deck: Select & Start Group (Dead Center) */
 .gp-deck-center {
   flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: auto;
 }
 .gp-center-buttons {
   display: flex;
@@ -2232,6 +2242,149 @@ body.is-fullscreen {
   transform: rotate(-15deg) translateY(2px);
   box-shadow: 0 0 8px var(--accent);
 }
+
+/* Gear Button: Bottom Right of Gamepad View */
+.gp-gear-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  z-index: 25;
+  width: 28px;
+  height: 28px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+  touch-action: manipulation;
+}
+.gp-gear-btn:hover {
+  opacity: 1;
+}
+.gp-gear-btn svg {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gp-gear-btn.active svg {
+  transform: rotate(60deg);
+}
+
+/* Gamepad Settings Overlay */
+.gp-settings-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: rgba(13, 17, 23, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.gp-settings-overlay.hidden {
+  display: none !important;
+}
+.gp-settings-dialog {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.gp-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--key-border);
+  background: rgba(255, 255, 255, 0.03);
+}
+.gp-settings-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.gp-settings-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+.gp-settings-close:hover {
+  color: var(--text);
+}
+.gp-settings-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.gp-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gp-setting-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.gp-toggle-group {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.gp-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.gp-toggle-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.gp-setting-action-btn {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.gp-setting-action-btn:hover {
+  background: var(--key-special);
+}
+
 
 /* Right Deck: Diamond Action Buttons */
 .gp-deck-right {
@@ -2347,17 +2500,20 @@ body.is-fullscreen {
 
 @media (max-height: 480px) {
   .gamepad-view { padding: 4px 12px; }
+  .gp-top-row { top: 6px; padding: 0 12px; }
+  .gp-sh-group { gap: 6px; }
   .gp-dpad, .gp-action-diamond, .gp-stick-container { width: 140px; height: 140px; }
+  .gp-stick-base { width: 124px; height: 124px; }
+  .gp-stick-thumb { width: 56px; height: 56px; }
   .dp-up, .dp-down { left: 48px; width: 44px; height: 50px; }
   .dp-left, .dp-right { top: 48px; width: 50px; height: 44px; }
   .gp-dp-center { top: 48px; left: 48px; width: 44px; height: 44px; }
   .gp-act-btn { width: 44px; height: 44px; font-size: 15px; }
-  .gp-act-btn.btn-x { left: 48px; }
-  .gp-act-btn.btn-y { top: 48px; }
-  .gp-act-btn.btn-a { top: 48px; }
-  .gp-act-btn.btn-b { left: 48px; }
-  .gp-sh-btn { height: 36px; padding: 4px 16px; font-size: 12px; min-width: 58px; }
-  .gp-top-bar { min-height: 32px; padding: 2px 8px; }
+  .gp-act-btn.btn-x { top: 0; left: 48px; }
+  .gp-act-btn.btn-y { top: 48px; left: 0; }
+  .gp-act-btn.btn-a { top: 48px; right: 0; }
+  .gp-act-btn.btn-b { bottom: 0; left: 48px; }
+  .gp-sh-btn { height: 32px; padding: 3px 12px; font-size: 11px; min-width: 58px; }
 }
 
 /* PlayStation 1 Authentic Button Styling */
@@ -2409,8 +2565,8 @@ body.is-fullscreen {
     padding: 14px 32px 20px;
   }
   .gp-top-row {
+    top: 14px;
     padding: 0 32px;
-    margin-top: 18px;
   }
   .gp-top-emblem {
     margin-top: 6px;
@@ -2435,9 +2591,17 @@ body.is-fullscreen {
     padding: 0 32px;
     min-height: 250px;
   }
-  .gp-dpad, .gp-action-diamond {
+  .gp-dpad, .gp-action-diamond, .gp-stick-container {
     width: 230px;
     height: 230px;
+  }
+  .gp-stick-base {
+    width: 200px;
+    height: 200px;
+  }
+  .gp-stick-thumb {
+    width: 90px;
+    height: 90px;
   }
   .dp-up {
     top: 0;
@@ -5359,11 +5523,18 @@ body.is-fullscreen {
       </div>
     </div>
 
-    <!-- Main Controller Deck (Rata Tengah: D-Pad, Select/Start, Action Diamond) -->
+    <!-- Main Controller Deck (Rata Tengah: D-Pad / Stick, Select/Start, Action Diamond) -->
     <div class="gp-main-deck">
-      <!-- Left Side: D-Pad -->
+      <!-- Left Side: Analog Stick (Default) / D-Pad (Alternative) -->
       <div class="gp-deck-left">
-        <div class="gp-dpad" id="gp-dpad">
+        <!-- Analog Stick (Default) -->
+        <div class="gp-stick-container" id="gp-stick-container">
+          <div class="gp-stick-base" id="gp-stick-base">
+            <div class="gp-stick-thumb" id="gp-stick-thumb"></div>
+          </div>
+        </div>
+        <!-- D-Pad (Alternative) -->
+        <div class="gp-dpad hidden" id="gp-dpad">
           <button class="gp-dp-btn dp-up" data-gp="up" id="gp-btn-up">▲</button>
           <button class="gp-dp-btn dp-left" data-gp="left" id="gp-btn-left">◀</button>
           <div class="gp-dp-center"></div>
@@ -5372,7 +5543,7 @@ body.is-fullscreen {
         </div>
       </div>
 
-      <!-- Center: Standard (Select & Start) -->
+      <!-- Center: Standard (Select & Start Dead Center) -->
       <div class="gp-deck-center" id="gp-deck-center-std">
         <div class="gp-center-buttons">
           <button class="gp-pill-btn" data-gp="select" id="gp-btn-select">SELECT</button>
@@ -5387,6 +5558,43 @@ body.is-fullscreen {
           <button class="gp-act-btn btn-y" data-gp="y" id="gp-btn-y">Y</button>
           <button class="gp-act-btn btn-b" data-gp="b" id="gp-btn-b">B</button>
           <button class="gp-act-btn btn-a" data-gp="a" id="gp-btn-a">A</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gear Button (Settings: Stick/Dpad toggle & Button Remap) -->
+    <button class="gp-gear-btn" id="gp-gear-btn" title="Pengaturan Gamepad" type="button" aria-label="Pengaturan Gamepad">
+      <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    </button>
+
+    <!-- Gamepad Settings Overlay -->
+    <div class="gp-settings-overlay hidden" id="gamepad-settings-overlay">
+      <div class="gp-settings-dialog">
+        <div class="gp-settings-header">
+          <div class="gp-settings-title">
+            <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span>Pengaturan Gamepad</span>
+          </div>
+          <button class="gp-settings-close" id="btn-close-gp-settings" type="button" aria-label="Tutup">✕</button>
+        </div>
+        <div class="gp-settings-body">
+          <div class="gp-setting-row">
+            <span class="gp-setting-label">Kontrol Arah</span>
+            <div class="gp-toggle-group">
+              <button class="gp-toggle-btn active" id="btn-opt-stick" type="button">Stik Analog</button>
+              <button class="gp-toggle-btn" id="btn-opt-dpad" type="button">Arah Panah</button>
+            </div>
+          </div>
+          <div class="gp-setting-row">
+            <span class="gp-setting-label">Konfigurasi Tombol</span>
+            <button class="gp-setting-action-btn" id="btn-open-gp-remap" type="button">Atur Mapping...</button>
+          </div>
         </div>
       </div>
     </div>
@@ -9378,11 +9586,17 @@ const gamepadView = $('gamepad-view');
 const btnGameMode = $('btn-game-mode');
 const btnExitGame = $('btn-exit-game');
 const gpPresetSelect = $('gp-preset-select');
-const btnSwitchStick = $('btn-switch-dpad-stick');
 const gpDpadEl = $('gp-dpad');
 const gpStickContainer = $('gp-stick-container');
 const gpStickBase = $('gp-stick-base');
 const gpStickThumb = $('gp-stick-thumb');
+
+const gpGearBtn = $('gp-gear-btn');
+const gpSettingsOverlay = $('gamepad-settings-overlay');
+const btnCloseGpSettings = $('btn-close-gp-settings');
+const btnOptStick = $('btn-opt-stick');
+const btnOptDpad = $('btn-opt-dpad');
+const btnOpenGpRemap = $('btn-open-gp-remap');
 
 const btnGpRemap = $('btn-gp-remap');
 const gpRemapModal = $('gamepad-remap-modal');
@@ -9430,7 +9644,7 @@ const GP_PRESETS = {
 let currentGpPreset = 'psx';
 let customGpMapping = null;
 
-let isStickMode = false;
+let isStickMode = localStorage.getItem('digi_gp_stick_mode') !== 'false';
 
 // Active gamepad physical keys currently sent as keydown to PC
 const activeGpKeys = new Set();
@@ -9460,7 +9674,7 @@ function sendGpKeyDown(pcKey) {
   activeGpKeys.add(pcKey);
   send({ type: 'keydown', key: pcKey });
   vibe(18);
-  playClickSound();
+  playClickSound(true);
 }
 
 function sendGpKeyUp(pcKey) {
@@ -9508,28 +9722,87 @@ if (gpPresetSelect) {
   });
 }
 
+// ── Gamepad Settings Overlay Controller (Gear Icon & Dialog) ──
+function toggleGpSettings(show) {
+  if (!gpSettingsOverlay || !gpGearBtn) return;
+  const isCurrentlyOpen = !gpSettingsOverlay.classList.contains('hidden');
+  const willOpen = (show !== undefined) ? show : !isCurrentlyOpen;
+  if (willOpen) {
+    gpSettingsOverlay.classList.remove('hidden');
+    gpGearBtn.classList.add('active');
+  } else {
+    gpSettingsOverlay.classList.add('hidden');
+    gpGearBtn.classList.remove('active');
+  }
+}
+
+if (gpGearBtn) {
+  gpGearBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleGpSettings();
+    vibe(15);
+    playClickSound(true);
+  });
+}
+
+if (btnCloseGpSettings) {
+  btnCloseGpSettings.addEventListener('click', () => {
+    toggleGpSettings(false);
+    vibe(10);
+  });
+}
+
+if (gpSettingsOverlay) {
+  gpSettingsOverlay.addEventListener('click', (e) => {
+    if (e.target === gpSettingsOverlay) {
+      toggleGpSettings(false);
+    }
+  });
+}
+
 // ── D-Pad vs Analog Stick Switcher ──
 function updateStickModeUI() {
   if (isStickMode) {
     if (gpDpadEl) gpDpadEl.classList.add('hidden');
     if (gpStickContainer) gpStickContainer.classList.remove('hidden');
-    if (btnSwitchStick) btnSwitchStick.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg> D-Pad';
+    if (btnOptStick) btnOptStick.classList.add('active');
+    if (btnOptDpad) btnOptDpad.classList.remove('active');
   } else {
     if (gpDpadEl) gpDpadEl.classList.remove('hidden');
     if (gpStickContainer) gpStickContainer.classList.add('hidden');
-    if (btnSwitchStick) btnSwitchStick.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg> Stick';
+    if (btnOptStick) btnOptStick.classList.remove('active');
+    if (btnOptDpad) btnOptDpad.classList.add('active');
   }
 }
 updateStickModeUI();
 updateGamepadLabels();
 
-if (btnSwitchStick) {
-  btnSwitchStick.addEventListener('click', () => {
-    isStickMode = !isStickMode;
-    localStorage.setItem('digi_gp_stick_mode', isStickMode ? 'true' : 'false');
+if (btnOptStick) {
+  btnOptStick.addEventListener('click', () => {
+    isStickMode = true;
+    localStorage.setItem('digi_gp_stick_mode', 'true');
     releaseAllGpKeys();
     updateStickModeUI();
     vibe(15);
+    playClickSound(true);
+  });
+}
+
+if (btnOptDpad) {
+  btnOptDpad.addEventListener('click', () => {
+    isStickMode = false;
+    localStorage.setItem('digi_gp_stick_mode', 'false');
+    releaseAllGpKeys();
+    updateStickModeUI();
+    vibe(15);
+    playClickSound(true);
+  });
+}
+
+if (btnOpenGpRemap) {
+  btnOpenGpRemap.addEventListener('click', () => {
+    toggleGpSettings(false);
+    openRemapModal();
   });
 }
 
@@ -9634,6 +9907,7 @@ function releaseDpad() {
 if (gpDpadEl) {
   gpDpadEl.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    unlockAudio();
     for (const t of e.changedTouches) {
       gpTouches.set(t.identifier, { type: 'dpad' });
       updateDpadFromCoords(t.clientX, t.clientY);
@@ -9742,6 +10016,7 @@ function releaseStick() {
 if (gpStickBase) {
   gpStickBase.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    unlockAudio();
     if (stickTouchId !== null) return;
     const t = e.changedTouches[0];
     stickTouchId = t.identifier;
@@ -9776,13 +10051,16 @@ if (gpStickBase) {
 // ── Attach Multi-Touch Listeners to Gamepad View ──
 if (gamepadView) {
   gamepadView.addEventListener('touchstart', (e) => {
-    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-bar')) return;
+    if (e.target.closest('#gp-gear-btn, #gamepad-settings-overlay, #gamepad-remap-modal')) return;
+    unlockAudio();
+    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;
     e.preventDefault();
     handleButtonTouch(e);
   }, { passive: false });
 
   gamepadView.addEventListener('touchend', (e) => {
-    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-bar')) return;
+    if (e.target.closest('#gp-gear-btn, #gamepad-settings-overlay, #gamepad-remap-modal')) return;
+    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;
     e.preventDefault();
     handleButtonEnd(e);
   }, { passive: false });
@@ -9794,7 +10072,9 @@ if (gamepadView) {
   // Mouse Fallback for Desktop Clicking
   let mouseGpBtn = null;
   gamepadView.addEventListener('mousedown', (e) => {
-    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-bar')) return;
+    if (e.target.closest('#gp-gear-btn, #gamepad-settings-overlay, #gamepad-remap-modal')) return;
+    unlockAudio();
+    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;
     const btn = e.target.closest('.gp-act-btn, .gp-sh-btn, .gp-pill-btn');
     if (btn && btn.dataset.gp) {
       const pcKey = getPcKeyForGp(btn.dataset.gp);
