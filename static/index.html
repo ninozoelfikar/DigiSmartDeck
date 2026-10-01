@@ -6429,6 +6429,98 @@ function playClickSound(force = false) {
   } catch(e) {}
 }
 
+function playMechanicalKey(ctx, time, pitch = 1.0, isEnter = false, vol = 0.8) {
+  if (!ctx) return;
+  try {
+    // 1. Tactile Click (switch leaf snap - triangle sweep)
+    const clickOsc = ctx.createOscillator();
+    const clickGain = ctx.createGain();
+    clickOsc.type = 'triangle';
+    const startF = (isEnter ? 1900 : 2500) * pitch;
+    const endF = (isEnter ? 450 : 600) * pitch;
+    clickOsc.frequency.setValueAtTime(startF, time);
+    clickOsc.frequency.exponentialRampToValueAtTime(Math.max(40, endF), time + 0.014);
+
+    const cVol = (isEnter ? 2.2 : 1.6) * vol;
+    clickGain.gain.setValueAtTime(cVol, time);
+    clickGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.014);
+    clickOsc.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    clickOsc.start(time);
+    clickOsc.stop(time + 0.014);
+
+    // 2. Plastic Clack (switch slider impact - short square chirp)
+    const clackOsc = ctx.createOscillator();
+    const clackGain = ctx.createGain();
+    clackOsc.type = 'square';
+    const clackF = (isEnter ? 750 : 1100) * pitch;
+    clackOsc.frequency.setValueAtTime(clackF, time);
+    clackOsc.frequency.exponentialRampToValueAtTime(180, time + 0.012);
+
+    const clackVol = (isEnter ? 0.8 : 0.5) * vol;
+    clackGain.gain.setValueAtTime(clackVol, time);
+    clackGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.012);
+    clackOsc.connect(clackGain);
+    clackGain.connect(ctx.destination);
+    clackOsc.start(time);
+    clackOsc.stop(time + 0.012);
+
+    // 3. Bottom-Out Thud (plate & desk resonance - sine body)
+    const thudOsc = ctx.createOscillator();
+    const thudGain = ctx.createGain();
+    thudOsc.type = 'sine';
+    const thudF = (isEnter ? 160 : 270) * pitch;
+    const thudEndF = (isEnter ? 60 : 90) * pitch;
+    const thudDur = isEnter ? 0.048 : 0.024;
+    thudOsc.frequency.setValueAtTime(thudF, time);
+    thudOsc.frequency.exponentialRampToValueAtTime(Math.max(25, thudEndF), time + thudDur);
+
+    const tVol = (isEnter ? 2.6 : 1.8) * vol;
+    thudGain.gain.setValueAtTime(tVol, time);
+    thudGain.gain.exponentialRampToValueAtTime(0.0001, time + thudDur);
+    thudOsc.connect(thudGain);
+    thudGain.connect(ctx.destination);
+    thudOsc.start(time);
+    thudOsc.stop(time + thudDur);
+  } catch(e) {}
+}
+
+let splashJinglePlayed = false;
+function playStartupTypingJingle() {
+  if (splashJinglePlayed) return;
+  if (localStorage.getItem('digi_sound') === 'false') return;
+
+  try {
+    unlockAudio();
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+
+    splashJinglePlayed = true;
+    const t0 = audioCtx.currentTime + 0.04;
+    const vol = soundVolume || 0.7;
+
+    // Pattern: 8 fast keystrokes + 1 deliberate final Enter keystroke
+    // Natural human mechanical typing cadence (DigiKeyboard startup jingle)
+    const pattern = [
+      { delay: 0.00, pitch: 0.97 },
+      { delay: 0.07, pitch: 1.05 },
+      { delay: 0.135, pitch: 0.93 },
+      { delay: 0.195, pitch: 1.08 },
+      { delay: 0.265, pitch: 0.99 },
+      { delay: 0.335, pitch: 1.04 },
+      { delay: 0.41, pitch: 0.95 },
+      { delay: 0.495, pitch: 1.07 },
+      { delay: 0.64, pitch: 0.82, isEnter: true }
+    ];
+
+    pattern.forEach(p => {
+      playMechanicalKey(audioCtx, t0 + p.delay, p.pitch, !!p.isEnter, vol);
+    });
+  } catch(e) {}
+}
+
 function vibe(ms = null) {
   if (!haptic || !navigator.vibrate) return;
   const dur = ms !== null ? ms : vibeDuration;
@@ -11126,15 +11218,19 @@ try {
   switchAppMode('standard');
 }
 
-// ── Startup Splash / Flash Screen Controller (0.8s) ──
+// ── Startup Splash / Flash Screen Controller & Mechanical Typing Jingle ──
 const splashScreen = $('splash-screen');
 if (splashScreen) {
+  playStartupTypingJingle();
+  window.addEventListener('touchstart', playStartupTypingJingle, { once: true, passive: true });
+  window.addEventListener('pointerdown', playStartupTypingJingle, { once: true, passive: true });
+
   setTimeout(() => {
     splashScreen.classList.add('fade-out');
     setTimeout(() => {
       if (splashScreen.parentNode) splashScreen.remove();
     }, 280);
-  }, 800);
+  }, 950);
 }
 
 connect();
