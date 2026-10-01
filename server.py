@@ -79,6 +79,9 @@ if sys.platform.startswith('linux'):
                     e.KEY_KP0, e.KEY_KP1, e.KEY_KP2, e.KEY_KP3, e.KEY_KP4,
                     e.KEY_KP5, e.KEY_KP6, e.KEY_KP7, e.KEY_KP8, e.KEY_KP9,
                     e.KEY_KPENTER, e.KEY_KPPLUS, e.KEY_KPMINUS, e.KEY_KPASTERISK, e.KEY_KPSLASH, e.KEY_KPDOT,
+                    # Media & Playback Keys
+                    e.KEY_PLAYPAUSE, e.KEY_NEXTSONG, e.KEY_PREVIOUSSONG,
+                    e.KEY_VOLUMEUP, e.KEY_VOLUMEDOWN, e.KEY_MUTE, e.KEY_STOPCD,
                     # Mouse Buttons
                     e.BTN_LEFT, e.BTN_RIGHT, e.BTN_MIDDLE
                 ],
@@ -110,6 +113,13 @@ if sys.platform.startswith('linux'):
                 'f1': e.KEY_F1, 'f2': e.KEY_F2, 'f3': e.KEY_F3, 'f4': e.KEY_F4,
                 'f5': e.KEY_F5, 'f6': e.KEY_F6, 'f7': e.KEY_F7, 'f8': e.KEY_F8,
                 'f9': e.KEY_F9, 'f10': e.KEY_F10, 'f11': e.KEY_F11, 'f12': e.KEY_F12,
+                'media_play_pause': e.KEY_PLAYPAUSE, 'play_pause': e.KEY_PLAYPAUSE,
+                'media_next': e.KEY_NEXTSONG, 'next_track': e.KEY_NEXTSONG,
+                'media_prev': e.KEY_PREVIOUSSONG, 'media_previous': e.KEY_PREVIOUSSONG, 'prev_track': e.KEY_PREVIOUSSONG,
+                'volume_up': e.KEY_VOLUMEUP, 'media_volume_up': e.KEY_VOLUMEUP,
+                'volume_down': e.KEY_VOLUMEDOWN, 'media_volume_down': e.KEY_VOLUMEDOWN,
+                'volume_mute': e.KEY_MUTE, 'mute': e.KEY_MUTE, 'media_volume_mute': e.KEY_MUTE,
+                'media_stop': e.KEY_STOPCD, 'stop': e.KEY_STOPCD,
             }
 
             CHAR_TO_EVDEV = {
@@ -232,7 +242,21 @@ if Key is not None:
         'num_lock': Key.num_lock,
         'f1': Key.f1, 'f2': Key.f2, 'f3': Key.f3, 'f4': Key.f4,
         'f5': Key.f5, 'f6': Key.f6, 'f7': Key.f7, 'f8': Key.f8,
-        'f9': Key.f9, 'f10': Key.f10, 'f11': Key.f11, 'f12': Key.f12
+        'f9': Key.f9, 'f10': Key.f10, 'f11': Key.f11, 'f12': Key.f12,
+        'media_play_pause': getattr(Key, 'media_play_pause', None),
+        'play_pause': getattr(Key, 'media_play_pause', None),
+        'media_next': getattr(Key, 'media_next', None),
+        'next_track': getattr(Key, 'media_next', None),
+        'media_prev': getattr(Key, 'media_previous', None),
+        'media_previous': getattr(Key, 'media_previous', None),
+        'prev_track': getattr(Key, 'media_previous', None),
+        'volume_up': getattr(Key, 'media_volume_up', None),
+        'media_volume_up': getattr(Key, 'media_volume_up', None),
+        'volume_down': getattr(Key, 'media_volume_down', None),
+        'media_volume_down': getattr(Key, 'media_volume_down', None),
+        'volume_mute': getattr(Key, 'media_volume_mute', None),
+        'mute': getattr(Key, 'media_volume_mute', None),
+        'media_volume_mute': getattr(Key, 'media_volume_mute', None),
     }
 
 
@@ -551,6 +575,77 @@ def simulate_mouse_scroll(dx, dy):
             print(f"[Error] Mouse scroll: {e}")
 
 
+SCREEN_SIZE_CACHE = None
+
+def get_screen_size():
+    """Mengambil resolusi layar host PC (lebar, tinggi)"""
+    global SCREEN_SIZE_CACHE
+    if SCREEN_SIZE_CACHE:
+        return SCREEN_SIZE_CACHE
+    if sys.platform.startswith('linux'):
+        try:
+            import subprocess
+            out = subprocess.check_output(['xrandr'], timeout=1).decode('utf-8', errors='ignore')
+            for line in out.splitlines():
+                if '*' in line:
+                    parts = line.split()
+                    for p in parts:
+                        if 'x' in p and p[0].isdigit():
+                            w, h = p.split('+')[0].split('x')
+                            SCREEN_SIZE_CACHE = (int(w), int(h))
+                            return SCREEN_SIZE_CACHE
+        except Exception:
+            pass
+    try:
+        import tkinter
+        root = tkinter.Tk()
+        w = root.winfo_screenwidth()
+        h = root.winfo_screenheight()
+        root.destroy()
+        if w > 0 and h > 0:
+            SCREEN_SIZE_CACHE = (w, h)
+            return SCREEN_SIZE_CACHE
+    except Exception:
+        pass
+    SCREEN_SIZE_CACHE = (1920, 1080)
+    return SCREEN_SIZE_CACHE
+
+
+def simulate_mouse_abs(rx, ry):
+    """Simulasi posisi kursor absolut dari Mode Canvas (koordinat 0.0 - 1.0)"""
+    sw, sh = get_screen_size()
+    tx = int(round(float(rx) * sw))
+    ty = int(round(float(ry) * sh))
+    tx = max(0, min(sw - 1, tx))
+    ty = max(0, min(sh - 1, ty))
+    if MOUSE_AVAILABLE and mouse_controller:
+        try:
+            mouse_controller.position = (tx, ty)
+        except Exception as e:
+            print(f"[Error mouse abs]: {e}")
+
+
+def set_system_volume(percent):
+    """Menyetel volume master sistem (0 - 100%)"""
+    try:
+        val = max(0, min(100, int(percent)))
+        if sys.platform.startswith('linux'):
+            import subprocess
+            try:
+                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', f"{val}%"], timeout=1, check=False)
+                return
+            except Exception:
+                pass
+            try:
+                subprocess.run(['amixer', '-D', 'pulse', 'sset', 'Master', f"{val}%"], timeout=1, check=False)
+                return
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"[Error set volume]: {e}")
+
+
+
 def get_local_ip_addresses():
     """Mengambil daftar IP lokal komputer di jaringan Wi-Fi/LAN"""
     ip_list = []
@@ -797,6 +892,15 @@ async def websocket_handler(request):
                 elif msg_type == 'mouseup':
                     btn = data.get('button', 'left')
                     simulate_mouse_up(btn)
+
+                elif msg_type == 'mouseabs':
+                    rx = data.get('x', 0)
+                    ry = data.get('y', 0)
+                    simulate_mouse_abs(rx, ry)
+
+                elif msg_type == 'volume_set':
+                    val = data.get('value', 50)
+                    set_system_volume(val)
 
                 elif msg_type == 'mousescroll':
                     dx = data.get('dx', 0)
