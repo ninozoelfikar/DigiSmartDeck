@@ -1028,11 +1028,23 @@ body.is-fullscreen {
 
 .tp-editor-center-deck {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.tp-editor-row {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  flex-wrap: wrap;
-  max-width: 100%;
+  width: 100%;
+}
+.tp-editor-row-slider {
+  justify-content: center;
 }
 
 .tp-editor-item {
@@ -1084,9 +1096,12 @@ body.is-fullscreen {
 }
 
 .tp-editor-slider-item {
-  min-width: 140px;
-  max-width: 220px;
-  flex: 1;
+  width: min(280px, 85vw);
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 .tp-editor-slider {
   flex: 1;
@@ -4343,28 +4358,31 @@ body.is-fullscreen {
         <!-- Real-Time Trackpad Editor Overlay -->
         <div class="tp-editor-overlay hidden" id="tp-editor-overlay">
           <div class="tp-editor-center-deck">
-            <!-- Togel Trackpad: On / Off -->
-            <div class="tp-editor-item">
-              <span class="tp-editor-lbl">Trackpad:</span>
-              <div class="tp-toggle-group">
-                <button type="button" class="tp-toggle-btn active" id="tp-toggle-on">On</button>
-                <button type="button" class="tp-toggle-btn" id="tp-toggle-off">Off</button>
+            <!-- Line 1: Togel Trackpad (On/Off) & Togel Posisi (Atas/Bawah) -->
+            <div class="tp-editor-row">
+              <div class="tp-editor-item">
+                <span class="tp-editor-lbl">Trackpad:</span>
+                <div class="tp-toggle-group">
+                  <button type="button" class="tp-toggle-btn active" id="tp-toggle-on">On</button>
+                  <button type="button" class="tp-toggle-btn" id="tp-toggle-off">Off</button>
+                </div>
+              </div>
+
+              <div class="tp-editor-item">
+                <span class="tp-editor-lbl">Posisi:</span>
+                <div class="tp-toggle-group">
+                  <button type="button" class="tp-toggle-btn active" id="tp-toggle-pos-top">Atas</button>
+                  <button type="button" class="tp-toggle-btn" id="tp-toggle-pos-bottom">Bawah</button>
+                </div>
               </div>
             </div>
 
-            <!-- Togel Posisi: Atas / Bawah -->
-            <div class="tp-editor-item">
-              <span class="tp-editor-lbl">Posisi:</span>
-              <div class="tp-toggle-group">
-                <button type="button" class="tp-toggle-btn active" id="tp-toggle-pos-top">Atas</button>
-                <button type="button" class="tp-toggle-btn" id="tp-toggle-pos-bottom">Bawah</button>
+            <!-- Line 2: Pengaturan Tinggi Trackpad -->
+            <div class="tp-editor-row tp-editor-row-slider">
+              <div class="tp-editor-item tp-editor-slider-item">
+                <span class="tp-editor-lbl">Tinggi: <b id="tp-editor-scale-val">100%</b></span>
+                <input type="range" class="tp-editor-slider custom-slider" id="tp-editor-slider" min="60" max="180" step="5" value="100">
               </div>
-            </div>
-
-            <!-- Pengaturan Tinggi Trackpad -->
-            <div class="tp-editor-item tp-editor-slider-item">
-              <span class="tp-editor-lbl">Tinggi: <b id="tp-editor-scale-val">100%</b></span>
-              <input type="range" class="tp-editor-slider custom-slider" id="tp-editor-slider" min="60" max="180" step="5" value="100">
             </div>
           </div>
         </div>
