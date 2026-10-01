@@ -129,4 +129,29 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kejernihan Garis Logo OS di Pengaturan:**
   - Logo target sistem operasi (Windows, Apple, dan Linux Tux) disetel dengan ketebalan garis tipis (`stroke-width: 0.5px`) sehingga kontur, tekstur, dan bentuk khasnya tajam dan mudah dikenali.
 
+---
+
+## 9. CATATAN CHECKPOINT (v0.9.5 - Real-Time Trackpad Editor & Keyboard Settings Persistence)
+- **Editor Trackpad Real-Time (Mode Keyboard Utama):**
+  - Trackpad utama kini dilengkapi tombol roda gigi (*borderless ghost gear icon*) di sudut kanan atas tanpa kotak latar dan tanpa perubahan warna, berputar 60 derajat saat diklik.
+  - Overlay editor real-time berada tepat di tengah area trackpad dengan layout 2 baris yang lega:
+    - Baris 1: Togel tersegmentasi status trackpad (`Trackpad: [On | Off]`) dan posisi (`Posisi: [Atas | Bawah]`).
+    - Baris 2: Slider pengatur tinggi trackpad secara real-time (`Tinggi: [persentase] [slider]`).
+  - Seluruh setelan tersimpan otomatis di `localStorage` tanpa tombol simpan manual.
+  - Mengklik kembali tombol roda gigi langsung menutup overlay editor secara instan.
+  - Tampilan permukaan trackpad dipercantik dengan watermark halus "Trackpad" di bagian tengah menggantikan teks panduan lama.
+- **Penyimpanan Pengaturan Keyboard Otomatis (Settings Persistence):**
+  - Status toggle panel keyboard utama (Tombol FN, Tombol Navigasi, Numpad, dan Bar Pintasan) kini tersimpan permanen di `localStorage`.
+  - Mode yang aktif tidak kembali ke default saat halaman dimuat ulang atau saat berpindah antar mode kerja.
+- **Penyempurnaan Ergonomi AI Workstation:**
+  - Latar belakang kolom AI Workstation dibuat transparan dengan jarak antar kolom proporsional (8px).
+  - Jarak vertikal tombol mikrofon diselaraskan seimbang: jarak ke batas bar atas sama dengan jarak ke batas kotak transkrip (~38px).
+  - Lebar badge AI WORKSTATION di kolom kiri dibuat 100% sejajar dengan tombol di atasnya.
+- **Sistem Hapus Multi-Tier Backspace (Tap-and-Hold):**
+  - 1x tap & tahan: menghapus karakter per karakter (interval 60ms).
+  - 2x tap & tahan: menghapus per kata (interval 140ms).
+  - 3x tap & tahan: menghapus per 5 kata (interval 240ms).
+  - Ketukan instan tanpa tahan menghapus 1 karakter (1x), 1 kata (2x), atau 5 kata (3x).
+
+
 
