@@ -434,5 +434,35 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Notifikasi HUD toast muncul halus saat mode berpindah otomatis untuk memberi tahu pengguna perpindahan mode kerja.
   - Menghormati aturan mutlak: nol emoji di seluruh kode/UI/log, efek suara mekanikal (`playClickSound()`) dan haptic feedback (`vibe()`) selalu aktif.
 
+---
+
+## 28. CATATAN CHECKPOINT (v0.9.24 - Simplifikasi UI/UX Pengaturan & Placeholder AI Workstation)
+- **Penghapusan Bahasa dari Menu Deck:**
+  - Pilihan bahasa tampilan dihapus dari Floating Control Deck (`#control-deck`), kini dikonsolidasikan secara terpusat dan bersih di dalam Modal Pengaturan (`#settings-modal`).
+- **Simplifikasi Judul & Label Pengaturan (1-2 Kata Kunci):**
+  - Mengubah seluruh judul grup pengaturan menjadi ringkas, profesional, to the point, dan bebas kalimat bertele-tele:
+    - 'Bahasa' (Language)
+    - 'Sistem Operasi' (Operating System)
+    - 'Tema' (Theme)
+    - 'Tipografi' (Typography)
+    - 'Keyboard' (Keyboard)
+    - 'Trackpad' (Trackpad)
+    - 'Penguncian Tombol' (Modifier Lock)
+    - 'Auto Switch' (Auto Switch)
+    - 'Getaran & Audio' (Haptic & Audio)
+  - Tombol aksi dan opsi disederhanakan:
+    - 'Uji Getaran' (Test Vibration)
+    - 'Suara Mekanikal' (Mechanical Sound)
+    - 'Uji Suara' (Test Audio)
+  - Menghapus teks deskripsi panjang dan notice banner yang tidak perlu (`haptic-device-notice`, `st_sound_notice`, subteks Auto Switch).
+- **Simplifikasi Placeholder AI Workstation:**
+  - Menggantikan placeholder teks yang panjang dan kaku menjadi frasa singkat dan elegan:
+    - Bahasa Indonesia: 'Bicara untuk mendikte...'
+    - English: 'Speak to dictate...'
+  - Tersinkronisasi dinamis melalui fungsi `clearTranscriptUI()` dan `renderTranscriptPreview()` berbasis kamus I18N.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji di seluruh kode, antarmuka, kamus terjemahan, dan log.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) tetap aktif sempurna.
+
 
 
