@@ -6237,18 +6237,11 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <!-- Hidden input element for speech synthesis bridge -->
         <input type="hidden" id="ai-voice-input">
 
-        <!-- Audio Dictation Language Bar & Target Toggle -->
-        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
+        <!-- Audio Dictation Language Bar -->
+        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:flex-start;width:100%;margin-bottom:4px;">
           <div class="ai-lang-toggle" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
             <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
             <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
-          </div>
-          <div class="ai-tk-target-cluster">
-            <span class="ai-tk-ctrl-title" data-i18n="ai_target_label">Target:</span>
-            <div class="ai-target-toggle" data-i18n-title="ai_target_title" title="Target: PC / Device">
-              <button type="button" class="ai-btn-target" id="btn-target-pc" data-i18n="ai_target_pc">PC</button>
-              <button type="button" class="ai-btn-target active" id="btn-target-device" data-i18n="ai_target_device">Device</button>
-            </div>
           </div>
         </div>
 

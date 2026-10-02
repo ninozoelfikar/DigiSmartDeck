@@ -536,11 +536,11 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Menggantikan judul panjang "Target Kontrol Keyboard: Host PC atau Input Lokal" menjadi frasa ringkas satu kata "Target:".
   - Diperbarui secara konsisten di kamus terjemahan `I18N.en` dan `I18N.id` (`ai_target_label: "Target:"`).
   - Label tombol diselaraskan menjadi "PC" dan "Device".
-- **Penyatuan Cluster Elemen Target Dekat Toggle PC/Device:**
+- **Penyatuan Cluster Elemen Target Dekat Toggle PC/Device (Khusus Keyboard):**
   - Menghilangkan jarak renggang `space-between` yang memisahkan teks label dan tombol toggle:
     - Wadah `.ai-tk-control-bar` kini menggunakan perataan rapi `justify-content: flex-end`.
-    - Dibuatkan kontainer khusus `.ai-tk-target-cluster` dengan `display: inline-flex; align-items: center; gap: 5px;` sehingga label "Target:" dan tombol toggle `[PC] [Device]` berdampingan langsung.
-  - Menambahkan cluster toggle Target yang sama pada header dikte AI (`.ai-transcript-header`), sehingga pengguna pada layar ponsel tanpa soft keyboard tablet tetap memiliki akses instan ke pengalihan target input.
+    - Dibuatkan kontainer khusus `.ai-tk-target-cluster` dengan `display: inline-flex; align-items: center; gap: 5px;` sehingga label "Target:" dan tombol toggle `[PC] [Device]` berdampingan langsung di atas baris tuts keyboard tablet.
+  - Sektor mikrofon / header transkripsi dikte suara (`.ai-transcript-header`) tetap bersih dan fokus pada pemilihan bahasa (`ID` / `EN`), karena pengiriman teks suara telah ditangani secara mandiri dan intuitif oleh fitur Auto-Kirim serta tombol Kirim ke PC.
 - **Kepatuhan Aturan Mutlak:**
   - Nol emoji / emotikon di seluruh berkas dan UI.
   - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
