@@ -5097,6 +5097,108 @@ body.is-fullscreen {
     background: #2ea043;
   }
 }
+
+/* SMART APP CONTEXT BADGE & TOAST */
+.smart-context-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 139, 253, 0.12);
+  border: 1px solid rgba(56, 139, 253, 0.28);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent, #58a6ff);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+.smart-context-chip:hover {
+  background: rgba(56, 139, 253, 0.2);
+  border-color: rgba(56, 139, 253, 0.45);
+}
+.smart-context-chip .sc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fb950;
+  box-shadow: 0 0 6px #3fb950;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+.smart-context-chip.paused .sc-dot {
+  background: #8b949e;
+  box-shadow: none;
+}
+.smart-context-chip.paused {
+  opacity: 0.7;
+  border-color: rgba(139, 148, 158, 0.25);
+  color: #8b949e;
+}
+#smart-context-app {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.deck-chips-context {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.deck-chips-context .deck-chip {
+  flex: 1;
+  min-width: 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+}
+.smart-context-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(13, 17, 23, 0.94);
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #c9d1d9;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.smart-context-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.smart-context-toast .toast-icon {
+  color: var(--accent, #58a6ff);
+  display: flex;
+  align-items: center;
+}
+.smart-context-toast .toast-bold {
+  color: #f0f6fc;
+  font-weight: 600;
+}
+.smart-context-toast .toast-arrow {
+  color: #8b949e;
+  font-size: 11px;
+}
   </style>
 </head>
 <body>
@@ -5143,6 +5245,10 @@ body.is-fullscreen {
         <span id="badge-txt" style="display:none;"></span>
       </span>
       <span id="ping" class="ping">-- ms</span>
+      <div id="smart-context-chip" class="smart-context-chip" data-i18n-title="smart_context_chip_title" title="Active Host Application">
+        <span class="sc-dot"></span>
+        <span id="smart-context-app">Desktop</span>
+      </div>
     </div>
     <div class="right-controls">
       <!-- Quick Mode Switcher (Beside Menu Sandwich Button) -->
@@ -5204,6 +5310,20 @@ body.is-fullscreen {
         <div class="deck-chips deck-chips-lang">
           <button type="button" class="tbtn deck-chip active" id="btn-ui-lang-en">English</button>
           <button type="button" class="tbtn deck-chip" id="btn-ui-lang-id">Bahasa Indonesia</button>
+        </div>
+      </div>
+
+      <!-- SECTION: SMART APP CONTEXT AUTO-SWITCH -->
+      <div class="deck-section">
+        <div class="deck-section-title">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
+          <span data-i18n="deck_smart_context_title">SMART APP CONTEXT</span>
+        </div>
+        <div class="deck-chips deck-chips-context">
+          <button type="button" class="tbtn on deck-chip" id="btn-toggle-smart-context" data-i18n-title="smart_context_toggle_title" title="Automatically adapt layout to active PC application">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span id="smart-context-toggle-lbl" data-i18n="smart_context_auto_on">Auto-Switch: Active</span>
+          </button>
         </div>
       </div>
 
@@ -7136,6 +7256,14 @@ body.is-fullscreen {
   </div>
 </div>
 
+<!-- SMART CONTEXT TOAST HUD -->
+<div id="smart-context-toast" class="smart-context-toast">
+  <span class="toast-icon">
+    <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+  </span>
+  <span id="smart-context-toast-text"></span>
+</div>
+
 <script>
 (function() {
 'use strict';
@@ -7148,6 +7276,9 @@ let retryCount = 0;
 let reconnectTimer = null;
 let isScanning = false;
 let modLockMode = localStorage.getItem('digi_mod_mode') || 'lock'; // 'lock' (Aktif Terus / Default), 'oneshot' (1x), 'hold' (manual)
+let autoSwitchContextEnabled = localStorage.getItem('digi_smart_context_auto') !== 'false';
+let lastAppContext = null;
+let toastTimeout = null;
 
 // ── Industry Standard Dual-Language Translation System (en / id) ──
 const I18N = {
@@ -7163,6 +7294,18 @@ const I18N = {
     reload_app: "Reload Application",
     menu_button: "Menu",
     conn_status_title: "Connection Status",
+    smart_context_chip_title: "Active Host Application",
+    deck_smart_context_title: "SMART APP CONTEXT",
+    smart_context_toggle_title: "Automatically adapt layout to active PC application",
+    smart_context_auto_on: "Auto-Switch: Active",
+    smart_context_auto_off: "Auto-Switch: Paused",
+    smart_toast_prefix: "PC Host:",
+    smart_mode_ai: "AI Workstation",
+    smart_mode_game: "Game Controller",
+    smart_mode_present: "Presentation Remote",
+    smart_mode_media: "Media Controller",
+    smart_mode_canvas: "Drawing Canvas",
+    smart_mode_standard: "PC Keyboard",
 
     // Control Deck
     menu_title: "Menu",
@@ -7330,6 +7473,18 @@ const I18N = {
     reload_app: "Muat Ulang Halaman",
     menu_button: "Menu",
     conn_status_title: "Status Koneksi",
+    smart_context_chip_title: "Aplikasi PC Aktif",
+    deck_smart_context_title: "KONTEKS APLIKASI CERDAS",
+    smart_context_toggle_title: "Otomatis sesuaikan tata letak dengan aplikasi PC yang aktif",
+    smart_context_auto_on: "Auto-Switch: Aktif",
+    smart_context_auto_off: "Auto-Switch: Dijeda",
+    smart_toast_prefix: "PC Host:",
+    smart_mode_ai: "AI Workstation",
+    smart_mode_game: "Gamepad Konsol",
+    smart_mode_present: "Remote Presentasi",
+    smart_mode_media: "Remote Multimedia",
+    smart_mode_canvas: "Kanvas Gambar",
+    smart_mode_standard: "Keyboard PC",
 
     // Control Deck
     menu_title: "Menu",
@@ -7544,6 +7699,7 @@ function setUiLanguage(lang) {
 
   // Update dynamic modules
   updateModModeUI();
+  if (typeof updateSmartContextUI === 'function') updateSmartContextUI();
   if (typeof updateAiMicUI === 'function') updateAiMicUI();
   if (typeof getCustomAiPrompts === 'function' && typeof applyAiPrompts === 'function') {
     applyAiPrompts(getCustomAiPrompts());
@@ -8063,6 +8219,81 @@ function updateDeckModesUI() {
     }
   }
 }
+
+// ─── SMART APP CONTEXT INTEGRATION ───
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showSmartContextToast(app, mode) {
+  const toast = $('smart-context-toast');
+  const toastText = $('smart-context-toast-text');
+  if (!toast || !toastText) return;
+
+  const modeKey = 'smart_mode_' + mode;
+  const modeLabel = t(modeKey, mode.toUpperCase());
+  const prefix = t('smart_toast_prefix', 'PC Host:');
+
+  toastText.innerHTML = `${prefix} <span class="toast-bold">${escapeHtml(app)}</span> <span class="toast-arrow">-></span> <span class="toast-bold">${escapeHtml(modeLabel)}</span>`;
+  toast.classList.add('show');
+
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2200);
+}
+
+function updateSmartContextUI() {
+  const chip = $('smart-context-chip');
+  const appEl = $('smart-context-app');
+  const btnToggle = $('btn-toggle-smart-context');
+  const lblToggle = $('smart-context-toggle-lbl');
+
+  if (chip) {
+    chip.classList.toggle('paused', !autoSwitchContextEnabled);
+  }
+  if (appEl && lastAppContext && lastAppContext.app) {
+    appEl.textContent = lastAppContext.app;
+  }
+  if (btnToggle) {
+    btnToggle.classList.toggle('on', autoSwitchContextEnabled);
+  }
+  if (lblToggle) {
+    lblToggle.textContent = t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
+  }
+}
+
+function handleAppContextUpdate(data) {
+  if (!data) return;
+  lastAppContext = data;
+
+  const appEl = $('smart-context-app');
+  if (appEl && data.app) {
+    appEl.textContent = data.app;
+  }
+
+  if (!autoSwitchContextEnabled) return;
+
+  const targetMode = data.suggested_mode || 'standard';
+  // Check current active mode
+  let currentActive = 'standard';
+  if (isGameModeActive) currentActive = 'game';
+  else if (isPresentModeActive) currentActive = 'present';
+  else if (isAiModeActive) currentActive = 'ai';
+  else if (isMediaModeActive) currentActive = 'media';
+  else if (isCanvasModeActive) currentActive = 'canvas';
+
+  if (targetMode !== currentActive) {
+    switchAppMode(targetMode);
+    showSmartContextToast(data.app || 'App', targetMode);
+  }
+}
+
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
@@ -8301,6 +8532,8 @@ function connect() {
         } else {
           document.body.classList.add('controller-standby');
         }
+      } else if (d.type === 'app_context') {
+        handleAppContextUpdate(d);
       }
     } catch(err) {}
   };
@@ -13646,6 +13879,35 @@ document.querySelectorAll('.st-lang-btn').forEach(btn => {
     setUiLanguage(btn.dataset.lang);
   });
 });
+
+// Smart App Context Click Handlers
+const btnToggleCtx = $('btn-toggle-smart-context');
+if (btnToggleCtx) {
+  btnToggleCtx.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    autoSwitchContextEnabled = !autoSwitchContextEnabled;
+    localStorage.setItem('digi_smart_context_auto', autoSwitchContextEnabled ? 'true' : 'false');
+    updateSmartContextUI();
+    if (autoSwitchContextEnabled && lastAppContext) {
+      handleAppContextUpdate(lastAppContext);
+    }
+  });
+}
+
+const chipCtx = $('smart-context-chip');
+if (chipCtx) {
+  chipCtx.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    autoSwitchContextEnabled = !autoSwitchContextEnabled;
+    localStorage.setItem('digi_smart_context_auto', autoSwitchContextEnabled ? 'true' : 'false');
+    updateSmartContextUI();
+    if (autoSwitchContextEnabled && lastAppContext) {
+      handleAppContextUpdate(lastAppContext);
+    }
+  });
+}
 
 // Initialize UI language on application load
 setUiLanguage(currentUiLang);

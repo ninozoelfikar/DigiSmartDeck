@@ -409,5 +409,28 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Nol emoji / zero emoticons di seluruh kode, log terminal, antarmuka, dan teks asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan umpan balik getar (`vibe()`) selalu dipertahankan pada seluruh tombol alih bahasa dan elemen dialog.
 
+---
+
+## 27. CATATAN CHECKPOINT (v0.9.23 - Fitur Cerdas 1: Smart App-Context Auto-Switching PC)
+- **Deteksi Jendela Aktif PC Host Secara Real-Time (X11 / Windows):**
+  - Backend `server.py` menjalankan loop asinkron non-blocking (`smart_context_tracker_loop`) setiap 800ms menggunakan `asyncio.to_thread`.
+  - Mengambil parameter sesi X11 (`DISPLAY` dan `XAUTHORITY`) secara otomatis dari `/proc` saat server berjalan di bawah systemd daemon.
+  - Menginspeksi `_NET_ACTIVE_WINDOW`, `WM_CLASS`, dan `_NET_WM_NAME` via `xprop` secara efisien (<30ms, CPU <0.1%).
+- **Klasifikasi Cerdas Mode Kerja Berdasarkan Aplikasi PC:**
+  - `ai` (AI Workstation Mode): Terminal (`gnome-terminal`, `alacritty`, `kitty`, `konsole`, dll.), Editor Kode (`VS Code`, `Cursor`, `Windsurf`, `PyCharm`, `IntelliJ`, `Sublime`, `Neovim`), serta web interface AI (`ChatGPT`, `Claude`, `DeepSeek`).
+  - `present` (Presentation Mode): `Impress`, `PowerPoint`, `Keynote`, PDF viewer (`Evince`, `Okular`), Google Slides, Canva.
+  - `media` (Media Controller Mode): `VLC`, `Spotify`, `MPV`, `Celluloid`, `YouTube`, `Netflix`.
+  - `game` (Gamepad Mode): `Steam`, `RetroArch`, `PCSX2`, `Dolphin`, emulator, dan game runtime.
+  - `canvas` (Drawing Mode): `GIMP`, `Krita`, `Inkscape`, `Photoshop`, `Blender`.
+  - `standard` (PC Keyboard Mode): Desktop background, file manager, peramban web umum, dan aplikasi lainnya.
+- **Penyiar Konteks via WebSocket (`app_context`):**
+  - Setiap perubahan jendela aktif atau mode yang disarankan langsung disiarkan ke semua client yang terhubung (`type: "app_context"`).
+  - Client yang baru terhubung langsung menerima konteks aplikasi aktif saat inisialisasi handshake WebSocket.
+- **Antarmuka Klien Cerdas (Badge Header, Floating Deck & Toast HUD):**
+  - Header atas dilengkapi chip interaktif `#smart-context-chip` yang menampilkan nama aplikasi aktif di PC host secara live.
+  - Floating Control Deck memuat tombol kontrol `#btn-toggle-smart-context` ("Auto-Switch: Active / Paused") yang tersimpan persisten di `localStorage`.
+  - Notifikasi HUD toast muncul halus saat mode berpindah otomatis untuk memberi tahu pengguna perpindahan mode kerja.
+  - Menghormati aturan mutlak: nol emoji di seluruh kode/UI/log, efek suara mekanikal (`playClickSound()`) dan haptic feedback (`vibe()`) selalu aktif.
+
 
 

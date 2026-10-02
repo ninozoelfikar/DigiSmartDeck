@@ -12,6 +12,8 @@ import asyncio
 import time
 import glob
 import shutil
+import re
+import subprocess
 from aiohttp import web
 
 BASE_DIR = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -93,7 +95,7 @@ if sys.platform.startswith('linux'):
             UINPUT_AVAILABLE = True
             KEYBOARD_AVAILABLE = True
             MOUSE_AVAILABLE = True
-            print("[✓] Linux uinput Virtual Hardware Controller aktif.")
+            print("[OK] Linux uinput Virtual Hardware Controller aktif.")
             print("    (Mendukung Layar Login Ubuntu GDM, Lock Screen, Wayland & X11)")
 
             KEY_NAME_TO_EVDEV = {
@@ -170,7 +172,7 @@ try:
     keyboard_controller = Controller()
     Key = PynputKey
     KEYBOARD_AVAILABLE = True
-    print("[✓] pynput keyboard controller siap.")
+    print("[OK] pynput keyboard controller siap.")
 except Exception as e:
     if not UINPUT_AVAILABLE:
         print(f"[!] Warning: pynput controller tidak dapat mengaitkan display saat ini: {e}")
@@ -181,7 +183,7 @@ try:
     mouse_controller = MouseController()
     MouseButton = PynputMouseButton
     MOUSE_AVAILABLE = True
-    print("[✓] pynput mouse/trackpad controller siap.")
+    print("[OK] pynput mouse/trackpad controller siap.")
 except Exception as e:
     if not UINPUT_AVAILABLE:
         print(f"[!] Warning: pynput mouse controller gagal: {e}")
@@ -711,6 +713,246 @@ def get_host_os():
     return 'win'
 
 
+# --- Smart App Context Tracking ---
+CACHED_X11_ENV = None
+CURRENT_APP_CONTEXT = {
+    'app': 'Desktop',
+    'title': '',
+    'suggested_mode': 'standard',
+    'class_name': '',
+    'win_id': ''
+}
+
+def get_x11_env():
+    global CACHED_X11_ENV
+    if CACHED_X11_ENV is not None:
+        return CACHED_X11_ENV
+
+    env = dict(os.environ)
+    if 'DISPLAY' not in env:
+        try:
+            for pid in os.listdir('/proc'):
+                if not pid.isdigit():
+                    continue
+                try:
+                    with open(f'/proc/{pid}/environ', 'rb') as f:
+                        data = f.read()
+                    if b'DISPLAY=' in data and b'XAUTHORITY=' in data:
+                        parts = data.split(b'\x00')
+                        d = dict(p.split(b'=', 1) for p in parts if b'=' in p)
+                        env['DISPLAY'] = d.get(b'DISPLAY', b':1').decode('utf-8', 'ignore')
+                        env['XAUTHORITY'] = d.get(b'XAUTHORITY', b'').decode('utf-8', 'ignore')
+                        break
+                except Exception:
+                    continue
+        except Exception:
+            pass
+    if 'DISPLAY' not in env:
+        env['DISPLAY'] = ':1'
+    if 'XAUTHORITY' not in env or not env['XAUTHORITY']:
+        env['XAUTHORITY'] = '/run/user/1000/gdm/Xauthority'
+
+    CACHED_X11_ENV = env
+    return env
+
+def classify_app_context(wm_classes, title):
+    wm_str = ' '.join(wm_classes).lower()
+    t_lower = title.lower()
+
+    # 1. AI Workstation / Coding / Terminal
+    ai_apps = [
+        'code', 'vscode', 'cursor', 'windsurf', 'pycharm', 'intellij', 'sublime',
+        'neovim', 'nvim', 'emacs', 'kate', 'gedit', 'atom',
+        'gnome-terminal', 'terminal', 'alacritty', 'kitty', 'konsole', 'xterm',
+        'wezterm', 'terminator', 'tilix', 'xfce4-terminal', 'lxterminal'
+    ]
+    if any(app in wm_str for app in ai_apps) or any(k in t_lower for k in ['chatgpt', 'claude.ai', 'deepseek', 'ollama']):
+        if 'code' in wm_str or 'vscode' in wm_str:
+            friendly = 'VS Code'
+        elif 'cursor' in wm_str:
+            friendly = 'Cursor'
+        elif 'windsurf' in wm_str:
+            friendly = 'Windsurf'
+        elif 'pycharm' in wm_str:
+            friendly = 'PyCharm'
+        elif 'intellij' in wm_str:
+            friendly = 'IntelliJ'
+        elif 'terminal' in wm_str or 'alacritty' in wm_str or 'kitty' in wm_str or 'konsole' in wm_str:
+            friendly = 'Terminal'
+        elif wm_classes:
+            friendly = wm_classes[-1].replace('-', ' ').title()
+        else:
+            friendly = 'AI Workstation'
+        return 'ai', friendly
+
+    # 2. Presentation
+    present_apps = ['impress', 'powerpnt', 'powerpoint', 'keynote', 'wps', 'wpp', 'evince', 'okular', 'acroread', 'xreader', 'mupdf', 'atril', 'zathura']
+    if any(app in wm_str for app in present_apps) or any(k in t_lower for k in ['slides.google.com', 'canva.com', 'pitch.com', 'presentation']):
+        if 'impress' in wm_str:
+            friendly = 'Impress Slides'
+        elif 'evince' in wm_str or 'okular' in wm_str or 'pdf' in t_lower:
+            friendly = 'Document Viewer'
+        else:
+            friendly = 'Presentation'
+        return 'present', friendly
+
+    # 3. Media
+    media_apps = ['vlc', 'mpv', 'celluloid', 'totem', 'spotify', 'rhythmbox', 'clementine', 'audacious', 'kodi', 'plex']
+    if any(app in wm_str for app in media_apps) or any(k in t_lower for k in ['youtube.com', 'netflix.com', 'spotify.com', 'twitch.tv']):
+        if 'vlc' in wm_str:
+            friendly = 'VLC Media Player'
+        elif 'spotify' in wm_str:
+            friendly = 'Spotify'
+        elif 'mpv' in wm_str:
+            friendly = 'MPV Player'
+        elif 'youtube' in t_lower:
+            friendly = 'YouTube'
+        elif 'netflix' in t_lower:
+            friendly = 'Netflix'
+        else:
+            friendly = 'Media Player'
+        return 'media', friendly
+
+    # 4. Gamepad / Emulators
+    game_apps = ['steam', 'retroarch', 'pcsx2', 'dolphin-emu', 'dolphin', 'rpcs3', 'yuzu', 'ryujinx', 'lutris', 'heroic', 'wine', 'ppsspp', 'duckstation']
+    if any(app in wm_str for app in game_apps):
+        if 'steam' in wm_str:
+            friendly = 'Steam'
+        elif 'retroarch' in wm_str:
+            friendly = 'RetroArch'
+        else:
+            friendly = 'Game / Emulator'
+        return 'game', friendly
+
+    # 5. Drawing / Graphics
+    canvas_apps = ['gimp', 'krita', 'inkscape', 'blender', 'photoshop', 'illustrator', 'figma']
+    if any(app in wm_str for app in canvas_apps):
+        friendly = wm_classes[-1].capitalize() if wm_classes else 'Canvas'
+        return 'canvas', friendly
+
+    # 6. Standard / Browser / General
+    if 'chrome' in wm_str:
+        friendly = 'Google Chrome'
+    elif 'firefox' in wm_str:
+        friendly = 'Firefox'
+    elif 'nautilus' in wm_str or 'files' in wm_str:
+        friendly = 'File Manager'
+    elif wm_classes:
+        friendly = wm_classes[-1].replace('-', ' ').title()
+    else:
+        friendly = 'Desktop'
+
+    return 'standard', friendly
+
+def get_active_window_info():
+    """Mendeteksi jendela aktif di PC host (Linux X11 dan fallback Windows)."""
+    global CACHED_X11_ENV
+    if sys.platform.startswith('linux'):
+        try:
+            env = get_x11_env()
+            res = subprocess.run(
+                ['xprop', '-root', '_NET_ACTIVE_WINDOW'],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.6
+            )
+            if res.returncode != 0:
+                CACHED_X11_ENV = None
+                return None
+
+            m = re.search(r'#\s*(0x[0-9a-fA-F]+)', res.stdout)
+            if not m or m.group(1) == '0x0':
+                return {
+                    'app': 'Desktop',
+                    'title': '',
+                    'suggested_mode': 'standard',
+                    'class_name': '',
+                    'win_id': '0x0'
+                }
+
+            win_id = m.group(1)
+            res_info = subprocess.run(
+                ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME'],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.6
+            )
+            if res_info.returncode != 0:
+                return {
+                    'app': 'Desktop',
+                    'title': '',
+                    'suggested_mode': 'standard',
+                    'class_name': '',
+                    'win_id': win_id
+                }
+
+            out = res_info.stdout
+            wm_classes = re.findall(r'"([^"]*)"', out.split('WM_CLASS(STRING) =')[-1].split('\n')[0]) if 'WM_CLASS' in out else []
+            title_match = re.search(r'(?:_NET_WM_NAME\(UTF8_STRING\) = "([^"]*)"|WM_NAME\(STRING\) = "([^"]*)")', out)
+            title = ''
+            if title_match:
+                title = title_match.group(1) or title_match.group(2) or ''
+
+            suggested_mode, friendly_name = classify_app_context(wm_classes, title)
+            return {
+                'app': friendly_name,
+                'title': title,
+                'suggested_mode': suggested_mode,
+                'class_name': wm_classes[0] if wm_classes else '',
+                'win_id': win_id
+            }
+        except Exception:
+            return None
+    elif sys.platform == 'win32':
+        try:
+            import win32gui
+            hwnd = win32gui.GetForegroundWindow()
+            if not hwnd:
+                return {'app': 'Desktop', 'title': '', 'suggested_mode': 'standard', 'class_name': '', 'win_id': '0'}
+            title = win32gui.GetWindowText(hwnd) or ''
+            class_name = win32gui.GetClassName(hwnd) or ''
+            mode, friendly = classify_app_context([class_name], title)
+            return {'app': friendly, 'title': title, 'suggested_mode': mode, 'class_name': class_name, 'win_id': str(hwnd)}
+        except Exception:
+            return None
+
+    return None
+
+async def smart_context_tracker_loop():
+    """Background task memeriksa jendela aktif PC setiap 800ms dan memancarkan perubahan ke client."""
+    global CURRENT_APP_CONTEXT
+    while True:
+        try:
+            info = await asyncio.to_thread(get_active_window_info)
+            if info:
+                changed = (
+                    info['suggested_mode'] != CURRENT_APP_CONTEXT['suggested_mode'] or
+                    info['app'] != CURRENT_APP_CONTEXT['app'] or
+                    info['win_id'] != CURRENT_APP_CONTEXT.get('win_id')
+                )
+                if changed:
+                    CURRENT_APP_CONTEXT = info
+                    payload = json.dumps({
+                        'type': 'app_context',
+                        'app': info['app'],
+                        'title': info['title'],
+                        'suggested_mode': info['suggested_mode'],
+                        'class_name': info['class_name']
+                    })
+                    for client in list(CONNECTED_CLIENTS):
+                        try:
+                            await client.send_str(payload)
+                        except Exception:
+                            pass
+        except asyncio.CancelledError:
+            break
+        except Exception:
+            pass
+        await asyncio.sleep(0.8)
+
+
 # --- WebSocket Handler ---
 CONNECTED_CLIENTS = set()
 
@@ -741,7 +983,7 @@ async def broadcast_controller_status():
             await client.send_str(json.dumps({
                 'type': 'controller_status',
                 'role': 'active',
-                'message': '🟢 Perangkat terhubung sebagai Pengendali PC.'
+                'message': 'Perangkat terhubung sebagai Pengendali PC.'
             }))
         except Exception:
             pass
@@ -775,6 +1017,13 @@ async def websocket_handler(request):
             'type': 'controller_status',
             'role': 'active',
             'message': 'Perangkat terhubung sebagai Pengendali PC.'
+        }))
+        await ws.send_str(json.dumps({
+            'type': 'app_context',
+            'app': CURRENT_APP_CONTEXT['app'],
+            'title': CURRENT_APP_CONTEXT['title'],
+            'suggested_mode': CURRENT_APP_CONTEXT['suggested_mode'],
+            'class_name': CURRENT_APP_CONTEXT['class_name']
         }))
     except Exception:
         pass
@@ -1110,6 +1359,8 @@ if __name__ == '__main__':
             await site.start()
         print(f"[OK] Server aktif di port {', '.join(str(p) for p in ports)}.")
 
+        context_task = asyncio.create_task(smart_context_tracker_loop())
+
         stop_event = asyncio.Event()
         loop = asyncio.get_running_loop()
         import signal
@@ -1121,6 +1372,11 @@ if __name__ == '__main__':
 
         await stop_event.wait()
         print("\n[*] Mematikan server secara aman...")
+        context_task.cancel()
+        try:
+            await context_task
+        except asyncio.CancelledError:
+            pass
         await runner.cleanup()
 
     try:
