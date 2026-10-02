@@ -429,6 +429,8 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Antarmuka Klien Cerdas (Badge Header, Floating Deck & Toast HUD):**
   - Header atas dilengkapi chip interaktif `#smart-context-chip` yang menampilkan nama aplikasi aktif di PC host secara live.
   - Floating Control Deck memuat tombol kontrol `#btn-toggle-smart-context` ("Auto-Switch: Active / Paused") yang tersimpan persisten di `localStorage`.
+  - Modal Pengaturan (`#settings-modal`) dilengkapi opsi dedicated 'Smart App-Context Auto-Switching' dengan tombol alih 'Enabled' (`#btn-st-smart-on`) dan 'Disabled' (`#btn-st-smart-off`) untuk konfigurasi preferensi pengguna yang jelas dan mudah diakses.
+  - Seluruh status indikator tersinkronisasi dua arah secara real-time antara badge header, menu deck, dan modal pengaturan.
   - Notifikasi HUD toast muncul halus saat mode berpindah otomatis untuk memberi tahu pengguna perpindahan mode kerja.
   - Menghormati aturan mutlak: nol emoji di seluruh kode/UI/log, efek suara mekanikal (`playClickSound()`) dan haptic feedback (`vibe()`) selalu aktif.
 

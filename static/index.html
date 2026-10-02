@@ -6805,6 +6805,28 @@ body.is-fullscreen {
           </div>
         </div>
 
+        <!-- SMART APP CONTEXT AUTO-SWITCH SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
+            <span data-i18n="st_smart_context_title">Smart App-Context Auto-Switching</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_smart_context_sub">Automatically adapt deck layout based on active window on host PC (Terminal/VS Code -> AI, Media -> Controller, Slides -> Presenter, Steam -> Gamepad):</div>
+          <div class="size-presets" id="smart-context-presets">
+            <button type="button" class="size-preset-btn st-smart-btn active" id="btn-st-smart-on" data-smart="on">
+              <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:#3fb950;"><polyline points="20 6 9 17 4 12"/></svg>
+              <span data-i18n="st_smart_context_on">Enabled</span>
+            </button>
+            <button type="button" class="size-preset-btn st-smart-btn" id="btn-st-smart-off" data-smart="off">
+              <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:var(--text-dim);"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg>
+              <span data-i18n="st_smart_context_off">Disabled</span>
+            </button>
+          </div>
+          <div id="st-smart-context-desc" style="font-size:11px;color:var(--text);margin-top:6px;line-height:1.4;" data-i18n="st_smart_context_desc">
+            When enabled, DigiKeyboard continuously detects your focused PC application in real time and automatically opens the matching layout.
+          </div>
+        </div>
+
         <!-- HAPTIC / VIBRATION SECTION -->
         <div class="setting-group">
           <div class="setting-title">
@@ -7409,6 +7431,11 @@ const I18N = {
     st_tp_speed: "Pointer Sensitivity:",
     st_mod_lock_title: "Modifier Key Behavior (Shift / Ctrl / Alt / Win)",
     st_mod_lock_sub: "Select how modifier keys trigger during interaction:",
+    st_smart_context_title: "Smart App-Context Auto-Switching",
+    st_smart_context_sub: "Automatically adapt deck layout based on active window on host PC (Terminal/VS Code -> AI, Media -> Controller, Slides -> Presenter, Steam -> Gamepad):",
+    st_smart_context_on: "Enabled",
+    st_smart_context_off: "Disabled",
+    st_smart_context_desc: "When enabled, DigiKeyboard continuously detects your focused PC application in real time and automatically opens the matching layout.",
     st_haptic_title: "Haptic & Audio Feedback",
     st_haptic_enable: "Enable tactile haptic vibration on keypress and trackpad taps",
     st_haptic_intensity: "Haptic Pulse Duration:",
@@ -7588,6 +7615,11 @@ const I18N = {
     st_tp_speed: "Sensitivitas Kursor:",
     st_mod_lock_title: "Penguncian Tombol Modifier (Shift / Ctrl / Alt / Win)",
     st_mod_lock_sub: "Pilih bagaimana tombol Shift, Ctrl, Alt & Win beroperasi saat ditekan:",
+    st_smart_context_title: "Auto-Switch Konteks Aplikasi Cerdas",
+    st_smart_context_sub: "Otomatis menyesuaikan tata letak deck dengan jendela aktif di PC host (Terminal/VS Code -> AI, Media -> Controller, Slides -> Presenter, Steam -> Gamepad):",
+    st_smart_context_on: "Aktif (Otomatis)",
+    st_smart_context_off: "Nonaktif (Manual)",
+    st_smart_context_desc: "Saat aktif, DigiKeyboard mendeteksi aplikasi PC yang sedang fokus secara real-time dan otomatis membuka tata letak yang sesuai.",
     st_haptic_title: "Umpan Balik Getaran & Audio",
     st_haptic_enable: "Getar saat tombol keyboard & trackpad berhasil diklik",
     st_haptic_intensity: "Intensitas / Durasi Getaran:",
@@ -8253,9 +8285,12 @@ function updateSmartContextUI() {
   const appEl = $('smart-context-app');
   const btnToggle = $('btn-toggle-smart-context');
   const lblToggle = $('smart-context-toggle-lbl');
+  const btnStOn = $('btn-st-smart-on');
+  const btnStOff = $('btn-st-smart-off');
 
   if (chip) {
     chip.classList.toggle('paused', !autoSwitchContextEnabled);
+    chip.title = (lastAppContext && lastAppContext.app ? lastAppContext.app + ' - ' : '') + t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
   }
   if (appEl && lastAppContext && lastAppContext.app) {
     appEl.textContent = lastAppContext.app;
@@ -8265,6 +8300,12 @@ function updateSmartContextUI() {
   }
   if (lblToggle) {
     lblToggle.textContent = t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
+  }
+  if (btnStOn) {
+    btnStOn.classList.toggle('active', autoSwitchContextEnabled);
+  }
+  if (btnStOff) {
+    btnStOff.classList.toggle('active', !autoSwitchContextEnabled);
   }
 }
 
@@ -13906,6 +13947,31 @@ if (chipCtx) {
     if (autoSwitchContextEnabled && lastAppContext) {
       handleAppContextUpdate(lastAppContext);
     }
+  });
+}
+
+const btnStSmartOn = $('btn-st-smart-on');
+if (btnStSmartOn) {
+  btnStSmartOn.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    autoSwitchContextEnabled = true;
+    localStorage.setItem('digi_smart_context_auto', 'true');
+    updateSmartContextUI();
+    if (lastAppContext) {
+      handleAppContextUpdate(lastAppContext);
+    }
+  });
+}
+
+const btnStSmartOff = $('btn-st-smart-off');
+if (btnStSmartOff) {
+  btnStSmartOff.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    autoSwitchContextEnabled = false;
+    localStorage.setItem('digi_smart_context_auto', 'false');
+    updateSmartContextUI();
   });
 }
 
