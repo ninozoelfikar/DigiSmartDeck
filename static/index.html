@@ -240,6 +240,7 @@ html, body {
   flex-shrink: 0;
   z-index: 10;
   gap: 8px;
+  position: relative;
 }
 @media (max-height: 480px) {
   .top-bar {
@@ -315,6 +316,28 @@ html, body {
   color: #f85149;
 }
 .ping { font-size: 10px; color: var(--text-dim); font-family: monospace; }
+.center-controls {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  z-index: 11;
+  max-width: calc(100% - 240px);
+}
+@media (max-width: 500px) {
+  .center-controls {
+    max-width: 140px;
+  }
+}
+@media (max-width: 380px) {
+  .center-controls {
+    display: none;
+  }
+}
 .right-controls { display: flex; gap: 5px; align-items: center; }
 .left-controls { display: flex; gap: 6px; align-items: center; }
 .tbtn {
@@ -5144,11 +5167,27 @@ body.is-fullscreen {
   background: #3fb950;
   box-shadow: 0 0 6px #3fb950;
   flex-shrink: 0;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+@keyframes sc-dot-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 4px #3fb950, 0 0 8px rgba(63, 185, 80, 0.45);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.18);
+    box-shadow: 0 0 8px #3fb950, 0 0 18px rgba(63, 185, 80, 0.85);
+    opacity: 1;
+  }
+}
+.smart-context-chip:not(.paused) .sc-dot {
+  animation: sc-dot-glow 2.4s ease-in-out infinite;
 }
 .smart-context-chip.paused .sc-dot {
   background: #8b949e;
   box-shadow: none;
+  animation: none;
 }
 .smart-context-chip.paused {
   opacity: 0.7;
@@ -5245,11 +5284,15 @@ body.is-fullscreen {
         <span id="badge-txt" style="display:none;"></span>
       </span>
       <span id="ping" class="ping">-- ms</span>
+    </div>
+
+    <div class="center-controls">
       <div id="smart-context-chip" class="smart-context-chip" data-i18n-title="smart_context_chip_title" title="Active Host Application">
         <span class="sc-dot"></span>
         <span id="smart-context-app">Desktop</span>
       </div>
     </div>
+
     <div class="right-controls">
       <!-- Quick Mode Switcher (Beside Menu Sandwich Button) -->
       <div class="header-modes" id="header-modes">
@@ -7309,8 +7352,8 @@ const I18N = {
     deck_utils_title: "SYSTEM & UTILITIES",
     util_trackpad: "Trackpad",
     util_trackpad_title: "Toggle Laptop Trackpad Deck",
-    util_modlock: "Mod Lock",
-    util_modlock_title: "Modifier Lock: Sticky Key Mode",
+    util_modlock: "Sticky",
+    util_modlock_title: "Modifier Lock: Sticky Key Mode (Shift, Ctrl, Alt)",
     util_smart_switch: "Smart Switch",
     util_smart_switch_title: "Smart App-Context Auto-Switching",
     util_haptic: "Haptics",
@@ -7526,8 +7569,8 @@ const I18N = {
     deck_utils_title: "SISTEM & UTILITAS",
     util_trackpad: "Trackpad",
     util_trackpad_title: "Alihkan Dek Trackpad Laptop",
-    util_modlock: "Kunci Mod",
-    util_modlock_title: "Kunci Modifier: Mode Kunci Tuts",
+    util_modlock: "Aktif Terus",
+    util_modlock_title: "Kunci Modifier: Mode Kunci Tuts (Shift, Ctrl, Alt)",
     util_smart_switch: "Smart Switch",
     util_smart_switch_title: "Auto-Switch Konteks Aplikasi Cerdas",
     util_haptic: "Getaran",
@@ -7789,17 +7832,26 @@ function updateModModeUI() {
   const btn = $('btn-latch');
   if (btn) {
     if (modLockMode === 'lock') {
-      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>' + (currentUiLang === 'id' ? 'Kunci Mod' : 'Mod Lock') + '</span>';
+      const label = currentUiLang === 'id' ? 'Aktif Terus' : 'Sticky';
+      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>' + label + '</span>';
       btn.classList.add('on');
-      btn.title = currentUiLang === 'id' ? 'Kunci Modifier: Aktif Terus (Shift/Ctrl/Alt tetap aktif sampai ditekan lagi)' : 'Modifier Lock: Sticky Mode (Shift/Ctrl/Alt remain active until pressed again)';
+      btn.title = currentUiLang === 'id'
+        ? 'Kunci Modifier: Aktif Terus (Shift, Ctrl, Alt tetap aktif sampai ditekan lagi)'
+        : 'Modifier Lock: Sticky Mode (Shift, Ctrl, Alt remain active until pressed again)';
     } else if (modLockMode === 'oneshot') {
-      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>1-Shot</span>';
+      const label = currentUiLang === 'id' ? 'Kunci 1x' : '1-Shot';
+      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>' + label + '</span>';
       btn.classList.add('on');
-      btn.title = currentUiLang === 'id' ? 'Kunci Modifier: 1-Shot (Shift/Ctrl/Alt lepas otomatis setelah 1 tombol)' : 'Modifier Lock: 1-Shot (Shift/Ctrl/Alt automatically release after 1 keypress)';
+      btn.title = currentUiLang === 'id'
+        ? 'Kunci Modifier: Kunci 1x (Shift, Ctrl, Alt lepas otomatis setelah 1 ketukan)'
+        : 'Modifier Lock: 1-Shot (Shift, Ctrl, Alt automatically release after 1 keypress)';
     } else {
-      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg> <span>Hold</span>';
+      const label = currentUiLang === 'id' ? 'Tahan' : 'Hold';
+      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg> <span>' + label + '</span>';
       btn.classList.remove('on');
-      btn.title = currentUiLang === 'id' ? 'Kunci Modifier: Manual (Hanya aktif selama jari menahan tombol)' : 'Modifier Lock: Manual Hold (Active only while holding key)';
+      btn.title = currentUiLang === 'id'
+        ? 'Kunci Modifier: Tahan Manual (Shift, Ctrl, Alt aktif hanya selama jari menahan tombol)'
+        : 'Modifier Lock: Manual Hold (Shift, Ctrl, Alt active only while holding key)';
     }
   }
 
@@ -7811,16 +7863,16 @@ function updateModModeUI() {
   if (descEl) {
     if (modLockMode === 'lock') {
       descEl.innerHTML = currentUiLang === 'id'
-        ? '<b>Aktif Terus:</b> Tombol modifier tetap aktif sampai ditekan kembali.'
-        : '<b>Sticky Lock:</b> Modifiers remain engaged until toggled off.';
+        ? '<b>Aktif Terus:</b> Tombol modifier (Shift, Ctrl, Alt) tetap aktif sampai ditekan kembali.'
+        : '<b>Sticky Lock:</b> Modifier keys (Shift, Ctrl, Alt) remain engaged until toggled off.';
     } else if (modLockMode === 'oneshot') {
       descEl.innerHTML = currentUiLang === 'id'
-        ? '<b>Kunci Sekali:</b> Tombol modifier aktif untuk 1 ketukan berikutnya.'
-        : '<b>One-Shot:</b> Modifiers engage for the next single keypress.';
+        ? '<b>Kunci 1x:</b> Tombol modifier (Shift, Ctrl, Alt) aktif untuk 1 ketukan berikutnya.'
+        : '<b>One-Shot:</b> Modifier keys (Shift, Ctrl, Alt) engage for the next single keypress.';
     } else {
       descEl.innerHTML = currentUiLang === 'id'
-        ? '<b>Tahan Manual:</b> Tombol modifier aktif hanya selama jari menekan layar.'
-        : '<b>Manual Hold:</b> Modifiers remain active only while held.';
+        ? '<b>Tahan Manual:</b> Tombol modifier (Shift, Ctrl, Alt) aktif hanya selama jari menekan layar.'
+        : '<b>Manual Hold:</b> Modifier keys (Shift, Ctrl, Alt) remain active only while held.';
     }
   }
 }

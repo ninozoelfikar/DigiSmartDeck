@@ -490,6 +490,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Nol emoji / emotikon di seluruh berkas dan UI.
   - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
 
+---
 
-
-
+## 30. CATATAN CHECKPOINT (v0.9.26 - Indikator Aplikasi Aktif Tengah Bar, Soft Green Dot Glow, & Lokalisasi Total Kunci Modifier)
+- **Penempatan Tengah Bar untuk Indikator Aplikasi Aktif PC:**
+  - Memindahkan chip aplikasi aktif (`#smart-context-chip`) dari `.left-controls` ke wadah khusus `.center-controls` yang diposisikan secara absolut tepat di tengah bar (`position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);`).
+  - Dilengkapi kontrol responsif (`max-width: calc(100% - 240px);` dan `display: none` pada layar super sempit di bawah 380px) agar tidak bertabrakan dengan kontrol sisi kiri maupun tombol mode sisi kanan.
+- **Pendaran Halus Titik Hijau Indikator (Anti-Flicker):**
+  - Mengimplementasikan animasi pendaran halus (`@keyframes sc-dot-glow`) pada titik hijau aktif (`.smart-context-chip:not(.paused) .sc-dot`):
+    - Siklus sinusoidal 2.4s `ease-in-out` bernapas lembut (*breathing glow*).
+    - Memancarkan cahaya hijau dengan `box-shadow` bertingkat (dari 4px/8px hingga 8px/18px) dan pembesaran halus (`scale(1)` ke `scale(1.18)`).
+    - Menghindari flicker atau kedipan kasar dengan variasi `opacity` terbatas (0.85 hingga 1.0).
+- **Lokalisasi Bahasa Indonesia untuk Menu Kunci Modifier (Shift, Ctrl, Alt):**
+  - Mengeliminasi teks bahasa Inggris tersisa ("Hold", "1-Shot", "Sticky") saat berpindah mode di Floating Control Deck maupun Modal Pengaturan:
+    - Mode Lock: Tombol menampilkan "Aktif Terus" (ID) / "Sticky" (EN).
+    - Mode One-Shot: Tombol menampilkan "Kunci 1x" (ID) / "1-Shot" (EN).
+    - Mode Hold: Tombol menampilkan "Tahan" (ID) / "Hold" (EN).
+  - Memperbarui tooltip dan deskripsi panduan di modal pengaturan dengan penyebutan tombol modifier `(Shift, Ctrl, Alt)` secara eksplisit dan konsisten.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan UI.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
