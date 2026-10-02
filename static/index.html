@@ -12250,14 +12250,10 @@ function updateAiMicUI(forceReset = false) {
 
 function commitCurrentSession() {
   if (currentSessionFinal) {
-    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+    aiAccumulatedText = [aiAccumulatedText, currentSessionFinal].filter(Boolean).join(' ').trim();
     currentSessionFinal = '';
   }
-  if (currentSessionInterim) {
-    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionInterim);
-    currentSessionInterim = '';
-  }
-  aiAccumulatedText = deduplicateRepeatedPhrases(aiAccumulatedText);
+  currentSessionInterim = ''; // Interim tidak pernah di-commit agar tidak menumpuk tebakan salah
   aiCursorPos = aiAccumulatedText.length;
 }
 
@@ -12350,33 +12346,38 @@ function startAiSpeechSession() {
     };
 
     recognition.onresult = (event) => {
-      let sessionFinal = '';
-      let sessionInterim = '';
+      let finalPieces = [];
+      let interimPieces = [];
 
       for (let i = 0; i < event.results.length; ++i) {
         const item = event.results[i];
         const piece = item[0].transcript.trim();
         if (!piece) continue;
         if (item.isFinal) {
-          sessionFinal = sessionFinal ? mergeTranscripts(sessionFinal, piece) : piece;
+          finalPieces.push(piece);
         } else {
-          sessionInterim = sessionInterim ? mergeTranscripts(sessionInterim, piece) : piece;
+          interimPieces.push(piece);
         }
       }
 
-      currentSessionFinal = sessionFinal;
-      currentSessionInterim = sessionInterim;
-      const confirmedSoFar = mergeTranscripts(aiAccumulatedText, sessionFinal);
+      currentSessionFinal = finalPieces.join(' ');
+      currentSessionInterim = interimPieces.join(' ');
 
-      if (aiAutoSend && confirmedSoFar.length > lastSentLength) {
-        const diff = confirmedSoFar.slice(lastSentLength).trim();
-        if (diff) {
-          sendAiText(diff + ' ');
-          lastSentLength = confirmedSoFar.length;
+      // Teks utuh live di layar
+      const liveText = [aiAccumulatedText, currentSessionFinal, currentSessionInterim].filter(Boolean).join(' ');
+
+      // Auto-Kirim: HANYA kirim teks yang sudah FINAL
+      if (aiAutoSend) {
+        const confirmedSoFar = [aiAccumulatedText, currentSessionFinal].filter(Boolean).join(' ');
+        if (confirmedSoFar.length > lastSentLength) {
+          const diff = confirmedSoFar.slice(lastSentLength).trim();
+          if (diff) {
+            sendAiText(diff + ' ');
+            lastSentLength = confirmedSoFar.length;
+          }
         }
       }
 
-      const liveText = deduplicateRepeatedPhrases(mergeTranscripts(confirmedSoFar, sessionInterim));
       aiCursorPos = liveText.length;
       renderTranscriptPreview(liveText);
     };
