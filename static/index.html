@@ -3281,10 +3281,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 .ai-tk-control-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 0 4px 3px 4px;
   margin-bottom: 3px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ai-tk-target-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 .ai-tk-ctrl-title {
   font-size: 9px;
@@ -6232,11 +6237,18 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <!-- Hidden input element for speech synthesis bridge -->
         <input type="hidden" id="ai-voice-input">
 
-        <!-- Audio Dictation Language Bar -->
-        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:flex-start;width:100%;margin-bottom:4px;">
+        <!-- Audio Dictation Language Bar & Target Toggle -->
+        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
           <div class="ai-lang-toggle" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
             <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
             <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
+          </div>
+          <div class="ai-tk-target-cluster">
+            <span class="ai-tk-ctrl-title" data-i18n="ai_target_label">Target:</span>
+            <div class="ai-target-toggle" data-i18n-title="ai_target_title" title="Target: PC / Device">
+              <button type="button" class="ai-btn-target" id="btn-target-pc" data-i18n="ai_target_pc">PC</button>
+              <button type="button" class="ai-btn-target active" id="btn-target-device" data-i18n="ai_target_device">Device</button>
+            </div>
           </div>
         </div>
 
@@ -6258,10 +6270,12 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <!-- Android-Style Soft QWERTY Keyboard (Tablet Only) -->
         <div class="ai-tablet-keyboard" id="ai-tablet-keyboard">
           <div class="ai-tk-control-bar">
-            <span class="ai-tk-ctrl-title" data-i18n="ai_target_title">Keyboard Target</span>
-            <div class="ai-target-toggle" data-i18n-title="ai_target_title" title="Keyboard Routing Target: Host PC or Local Input">
-              <button type="button" class="ai-btn-target" id="btn-tk-target-pc" data-i18n="ai_target_pc">Host PC</button>
-              <button type="button" class="ai-btn-target active" id="btn-tk-target-device" data-i18n="ai_target_device">Device</button>
+            <div class="ai-tk-target-cluster">
+              <span class="ai-tk-ctrl-title" data-i18n="ai_target_label">Target:</span>
+              <div class="ai-target-toggle" data-i18n-title="ai_target_title" title="Target: PC / Device">
+                <button type="button" class="ai-btn-target" id="btn-tk-target-pc" data-i18n="ai_target_pc">PC</button>
+                <button type="button" class="ai-btn-target active" id="btn-tk-target-device" data-i18n="ai_target_device">Device</button>
+              </div>
             </div>
           </div>
           <div class="ai-tk-row" id="ai-tk-row1">
@@ -7437,8 +7451,9 @@ const I18N = {
     ai_auto_send_title: "Automatically transmit text to host upon silence detection",
     ai_clear: "Clear",
     ai_send_host: "Send to Host",
-    ai_target_title: "Keyboard Routing Target: Host PC or Local Input",
-    ai_target_pc: "Host PC",
+    ai_target_label: "Target:",
+    ai_target_title: "Target: PC / Device",
+    ai_target_pc: "PC",
     ai_target_device: "Device",
     ai_pe_title: "AI Prompt Shortcut Configuration",
     ai_pe_desc: "Configure button labels and automated command prompts for your development workflow:",
@@ -7655,7 +7670,8 @@ const I18N = {
     ai_auto_send_title: "Kirim teks otomatis ke PC setiap selesai berbicara",
     ai_clear: "Bersihkan",
     ai_send_host: "Kirim ke PC",
-    ai_target_title: "Target Kontrol Keyboard: Host PC atau Input Lokal",
+    ai_target_label: "Target:",
+    ai_target_title: "Target: PC / Device",
     ai_target_pc: "PC",
     ai_target_device: "Device",
     ai_pe_title: "Kustomisasi Shortcut Prompt AI",

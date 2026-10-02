@@ -529,3 +529,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Nol emoji / emotikon di seluruh berkas dan antarmuka.
   - Suara klik mekanikal (`playClickSound()`) dan efek jingle ketikan startup tetap aktif sempurna.
 
+---
+
+## 32. CATATAN CHECKPOINT (v0.9.28 - Simplifikasi Label Target Kontrol & Penyatuan Cluster Toggle PC/Device)
+- **Simplifikasi Label Target Kontrol ("Target:"):**
+  - Menggantikan judul panjang "Target Kontrol Keyboard: Host PC atau Input Lokal" menjadi frasa ringkas satu kata "Target:".
+  - Diperbarui secara konsisten di kamus terjemahan `I18N.en` dan `I18N.id` (`ai_target_label: "Target:"`).
+  - Label tombol diselaraskan menjadi "PC" dan "Device".
+- **Penyatuan Cluster Elemen Target Dekat Toggle PC/Device:**
+  - Menghilangkan jarak renggang `space-between` yang memisahkan teks label dan tombol toggle:
+    - Wadah `.ai-tk-control-bar` kini menggunakan perataan rapi `justify-content: flex-end`.
+    - Dibuatkan kontainer khusus `.ai-tk-target-cluster` dengan `display: inline-flex; align-items: center; gap: 5px;` sehingga label "Target:" dan tombol toggle `[PC] [Device]` berdampingan langsung.
+  - Menambahkan cluster toggle Target yang sama pada header dikte AI (`.ai-transcript-header`), sehingga pengguna pada layar ponsel tanpa soft keyboard tablet tetap memiliki akses instan ke pengalihan target input.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan UI.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
