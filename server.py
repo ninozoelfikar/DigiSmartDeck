@@ -920,6 +920,135 @@ def get_active_window_info():
 
     return None
 
+def get_open_windows_list():
+    """Mengambil daftar jendela aplikasi GUI yang terbuka di PC host."""
+    global CACHED_X11_ENV, CURRENT_APP_CONTEXT
+    windows = []
+    current_active_id = CURRENT_APP_CONTEXT.get('win_id', '') if CURRENT_APP_CONTEXT else ''
+
+    if sys.platform.startswith('linux'):
+        try:
+            env = get_x11_env()
+            res = subprocess.run(
+                ['wmctrl', '-l', '-x'],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.8
+            )
+            if res.returncode == 0:
+                for line in res.stdout.strip().splitlines():
+                    parts = re.split(r'\s+', line.strip(), maxsplit=4)
+                    if len(parts) >= 5:
+                        win_id, desktop_num, wm_class, client_machine, title = parts
+                    elif len(parts) == 4:
+                        win_id, desktop_num, wm_class, client_machine = parts
+                        title = ''
+                    else:
+                        continue
+
+                    try:
+                        d_num = int(desktop_num)
+                    except ValueError:
+                        d_num = 0
+
+                    wm_class_lower = wm_class.lower()
+                    if d_num == -1:
+                        if 'desktop' in wm_class_lower or 'gjs' in wm_class_lower or 'nautilus' in wm_class_lower:
+                            continue
+
+                    if not title or title.strip() == 'Desktop Icons':
+                        continue
+
+                    classes = [c for c in wm_class.split('.') if c]
+                    suggested_mode, friendly_name = classify_app_context(classes, title)
+
+                    is_active = False
+                    if current_active_id:
+                        try:
+                            is_active = (int(win_id, 16) == int(current_active_id, 16))
+                        except Exception:
+                            is_active = (win_id.lower() == current_active_id.lower())
+
+                    windows.append({
+                        'win_id': win_id,
+                        'app': friendly_name,
+                        'title': title,
+                        'suggested_mode': suggested_mode,
+                        'class_name': wm_class,
+                        'is_active': is_active
+                    })
+        except Exception:
+            pass
+
+    elif sys.platform == 'win32':
+        try:
+            import win32gui, win32process
+            def enum_cb(hwnd, extra):
+                if win32gui.IsWindowVisible(hwnd):
+                    title = win32gui.GetWindowText(hwnd) or ''
+                    if title and title != 'Program Manager':
+                        class_name = win32gui.GetClassName(hwnd) or ''
+                        suggested_mode, friendly_name = classify_app_context([class_name], title)
+                        is_active = (str(hwnd) == str(current_active_id))
+                        extra.append({
+                            'win_id': str(hwnd),
+                            'app': friendly_name,
+                            'title': title,
+                            'suggested_mode': suggested_mode,
+                            'class_name': class_name,
+                            'is_active': is_active
+                        })
+            win32gui.EnumWindows(enum_cb, windows)
+        except Exception:
+            pass
+
+    return windows
+
+
+def activate_and_focus_window(win_id, maximize=True):
+    """Mengangkat jendela PC ke depan dan memaksimalkan ukurannya."""
+    global CACHED_X11_ENV
+    if not win_id:
+        return False
+    if sys.platform.startswith('linux'):
+        try:
+            env = get_x11_env()
+            # 1. Aktifkan dan angkat jendela ke depan (focus & raise)
+            subprocess.run(
+                ['wmctrl', '-i', '-a', win_id],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.8
+            )
+            # 2. Maksimalkan jendela jika diminta
+            if maximize:
+                subprocess.run(
+                    ['wmctrl', '-i', '-r', win_id, '-b', 'add,maximized_vert,maximized_horz'],
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    timeout=0.8
+                )
+            return True
+        except Exception:
+            return False
+    elif sys.platform == 'win32':
+        try:
+            import win32gui, win32con
+            hwnd = int(win_id)
+            if win32gui.IsWindow(hwnd):
+                if maximize:
+                    win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+                else:
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                win32gui.SetForegroundWindow(hwnd)
+                return True
+        except Exception:
+            return False
+    return False
+
 async def smart_context_tracker_loop():
     """Background task memeriksa jendela aktif PC setiap 800ms dan memancarkan perubahan ke client."""
     global CURRENT_APP_CONTEXT
@@ -1171,7 +1300,37 @@ async def websocket_handler(request):
                                 simulate_tap(ch)
                                 await asyncio.sleep(0.003)
 
+                elif msg_type == 'get_window_list':
+                    windows = await asyncio.to_thread(get_open_windows_list)
+                    try:
+                        await ws.send_str(json.dumps({
+                            'type': 'window_list',
+                            'windows': windows
+                        }))
+                    except Exception:
+                        pass
 
+                elif msg_type == 'activate_window':
+                    win_id = data.get('win_id')
+                    maximize = data.get('maximize', True)
+                    if win_id:
+                        await asyncio.to_thread(activate_and_focus_window, win_id, maximize)
+                        # Segera periksa dan siarkan konteks aplikasi aktif yang baru
+                        new_info = await asyncio.to_thread(get_active_window_info)
+                        if new_info:
+                            CURRENT_APP_CONTEXT = new_info
+                            broadcast_payload = json.dumps({
+                                'type': 'app_context',
+                                'app': new_info['app'],
+                                'title': new_info['title'],
+                                'suggested_mode': new_info['suggested_mode'],
+                                'class_name': new_info['class_name']
+                            })
+                            for client in list(CONNECTED_CLIENTS):
+                                try:
+                                    await client.send_str(broadcast_payload)
+                                except Exception:
+                                    pass
 
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")

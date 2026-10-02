@@ -544,3 +544,121 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - Nol emoji / emotikon di seluruh berkas dan UI.
   - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 33. CATATAN CHECKPOINT (v0.9.29 - Eliminasi Total Duplikasi & Pengulangan Transkrip Mic AI)
+- **Akar Masalah Duplikasi Transkrip Google STT di Mobile (Android/Chrome):**
+  - Peramban Chrome dan WebView di Android sering mengirimkan potongan transkripsi secara kumulatif atau ganda di dalam event `SpeechRecognition.onresult`, di mana item `event.results[i]` dapat memuat ulang seluruh kalimat sebelumnya atau mengulang frasa yang baru saja diucapkan.
+  - Sebelumnya, potongan transkrip digabungkan menggunakan spasi biasa (`join(' ')`) dan fungsi `mergeTranscripts` tidak pernah dipanggil di dalam siklus streaming `onresult` maupun `commitCurrentSession`. Hal ini menyebabkan teks berlipat ganda berkali-kali baik di layar ponsel maupun saat terkirim ke PC host via Auto-Kirim.
+- **Penyatuan Cerdas Berbasis `mergeTranscripts` Real-Time:**
+  - `recognition.onresult` kini menyatukan seluruh potongan final (`finalPieces`) dan interim (`interimPieces`) menggunakan `mergeTranscripts(merged, piece)`.
+  - Teks sesi aktif (`currentSessionText`) disatukan dari gabungan final dan interim tanpa menghasilkan duplikat kalimat yang sedang diucapkan.
+  - Teks preview live (`liveText`) menggabungkan teks tersimpan (`aiAccumulatedText`) dengan sesi aktif secara cerdas tanpa pengulangan buffer lama.
+  - Fungsi `commitCurrentSession()` menggabungkan teks final ke `aiAccumulatedText` via `mergeTranscripts`, mencegah penumpukan teks identik antar-sesi dikte.
+  - Alur Auto-Kirim (`aiAutoSend`) menggunakan `mergeTranscripts(aiAccumulatedText, currentSessionFinal)` dengan pelindung batas panjang (`lastSentLength`), memastikan hanya kata baru murni yang diketikkan ke PC host.
+- **Optimasi Pembersih Frasa & Tumpang Tindih Kata (`deduplicateRepeatedPhrases` & `mergeTranscripts`):**
+  - Mengizinkan deteksi pengulangan kata tunggal untuk teks pendek (ambang batas diturunkan dari `< 3` menjadi `< 2`), sehingga pengulangan 2 kata seperti "halo halo" atau "buka buka" langsung dibersihkan.
+  - Mendukung eliminasi tumpang tindih 1 kata pada batas sambungan (`len === 1`), mencegah pengulangan kata di perbatasan chunk ucapan.
+  - Mempertahankan kata ulang sah dalam Bahasa Indonesia (`commonIndoDuplication`: 'hati-hati', 'pelan-pelan', 'sama-sama', 'pagi-pagi', dsb.).
+  - Normalisasi kata bersih berbasis Unicode huruf/angka (`\p{L}\p{N}`) sehingga tanda baca bawaan Google STT tidak merusak proses pencocokan awalan/akhiran.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan UI.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 34. CATATAN CHECKPOINT (v0.9.30 - PC Window Switcher & Task Manager Dropdown dari Header Bar)
+- **Menu Dropdown Jendela PC pada Indikator Header Bar (`#smart-context-chip`):**
+  - Chip indikator aplikasi aktif PC di tengah header bar kini dilengkapi ikon panah dropdown (`.sc-chevron`).
+  - Mengklik chip akan membuka pop-up modal "Aplikasi Terbuka di PC" (`#modal-window-switcher`) yang menampilkan seluruh daftar aplikasi/jendela GUI yang sedang berjalan di PC host.
+- **Backend Task Inspector & Window Manager (`server.py`):**
+  - Fungsi `get_open_windows_list()`: Memindai daftar jendela aktif menggunakan `wmctrl -l -x` (Linux) dan `win32gui` (Windows), mengecualikan window desktop wallpaper/dock `-1`, serta memetakan kelas jendela ke nama ramah (`app`) dan mode rekomendasi (`suggested_mode`).
+  - Fungsi `activate_and_focus_window(win_id, maximize=True)`: Mengangkat jendela pilihan ke latar depan (`wmctrl -i -a <id>`) dan memaksimalkan ukurannya ke jendela penuh (`wmctrl -i -r <id> -b add,maximized_vert,maximized_horz`).
+  - Penanganan pesan WebSocket `get_window_list` dan `activate_window` yang secara langsung menyiarkan status aplikasi aktif terbaru ke seluruh client.
+- **Antarmuka Interaktif Pengalihan Jendela & Otomatisasi Mode:**
+  - Setiap item jendela dalam daftar menampilkan ikon kategori mode (Terminal/AI, Media, Game, Kanvas, Keyboard), nama aplikasi, badge "Aktif" untuk jendela yang sedang fokus, judul jendela, serta tag mode kerja.
+  - Mengetuk jendela pilihan akan memicu bunyi klik mekanikal (`playClickSound()`), getaran haptik (`vibe(20)`), menutup popover, mengirim perintah aktivasi & pemaksimalan ke PC, serta langsung mengubah mode DigiKeyboard di ponsel agar sesuai dengan aplikasi tersebut (misal Terminal/VS Code langsung masuk ke AI Workstation).
+  - Dilengkapi tombol Segarkan (`#btn-refresh-win-switcher`) untuk memperbarui daftar jendela secara real-time.
+- **Dukungan Dua Bahasa Lengkap (ID / EN):**
+  - Entri kamus terjemahan `win_switcher_*` terpasang penuh di `I18N.id` dan `I18N.en`.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan antarmuka.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 35. CATATAN CHECKPOINT (v0.9.31 - Tema Solid: Racing, Anime, Sakura, Pastel Cantik, Pelangi Warna & RGB Lampu Jalan)
+- **Eliminasi Total Background Gambar & Wallpaper Overlays demi Keterbacaan Maksimal:**
+  - Sesuai arahan pengguna, seluruh lapisan gambar background, wallpaper SVG, dan fitur unggah foto kustom dari galeri dihapus total.
+  - Tampilan kembali bersih, ringan, dan fokus pada warna solid harmonis tanpa ada distorsi kontras di tuts maupun area kerja AI.
+- **Koleksi Tema Warna Solid Baru:**
+  - `theme-racing` (Racing Supercar): Sasis obsidian pekat, panel serat karbon, aksen merah Rosso Corsa (`#ff3b30`) dengan garis bawah tuts merah balap.
+  - `theme-anime` (Anime Mecha): Biru ruang angkasa tengah malam, panel mecha navy, aksen cyber cyan menyala (`#00e5ff`) dan garis bawah tuts cyan.
+  - `theme-sakura` (Sakura Floral): Nuansa plum anggun dengan aksen cherry blossom pink (`#ff80bf`) yang feminin dan lembut.
+  - `theme-pastel` (Pastel Cantik): Palet pastel estetis feminin berlatar dark-lavender (`#1b1622`) dengan aksen rose pastel (`#f8c8dc`) dan warna pastel per baris tuts (peach `#ffb7b2`, melon `#ffdac1`, pistachio `#e2f0cb`, mint `#b5ead7`, periwinkle `#c7ceea`).
+  - `theme-rainbow` (Pelangi Warna): Palet spektrum pelangi cerah berlatar midnight obsidian dengan aksen multi-warna di tiap baris tuts (merah `#ff595e`, oranye `#ff924c`, kuning `#ffca3a`, hijau `#8ac926`, biru `#1982c4`).
+  - `theme-rgb-wave` (RGB Lampu Jalan): Efek pencahayaan Chroma RGB neon dinamis dengan animasi berjalan halus (`rgb-running-light 4s linear infinite`) pada garis pemisah header bar dan border tuts keyboard.
+- **Perbaikan Total Kontras AI Workstation:**
+  - Menghapus layer wallpaper fixed yang sebelumnya menutupi tombol-tombol AI Workstation karena perbedaan stacking context CSS.
+  - Tombol-tombol pintasan cepat AI (`.ai-prompt-chip`), tombol tool (`.ai-btn-sh`), tuts QWERTY, tombol panah navigasi, dan tombol Enter kini memiliki kontras tinggi dengan teks putih solid (`#ffffff`), border kiri aksen warna tema (`border-left: 3px solid var(--accent)`), dan bayangan tegas.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan antarmuka.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) aktif pada pemilihan seluruh tema dan tombol interaktif.
+
+---
+
+## 36. CATATAN CHECKPOINT (v0.9.32 - Penonaktifan Menu Toko / Store & Tema Rainbow Multicolor Cerah Ceria)
+- **Penonaktifan (Mute) Menu Toko / Store:**
+  - Tombol Store (`#btn-store`) pada Control Deck disembunyikan (`display: none;`) dan fungsinya dinonaktifkan sepenuhnya.
+  - Pemanggilan fungsi `openStore()` dikunci dengan early return sehingga modal store tidak dapat terbuka.
+- **Penyederhanaan Nama Tema Rainbow:**
+  - Label tema diubah dari sebelumnya "Vibrant Rainbow" (EN) / "Pelangi Warna" (ID) menjadi ringkas: `Rainbow` di seluruh kamus i18n dan antarmuka pemilih tema.
+- **Desain Multicolor Penuh Cerah Ceria pada Tema Rainbow:**
+  - Seluruh tuts keyboard pada tema Rainbow kini menggunakan latar belakang warna gradien spektrum pelangi cerah ceria dengan kontras tajam:
+    - Baris 1 (Angka): Gradien merah coral stroberi (`#ff2a5f` -> `#d81141`) dengan border pink.
+    - Baris 2 (QWERTY): Gradien oranye jingga matahari (`#ff7a00` -> `#e65c00`) dengan border oranye terang.
+    - Baris 3 (Home Row): Gradien hijau zamrud segar (`#00c853` -> `#009624`) dengan tombol Enter hot magenta fuchsia (`#ff007f`).
+    - Baris 4 (ZXCV): Gradien biru langit elektrik (`#00b0ff` -> `#0077c2`).
+    - Baris 5 (Bawah/Modifier): Gradien ungu royal violet (`#9c27b0` -> `#6a0080`), spasi multicolor pelangi (`linear-gradient(90deg, #ff2a5f, #ff7a00, #00c853, #00b0ff, #9c27b0)`), serta tombol panah navigasi kuning emas cerah (`#ffd600`).
+  - AI Workstation mengadopsi palet senada pada tombol pintasan cepat, tuts QWERTY, tombol enter, trackpad, dan ring mikrofon.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan antarmuka.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 37. CATATAN CHECKPOINT (v0.9.33 - Harmonisasi Warna Tombol Enter, Kirim ke PC & Efek Mic Listening Sesuai Tema)
+- **Harmonisasi Warna Tombol Enter & Kirim ke PC (`Send to Host`):**
+  - Tombol Enter raksasa AI Workstation (`.ai-btn-giant-enter`) dan tombol Kirim ke PC (`#btn-ai-tr-send` / `.ai-btn-tr-act.primary`) tidak lagi dikunci dengan warna hijau statis.
+  - Keduanya kini dinamis mengikuti variabel tema aktif (`var(--enter-bg)` dan `var(--enter-border)`):
+    - Tema Racing: Merah sasis balap Rosso Corsa pekat (`#b71c1c` / `#ff3b30`).
+    - Tema Anime: Mecha navy cyber dengan aksen border cyan menyala (`#7b1fa2` / `#00e5ff`).
+    - Tema Sakura: Plum blossom anggun dengan border cherry blossom pink (`#ad1457` / `#ff80bf`).
+    - Tema Pastel: Mauve feminin lembut dengan border rose pastel (`#85587a` / `#f8c8dc`).
+    - Tema Rainbow: Hot magenta fuchsia cerah ceria (`#ff007f` / `#ff66b2`).
+    - Tema RGB Wave: Neon violet bercahaya dengan border cyan (`#7700ff` / `#00f0ff`).
+    - Tema Dark / OS Default: GitHub blue modern (`#1f6feb` / `#388bfd`).
+- **Efek Mic Listening & Label Status Selaras Tema:**
+  - Animasi pendaran denyut mic (`.ai-btn-mic.recording` via `@keyframes ai-pulse-theme`) kini memancarkan gelombang ripple lingkaran dengan warna aksen tema aktif (`var(--accent)`), bukan warna hijau statis lagi.
+  - Khusus tema RGB Lampu Jalan (`theme-rgb-wave`), pendaran denyut mic menggunakan animasi spektrum RGB neon multi-warna (`@keyframes rgb-mic-pulse`).
+  - Label status teks dikte ("Mendengarkan...", "Teks tersimpan") di bawah tombol mic otomatis diwarnai sesuai warna aksen tema aktif.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan antarmuka.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 38. CATATAN CHECKPOINT (v0.9.34 - Penghapusan Tema Rainbow & RGB)
+- **Penghapusan Bersih Tema Rainbow & RGB:**
+  - Seluruh aturan CSS untuk `theme-rainbow` dan `theme-rgb-wave` (termasuk animasi `@keyframes rgb-running-light` dan `@keyframes rgb-mic-pulse`) dihapus sepenuhnya dari stylesheet.
+  - Kartu pemilih tema `Rainbow` dan `RGB Chroma Wave` dihapus dari modal Pengaturan (`#settings-modal`).
+  - Pratinjau `.tp-rainbow` dan `.tp-rgb-wave` dihapus dari CSS.
+  - Entri teks terjemahan `theme_rainbow` dan `theme_rgb_wave` dihapus dari kamus `I18N.en` dan `I18N.id`.
+- **Daftar Tema Aktif yang Dipertahankan:**
+  - `os-native`, `dark`, `retro`, `cyberpunk`, `stealth`, `nord`, `racing`, `anime`, `sakura`, `pastel`.
+- **Proteksi Fallback Aman pada `applyTheme`:**
+  - Menambahkan array `VALID_THEMES`. Jika browser client memiliki sisa riwayat tema `rainbow` atau `rgb-wave` di `localStorage`, sistem otomatis melakukan fallback aman ke `os-native` tanpa menyebabkan kerusakan tampilan.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan antarmuka.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.

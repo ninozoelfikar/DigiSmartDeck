@@ -33,8 +33,8 @@
   --text: #f0f6fc;
   --text-dim: #8b949e;
   --danger: #da3633;
-  --enter-bg: #1f4068;
-  --enter-border: #2a5286;
+  --enter-bg: #1f6feb;
+  --enter-border: #388bfd;
   --key-min-height: 38px;
   --key-font-size: 11px;
   --tp-scale: 1;
@@ -196,6 +196,108 @@ body.theme-nord {
   --key-letter-spacing: 0px;
 }
 
+/* ─── TEMA WARNA SOLID (CLEAN SOLID COLOR PALETTES, ZERO BACKGROUND DISTRACTION) ─── */
+
+/* 1. Racing Supercar: Deep obsidian chassis, carbon panels, vivid racing red */
+body.theme-racing {
+  --bg: #0e1015;
+  --header-bg: #161822;
+  --panel-bg: #1c202d;
+  --key-bg: #242938;
+  --key-active-bg: #e63946;
+  --key-active-border: #ff6b64;
+  --key-shadow: #06070a;
+  --key-border: #384055;
+  --key-special: #181b26;
+  --key-mod-active: #e63946;
+  --accent: #ff3b30;
+  --text: #ffffff;
+  --text-dim: #9aa2b5;
+  --danger: #e63946;
+  --enter-bg: #b71c1c;
+  --enter-border: #ff3b30;
+}
+body.theme-racing .k {
+  border-color: #3d465c;
+  border-bottom: 2px solid #e63946;
+}
+
+/* 2. Anime Mecha: Midnight space, mecha cockpit deep blue, electric cyber cyan */
+body.theme-anime {
+  --bg: #0a0b14;
+  --header-bg: #121424;
+  --panel-bg: #171a30;
+  --key-bg: #1e2240;
+  --key-active-bg: #00e5ff;
+  --key-active-border: #80f0ff;
+  --key-shadow: #05060c;
+  --key-border: #2e3561;
+  --key-special: #131526;
+  --key-mod-active: #ff007f;
+  --accent: #00e5ff;
+  --text: #f0f4ff;
+  --text-dim: #9eaadb;
+  --danger: #ff0055;
+  --enter-bg: #7b1fa2;
+  --enter-border: #00e5ff;
+}
+body.theme-anime .k {
+  border-color: #343c6d;
+  border-bottom: 2px solid #00e5ff;
+}
+
+/* 3. Sakura Floral: Deep plum night, blossom panel, elegant cherry blossom pink */
+body.theme-sakura {
+  --bg: #170f19;
+  --header-bg: #231426;
+  --panel-bg: #2d1931;
+  --key-bg: #381f3d;
+  --key-active-bg: #ff69b4;
+  --key-active-border: #ffb6c1;
+  --key-shadow: #0b070c;
+  --key-border: #522d5a;
+  --key-special: #221325;
+  --key-mod-active: #ff69b4;
+  --accent: #ff80bf;
+  --text: #fff0f5;
+  --text-dim: #d1b8d6;
+  --danger: #e60067;
+  --enter-bg: #ad1457;
+  --enter-border: #ff80bf;
+}
+body.theme-sakura .k {
+  border-color: #5d3366;
+  border-bottom: 2px solid #ff80bf;
+}
+
+/* 4. Pastel Chic: Soft, elegant, feminine pastel palette (lavender, peach, mint, rose) */
+body.theme-pastel {
+  --bg: #1b1622;
+  --header-bg: #241d2e;
+  --panel-bg: #2c2338;
+  --key-bg: #372c46;
+  --key-active-bg: #d4a5b8;
+  --key-active-border: #f8c8dc;
+  --key-shadow: #100c15;
+  --key-border: #4d3d62;
+  --key-special: #251e2e;
+  --key-mod-active: #b5ead7;
+  --accent: #f8c8dc;
+  --text: #fdf7fa;
+  --text-dim: #cbbccf;
+  --danger: #ffb7b2;
+  --enter-bg: #9c7b9e;
+  --enter-border: #f8c8dc;
+}
+body.theme-pastel .k {
+  border-color: #55446c;
+}
+body.theme-pastel #kb-row-1 .k { border-top: 2px solid #ffb7b2; }
+body.theme-pastel #kb-row-2 .k { border-top: 2px solid #ffdac1; }
+body.theme-pastel #kb-row-3 .k { border-top: 2px solid #e2f0cb; }
+body.theme-pastel #kb-row-4 .k { border-top: 2px solid #b5ead7; }
+body.theme-pastel #kb-row-5 .k { border-top: 2px solid #c7ceea; }
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -218,6 +320,8 @@ html, body {
   font-family: var(--key-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
 }
 #app {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1559,6 +1663,10 @@ body.is-fullscreen {
 .tp-cyberpunk { background: linear-gradient(135deg, #0b0716 50%, #00f0ff 50%); border: 1px solid #ff007f; }
 .tp-stealth { background: linear-gradient(135deg, #000000 50%, #171717 50%); border: 1px solid #333333; }
 .tp-nord { background: linear-gradient(135deg, #242933 50%, #88c0d0 50%); border: 1px solid #4c566a; }
+.tp-racing { background: linear-gradient(135deg, #0e1015 40%, #ff3b30 40% 60%, #242938 60%); border: 1px solid #ff3b30; }
+.tp-anime { background: linear-gradient(135deg, #0a0b14 40%, #00e5ff 40% 60%, #1e2240 60%); border: 1px solid #00e5ff; }
+.tp-sakura { background: linear-gradient(135deg, #170f19 40%, #ff80bf 40% 60%, #381f3d 60%); border: 1px solid #ff80bf; }
+.tp-pastel { background: linear-gradient(135deg, #ffb7b2 20%, #ffdac1 20% 40%, #e2f0cb 40% 60%, #b5ead7 60% 80%, #c7ceea 80%); border: 1px solid #f8c8dc; }
 
 .font-grid {
   display: grid;
@@ -3411,15 +3519,16 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   justify-content: center;
   background: var(--key-bg);
   border: 1px solid var(--key-border);
-  border-radius: 4px;
+  border-radius: 5px;
   color: var(--text);
   font-size: 9.5px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 1px 2px;
   cursor: pointer;
   transition: all 0.1s ease;
   min-height: 0;
   height: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 .ai-btn-sh:active {
   transform: translateY(1px);
@@ -3436,19 +3545,21 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   grid-column: span 2;
 }
 .ai-btn-sh.ai-prompt-chip {
-  background: rgba(88, 166, 255, 0.08);
-  border-color: rgba(88, 166, 255, 0.25);
-  color: var(--accent);
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-left: 3px solid var(--accent);
+  color: #ffffff;
   font-size: 9.5px;
   font-weight: 700;
   text-align: center;
   padding: 2px 4px;
   box-sizing: border-box;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 .ai-btn-sh.ai-prompt-chip:active {
-  background: rgba(88, 166, 255, 0.25);
-  border-color: var(--accent);
+  background: var(--key-active-bg);
+  border-color: var(--key-active-border);
 }
 .ai-btn-sh.ai-prompt-chip span {
   display: block;
@@ -3457,6 +3568,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   line-height: 1.15;
   word-break: break-word;
   overflow-wrap: break-word;
+  color: #ffffff;
 }
 .ai-btn-sh.ai-prompt-chip:not(.span-2) {
   padding: 2px 4px;
@@ -3507,10 +3619,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   height: 43px;
 }
 .ai-btn-mic.recording {
-  background: rgba(46, 160, 67, 0.16);
-  border-color: #3fb950;
-  color: #3fb950;
-  animation: ai-pulse-green 1.8s infinite ease-in-out;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+  animation: ai-pulse-theme 1.8s infinite ease-in-out;
 }
 .ai-btn-mic.recording svg {
   animation: ai-mic-breathe 1.8s infinite ease-in-out;
@@ -3519,15 +3631,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
 }
-@keyframes ai-pulse-green {
+@keyframes ai-pulse-theme {
   0% {
-    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.65), 0 0 8px rgba(63, 185, 80, 0.4);
+    box-shadow: 0 0 0 0 var(--accent), 0 0 10px var(--accent);
   }
   60% {
-    box-shadow: 0 0 0 10px rgba(63, 185, 80, 0), 0 0 12px rgba(63, 185, 80, 0.25);
+    box-shadow: 0 0 0 14px transparent, 0 0 16px var(--accent);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0), 0 0 6px rgba(63, 185, 80, 0.15);
+    box-shadow: 0 0 0 0 transparent, 0 0 6px var(--accent);
   }
 }
 .ai-mic-status-label {
@@ -3615,9 +3727,14 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   border-color: var(--accent);
 }
 .ai-btn-tr-act.primary {
-  background: #238636;
-  border-color: #2ea043;
+  background: var(--enter-bg);
+  border-color: var(--enter-border);
   color: #fff;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.ai-btn-tr-act.primary:active {
+  filter: brightness(1.2);
 }
 
 /* ─── Android-style Soft QWERTY Keyboard (Tablet & Mobile AI Workstation) ─── */
@@ -3818,15 +3935,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 .ai-btn-giant-enter {
   flex: 1;
   min-height: 0;
-  background: linear-gradient(180deg, #2ea043 0%, #238636 100%);
-  border: 1px solid #3fb950;
+  background: var(--enter-bg);
+  border: 1px solid var(--enter-border);
   border-radius: 6px;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(35, 134, 54, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   transition: all 0.1s ease;
   user-select: none;
   padding: 4px;
@@ -3836,8 +3953,8 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 }
 .ai-btn-giant-enter:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 3px rgba(35, 134, 54, 0.2);
-  filter: brightness(0.9);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.2);
 }
 .ai-enter-label {
   font-size: 14px;
@@ -5210,6 +5327,128 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.smart-context-chip .sc-chevron {
+  opacity: 0.6;
+  margin-left: 1px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  flex-shrink: 0;
+}
+.smart-context-chip:hover .sc-chevron,
+.smart-context-chip.active .sc-chevron {
+  opacity: 1;
+}
+.smart-context-chip.active .sc-chevron {
+  transform: rotate(180deg);
+}
+
+/* WINDOW SWITCHER MODAL & LIST */
+.win-switcher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+.win-switcher-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--panel-bg, #161b22);
+  border: 1px solid var(--key-border, rgba(56, 139, 253, 0.2));
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: all 0.15s ease;
+}
+.win-switcher-item:hover, .win-switcher-item:active {
+  background: rgba(88, 166, 255, 0.14);
+  border-color: var(--accent, #58a6ff);
+  transform: translateY(-1px);
+}
+.win-switcher-item.active-window {
+  border-color: #3fb950;
+  background: rgba(63, 185, 80, 0.12);
+}
+.win-switcher-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.win-switcher-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent, #58a6ff);
+  flex-shrink: 0;
+}
+.win-switcher-item.active-window .win-switcher-icon {
+  background: rgba(63, 185, 80, 0.15);
+  border-color: rgba(63, 185, 80, 0.35);
+  color: #3fb950;
+}
+.win-switcher-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.win-switcher-app-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.win-switcher-app-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text, #e6edf3);
+}
+.win-switcher-badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(63, 185, 80, 0.2);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.4);
+}
+.win-switcher-win-title {
+  font-size: 11px;
+  color: var(--text-dim, #8b949e);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.win-switcher-mode-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(88, 166, 255, 0.1);
+  color: var(--accent, #58a6ff);
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.win-switcher-empty, .win-switcher-loading {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--text-dim, #8b949e);
+  font-size: 12px;
+}
 .smart-context-toast {
   position: fixed;
   bottom: 24px;
@@ -5302,6 +5541,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       <div id="smart-context-chip" class="smart-context-chip" data-i18n-title="smart_context_chip_title" title="Active Host Application">
         <span class="sc-dot"></span>
         <span id="smart-context-app">Desktop</span>
+        <svg class="sc-chevron svg-icon" width="10" height="10" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
       </div>
     </div>
 
@@ -5404,7 +5644,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             <span data-i18n="util_settings">Settings</span>
           </button>
-          <button type="button" class="tbtn deck-chip" id="btn-store" data-i18n-title="util_store_title" title="Store: Skins, Plugins &amp; Licenses" style="color:var(--accent);border-color:rgba(88,166,255,0.4);">
+          <button type="button" class="tbtn deck-chip" id="btn-store" data-i18n-title="util_store_title" title="Store: Skins, Plugins &amp; Licenses" style="display:none;">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span data-i18n="util_store">Store</span>
           </button>
@@ -5568,7 +5808,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <!-- ROW 1: Number row -->
-      <div class="kb-row">
+      <div class="kb-row" id="kb-row-1">
         <button class="k" data-char="`" data-shift="~"><span class="sub">~</span><span class="lbl">`</span></button>
         <button class="k" data-char="1" data-shift="!"><span class="sub">!</span><span class="lbl">1</span></button>
         <button class="k" data-char="2" data-shift="@"><span class="sub">@</span><span class="lbl">2</span></button>
@@ -5586,7 +5826,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <!-- ROW 2: Tab + QWERTY -->
-      <div class="kb-row">
+      <div class="kb-row" id="kb-row-2">
         <button class="k sp w15" data-key="tab">Tab</button>
         <button class="k" data-char="q" data-shift="Q">Q</button>
         <button class="k" data-char="w" data-shift="W">W</button>
@@ -5604,7 +5844,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <!-- ROW 3: Caps + ASDF + Enter -->
-      <div class="kb-row">
+      <div class="kb-row" id="kb-row-3">
         <button class="k sp w18" data-key="caps_lock" id="key-caps">Caps</button>
         <button class="k" data-char="a" data-shift="A">A</button>
         <button class="k" data-char="s" data-shift="S">S</button>
@@ -5621,7 +5861,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <!-- ROW 4: Shift + ZXCV + Up -->
-      <div class="kb-row">
+      <div class="kb-row" id="kb-row-4">
         <button class="k sp w24" data-key="shift" id="key-shift-l">Shift</button>
         <button class="k" data-char="z" data-shift="Z">Z</button>
         <button class="k" data-char="x" data-shift="X">X</button>
@@ -5638,7 +5878,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <!-- ROW 5: Bottom modifiers + Space + Arrows -->
-      <div class="kb-row">
+      <div class="kb-row" id="kb-row-5">
         <button class="k sp w13" data-key="ctrl" id="key-ctrl-l">Ctrl</button>
         <button class="k sp w13" data-key="cmd" id="key-win">⊞ Win</button>
         <button class="k sp w13" data-key="alt" id="key-alt-l">Alt</button>
@@ -6691,6 +6931,22 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
               <div class="theme-preview tp-dark"></div>
               <span data-i18n="theme_dark">Dark Modern</span>
             </button>
+            <button class="theme-card" data-theme="racing" type="button">
+              <div class="theme-preview tp-racing"></div>
+              <span data-i18n="theme_racing">Racing Supercar</span>
+            </button>
+            <button class="theme-card" data-theme="anime" type="button">
+              <div class="theme-preview tp-anime"></div>
+              <span data-i18n="theme_anime">Anime Mecha</span>
+            </button>
+            <button class="theme-card" data-theme="sakura" type="button">
+              <div class="theme-preview tp-sakura"></div>
+              <span data-i18n="theme_sakura">Sakura Floral</span>
+            </button>
+            <button class="theme-card" data-theme="pastel" type="button">
+              <div class="theme-preview tp-pastel"></div>
+              <span data-i18n="theme_pastel">Pastel Chic</span>
+            </button>
             <button class="theme-card" data-theme="retro" type="button">
               <div class="theme-preview tp-retro"></div>
               <span data-i18n="theme_retro">Retro 90s</span>
@@ -6706,6 +6962,12 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
             <button class="theme-card" data-theme="nord" type="button">
               <div class="theme-preview tp-nord"></div>
               <span data-i18n="theme_nord">Nord Arctic</span>
+            </button>
+          </div>
+
+          <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" class="btn-st-action" id="btn-reset-theme-default" style="font-size: 11px; padding: 6px 12px; background: var(--panel-bg); border: 1px solid var(--key-border); color: var(--text-dim); border-radius: 6px; cursor: pointer;">
+              <span data-i18n="btn_reset_theme_default">Reset Theme to Default</span>
             </button>
           </div>
         </div>
@@ -7305,6 +7567,29 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   </div>
 </div>
 
+<!-- WINDOW SWITCHER MODAL (ACTIVE PC APPS DROPDOWN) -->
+<div class="modal-backdrop hidden" id="modal-window-switcher">
+  <div class="modal-dialog" style="max-width:460px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+        <span data-i18n="win_switcher_title">Aplikasi Terbuka di PC</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="modal-close" id="btn-refresh-win-switcher" type="button" data-i18n-title="win_switcher_refresh" title="Segarkan" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;">
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+        </button>
+        <button class="modal-close" id="btn-close-win-switcher" type="button" title="Tutup">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:10px;max-height:min(60vh, 380px);overflow-y:auto;">
+      <div id="win-switcher-list" class="win-switcher-list">
+        <!-- Diisi secara dinamis oleh JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SMART CONTEXT TOAST HUD -->
 <div id="smart-context-toast" class="smart-context-toast">
   <span class="toast-icon">
@@ -7355,8 +7640,14 @@ const I18N = {
     smart_mode_game: "Game Controller",
     smart_mode_present: "Presentation Remote",
     smart_mode_media: "Media Controller",
-    smart_mode_canvas: "Drawing Canvas",
     smart_mode_standard: "PC Keyboard",
+    win_switcher_title: "Open PC Applications",
+    win_switcher_loading: "Scanning open PC windows...",
+    win_switcher_empty: "No other open applications found on PC",
+    win_switcher_refresh: "Refresh List",
+    win_switcher_active_badge: "Active",
+    win_switcher_toast: "Activating",
+    win_switcher_maximized: "Maximized",
 
     // Control Deck
     menu_title: "Menu",
@@ -7485,6 +7776,11 @@ const I18N = {
     theme_cyberpunk: "Cyberpunk",
     theme_stealth: "Stealth",
     theme_nord: "Nord Arctic",
+    theme_racing: "Racing Supercar",
+    theme_anime: "Anime Mecha",
+    theme_sakura: "Sakura Floral",
+    theme_pastel: "Pastel Chic",
+    btn_reset_theme_default: "Reset Theme to Default",
     font_default_name: "System Default",
     font_default_sub: "Auto OS / Theme",
     font_system_name: "System UI",
@@ -7574,8 +7870,14 @@ const I18N = {
     smart_mode_game: "Gamepad Konsol",
     smart_mode_present: "Remote Presentasi",
     smart_mode_media: "Remote Multimedia",
-    smart_mode_canvas: "Kanvas Gambar",
     smart_mode_standard: "Keyboard PC",
+    win_switcher_title: "Aplikasi Terbuka di PC",
+    win_switcher_loading: "Memindai jendela aplikasi PC...",
+    win_switcher_empty: "Tidak ada aplikasi lain yang terbuka di PC",
+    win_switcher_refresh: "Segarkan Daftar",
+    win_switcher_active_badge: "Aktif",
+    win_switcher_toast: "Mengaktifkan",
+    win_switcher_maximized: "Jendela Penuh",
 
     // Control Deck
     menu_title: "Menu",
@@ -7704,6 +8006,11 @@ const I18N = {
     theme_cyberpunk: "Cyberpunk",
     theme_stealth: "Stealth",
     theme_nord: "Nord Arctic",
+    theme_racing: "Racing Supercar",
+    theme_anime: "Anime Mecha",
+    theme_sakura: "Sakura Bunga",
+    theme_pastel: "Pastel Cantik",
+    btn_reset_theme_default: "Reset Tema ke Bawaan",
     font_default_name: "Bawaan Tema",
     font_default_sub: "Otomatis tema/OS",
     font_system_name: "Sistem UI",
@@ -8446,6 +8753,121 @@ function handleAppContextUpdate(data) {
   }
 }
 
+// ── Window Switcher Modal Controller ──
+function getModeIconSvg(mode) {
+  if (mode === 'ai') {
+    return '<svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>';
+  } else if (mode === 'media') {
+    return '<svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  } else if (mode === 'game') {
+    return '<svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="13" r="1"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>';
+  } else if (mode === 'canvas') {
+    return '<svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="m18 2 4 4-12 12H6v-4L18 2z"/><line x1="14" x2="18" y1="6" y2="10"/></svg>';
+  } else if (mode === 'present') {
+    return '<svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>';
+  }
+  return '<svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>';
+}
+
+function openWindowSwitcherModal() {
+  if (isSplashScreenActive) return;
+  const modal = $('modal-window-switcher');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  const chip = $('smart-context-chip');
+  if (chip) chip.classList.add('active');
+
+  const listEl = $('win-switcher-list');
+  if (listEl) {
+    listEl.innerHTML = `<div class="win-switcher-loading">${escapeHtml(t('win_switcher_loading', 'Memindai jendela aplikasi PC...'))}</div>`;
+  }
+  send({ type: 'get_window_list' });
+}
+
+function closeWindowSwitcherModal() {
+  const modal = $('modal-window-switcher');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  const chip = $('smart-context-chip');
+  if (chip) chip.classList.remove('active');
+}
+
+function renderWindowList(windows) {
+  const listEl = $('win-switcher-list');
+  if (!listEl) return;
+  if (!windows || windows.length === 0) {
+    listEl.innerHTML = `<div class="win-switcher-empty">${escapeHtml(t('win_switcher_empty', 'Tidak ada aplikasi lain yang terbuka di PC'))}</div>`;
+    return;
+  }
+
+  listEl.innerHTML = '';
+  windows.forEach(win => {
+    const item = document.createElement('div');
+    item.className = 'win-switcher-item' + (win.is_active ? ' active-window' : '');
+
+    const modeLabelKey = 'smart_mode_' + (win.suggested_mode || 'standard');
+    const modeLabel = t(modeLabelKey) || win.suggested_mode;
+
+    const left = document.createElement('div');
+    left.className = 'win-switcher-left';
+
+    const iconBox = document.createElement('div');
+    iconBox.className = 'win-switcher-icon';
+    iconBox.innerHTML = getModeIconSvg(win.suggested_mode);
+
+    const meta = document.createElement('div');
+    meta.className = 'win-switcher-meta';
+
+    const appLine = document.createElement('div');
+    appLine.className = 'win-switcher-app-line';
+
+    const appName = document.createElement('span');
+    appName.className = 'win-switcher-app-name';
+    appName.textContent = win.app || 'App';
+    appLine.appendChild(appName);
+
+    if (win.is_active) {
+      const activeBadge = document.createElement('span');
+      activeBadge.className = 'win-switcher-badge-active';
+      activeBadge.textContent = t('win_switcher_active_badge', 'Aktif');
+      appLine.appendChild(activeBadge);
+    }
+
+    const winTitle = document.createElement('span');
+    winTitle.className = 'win-switcher-win-title';
+    winTitle.textContent = win.title || win.class_name || '';
+
+    meta.appendChild(appLine);
+    meta.appendChild(winTitle);
+
+    left.appendChild(iconBox);
+    left.appendChild(meta);
+
+    const tag = document.createElement('span');
+    tag.className = 'win-switcher-mode-tag';
+    tag.textContent = modeLabel;
+
+    item.appendChild(left);
+    item.appendChild(tag);
+
+    item.addEventListener('click', () => {
+      playClickSound();
+      vibe(20);
+      closeWindowSwitcherModal();
+
+      // Aktifkan jendela dan maksimalkan di PC host
+      send({ type: 'activate_window', win_id: win.win_id, maximize: true });
+
+      // Otomatis ubah mode di HP ke mode aplikasi tersebut
+      const targetMode = win.suggested_mode || 'standard';
+      switchAppMode(targetMode);
+      showSmartContextToast(win.app || 'App', targetMode);
+    });
+
+    listEl.appendChild(item);
+  });
+}
+
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') === 'true';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
@@ -8686,6 +9108,8 @@ function connect() {
         }
       } else if (d.type === 'app_context') {
         handleAppContextUpdate(d);
+      } else if (d.type === 'window_list') {
+        renderWindowList(d.windows);
       }
     } catch(err) {}
   };
@@ -9706,11 +10130,8 @@ const btnCloseStore = $('btn-close-store');
 const btnDismissStore = $('btn-dismiss-store');
 
 function openStore(initialTab) {
-  if (storeModal) {
-    storeModal.classList.remove('hidden');
-    if (initialTab) switchStoreTab(initialTab);
-    vibe(15);
-  }
+  // Menu toko/store dinonaktifkan sementara (dimute)
+  return;
 }
 
 function closeStore() {
@@ -9754,7 +10175,7 @@ function switchStoreTab(tabKey) {
   }
 }
 
-if (btnStore) btnStore.onclick = () => openStore('all');
+if (btnStore) btnStore.onclick = (e) => { if (e) { e.preventDefault(); e.stopPropagation(); } };
 if (btnCloseStore) btnCloseStore.onclick = closeStore;
 if (btnDismissStore) btnDismissStore.onclick = closeStore;
 if (storeModal) {
@@ -9894,9 +10315,19 @@ osCards.forEach(card => {
 
 // ─── Theme Manager ───
 const themeCards = document.querySelectorAll('.theme-card');
+const ALL_THEME_CLASSES = [
+  'theme-os-native', 'theme-win', 'theme-mac', 'theme-ubuntu',
+  'theme-dark', 'theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord',
+  'theme-racing', 'theme-anime', 'theme-sakura', 'theme-pastel'
+];
+const VALID_THEMES = ['os-native', 'dark', 'retro', 'cyberpunk', 'stealth', 'nord', 'racing', 'anime', 'sakura', 'pastel'];
+
 function applyTheme(theme) {
-  theme = theme || 'os-native';
-  document.body.classList.remove('theme-os-native', 'theme-win', 'theme-mac', 'theme-ubuntu', 'theme-dark', 'theme-retro', 'theme-cyberpunk', 'theme-stealth', 'theme-nord');
+  if (!theme || !VALID_THEMES.includes(theme)) {
+    theme = 'os-native';
+    localStorage.setItem('digi_theme', 'os-native');
+  }
+  document.body.classList.remove(...ALL_THEME_CLASSES);
 
   if (theme === 'os-native') {
     document.body.classList.add('theme-os-native');
@@ -9912,6 +10343,15 @@ function applyTheme(theme) {
   localStorage.setItem('digi_theme', theme);
   const activeFont = localStorage.getItem('digi_font') || 'default';
   applyFont(activeFont);
+}
+
+const btnResetThemeDefault = $('btn-reset-theme-default');
+if (btnResetThemeDefault) {
+  btnResetThemeDefault.addEventListener('click', () => {
+    playClickSound();
+    vibe(20);
+    applyTheme('os-native');
+  });
 }
 
 themeCards.forEach(card => {
@@ -9995,6 +10435,8 @@ fontCards.forEach(card => {
 
 // Migration from legacy theme-as-os or defaults
 let savedTheme = localStorage.getItem('digi_theme') || 'os-native';
+const urlThemeParam = new URLSearchParams(window.location.search).get('theme');
+if (urlThemeParam) savedTheme = urlThemeParam;
 let savedOS = localStorage.getItem('digi_os');
 if (!savedOS) {
   if (savedTheme === 'win' || savedTheme === 'mac' || savedTheme === 'ubuntu') {
@@ -12064,19 +12506,24 @@ function areWordsSimilar(w1, w2) {
   return false;
 }
 
+const commonIndoDuplication = new Set([
+  'masing', 'tiba', 'pelan', 'kira', 'sama', 'hati', 'pura', 'sia', 'kadang', 'benar', 'betul', 'kata', 'anak', 'orang',
+  'pagi', 'malam', 'siang', 'hari', 'jalan', 'coba', 'tanya', 'mudah'
+]);
+
 // Deteksi dan bersihkan pengulangan frasa/kalimat beruntun (misal 'jadikan check point jadikan check point')
 function deduplicateRepeatedPhrases(text) {
   if (!text) return '';
   let words = text.trim().split(/\s+/);
-  if (words.length < 3) return text;
+  if (words.length < 2) return text;
 
-  // 1. Deteksi pengulangan blok kata majemuk beruntun (dari 25 kata turun ke 2 kata)
+  // 1. Deteksi pengulangan blok kata majemuk beruntun (dari 20 kata turun ke 2 kata)
   let changed = true;
   let iterations = 0;
   while (changed && iterations < 10) {
     changed = false;
     iterations++;
-    const maxSpan = Math.min(25, Math.floor(words.length / 2));
+    const maxSpan = Math.min(20, Math.floor(words.length / 2));
     for (let span = maxSpan; span >= 2; span--) {
       for (let i = 0; i <= words.length - (span * 2); i++) {
         let matchCount = 0;
@@ -12097,16 +12544,13 @@ function deduplicateRepeatedPhrases(text) {
   }
 
   // 2. Deteksi pengulangan kata tunggal yang tidak wajar (kecuali kata ulang sah Bahasa Indonesia)
-  const commonIndoDuplication = new Set([
-    'masing', 'tiba', 'pelan', 'kira', 'sama', 'hati', 'pura', 'sia', 'kadang', 'benar', 'betul', 'kata', 'anak', 'orang'
-  ]);
   const resultWords = [];
   for (let i = 0; i < words.length; i++) {
     const curr = words[i];
     const prev = resultWords[resultWords.length - 1];
     if (prev && cleanAiWord(curr) === cleanAiWord(prev)) {
       const clean = cleanAiWord(curr);
-      if (!commonIndoDuplication.has(clean) && clean.length > 2) {
+      if (!commonIndoDuplication.has(clean)) {
         continue;
       }
     }
@@ -12129,7 +12573,6 @@ function mergeTranscripts(existing, incoming) {
   // 1. Jika teks baru persis sama atau sudah berada di ujung teks lama
   if (existLower === incLower || existLower.endsWith(incLower)) return existing;
   if (incLower.startsWith(existLower)) return incoming;
-  if (existLower.includes(incLower)) return existing;
 
   // 2. Normalisasi kata gabung umum (misal 'jadi kan' vs 'jadikan')
   const normExist = existLower.replace(/\bjadi\s+kan\b/g, 'jadikan');
@@ -12137,30 +12580,37 @@ function mergeTranscripts(existing, incoming) {
   if (normExist.endsWith(normInc)) return existing;
   if (normInc.startsWith(normExist)) return incoming;
 
-  // 3. Deteksi tumpang tindih kata (suffix-to-prefix overlap cerdas)
+  // 3. Normalisasi kata bersih (tanpa tanda baca)
   const existWords = existing.split(/\s+/);
   const incWords = incoming.split(/\s+/);
+  const existClean = existWords.map(cleanAiWord).filter(Boolean);
+  const incClean = incWords.map(cleanAiWord).filter(Boolean);
 
-  const existClean = existWords.map(cleanAiWord);
-  const incClean = incWords.map(cleanAiWord);
+  const existCleanStr = existClean.join(' ');
+  const incCleanStr = incClean.join(' ');
 
+  if (existCleanStr === incCleanStr || existCleanStr.endsWith(incCleanStr)) return existing;
+  if (incCleanStr.startsWith(existCleanStr)) return incoming;
+  if (existCleanStr.includes(incCleanStr)) return existing;
+
+  // 4. Deteksi tumpang tindih kata (suffix-to-prefix overlap cerdas, termasuk 1 kata)
   const maxOverlap = Math.min(existWords.length, incWords.length);
   for (let len = maxOverlap; len >= 1; len--) {
     let matchCount = 0;
     for (let k = 0; k < len; k++) {
-      if (areWordsSimilar(existClean[existWords.length - len + k], incClean[k])) {
+      if (areWordsSimilar(existClean[existClean.length - len + k], incClean[k])) {
         matchCount++;
       }
     }
-    if (matchCount >= Math.ceil(len * 0.8) && matchCount >= 2) {
+    const threshold = len === 1 ? 1 : Math.ceil(len * 0.8);
+    if (matchCount >= threshold) {
       const nonOverlapping = incWords.slice(len).join(' ');
       const merged = nonOverlapping ? (existing + ' ' + nonOverlapping) : existing;
       return deduplicateRepeatedPhrases(merged);
     }
   }
 
-  // 4. Deteksi apakah incoming mengulangi sebagian besar kalimat existing dari awal
-  // Kasus: Google STT mengulang buffer audio lama ditambah kata baru di ujung
+  // 5. Deteksi apakah incoming mengulangi sebagian besar kalimat existing dari awal (revisi buffer STT)
   let prefixMatch = 0;
   for (let k = 0; k < maxOverlap; k++) {
     if (areWordsSimilar(existClean[k], incClean[k])) {
@@ -12169,7 +12619,7 @@ function mergeTranscripts(existing, incoming) {
       break;
     }
   }
-  if (prefixMatch >= 3 && prefixMatch >= Math.floor(existWords.length * 0.6)) {
+  if (prefixMatch >= 2 && prefixMatch >= Math.floor(existClean.length * 0.5)) {
     return incoming.length >= existing.length ? incoming : existing;
   }
 
@@ -12186,19 +12636,19 @@ function getAiMicStateConfig(state) {
     return {
       phase1: t('ai_mic_listen_1', currentUiLang === 'id' ? 'Mendengarkan...' : 'Listening...'),
       phase2: t('ai_mic_listen_2', currentUiLang === 'id' ? 'Ketuk untuk berhenti' : 'Tap to stop'),
-      color: '#3fb950'
+      color: 'var(--accent)'
     };
   } else if (state === 'saved') {
     return {
       phase1: t('ai_mic_saved_1', currentUiLang === 'id' ? 'Teks tersimpan' : 'Transcript saved'),
       phase2: t('ai_mic_saved_2', currentUiLang === 'id' ? 'Ketuk Mic untuk lanjut bicara' : 'Tap Mic to resume'),
-      color: '#58a6ff'
+      color: 'var(--accent)'
     };
   } else {
     return {
       phase1: t('ai_mic_ready_1', currentUiLang === 'id' ? 'Siap Mendikte' : 'Ready to Dictate'),
       phase2: t('ai_mic_ready_2', currentUiLang === 'id' ? 'Ketuk Mic untuk bicara' : 'Tap Mic to speak'),
-      color: ''
+      color: 'var(--text-dim)'
     };
   }
 }
@@ -12250,10 +12700,13 @@ function updateAiMicUI(forceReset = false) {
 
 function commitCurrentSession() {
   if (currentSessionFinal) {
-    aiAccumulatedText = [aiAccumulatedText, currentSessionFinal].filter(Boolean).join(' ').trim();
+    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionFinal).trim();
     currentSessionFinal = '';
   }
   currentSessionInterim = ''; // Interim tidak pernah di-commit agar tidak menumpuk tebakan salah
+  if (aiAutoSend) {
+    lastSentLength = aiAccumulatedText.length;
+  }
   aiCursorPos = aiAccumulatedText.length;
 }
 
@@ -12351,6 +12804,7 @@ function startAiSpeechSession() {
 
       for (let i = 0; i < event.results.length; ++i) {
         const item = event.results[i];
+        if (!item || !item[0]) continue;
         const piece = item[0].transcript.trim();
         if (!piece) continue;
         if (item.isFinal) {
@@ -12360,15 +12814,32 @@ function startAiSpeechSession() {
         }
       }
 
-      currentSessionFinal = finalPieces.join(' ');
-      currentSessionInterim = interimPieces.join(' ');
+      // Gabungkan final chunks secara cerdas tanpa pengulangan buffer
+      let mergedFinal = '';
+      for (const piece of finalPieces) {
+        mergedFinal = mergeTranscripts(mergedFinal, piece);
+      }
+      currentSessionFinal = mergedFinal;
 
-      // Teks utuh live di layar
-      const liveText = [aiAccumulatedText, currentSessionFinal, currentSessionInterim].filter(Boolean).join(' ');
+      // Gabungkan interim chunks secara cerdas
+      let mergedInterim = '';
+      for (const piece of interimPieces) {
+        mergedInterim = mergeTranscripts(mergedInterim, piece);
+      }
+      currentSessionInterim = mergedInterim;
+
+      // Satukan final dan interim sesi saat ini
+      const currentSessionText = mergeTranscripts(currentSessionFinal, currentSessionInterim);
+
+      // Teks utuh live di layar (menggabungkan teks tersimpan + sesi suara aktif tanpa duplikasi)
+      const liveText = mergeTranscripts(aiAccumulatedText, currentSessionText);
 
       // Auto-Kirim: HANYA kirim teks yang sudah FINAL
       if (aiAutoSend) {
-        const confirmedSoFar = [aiAccumulatedText, currentSessionFinal].filter(Boolean).join(' ');
+        const confirmedSoFar = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+        if (lastSentLength > confirmedSoFar.length) {
+          lastSentLength = confirmedSoFar.length;
+        }
         if (confirmedSoFar.length > lastSentLength) {
           const diff = confirmedSoFar.slice(lastSentLength).trim();
           if (diff) {
@@ -14137,11 +14608,33 @@ if (chipCtx) {
   chipCtx.addEventListener('click', () => {
     playClickSound();
     vibe(15);
-    autoSwitchContextEnabled = !autoSwitchContextEnabled;
-    localStorage.setItem('digi_smart_context_auto', autoSwitchContextEnabled ? 'true' : 'false');
-    updateSmartContextUI();
-    if (autoSwitchContextEnabled && lastAppContext) {
-      handleAppContextUpdate(lastAppContext);
+    openWindowSwitcherModal();
+  });
+}
+
+const btnCloseWinSw = $('btn-close-win-switcher');
+if (btnCloseWinSw) {
+  btnCloseWinSw.addEventListener('click', () => {
+    playClickSound();
+    vibe(10);
+    closeWindowSwitcherModal();
+  });
+}
+
+const btnRefreshWinSw = $('btn-refresh-win-switcher');
+if (btnRefreshWinSw) {
+  btnRefreshWinSw.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    openWindowSwitcherModal();
+  });
+}
+
+const modalWinSw = $('modal-window-switcher');
+if (modalWinSw) {
+  modalWinSw.addEventListener('click', (e) => {
+    if (e.target === modalWinSw) {
+      closeWindowSwitcherModal();
     }
   });
 }
