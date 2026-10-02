@@ -1934,7 +1934,7 @@ body.is-fullscreen {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99999;
+  z-index: 100000000 !important;
   opacity: 1;
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
   pointer-events: auto;
@@ -1943,6 +1943,13 @@ body.is-fullscreen {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+}
+/* Pastikan tidak ada pop-up, banner, atau modal yang muncul saat flash screen aktif */
+body:has(#splash-screen:not(.fade-out)) .orientation-guard,
+body:has(#splash-screen:not(.fade-out)) .reconnect-banner,
+body:has(#splash-screen:not(.fade-out)) .smart-context-toast,
+body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
+  display: none !important;
 }
 .splash-content {
   display: flex;
@@ -5263,14 +5270,14 @@ body.is-fullscreen {
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-title">DigiKeyboard</div>
-      <div class="splash-sub">by King Ali Studio</div>
+      <div class="splash-sub">by King Ali Studiō</div>
     </div>
   </div>
 
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
     <div class="left-controls">
-      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" data-i18n-title="brand_title" title="About DigiKeyboard - King Ali Studio">
+      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" data-i18n-title="brand_title" title="About DigiKeyboard - King Ali Studiō">
         <span class="logo">
           <span>DigiKeyboard</span>
         </span>
@@ -7193,7 +7200,7 @@ body.is-fullscreen {
         <div style="margin-top:4px;">
           <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);">DigiKeyboard v1.17.0</span>
         </div>
-        <div style="margin-top:6px;font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.2px;">by King Ali Studio</div>
+        <div style="margin-top:6px;font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.2px;">by King Ali Studiō</div>
         <div style="margin-top:4px;font-size:11px;color:var(--text-dim);line-height:1.4;" data-i18n="about_desc">Virtual &amp; Remote PC Input Emulation System with Haptic Feedback and AI Workstation Deck</div>
       </div>
 
@@ -7310,6 +7317,7 @@ let lastPongTime = Date.now();
 let retryCount = 0;
 let reconnectTimer = null;
 let isScanning = false;
+let isSplashScreenActive = true;
 let modLockMode = localStorage.getItem('digi_mod_mode') || 'lock'; // 'lock' (Aktif Terus / Default), 'oneshot' (1x), 'hold' (manual)
 let autoSwitchContextEnabled = localStorage.getItem('digi_smart_context_auto') !== 'false';
 let lastAppContext = null;
@@ -7318,6 +7326,7 @@ let toastTimeout = null;
 // ── Industry Standard Dual-Language Translation System (en / id) ──
 const I18N = {
   en: {
+    brand_title: "About DigiKeyboard - King Ali Studiō",
     // Header & Quick Modes
     quick_keyboard: "PC Keyboard",
     quick_gamepad: "Game Controller",
@@ -7535,6 +7544,7 @@ const I18N = {
     about_contact: "CONTACT US"
   },
   id: {
+    brand_title: "Tentang DigiKeyboard - King Ali Studiō",
     // Header & Quick Modes
     quick_keyboard: "Keyboard PC",
     quick_gamepad: "Gamepad Konsol",
@@ -8134,6 +8144,7 @@ if (btnControlDeck) {
 }
 
 function openAboutModal() {
+  if (isSplashScreenActive) return;
   const modal = $('modal-about');
   if (!modal) return;
   modal.classList.remove('hidden');
@@ -8352,6 +8363,7 @@ function escapeHtml(str) {
 }
 
 function showSmartContextToast(app, mode) {
+  if (isSplashScreenActive) return;
   const toast = $('smart-context-toast');
   const toastText = $('smart-context-toast-text');
   if (!toast || !toastText) return;
@@ -8764,6 +8776,7 @@ document.addEventListener('visibilitychange', () => {
 
 // ── Reconnection Assistant & Network Scanner UI ──
 function showReconnectBanner() {
+  if (isSplashScreenActive) return;
   const banner = $('reconnect-banner');
   if (!banner) return;
   const title = $('rc-title');
@@ -8787,6 +8800,7 @@ function hideReconnectBanner() {
 }
 
 function openReconnectModal() {
+  if (isSplashScreenActive) return;
   const modal = $('modal-reconnect');
   if (!modal) return;
   const hostEl = $('lbl-current-host');
@@ -14060,9 +14074,12 @@ if (splashScreen) {
   setTimeout(() => {
     splashScreen.classList.add('fade-out');
     setTimeout(() => {
+      isSplashScreenActive = false;
       if (splashScreen.parentNode) splashScreen.remove();
     }, 280);
   }, 1050);
+} else {
+  isSplashScreenActive = false;
 }
 
 // Wire up Language Switcher Click Handlers

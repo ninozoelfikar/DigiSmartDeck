@@ -510,3 +510,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - Nol emoji / emotikon di seluruh berkas dan UI.
   - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 31. CATATAN CHECKPOINT (v0.9.27 - Tipografi King Ali Studiō & Proteksi Mutlak Bebas Pop-up Saat Flash Screen)
+- **Tipografi King Ali Studiō (Huruf o dengan Garis Atas / Macron):**
+  - Mengubah penulisan nama studio menjadi "King Ali Studiō" dengan karakter 'ō' (U+014D):
+    - Subtitle layar pembuka / flash screen (`.splash-sub`): "by King Ali Studiō".
+    - Header atas tombol branding (`#btn-brand-toggle`): tooltip title "About DigiKeyboard - King Ali Studiō" (EN) / "Tentang DigiKeyboard - King Ali Studiō" (ID).
+    - Modal Tentang / Informasi Aplikasi (`#modal-about`): subtitle pahlawan "by King Ali Studiō".
+    - Kamus terjemahan `I18N.en` dan `I18N.id` untuk entri `brand_title`.
+- **Proteksi Mutlak Bebas Pop-up Saat Flash Screen (Splash Screen):**
+  - Memastikan antarmuka bersih tanpa gangguan pop-up, modal, banner, atau toast apa pun selama layar pembuka (flash screen 1050ms) aktif:
+    - Lapisan CSS Guard: Menambahkan aturan selektor `body:has(#splash-screen:not(.fade-out))` yang secara eksplisit menyembunyikan `.orientation-guard`, `.reconnect-banner`, `.smart-context-toast`, dan seluruh `.modal-backdrop` dengan `display: none !important;`.
+    - Level z-index: Menaikkan `z-index` `.splash-screen` menjadi `100000000 !important;` agar selalu menempati lapisan teratas tanpa potensi tembus pandang atau bleed-through.
+    - Lapisan JavaScript Guard: Menambahkan state `isSplashScreenActive = true` yang memblokir pemanggilan fungsi `showSmartContextToast()`, `showReconnectBanner()`, `openReconnectModal()`, dan `openAboutModal()` sampai flash screen selesai dan terhapus dari DOM.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan antarmuka.
+  - Suara klik mekanikal (`playClickSound()`) dan efek jingle ketikan startup tetap aktif sempurna.
+
