@@ -3477,6 +3477,13 @@ body.is-fullscreen {
   color: #3fb950;
   animation: ai-pulse-green 1.8s infinite ease-in-out;
 }
+.ai-btn-mic.recording svg {
+  animation: ai-mic-breathe 1.8s infinite ease-in-out;
+}
+@keyframes ai-mic-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
 @keyframes ai-pulse-green {
   0% {
     box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.65), 0 0 8px rgba(63, 185, 80, 0.4);
@@ -3494,6 +3501,13 @@ body.is-fullscreen {
   color: var(--text);
   text-align: center;
   letter-spacing: 0.2px;
+  min-height: 16px;
+  line-height: 16px;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+.ai-mic-status-label.anim-fade {
+  opacity: 0;
+  transform: translateY(-2px);
 }
 .ai-mic-hint {
   display: none !important;
@@ -5378,9 +5392,9 @@ body.is-fullscreen {
         </div>
         <div class="rc-channel-card">
           <div class="rc-channel-icon">
-            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="19" r="2"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7" fill="currentColor"/><path d="M12 11h4a2 2 0 0 1 2 2v2"/><circle cx="18" cy="17" r="1.5"/><path d="M12 13H8a2 2 0 0 0-2 2v1"/><rect x="4.5" y="16" width="3" height="3" rx="0.5"/></svg>
           </div>
-          <span class="rc-channel-name" data-i18n="rc_channel_usb">USB Interface</span>
+          <span class="rc-channel-name" data-i18n="rc_channel_usb">USB Cable</span>
           <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
         <div class="rc-channel-card">
@@ -6614,27 +6628,27 @@ body.is-fullscreen {
           <div class="theme-grid">
             <button class="theme-card active" data-theme="os-native" type="button">
               <div class="theme-preview tp-os-native"></div>
-              <span>Sesuai OS</span>
+              <span data-i18n="theme_os">Native OS</span>
             </button>
             <button class="theme-card" data-theme="dark" type="button">
               <div class="theme-preview tp-dark"></div>
-              <span>Dark Modern</span>
+              <span data-i18n="theme_dark">Dark Modern</span>
             </button>
             <button class="theme-card" data-theme="retro" type="button">
               <div class="theme-preview tp-retro"></div>
-              <span>Retro 90s</span>
+              <span data-i18n="theme_retro">Retro 90s</span>
             </button>
             <button class="theme-card" data-theme="cyberpunk" type="button">
               <div class="theme-preview tp-cyberpunk"></div>
-              <span>Cyberpunk</span>
+              <span data-i18n="theme_cyberpunk">Cyberpunk</span>
             </button>
             <button class="theme-card" data-theme="stealth" type="button">
               <div class="theme-preview tp-stealth"></div>
-              <span>Stealth</span>
+              <span data-i18n="theme_stealth">Stealth</span>
             </button>
             <button class="theme-card" data-theme="nord" type="button">
               <div class="theme-preview tp-nord"></div>
-              <span>Nord Arctic</span>
+              <span data-i18n="theme_nord">Nord Arctic</span>
             </button>
           </div>
         </div>
@@ -6648,8 +6662,8 @@ body.is-fullscreen {
           <div class="font-grid">
             <button class="font-card active" data-font="default" type="button">
               <span class="font-preview" style="font-family: inherit;">Aa 123</span>
-              <span class="font-name">Bawaan Tema</span>
-              <span class="font-sub">Otomatis tema/OS</span>
+              <span class="font-name" data-i18n="font_default_name">System Default</span>
+              <span class="font-sub" data-i18n="font_default_sub">Auto OS / Theme</span>
             </button>
             <button class="font-card" data-font="ubuntu" type="button">
               <span class="font-preview" style="font-family: 'Ubuntu', sans-serif;">Aa 123</span>
@@ -6693,8 +6707,8 @@ body.is-fullscreen {
             </button>
             <button class="font-card" data-font="system" type="button">
               <span class="font-preview" style="font-family: sans-serif;">Aa 123</span>
-              <span class="font-name">Sistem UI</span>
-              <span class="font-sub">Default Sans-Serif</span>
+              <span class="font-name" data-i18n="font_system_name">System UI</span>
+              <span class="font-sub" data-i18n="font_system_sub">Default Sans-Serif</span>
             </button>
           </div>
         </div>
@@ -6706,13 +6720,13 @@ body.is-fullscreen {
             <span data-i18n="st_key_size">Keyboard</span>
           </div>
           <div class="size-presets">
-            <button class="size-preset-btn key-preset-btn" data-size="compact">Kecil</button>
-            <button class="size-preset-btn key-preset-btn active" data-size="normal">Normal</button>
-            <button class="size-preset-btn key-preset-btn" data-size="large">Besar</button>
-            <button class="size-preset-btn key-preset-btn" data-size="xl">Ekstra</button>
+            <button class="size-preset-btn key-preset-btn" data-size="compact" data-i18n="size_compact">Compact</button>
+            <button class="size-preset-btn key-preset-btn active" data-size="normal" data-i18n="size_normal">Normal</button>
+            <button class="size-preset-btn key-preset-btn" data-size="large" data-i18n="size_large">Large</button>
+            <button class="size-preset-btn key-preset-btn" data-size="xl" data-i18n="size_xl">Extra</button>
           </div>
           <div class="setting-slider-row">
-            <span class="setting-slider-label">Tinggi: <b id="lbl-key-h">38px</b></span>
+            <span class="setting-slider-label"><span data-i18n="st_height">Height:</span> <b id="lbl-key-h">38px</b></span>
             <input type="range" id="slider-key-h" min="30" max="60" step="2" value="38" class="custom-slider">
           </div>
         </div>
@@ -6729,24 +6743,24 @@ body.is-fullscreen {
             <button class="pos-option-btn" id="opt-tp-off" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:var(--text-dim);"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg> <span data-i18n="st_tp_disable">Disabled</span></button>
           </div>
           <div id="tp-config-controls" style="transition: opacity 0.2s ease;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_pos">Posisi:</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_pos">Position:</div>
             <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
-              <button class="pos-option-btn active" id="opt-tp-top">▲ Top Docked</button>
-              <button class="pos-option-btn" id="opt-tp-bottom">▼ Bottom Docked</button>
+              <button class="pos-option-btn active" id="opt-tp-top" data-i18n="tp_dock_top">Top Docked</button>
+              <button class="pos-option-btn" id="opt-tp-bottom" data-i18n="tp_dock_bottom">Bottom Docked</button>
             </div>
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_scale">Ukuran:</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_scale">Size:</div>
             <div class="size-presets" id="tp-size-presets">
-              <button class="size-preset-btn tp-preset-btn" data-tpsize="compact">Kecil</button>
-              <button class="size-preset-btn tp-preset-btn active" data-tpsize="normal">Normal</button>
-              <button class="size-preset-btn tp-preset-btn" data-tpsize="large">Besar</button>
-              <button class="size-preset-btn tp-preset-btn" data-tpsize="xl">Ekstra</button>
+              <button class="size-preset-btn tp-preset-btn" data-tpsize="compact" data-i18n="size_compact">Compact</button>
+              <button class="size-preset-btn tp-preset-btn active" data-tpsize="normal" data-i18n="size_normal">Normal</button>
+              <button class="size-preset-btn tp-preset-btn" data-tpsize="large" data-i18n="size_large">Large</button>
+              <button class="size-preset-btn tp-preset-btn" data-tpsize="xl" data-i18n="size_xl">Extra</button>
             </div>
             <div class="setting-slider-row" style="margin-bottom:10px;">
-              <span class="setting-slider-label">Tinggi: <b id="lbl-tp-scale">100%</b></span>
+              <span class="setting-slider-label"><span data-i18n="st_height">Height:</span> <b id="lbl-tp-scale">100%</b></span>
               <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
             </div>
             <div class="setting-slider-row">
-              <span class="setting-slider-label"><span data-i18n="st_tp_speed">Sensitivitas:</span> <b id="tp-speed-val">1.2x</b></span>
+              <span class="setting-slider-label"><span data-i18n="st_tp_speed">Sensitivity:</span> <b id="tp-speed-val">1.2x</b></span>
               <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="custom-slider">
             </div>
           </div>
@@ -6756,15 +6770,15 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span data-i18n="st_mod_lock_title">Penguncian Tombol</span>
+            <span data-i18n="st_mod_lock_title">Modifier Lock</span>
           </div>
           <div class="size-presets" id="mod-lock-presets">
-            <button type="button" class="size-preset-btn mod-lock-btn active" data-modmode="lock"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>Aktif Terus</span></button>
-            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="oneshot"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Kunci 1x</span></button>
-            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="hold"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg> <span>Tahan Manual</span></button>
+            <button type="button" class="size-preset-btn mod-lock-btn active" data-modmode="lock"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span data-i18n="mod_lock_sticky">Sticky</span></button>
+            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="oneshot"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="mod_lock_oneshot">1-Shot</span></button>
+            <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="hold"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg> <span data-i18n="mod_lock_hold">Hold</span></button>
           </div>
           <div id="mod-lock-desc" style="font-size:11px;color:var(--text);margin-top:6px;line-height:1.4;">
-            <b>Aktif Terus:</b> Tombol modifier tetap aktif sampai ditekan kembali.
+            <b>Sticky Lock:</b> Modifiers remain engaged until toggled off.
           </div>
         </div>
 
@@ -6790,41 +6804,41 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/><path d="M2 8v8"/><path d="M22 8v8"/></svg>
-            <span data-i18n="st_haptic_title">Getaran &amp; Audio</span>
+            <span data-i18n="st_haptic_title">Haptic &amp; Audio</span>
           </div>
           <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;margin-bottom:8px;">
             <input type="checkbox" id="chk-haptic" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
-            <span data-i18n="st_haptic_enable">Getaran Haptik</span>
+            <span data-i18n="st_haptic_enable">Haptic Vibration</span>
           </label>
           <div id="haptic-strength-controls">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_haptic_intensity">Durasi:</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_haptic_intensity">Duration:</div>
             <div class="size-presets" id="haptic-presets">
-              <button class="size-preset-btn haptic-preset-btn" data-vibe="soft">Lembut (15ms)</button>
-              <button class="size-preset-btn haptic-preset-btn active" data-vibe="normal">Normal (30ms)</button>
-              <button class="size-preset-btn haptic-preset-btn" data-vibe="strong">Kuat (50ms)</button>
+              <button class="size-preset-btn haptic-preset-btn" data-vibe="soft" data-i18n="vibe_soft">Soft (15ms)</button>
+              <button class="size-preset-btn haptic-preset-btn active" data-vibe="normal" data-i18n="vibe_normal">Normal (30ms)</button>
+              <button class="size-preset-btn haptic-preset-btn" data-vibe="strong" data-i18n="vibe_strong">Strong (50ms)</button>
             </div>
             <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="st_haptic_test">Uji Getaran</span></button>
+              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="st_haptic_test">Test Vibration</span></button>
             </div>
             <div id="haptic-device-notice" style="display:none;"></div>
           </div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
             <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:2px 0;">
               <input type="checkbox" id="chk-sound" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
-              <span style="display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> <span data-i18n="st_sound_enable">Suara Mekanikal</span></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> <span data-i18n="st_sound_enable">Mechanical Sound</span></span>
             </label>
             <div id="sound-controls" style="margin-top:8px;">
               <div class="setting-slider-row" style="margin-bottom:6px;">
-                <span class="setting-slider-label">Volume: <b id="lbl-sound-vol">70%</b></span>
+                <span class="setting-slider-label"><span data-i18n="st_sound_vol">Volume:</span> <b id="lbl-sound-vol">70%</b></span>
                 <input type="range" id="slider-sound-vol" min="10" max="100" step="5" value="70" class="custom-slider">
               </div>
               <div class="size-presets" id="sound-vol-presets" style="margin-bottom:8px;">
-                <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="30">Pelan (30%)</button>
-                <button type="button" class="size-preset-btn sound-vol-preset-btn active" data-vol="70">Sedang (70%)</button>
-                <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="100">Keras (100%)</button>
+                <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="30" data-i18n="vol_low">Low (30%)</button>
+                <button type="button" class="size-preset-btn sound-vol-preset-btn active" data-vol="70" data-i18n="vol_med">Medium (70%)</button>
+                <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="100" data-i18n="vol_high">High (100%)</button>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
-                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <span data-i18n="st_sound_test">Uji Suara</span></button>
+                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <span data-i18n="st_sound_test">Test Audio</span></button>
               </div>
             </div>
           </div>
@@ -6919,7 +6933,7 @@ body.is-fullscreen {
     <div class="modal-header">
       <div class="modal-title">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span>DigiKeyboard Store</span>
+        <span data-i18n="store_modal_title">DigiKeyboard Store</span>
       </div>
       <button class="modal-close" id="btn-close-store" type="button">✕</button>
     </div>
@@ -7314,7 +7328,7 @@ const I18N = {
     rc_hint: "Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired.",
     rc_status_scanning: "Scanning",
     rc_channel_wifi: "Wi-Fi LAN",
-    rc_channel_usb: "USB Interface",
+    rc_channel_usb: "USB Cable",
     rc_channel_bt: "Bluetooth",
     rc_modal_title: "Host Discovery & Reconnection",
     rc_modal_desc: "When the local network changes or DHCP assigns a new IP address to the PC host, use the automatic subnet scanner below to rediscover the server.",
@@ -7359,6 +7373,12 @@ const I18N = {
     ai_mic_idle: "Tap Mic to Begin Dictation",
     ai_mic_listening: "Listening... (Tap to pause)",
     ai_mic_paused: "Transcript buffered. Tap Mic to resume",
+    ai_mic_listen_1: "Listening...",
+    ai_mic_listen_2: "Tap to stop",
+    ai_mic_saved_1: "Transcript saved",
+    ai_mic_saved_2: "Tap Mic to resume",
+    ai_mic_ready_1: "Ready to Dictate",
+    ai_mic_ready_2: "Tap Mic to speak",
     ai_dictation_lang: "Dictation Language",
     ai_transcript_empty: "Speak to dictate...",
     ai_auto_send: "Auto-Send",
@@ -7380,6 +7400,8 @@ const I18N = {
     st_theme: "Theme",
     st_font: "Typography",
     st_key_size: "Keyboard",
+    st_height: "Height:",
+    st_sound_vol: "Volume:",
     st_tp_title: "Trackpad",
     st_tp_status: "Status:",
     st_tp_enable: "Enabled",
@@ -7397,6 +7419,32 @@ const I18N = {
     st_haptic_test: "Test Vibration",
     st_sound_enable: "Mechanical Sound",
     st_sound_test: "Test Audio",
+    theme_os: "Native OS",
+    theme_dark: "Dark Modern",
+    theme_retro: "Retro 90s",
+    theme_cyberpunk: "Cyberpunk",
+    theme_stealth: "Stealth",
+    theme_nord: "Nord Arctic",
+    font_default_name: "System Default",
+    font_default_sub: "Auto OS / Theme",
+    font_system_name: "System UI",
+    font_system_sub: "Default Sans-Serif",
+    size_compact: "Compact",
+    size_normal: "Normal",
+    size_large: "Large",
+    size_xl: "Extra",
+    tp_dock_top: "Top Docked",
+    tp_dock_bottom: "Bottom Docked",
+    mod_lock_sticky: "Sticky",
+    mod_lock_oneshot: "1-Shot",
+    mod_lock_hold: "Hold",
+    vibe_soft: "Soft (15ms)",
+    vibe_normal: "Normal (30ms)",
+    vibe_strong: "Strong (50ms)",
+    vol_low: "Low (30%)",
+    vol_med: "Medium (70%)",
+    vol_high: "High (100%)",
+    store_modal_title: "DigiKeyboard Store",
     st_pwa_title: "Standalone Fullscreen Experience",
     st_pwa_sub: "For optimal typing performance without browser address bars or navigation popups:",
     st_pwa_box: "<b>Recommended Native Solution (Android):</b> Install the dedicated <b>DigiKeyboard APK</b> (True fullscreen, zero browser UI interference).<br><br><b>Chrome Web App:</b> Open the Chrome menu (⋮) and select <b>'Add to Home screen'</b>.",
@@ -7482,13 +7530,13 @@ const I18N = {
     util_modlock_title: "Kunci Modifier: Mode Kunci Tuts",
     util_smart_switch: "Smart Switch",
     util_smart_switch_title: "Auto-Switch Konteks Aplikasi Cerdas",
-    util_haptic: "Getar",
+    util_haptic: "Getaran",
     util_haptic_title: "Umpan Balik Getaran Sentuh",
-    util_sound: "Suara Klik",
+    util_sound: "Suara Tuts",
     util_sound_title: "Suara Klik Mekanikal",
     util_settings: "Pengaturan",
     util_settings_title: "Tampilan & Preferensi",
-    util_store: "Store",
+    util_store: "Toko",
     util_store_title: "Toko: Skin, Plugin & Lisensi",
 
     // Reconnection Overlay
@@ -7542,6 +7590,12 @@ const I18N = {
     ai_mic_idle: "Ketuk Mic untuk Mulai Dikte",
     ai_mic_listening: "Mendengarkan... (Ketuk untuk jeda)",
     ai_mic_paused: "Teks tersimpan. Ketuk Mic untuk lanjut bicara",
+    ai_mic_listen_1: "Mendengarkan...",
+    ai_mic_listen_2: "Ketuk untuk berhenti",
+    ai_mic_saved_1: "Teks tersimpan",
+    ai_mic_saved_2: "Ketuk Mic untuk lanjut bicara",
+    ai_mic_ready_1: "Siap Mendikte",
+    ai_mic_ready_2: "Ketuk Mic untuk bicara",
     ai_dictation_lang: "Bahasa Dikte",
     ai_transcript_empty: "Bicara untuk mendikte...",
     ai_auto_send: "Auto-Kirim",
@@ -7563,6 +7617,8 @@ const I18N = {
     st_theme: "Tema",
     st_font: "Tipografi",
     st_key_size: "Keyboard",
+    st_height: "Tinggi:",
+    st_sound_vol: "Volume:",
     st_tp_title: "Trackpad",
     st_tp_status: "Status:",
     st_tp_enable: "Aktif",
@@ -7580,6 +7636,32 @@ const I18N = {
     st_haptic_test: "Uji Getaran",
     st_sound_enable: "Suara Mekanikal",
     st_sound_test: "Uji Suara",
+    theme_os: "Sesuai OS",
+    theme_dark: "Dark Modern",
+    theme_retro: "Retro 90s",
+    theme_cyberpunk: "Cyberpunk",
+    theme_stealth: "Stealth",
+    theme_nord: "Nord Arctic",
+    font_default_name: "Bawaan Tema",
+    font_default_sub: "Otomatis tema/OS",
+    font_system_name: "Sistem UI",
+    font_system_sub: "Default Sans-Serif",
+    size_compact: "Kecil",
+    size_normal: "Normal",
+    size_large: "Besar",
+    size_xl: "Ekstra",
+    tp_dock_top: "Dock Atas",
+    tp_dock_bottom: "Dock Bawah",
+    mod_lock_sticky: "Aktif Terus",
+    mod_lock_oneshot: "Kunci 1x",
+    mod_lock_hold: "Tahan Manual",
+    vibe_soft: "Lembut (15ms)",
+    vibe_normal: "Normal (30ms)",
+    vibe_strong: "Kuat (50ms)",
+    vol_low: "Pelan (30%)",
+    vol_med: "Sedang (70%)",
+    vol_high: "Keras (100%)",
+    store_modal_title: "Toko DigiKeyboard",
     st_pwa_title: "Solusi Layar Penuh Bebas Pop-up",
     st_pwa_sub: "Untuk pengalaman mengetik terbaik tanpa pop-up peringatan Chrome dan tanpa bilah alamat:",
     st_pwa_box: "<b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiKeyboard APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br><b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>'Tambahkan ke Layar Utama' (Add shortcut)</b>.",
@@ -8148,6 +8230,7 @@ function switchAppMode(targetMode) {
     } else if (targetMode === 'present') {
       vibe(25);
     } else if (targetMode === 'ai') {
+      if (typeof updateAiMicUI === 'function') updateAiMicUI();
       vibe(25);
     } else if (targetMode === 'media') {
       vibe(25);
@@ -8634,9 +8717,15 @@ function showReconnectBanner() {
   const title = $('rc-title');
   const sub = $('rc-sub');
   const hint = $('rc-hint');
-  if (title) title.textContent = retryCount > 0 ? `Mencari PC (${retryCount}x)...` : 'Mencari Koneksi PC...';
-  if (sub) sub.textContent = 'Memindai seluruh jalur koneksi yang tersedia secara otomatis';
-  if (hint) hint.textContent = 'Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang';
+  if (title) {
+    if (currentUiLang === 'id') {
+      title.textContent = retryCount > 0 ? `Mencari PC (${retryCount}x)...` : 'Mencari Koneksi PC...';
+    } else {
+      title.textContent = retryCount > 0 ? `Searching Host (${retryCount}x)...` : 'Connecting to Host PC...';
+    }
+  }
+  if (sub) sub.textContent = t('rc_sub', currentUiLang === 'id' ? 'Memindai seluruh jalur koneksi yang tersedia secara otomatis' : 'Scanning available communication channels automatically');
+  if (hint) hint.textContent = t('rc_hint', currentUiLang === 'id' ? 'Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang' : 'Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired');
   banner.classList.remove('hidden');
 }
 
@@ -8695,10 +8784,13 @@ if (btnRcUsb) {
     if (typeof playClickSound === 'function') playClickSound();
     if (typeof vibe === 'function') vibe(15);
     const isCurrentUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    if (!isCurrentUsb && confirm("Beralih ke Koneksi Kabel USB?\n\nPastikan kabel USB sudah terhubung dari HP ke PC.\nBuka DigiKeyboard via USB (http://localhost:8080)?")) {
+    const confirmMsg = currentUiLang === 'id'
+      ? "Beralih ke Koneksi Kabel USB?\n\nPastikan kabel USB sudah terhubung dari HP ke PC.\nBuka DigiKeyboard via USB (http://localhost:8080)?"
+      : "Switch to USB Cable Connection?\n\nEnsure USB cable is connected from mobile to PC.\nOpen DigiKeyboard via USB (http://localhost:8080)?";
+    if (!isCurrentUsb && confirm(confirmMsg)) {
       window.location.href = 'http://localhost:' + (window.location.port || '8080');
     } else {
-      alert(
+      alert(currentUiLang === 'id' ? (
         "PANDUAN KONEKSI KABEL USB:\n\n" +
         "1. CARA 1: ADB FORWARDING (Otomatis & Tercepat):\n" +
         "   - Hubungkan kabel USB dari HP ke PC.\n" +
@@ -8709,7 +8801,18 @@ if (btnRcUsb) {
         "   - Hubungkan kabel USB ke PC.\n" +
         "   - Di HP: Buka Pengaturan -> Hotspot & Tethering -> Nyalakan 'Penambatan USB'.\n" +
         "   - PC dan HP akan otomatis terhubung via kabel langsung."
-      );
+      ) : (
+        "USB CABLE CONNECTION GUIDE:\n\n" +
+        "1. METHOD 1: ADB FORWARDING (Automatic & Fastest):\n" +
+        "   - Connect USB cable between phone and PC.\n" +
+        "   - Enable 'USB Debugging' in Developer Options.\n" +
+        "   - Host PC server automatically forwards port.\n" +
+        "   - Open Chrome on phone: http://localhost:8080\n\n" +
+        "2. METHOD 2: USB TETHERING (No Debugging Required):\n" +
+        "   - Connect USB cable to PC.\n" +
+        "   - On phone: Settings -> Hotspot & Tethering -> Turn on 'USB Tethering'.\n" +
+        "   - Phone and PC connect directly via cable."
+      ));
     }
   };
 }
@@ -8722,12 +8825,17 @@ if (btnRcBt) {
     if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.enableBluetoothHid === 'function') {
       window.DigiAndroidBridge.enableBluetoothHid();
     } else {
-      alert(
+      alert(currentUiLang === 'id' ? (
         "PANDUAN KONEKSI BLUETOOTH HID:\n\n" +
         "1. Mode Bluetooth HID Hardware didukung penuh pada aplikasi resmi DigiKeyboard Android (.apk).\n" +
         "2. Melalui aplikasi Android, HP Anda akan terdeteksi langsung sebagai keyboard & mouse Bluetooth native tanpa kabel atau jaringan Wi-Fi.\n" +
         "3. Untuk mengaktifkan, buka DigiKeyboard melalui aplikasi APK dan izinkan akses Bluetooth."
-      );
+      ) : (
+        "BLUETOOTH HID CONNECTION GUIDE:\n\n" +
+        "1. Hardware Bluetooth HID mode is natively supported in the official DigiKeyboard Android APK.\n" +
+        "2. Through the Android app, your phone is detected directly as a native Bluetooth keyboard & mouse without Wi-Fi or cables.\n" +
+        "3. To activate, launch DigiKeyboard via the APK and grant Bluetooth permissions."
+      ));
     }
   };
 }
@@ -10163,11 +10271,17 @@ const isTabletOrIos = /iPad|Macintosh/i.test(navigator.userAgent) || (!('vibrate
 const hapticNotice = $('haptic-device-notice');
 if (hapticNotice) {
   if (!('vibrate' in navigator)) {
-    hapticNotice.innerHTML = '<i>Perangkat ini (misal iPad/iPhone) tidak mendukung motor getar web oleh Apple. Anda dapat mengaktifkan <b>Suara Klik Mekanikal</b> di bawah sebagai alternatif umpan balik sentuhan.</i>';
+    hapticNotice.innerHTML = currentUiLang === 'id'
+      ? '<i>Perangkat ini (misal iPad/iPhone) tidak mendukung motor getar web oleh Apple. Anda dapat mengaktifkan <b>Suara Mekanikal</b> di bawah sebagai alternatif umpan balik sentuhan.</i>'
+      : '<i>This device (e.g. iPad/iPhone) does not support Web Vibration API. You can enable <b>Mechanical Sound</b> below for tactile feedback.</i>';
   } else if (!isMobileDevice) {
-    hapticNotice.innerHTML = '<i>Perangkat ini terdeteksi sebagai PC/Laptop (tidak memiliki motor getar fisik).</i>';
+    hapticNotice.innerHTML = currentUiLang === 'id'
+      ? '<i>Perangkat ini terdeteksi sebagai PC/Laptop (tidak memiliki motor getar fisik).</i>'
+      : '<i>This device is detected as PC/Laptop (lacks physical vibration motor).</i>';
   } else {
-    hapticNotice.innerHTML = '<i>Catatan Tablet: Banyak tablet Android/iPad dari pabrik tidak dipasang motor getar fisik. Jika tablet Anda tidak bergetar, aktifkan <b>Suara Klik Mekanikal</b> di bawah.</i>';
+    hapticNotice.innerHTML = currentUiLang === 'id'
+      ? '<i>Catatan Tablet: Banyak tablet Android/iPad dari pabrik tidak dipasang motor getar fisik. Jika tablet Anda tidak bergetar, aktifkan <b>Suara Mekanikal</b> di bawah.</i>'
+      : '<i>Tablet note: Many tablets lack a physical vibration motor. If your tablet does not vibrate, enable <b>Mechanical Sound</b> below.</i>';
   }
 }
 
@@ -10175,7 +10289,9 @@ const btnTestHaptic = $('btn-test-haptic');
 if (btnTestHaptic) {
   btnTestHaptic.addEventListener('click', () => {
     if (!('vibrate' in navigator)) {
-      alert('Perangkat / peramban ini tidak mendukung Web Vibration API (seperti iPad / iPhone). Silakan aktifkan opsi Suara Klik Mekanikal.');
+      alert(currentUiLang === 'id'
+        ? 'Perangkat / peramban ini tidak mendukung Web Vibration API (seperti iPad / iPhone). Silakan aktifkan opsi Suara Mekanikal.'
+        : 'This device/browser does not support the Web Vibration API (e.g. iPad/iPhone). Please enable Mechanical Key Sound.');
       return;
     }
     try {
@@ -10225,7 +10341,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
 if (btnPwaInstall) {
   btnPwaInstall.addEventListener('click', async () => {
     if (!deferredInstallPrompt) {
-      alert('Untuk memasang di HP tanpa pop-up Chrome:\n\n1. Ketuk menu titik tiga (⋮) di pojok kanan atas Chrome.\n2. Pilih "Tambahkan ke Layar Utama" (Add to Home screen).\n\nAtau gunakan aplikasi native DigiKeyboard APK untuk pengalaman layar penuh murni 100% bebas pop-up.');
+      alert(currentUiLang === 'id'
+        ? 'Untuk memasang di HP tanpa pop-up Chrome:\n\n1. Ketuk menu titik tiga (⋮) di pojok kanan atas Chrome.\n2. Pilih "Tambahkan ke Layar Utama" (Add to Home screen).\n\nAtau gunakan aplikasi native DigiKeyboard APK untuk pengalaman layar penuh murni 100% bebas pop-up.'
+        : 'To install without browser popups:\n\n1. Tap the three dots menu (⋮) in Chrome.\n2. Select "Add to Home screen".\n\nOr install the native DigiKeyboard APK for true fullscreen experience.');
       return;
     }
     try {
@@ -10235,7 +10353,9 @@ if (btnPwaInstall) {
         if (pwaInstallGroup) pwaInstallGroup.style.display = 'none';
       }
     } catch(err) {
-      alert('Chrome membatasi instalasi PWA pada jaringan Wi-Fi lokal HTTP.\n\nSolusi Mudah:\nBuka menu titik tiga (⋮) di Chrome > pilih "Tambahkan ke Layar Utama" (Add shortcut).');
+      alert(currentUiLang === 'id'
+        ? 'Chrome membatasi instalasi PWA pada jaringan Wi-Fi lokal HTTP.\n\nSolusi Mudah:\nBuka menu titik tiga (⋮) di Chrome > pilih "Tambahkan ke Layar Utama" (Add shortcut).'
+        : 'Chrome restricts PWA install on local HTTP.\n\nSimple Solution:\nOpen Chrome menu (⋮) > select "Add to Home screen".');
     }
     deferredInstallPrompt = null;
   });
@@ -11982,24 +12102,67 @@ function mergeTranscripts(existing, incoming) {
   return deduplicateRepeatedPhrases(merged);
 }
 
+let aiMicCycleTimer = null;
+let aiMicTextPhase = 0;
+
+function getAiMicTextPair() {
+  if (aiSpeechWanted) {
+    return [
+      t('ai_mic_listen_1', currentUiLang === 'id' ? 'Mendengarkan...' : 'Listening...'),
+      t('ai_mic_listen_2', currentUiLang === 'id' ? 'Ketuk untuk berhenti' : 'Tap to stop')
+    ];
+  } else if (aiAccumulatedText.trim()) {
+    return [
+      t('ai_mic_saved_1', currentUiLang === 'id' ? 'Teks tersimpan' : 'Transcript saved'),
+      t('ai_mic_saved_2', currentUiLang === 'id' ? 'Ketuk Mic untuk lanjut bicara' : 'Tap Mic to resume')
+    ];
+  } else {
+    return [
+      t('ai_mic_ready_1', currentUiLang === 'id' ? 'Siap Mendikte' : 'Ready to Dictate'),
+      t('ai_mic_ready_2', currentUiLang === 'id' ? 'Ketuk Mic untuk bicara' : 'Tap Mic to speak')
+    ];
+  }
+}
+
+function renderAiMicStatusText() {
+  const statusEl = $('ai-mic-status');
+  if (!statusEl) return;
+  const pair = getAiMicTextPair();
+  const text = pair[aiMicTextPhase % pair.length];
+  statusEl.textContent = text;
+  if (aiSpeechWanted) {
+    statusEl.style.color = '#3fb950';
+  } else if (aiAccumulatedText.trim()) {
+    statusEl.style.color = '#58a6ff';
+  } else {
+    statusEl.style.color = '';
+  }
+}
+
+function startAiMicCycle() {
+  if (aiMicCycleTimer) clearInterval(aiMicCycleTimer);
+  aiMicCycleTimer = setInterval(() => {
+    const statusEl = $('ai-mic-status');
+    if (!statusEl) return;
+    statusEl.classList.add('anim-fade');
+    setTimeout(() => {
+      aiMicTextPhase = (aiMicTextPhase + 1) % 2;
+      renderAiMicStatusText();
+      statusEl.classList.remove('anim-fade');
+    }, 280);
+  }, 2400);
+}
+
 function updateAiMicUI() {
   const micBtn = $('btn-ai-mic');
-  const statusEl = $('ai-mic-status');
   if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
+  aiMicTextPhase = 0;
+  const statusEl = $('ai-mic-status');
   if (statusEl) {
-    if (aiSpeechWanted) {
-      statusEl.textContent = currentUiLang === 'id' ? 'Mendengarkan... (Ketuk untuk jeda)' : 'Listening... (Tap to pause)';
-      statusEl.style.color = '#3fb950';
-    } else {
-      if (aiAccumulatedText.trim()) {
-        statusEl.textContent = currentUiLang === 'id' ? 'Teks tersimpan. Ketuk Mic untuk lanjut bicara' : 'Transcript buffered. Tap Mic to resume';
-        statusEl.style.color = '#58a6ff';
-      } else {
-        statusEl.textContent = currentUiLang === 'id' ? 'Ketuk Mic untuk Mulai Dikte' : 'Tap Mic to Begin Dictation';
-        statusEl.style.color = '';
-      }
-    }
+    statusEl.classList.remove('anim-fade');
   }
+  renderAiMicStatusText();
+  startAiMicCycle();
 }
 
 function commitCurrentSession() {

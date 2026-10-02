@@ -464,5 +464,31 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Nol emoji di seluruh kode, antarmuka, kamus terjemahan, dan log.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) tetap aktif sempurna.
 
+---
+
+## 29. CATATAN CHECKPOINT (v0.9.25 - Mekanisme Dinamis Status Mic AI, Ikon Standar USB, & Penyatuan Bahasa 100%)
+- **Mekanisme Teks Dinamis Berganti pada Mic AI Workstation:**
+  - Status teks di bawah tombol mikrofon kini berganti secara otomatis (2 fase siklus) dengan transisi halus (`opacity` & `translateY` 0.28s) sehingga sistem terasa hidup, pintar, dan matang:
+    - Saat Mendengarkan: Fase 1 "Mendengarkan..." -> Fase 2 "Ketuk untuk berhenti".
+    - Saat Teks Tersimpan: Fase 1 "Teks tersimpan" -> Fase 2 "Ketuk Mic untuk lanjut bicara".
+    - Saat Siap/Idle: Fase 1 "Siap Mendikte" -> Fase 2 "Ketuk Mic untuk bicara".
+  - Tombol mic berdenyut halus (*breathing animation*) saat sesi perekaman suara aktif.
+- **Ikon Standar Industri USB:**
+  - Mengganti ikon rantai (*chain/link*) pada kartu channel rekoneksi dengan simbol standar industri USB trident SVG yang presisi.
+- **Penyatuan Bahasa 100% Konsisten (ID / EN):**
+  - Seluruh teks yang sebelumnya tercampur atau hardcoded telah diintegrasikan dengan kamus `I18N`:
+    - Kartu tema: Native OS / Sesuai OS, Dark Modern, Retro 90s, Cyberpunk, Stealth, Nord Arctic.
+    - Tipografi: Bawaan Tema / System Default, Sistem UI / System UI.
+    - Ukuran keyboard & trackpad: Kecil / Compact, Normal / Normal, Besar / Large, Ekstra / Extra.
+    - Posisi dock trackpad: Dock Atas / Top Docked, Dock Bawah / Bottom Docked.
+    - Penguncian tombol: Aktif Terus / Sticky, Kunci 1x / 1-Shot, Tahan Manual / Hold.
+    - Preset getaran & volume audio: Lembut, Normal, Kuat / Pelan, Sedang, Keras.
+    - Chip deck utilitas: Toko / Store, Getaran / Haptics, Suara Tuts / Key Sound.
+    - Dialog peringatan dan konfirmasi (USB Cable switch, Bluetooth HID guide, Web Vibration notice, PWA install prompt) sepenuhnya bilingual sesuai preferensi bahasa aktif.
+- **Kepatuhan Aturan Mutlak:**
+  - Nol emoji / emotikon di seluruh berkas dan UI.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+
 
 
