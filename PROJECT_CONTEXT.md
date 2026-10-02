@@ -392,4 +392,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Stik analog kini bergerak halus dan hening tanpa bunyi klik berulang saat diarahkan ke berbagai sudut.
   - Efek suara klik mekanikal (`playClickSound()`) tetap dipertahankan penuh pada seluruh tombol aksi lainnya (L1, L2, R1, R2, Segitiga, Lingkaran, Silang, Kotak, Select, dan Start).
 
+---
+
+## 26. CATATAN CHECKPOINT (v0.9.22 - Standarisasi Terminologi Standar Industri & Dukungan Antarmuka Dua Bahasa EN / ID)
+- **Standarisasi Seluruh Teks Antarmuka ke Standar Industri:**
+  - Menggantikan salinan informal, kasual, atau sisa prompt buatan AI dengan terminologi teknis profesional standar industri periferal emulasi nirkabel.
+  - Mencakup top navigation bar, floating control deck, modal rekoneksi jaringan/IP discovery, editor trackpad real-time, dialog pengaturan & remap gamepad, workstation dikte audio AI, modal pengaturan sistem & tema, modal toko produk, serta modal tentang aplikasi.
+- **Dukungan Dua Bahasa Lengkap (English & Bahasa Indonesia):**
+  - Bahasa default awal disetel ke English (`en`) untuk kenyamanan standardisasi internasional, dengan dukungan penuh terjemahan Bahasa Indonesia (`id`).
+  - Kamus terjemahan `I18N` terpasang di client-side JavaScript dengan mekanisme update reaktif berbasis atribut `data-i18n`, `data-i18n-title`, dan `data-i18n-placeholder`.
+- **Mode Penggantian Bahasa Interaktif di Menu & Pengaturan:**
+  - Tombol alih bahasa interaktif terpasang di Menu Floating Control Deck (Seksi 1) dan di dalam modal Pengaturan (`#settings-modal`).
+  - Preferensi bahasa disimpan secara persisten di `localStorage` (`digi_ui_lang`).
+  - Preset pintasan prompt AI otomatis menyesuaikan antara varian bahasa Inggris (`Continue`, `Proceed`, `Fix Bug`, `Generate Docs`, `Create Checkpoint`) dan varian bahasa Indonesia saat bahasa antarmuka diganti.
+- **Kepatuhan Aturan Mutlak Repositori:**
+  - Nol emoji / zero emoticons di seluruh kode, log terminal, antarmuka, dan teks asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan umpan balik getar (`vibe()`) selalu dipertahankan pada seluruh tombol alih bahasa dan elemen dialog.
+
+
 

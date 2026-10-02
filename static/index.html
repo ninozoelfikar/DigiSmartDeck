@@ -329,7 +329,7 @@ html, body {
   white-space: nowrap;
   transition: all .12s;
 }
-.tbtn.on {
+.tbtn.on, .tbtn.active {
   background: var(--key-active-bg);
   border-color: var(--key-active-border);
   color: #fff;
@@ -605,6 +605,9 @@ html, body {
 .deck-chips {
   display: grid;
   gap: 8px;
+}
+.deck-chips-lang {
+  grid-template-columns: repeat(2, 1fr);
 }
 .deck-chips-layers {
   grid-template-columns: repeat(4, 1fr);
@@ -5126,13 +5129,13 @@ body.is-fullscreen {
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
     <div class="left-controls">
-      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" title="Tentang DigiKeyboard - King Ali Studio">
+      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" data-i18n-title="brand_title" title="About DigiKeyboard - King Ali Studio">
         <span class="logo">
           <span>DigiKeyboard</span>
         </span>
       </div>
 
-      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" title="Status Koneksi">
+      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" data-i18n-title="conn_status_title" title="Connection Status">
         <span class="dot"></span>
         <span id="badge-icon">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
@@ -5144,35 +5147,35 @@ body.is-fullscreen {
     <div class="right-controls">
       <!-- Quick Mode Switcher (Beside Menu Sandwich Button) -->
       <div class="header-modes" id="header-modes">
-        <button type="button" class="header-mode-btn" id="quick-mode-standard" title="Keyboard PC">
+        <button type="button" class="header-mode-btn" id="quick-mode-standard" data-i18n-title="quick_keyboard" title="PC Keyboard">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
         </button>
-        <button type="button" class="header-mode-btn" id="quick-mode-game" title="Game Console">
+        <button type="button" class="header-mode-btn" id="quick-mode-game" data-i18n-title="quick_gamepad" title="Game Controller">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
         </button>
-        <button type="button" class="header-mode-btn" id="quick-mode-present" title="Slide Remote" style="display:none;">
+        <button type="button" class="header-mode-btn" id="quick-mode-present" data-i18n-title="quick_presenter" title="Presentation Remote" style="display:none;">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
         </button>
-        <button type="button" class="header-mode-btn" id="quick-mode-ai" title="AI Workstation">
+        <button type="button" class="header-mode-btn" id="quick-mode-ai" data-i18n-title="quick_ai" title="AI Workstation">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
         </button>
-        <button type="button" class="header-mode-btn" id="quick-mode-media" title="Media Controller" style="display:none;">
+        <button type="button" class="header-mode-btn" id="quick-mode-media" data-i18n-title="quick_media" title="Media Controller" style="display:none;">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/><line x1="19" x2="19" y1="5" y2="19"/></svg>
         </button>
-        <button type="button" class="header-mode-btn" id="quick-mode-canvas" title="Mode Canvas" style="display:none;">
+        <button type="button" class="header-mode-btn" id="quick-mode-canvas" data-i18n-title="quick_canvas" title="Drawing Canvas" style="display:none;">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/><path d="m15 5 3 3"/><path d="M4 20h16"/></svg>
         </button>
       </div>
 
       <!-- Dev Controls (Fullscreen & Reload) di Bar Atas -->
-      <button type="button" class="header-mode-btn" id="btn-ai-fs" title="Layar Penuh (Fullscreen)">
+      <button type="button" class="header-mode-btn" id="btn-ai-fs" data-i18n-title="toggle_fullscreen" title="Toggle Fullscreen">
         <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
       </button>
-      <button type="button" class="header-mode-btn" id="btn-ai-reload" title="Muat Ulang Halaman (Reload)">
+      <button type="button" class="header-mode-btn" id="btn-ai-reload" data-i18n-title="reload_app" title="Reload Application">
         <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
       </button>
 
-      <button type="button" class="deck-trigger-btn" id="btn-control-deck" title="Menu" aria-label="Menu">
+      <button type="button" class="deck-trigger-btn" id="btn-control-deck" data-i18n-title="menu_button" title="Menu" aria-label="Menu">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
       </button>
     </div>
@@ -5184,27 +5187,39 @@ body.is-fullscreen {
     <div class="deck-header">
       <div class="deck-title">
         <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-        <span>Menu</span>
+        <span data-i18n="menu_title">Menu</span>
       </div>
-      <button type="button" class="deck-close" id="btn-close-deck" title="Tutup Menu">
+      <button type="button" class="deck-close" id="btn-close-deck" data-i18n-title="close_menu" title="Close Menu">
         <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
 
     <div class="deck-body">
+      <!-- SECTION 1: INTERFACE LANGUAGE -->
+      <div class="deck-section">
+        <div class="deck-section-title">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span data-i18n="deck_lang_title">INTERFACE LANGUAGE</span>
+        </div>
+        <div class="deck-chips deck-chips-lang">
+          <button type="button" class="tbtn deck-chip active" id="btn-ui-lang-en">English</button>
+          <button type="button" class="tbtn deck-chip" id="btn-ui-lang-id">Bahasa Indonesia</button>
+        </div>
+      </div>
+
       <!-- SECTION 2: KEYBOARD LAYERS -->
       <div class="deck-section">
         <div class="deck-section-title">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          <span>LAYER TAMBAHAN</span>
+          <span data-i18n="deck_layers_title">KEYBOARD LAYERS</span>
         </div>
         <div class="deck-chips deck-chips-layers">
           <button type="button" class="tbtn deck-chip" id="btn-fn">Fn (F1-F12)</button>
-          <button type="button" class="tbtn deck-chip" id="btn-nav">Navigasi</button>
+          <button type="button" class="tbtn deck-chip" id="btn-nav" data-i18n="layer_nav">Navigation</button>
           <button type="button" class="tbtn deck-chip" id="btn-num">123 (Numpad)</button>
           <button type="button" class="tbtn deck-chip" id="btn-sc">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span>Shortcut</span>
+            <span data-i18n="layer_shortcuts">Shortcuts</span>
           </button>
         </div>
       </div>
@@ -5213,32 +5228,32 @@ body.is-fullscreen {
       <div class="deck-section">
         <div class="deck-section-title">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>FITUR &amp; PERANGKAT</span>
+          <span data-i18n="deck_utils_title">SYSTEM &amp; UTILITIES</span>
         </div>
         <div class="deck-chips deck-chips-utils">
-          <button type="button" class="tbtn on deck-chip" id="btn-tp" title="Toggle Trackpad Laptop">
+          <button type="button" class="tbtn on deck-chip" id="btn-tp" data-i18n-title="util_trackpad_title" title="Toggle Laptop Trackpad Deck">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="7"/><line x1="12" y1="6" x2="12" y2="10"/></svg>
-            <span>Trackpad</span>
+            <span data-i18n="util_trackpad">Trackpad</span>
           </button>
-          <button type="button" class="tbtn on deck-chip" id="btn-latch" title="Kunci Modifier: Aktif Terus">
+          <button type="button" class="tbtn on deck-chip" id="btn-latch" data-i18n-title="util_modlock_title" title="Modifier Lock: Toggle Sticky Mode">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>Mod Lock</span>
+            <span data-i18n="util_modlock">Mod Lock</span>
           </button>
-          <button type="button" class="tbtn on deck-chip" id="btn-haptic" title="Haptic feedback">
+          <button type="button" class="tbtn on deck-chip" id="btn-haptic" data-i18n-title="util_haptic_title" title="Haptic Touch Feedback">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="10" height="18" x="7" y="3" rx="2"/><path d="M2 8v8"/><path d="M22 8v8"/></svg>
-            <span>Getar</span>
+            <span data-i18n="util_haptic">Haptics</span>
           </button>
-          <button type="button" class="tbtn deck-chip" id="btn-sound" title="Suara Klik Mekanikal">
+          <button type="button" class="tbtn deck-chip" id="btn-sound" data-i18n-title="util_sound_title" title="Mechanical Key Click Audio">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-            <span>Suara</span>
+            <span data-i18n="util_sound">Key Sound</span>
           </button>
-          <button type="button" class="tbtn deck-chip" id="btn-settings" title="Pengaturan Tema &amp; Ukuran">
+          <button type="button" class="tbtn deck-chip" id="btn-settings" data-i18n-title="util_settings_title" title="Appearance &amp; Preferences">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span>Pengaturan</span>
+            <span data-i18n="util_settings">Settings</span>
           </button>
-          <button type="button" class="tbtn deck-chip" id="btn-store" title="Toko Resmi: Skin, Plugin &amp; Lisensi Pro" style="color:var(--accent);border-color:rgba(88,166,255,0.4);">
+          <button type="button" class="tbtn deck-chip" id="btn-store" data-i18n-title="util_store_title" title="Store: Skins, Plugins &amp; Licenses" style="color:var(--accent);border-color:rgba(88,166,255,0.4);">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span>Store</span>
+            <span data-i18n="util_store">Store</span>
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-fs" title="Layar Penuh" style="display:none;">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
@@ -5265,31 +5280,31 @@ body.is-fullscreen {
         </div>
       </div>
       <div class="rc-modal-content">
-        <div class="rc-modal-title" id="rc-title">Mencari Koneksi PC...</div>
-        <div class="rc-modal-sub" id="rc-sub">Memindai seluruh jalur koneksi yang tersedia secara otomatis</div>
-        <div class="rc-modal-hint" id="rc-hint">Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang</div>
+        <div class="rc-modal-title" id="rc-title" data-i18n="rc_title">Connecting to Host PC...</div>
+        <div class="rc-modal-sub" id="rc-sub" data-i18n="rc_sub">Scanning available communication channels automatically</div>
+        <div class="rc-modal-hint" id="rc-hint" data-i18n="rc_hint">Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired.</div>
       </div>
       <div class="rc-channels-grid">
         <div class="rc-channel-card">
           <div class="rc-channel-icon">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
           </div>
-          <span class="rc-channel-name">Wi-Fi LAN</span>
-          <span class="rc-channel-status">Memindai</span>
+          <span class="rc-channel-name" data-i18n="rc_channel_wifi">Wi-Fi LAN</span>
+          <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
         <div class="rc-channel-card">
           <div class="rc-channel-icon">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </div>
-          <span class="rc-channel-name">Kabel USB</span>
-          <span class="rc-channel-status">Memindai</span>
+          <span class="rc-channel-name" data-i18n="rc_channel_usb">USB Interface</span>
+          <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
         <div class="rc-channel-card">
           <div class="rc-channel-icon">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
           </div>
-          <span class="rc-channel-name">Bluetooth</span>
-          <span class="rc-channel-status">Memindai</span>
+          <span class="rc-channel-name" data-i18n="rc_channel_bt">Bluetooth</span>
+          <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
       </div>
     </div>
@@ -5321,10 +5336,10 @@ body.is-fullscreen {
         <!-- Real-Time Trackpad Editor Overlay -->
         <div class="tp-editor-overlay hidden" id="tp-editor-overlay">
           <div class="tp-editor-center-deck">
-            <!-- Line 1: Togel Trackpad (On/Off) & Togel Posisi (Atas/Bawah) -->
+            <!-- Line 1: Trackpad State & Position Alignment -->
             <div class="tp-editor-row">
               <div class="tp-editor-item">
-                <span class="tp-editor-lbl">Trackpad:</span>
+                <span class="tp-editor-lbl" data-i18n="tp_editor_trackpad">Trackpad:</span>
                 <div class="tp-toggle-group">
                   <button type="button" class="tp-toggle-btn active" id="tp-toggle-on">On</button>
                   <button type="button" class="tp-toggle-btn" id="tp-toggle-off">Off</button>
@@ -5332,26 +5347,26 @@ body.is-fullscreen {
               </div>
 
               <div class="tp-editor-item">
-                <span class="tp-editor-lbl">Posisi:</span>
+                <span class="tp-editor-lbl" data-i18n="tp_editor_position">Position:</span>
                 <div class="tp-toggle-group">
-                  <button type="button" class="tp-toggle-btn active" id="tp-toggle-pos-top">Atas</button>
-                  <button type="button" class="tp-toggle-btn" id="tp-toggle-pos-bottom">Bawah</button>
+                  <button type="button" class="tp-toggle-btn active" id="tp-toggle-pos-top" data-i18n="tp_editor_top">Top</button>
+                  <button type="button" class="tp-toggle-btn" id="tp-toggle-pos-bottom" data-i18n="tp_editor_bottom">Bottom</button>
                 </div>
               </div>
             </div>
 
-            <!-- Line 2: Pengaturan Tinggi Trackpad -->
+            <!-- Line 2: Trackpad Surface Height -->
             <div class="tp-editor-row tp-editor-row-slider">
               <div class="tp-editor-item tp-editor-slider-item">
-                <span class="tp-editor-lbl">Tinggi: <b id="tp-editor-scale-val">100%</b></span>
+                <span class="tp-editor-lbl"><span data-i18n="tp_editor_height">Height:</span> <b id="tp-editor-scale-val">100%</b></span>
                 <input type="range" class="tp-editor-slider custom-slider" id="tp-editor-slider" min="60" max="180" step="5" value="100">
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tombol Roda Gigi Settings Trackpad -->
-        <button type="button" class="tp-gear-btn" id="tp-gear-btn" title="Editor Trackpad">
+        <!-- Trackpad Configuration Gear Button -->
+        <button type="button" class="tp-gear-btn" id="tp-gear-btn" data-i18n-title="tp_gear_title" title="Trackpad Configuration">
           <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
@@ -5577,7 +5592,7 @@ body.is-fullscreen {
     </div>
 
     <!-- Gear Button (Settings: Stick/Dpad toggle & Button Remap) -->
-    <button class="gp-gear-btn" id="gp-gear-btn" title="Pengaturan Gamepad" type="button" aria-label="Pengaturan Gamepad">
+    <button class="gp-gear-btn" id="gp-gear-btn" data-i18n-title="gp_gear_title" title="Gamepad Settings" type="button" aria-label="Gamepad Settings">
       <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
         <circle cx="12" cy="12" r="3"/>
@@ -5593,21 +5608,21 @@ body.is-fullscreen {
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
-            <span>Pengaturan Gamepad</span>
+            <span data-i18n="gp_settings_title">Gamepad Configuration</span>
           </div>
-          <button class="gp-settings-close" id="btn-close-gp-settings" type="button" aria-label="Tutup">✕</button>
+          <button class="gp-settings-close" id="btn-close-gp-settings" type="button" aria-label="Close">✕</button>
         </div>
         <div class="gp-settings-body">
           <div class="gp-setting-row">
-            <span class="gp-setting-label">Kontrol Arah</span>
+            <span class="gp-setting-label" data-i18n="gp_dir_control">Directional Control</span>
             <div class="gp-toggle-group">
-              <button class="gp-toggle-btn active" id="btn-opt-stick" type="button">Stik Analog</button>
-              <button class="gp-toggle-btn" id="btn-opt-dpad" type="button">Arah Panah</button>
+              <button class="gp-toggle-btn active" id="btn-opt-stick" type="button" data-i18n="gp_stick">Analog Stick</button>
+              <button class="gp-toggle-btn" id="btn-opt-dpad" type="button" data-i18n="gp_dpad">D-Pad</button>
             </div>
           </div>
           <div class="gp-setting-row">
-            <span class="gp-setting-label">Konfigurasi Tombol</span>
-            <button class="gp-setting-action-btn" id="btn-open-gp-remap" type="button">Atur Mapping...</button>
+            <span class="gp-setting-label" data-i18n="gp_btn_config">Button Mapping</span>
+            <button class="gp-setting-action-btn" id="btn-open-gp-remap" type="button" data-i18n="gp_btn_remap">Configure Remap...</button>
           </div>
         </div>
       </div>
@@ -5620,21 +5635,21 @@ body.is-fullscreen {
       <div class="modal-header">
         <div class="modal-title">
           <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
-          <span>Kustomisasi Mapping Gamepad</span>
+          <span data-i18n="gp_remap_title">Gamepad Button Remapping</span>
         </div>
         <button class="modal-close" id="btn-close-gp-remap">✕</button>
       </div>
       <div class="modal-body" style="max-height:65vh;overflow-y:auto;">
-        <p style="font-size:11px;color:var(--text-dim);margin-bottom:12px;">
-          Pilih tombol keyboard PC dari menu drop-down untuk setiap tombol gamepad:
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:12px;" data-i18n="gp_remap_desc">
+          Assign a target PC keyboard key for each gamepad button:
         </p>
         <div class="gp-remap-grid" id="gp-remap-container">
           <!-- Dynamically populated via JS -->
         </div>
       </div>
       <div class="modal-footer" style="display:flex;justify-content:space-between;padding:12px;border-top:1px solid var(--key-border);">
-        <button class="deck-btn" id="btn-reset-gp-mapping" style="color:var(--danger);" type="button">Reset Default</button>
-        <button class="btn-primary" id="btn-save-gp-mapping" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:600;" type="button">Simpan &amp; Tutup</button>
+        <button class="deck-btn" id="btn-reset-gp-mapping" style="color:var(--danger);" type="button" data-i18n="gp_btn_reset">Reset Defaults</button>
+        <button class="btn-primary" id="btn-save-gp-mapping" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:600;" type="button" data-i18n="gp_btn_save">Save &amp; Close</button>
       </div>
     </div>
   </div>
@@ -6057,37 +6072,37 @@ body.is-fullscreen {
         </div>
       </div>
 
-      <!-- Kolom 2: Voice Typing / Dikte Suara Nirkabel -->
+      <!-- Column 2: Real-time Audio Dictation Deck -->
       <div class="ai-col-center">
         <div class="ai-mic-section">
-          <button type="button" class="ai-btn-mic" id="btn-ai-mic" title="Ketuk untuk mulai/berhenti dikte suara">
+          <button type="button" class="ai-btn-mic" id="btn-ai-mic" data-i18n-title="ai_mic_title" title="Toggle real-time audio dictation">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
           </button>
-          <div class="ai-mic-status-label" id="ai-mic-status">Ketuk Mic untuk Mulai Dikte</div>
+          <div class="ai-mic-status-label" id="ai-mic-status" data-i18n="ai_mic_idle">Tap Mic to Begin Dictation</div>
         </div>
 
-        <!-- Input Tersembunyi untuk Kompatibilitas -->
+        <!-- Hidden input element for speech synthesis bridge -->
         <input type="hidden" id="ai-voice-input">
 
-        <!-- Bar Bahasa di Sebelah Kiri Atas Box Text (di Luar Box Text) -->
+        <!-- Audio Dictation Language Bar -->
         <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:flex-start;width:100%;margin-bottom:4px;">
-          <div class="ai-lang-toggle" title="Pilih Bahasa Dikte Suara">
-            <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
-            <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
+          <div class="ai-lang-toggle" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
+            <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
+            <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
           </div>
         </div>
 
-        <!-- Kolom Hasil Ucapan yang Menampung Semua Karakter Secara Berkesinambungan -->
+        <!-- Continuous Speech Transcription Stream Container -->
         <div class="ai-transcript-box">
-          <div class="ai-transcript-text empty" id="ai-transcript-preview">Hasil ucapan Anda akan muncul di sini secara berkesinambungan...</div>
+          <div class="ai-transcript-text empty" id="ai-transcript-preview" data-i18n="ai_transcript_empty">Voice transcription stream will appear here in real time...</div>
           <div class="ai-transcript-actions">
-            <label class="ai-autosend-label" title="Kirim teks otomatis ke PC setiap selesai berbicara">
+            <label class="ai-autosend-label" data-i18n-title="ai_auto_send_title" title="Automatically transmit text to host upon silence detection">
               <input type="checkbox" id="ai-autosend-chk">
-              <span>Auto-Kirim</span>
+              <span data-i18n="ai_auto_send">Auto-Send</span>
             </label>
             <div class="ai-tr-btns">
-              <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear">Bersihkan</button>
-              <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send">Kirim ke PC</button>
+              <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear" data-i18n="ai_clear">Clear</button>
+              <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send" data-i18n="ai_send_host">Send to Host</button>
             </div>
           </div>
         </div>
@@ -6095,10 +6110,10 @@ body.is-fullscreen {
         <!-- Android-Style Soft QWERTY Keyboard (Tablet Only) -->
         <div class="ai-tablet-keyboard" id="ai-tablet-keyboard">
           <div class="ai-tk-control-bar">
-            <span class="ai-tk-ctrl-title">Target Keyboard</span>
-            <div class="ai-target-toggle" title="Target Kontrol Keyboard: PC atau Device (Kolom Teks)">
-              <button type="button" class="ai-btn-target" id="btn-tk-target-pc">PC</button>
-              <button type="button" class="ai-btn-target active" id="btn-tk-target-device">Device</button>
+            <span class="ai-tk-ctrl-title" data-i18n="ai_target_title">Keyboard Target</span>
+            <div class="ai-target-toggle" data-i18n-title="ai_target_title" title="Keyboard Routing Target: Host PC or Local Input">
+              <button type="button" class="ai-btn-target" id="btn-tk-target-pc" data-i18n="ai_target_pc">Host PC</button>
+              <button type="button" class="ai-btn-target active" id="btn-tk-target-device" data-i18n="ai_target_device">Device</button>
             </div>
           </div>
           <div class="ai-tk-row" id="ai-tk-row1">
@@ -6424,23 +6439,23 @@ body.is-fullscreen {
       <div class="modal-header">
         <div class="modal-title">
           <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          <span>Kustomisasi Shortcut Prompt AI</span>
+          <span data-i18n="ai_pe_title">AI Prompt Shortcut Configuration</span>
         </div>
         <button class="modal-close" id="btn-close-ai-prompt-edit" type="button">✕</button>
       </div>
 
       <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
-          Ubah nama tombol dan teks prompt perintah otomatis sesuai kebutuhan workflow coding Anda:
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;" data-i18n="ai_pe_desc">
+          Configure button labels and automated command prompts for your development workflow:
         </p>
         <div id="ai-prompt-edit-list" style="display: flex; flex-direction: column; gap: 8px;">
-          <!-- 5 rows diisi secara otomatis oleh JavaScript -->
+          <!-- Populated dynamically via JS -->
         </div>
       </div>
 
       <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-        <button class="cp-btn-aux" id="btn-reset-ai-prompts" type="button" style="padding: 6px 12px;">Reset Default</button>
-        <button class="btn-primary" id="btn-save-ai-prompts" type="button">Simpan &amp; Terapkan</button>
+        <button class="cp-btn-aux" id="btn-reset-ai-prompts" type="button" style="padding: 6px 12px;" data-i18n="ai_pe_reset">Reset Defaults</button>
+        <button class="btn-primary" id="btn-save-ai-prompts" type="button" data-i18n="ai_pe_save">Save &amp; Apply</button>
       </div>
     </div>
   </div>
@@ -6451,17 +6466,29 @@ body.is-fullscreen {
       <div class="modal-header">
         <div class="modal-title">
           <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>Pengaturan Tampilan</span>
+          <span data-i18n="st_title">Display &amp; System Preferences</span>
         </div>
         <button class="modal-close" id="btn-close-settings">✕</button>
       </div>
 
       <div class="modal-body">
+        <!-- INTERFACE LANGUAGE SECTION -->
+        <div class="setting-group">
+          <div class="setting-title">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span data-i18n="st_lang_title">Interface Language</span>
+          </div>
+          <div class="size-presets">
+            <button type="button" class="size-preset-btn st-lang-btn active" data-lang="en">English (US)</button>
+            <button type="button" class="size-preset-btn st-lang-btn" data-lang="id">Bahasa Indonesia</button>
+          </div>
+        </div>
+
         <!-- TARGET OS SELECTION SECTION -->
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
-            <span>Sistem Operasi (Target OS)</span>
+            <span data-i18n="st_target_os">Target Host Operating System</span>
           </div>
           <div class="os-grid">
             <button class="os-card active" data-os="win" type="button">
@@ -6498,7 +6525,7 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
-            <span>Tema / Skin Keyboard</span>
+            <span data-i18n="st_theme">Theme &amp; Visual Styling</span>
           </div>
           <div class="theme-grid">
             <button class="theme-card active" data-theme="os-native" type="button">
@@ -6532,7 +6559,7 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
-            <span>Font / Tipografi Tombol</span>
+            <span data-i18n="st_font">Keycap Typography</span>
           </div>
           <div class="font-grid">
             <button class="font-card active" data-font="default" type="button">
@@ -6592,7 +6619,7 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M21.3 8.7 8.7 21.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15.3 2.7c1-1 2.5-1 3.4 0l2.6 2.6c1 1 1 2.5 0 3.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/></svg>
-            <span>Ukuran Tombol Keyboard</span>
+            <span data-i18n="st_key_size">Keycap Dimensions</span>
           </div>
           <div class="size-presets">
             <button class="size-preset-btn key-preset-btn" data-size="compact">Kecil</button>
@@ -6610,20 +6637,20 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="14" x="3" y="5" rx="3"/><line x1="12" x2="12" y1="14" y2="19"/><line x1="3" x2="21" y1="14" y2="14"/></svg>
-            <span>Pengaturan Trackpad Laptop</span>
+            <span data-i18n="st_tp_title">Laptop Trackpad Configuration</span>
           </div>
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Status Dek Trackpad:</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_status">Trackpad Deck State:</div>
           <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
-            <button class="pos-option-btn active" id="opt-tp-on" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:#3fb950;"><polyline points="20 6 9 17 4 12"/></svg> <span>Aktif (Tampilkan)</span></button>
-            <button class="pos-option-btn" id="opt-tp-off" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:var(--text-dim);"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg> <span>Nonaktif (Matikan)</span></button>
+            <button class="pos-option-btn active" id="opt-tp-on" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:#3fb950;"><polyline points="20 6 9 17 4 12"/></svg> <span data-i18n="st_tp_enable">Enabled</span></button>
+            <button class="pos-option-btn" id="opt-tp-off" type="button"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:var(--text-dim);"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg> <span data-i18n="st_tp_disable">Disabled</span></button>
           </div>
           <div id="tp-config-controls" style="transition: opacity 0.2s ease;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Posisi Dek:</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_pos">Deck Alignment:</div>
             <div class="trackpad-pos-buttons" style="margin-bottom:12px;">
-              <button class="pos-option-btn active" id="opt-tp-top">▲ Posisi: Di Atas</button>
-              <button class="pos-option-btn" id="opt-tp-bottom">▼ Posisi: Di Bawah</button>
+              <button class="pos-option-btn active" id="opt-tp-top">▲ Top Docked</button>
+              <button class="pos-option-btn" id="opt-tp-bottom">▼ Bottom Docked</button>
             </div>
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Ukuran / Skala Trackpad:</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_tp_scale">Trackpad Surface Scale:</div>
             <div class="size-presets" id="tp-size-presets">
               <button class="size-preset-btn tp-preset-btn" data-tpsize="compact">Kecil</button>
               <button class="size-preset-btn tp-preset-btn active" data-tpsize="normal">Normal</button>
@@ -6635,7 +6662,7 @@ body.is-fullscreen {
               <input type="range" id="slider-tp-scale" min="60" max="180" step="5" value="100" class="custom-slider">
             </div>
             <div class="setting-slider-row">
-              <span class="setting-slider-label">Sensitivitas Kursor: <b id="tp-speed-val">1.2x</b></span>
+              <span class="setting-slider-label"><span data-i18n="st_tp_speed">Pointer Sensitivity:</span> <b id="tp-speed-val">1.2x</b></span>
               <input type="range" id="tp-speed" min="0.5" max="3.0" step="0.1" value="1.2" class="custom-slider">
             </div>
           </div>
@@ -6645,9 +6672,9 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>Penguncian Tombol Modifier (Shift / Ctrl / Alt / Win)</span>
+            <span data-i18n="st_mod_lock_title">Modifier Key Behavior (Shift / Ctrl / Alt / Win)</span>
           </div>
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Pilih bagaimana tombol Shift, Ctrl, Alt &amp; Win beroperasi saat dipencet:</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_mod_lock_sub">Select how modifier keys trigger during interaction:</div>
           <div class="size-presets" id="mod-lock-presets">
             <button type="button" class="size-preset-btn mod-lock-btn active" data-modmode="lock"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>Aktif Terus</span></button>
             <button type="button" class="size-preset-btn mod-lock-btn" data-modmode="oneshot"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Kunci 1x</span></button>
@@ -6662,21 +6689,21 @@ body.is-fullscreen {
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/><path d="M2 8v8"/><path d="M22 8v8"/></svg>
-            <span>Efek Getar Tombol (Haptic Feedback)</span>
+            <span data-i18n="st_haptic_title">Haptic &amp; Audio Feedback</span>
           </div>
           <label style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;user-select:none;padding:4px 0;margin-bottom:8px;">
             <input type="checkbox" id="chk-haptic" checked style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
-            <span>Getar saat tombol keyboard &amp; trackpad berhasil diklik</span>
+            <span data-i18n="st_haptic_enable">Enable tactile haptic vibration on keypress and trackpad taps</span>
           </label>
           <div id="haptic-strength-controls">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">Intensitas / Durasi Getaran:</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;" data-i18n="st_haptic_intensity">Haptic Pulse Duration:</div>
             <div class="size-presets" id="haptic-presets">
               <button class="size-preset-btn haptic-preset-btn" data-vibe="soft">Lembut (15ms)</button>
               <button class="size-preset-btn haptic-preset-btn active" data-vibe="normal">Normal (30ms)</button>
               <button class="size-preset-btn haptic-preset-btn" data-vibe="strong">Kuat (50ms)</button>
             </div>
             <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>Uji Getaran Sekarang</span></button>
+              <button type="button" class="btn-primary" id="btn-test-haptic" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="st_haptic_test">Test Vibration</span></button>
             </div>
             <div id="haptic-device-notice" style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4;"></div>
           </div>
@@ -6696,40 +6723,37 @@ body.is-fullscreen {
                 <button type="button" class="size-preset-btn sound-vol-preset-btn" data-vol="100">Keras (100%)</button>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
-                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <span>Uji Suara Klik</span></button>
+                <button type="button" class="btn-primary" id="btn-test-sound" style="font-size:11px;padding:4px 10px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <span data-i18n="st_sound_test">Test Switch Audio</span></button>
               </div>
             </div>
             <div style="font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.4;">
-              <i>Pastikan volume Media di HP menyala (tidak dalam mode senyap/silent). Pengaturan suara &amp; getar tersimpan mandiri di tiap peramban/perangkat.</i>
+              <i data-i18n="st_sound_notice">Ensure device media audio volume is enabled. Audio &amp; haptic preferences are persisted locally on this device.</i>
             </div>
           </div>
         </div>
 
-
-
-        <!-- PWA / STANDALONE INSTALLATION -->
+        <!-- STANDALONE / APP INSTALLATION -->
         <div class="setting-group" id="pwa-install-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-            <span>Solusi Layar Penuh Bebas Pop-up Chrome</span>
+            <span data-i18n="st_pwa_title">Standalone Fullscreen Experience</span>
           </div>
-          <div style="font-size:11px;color:var(--text);margin-bottom:8px;line-height:1.4;">
-            Untuk pengalaman mengetik terbaik tanpa pop-up peringatan Chrome dan tanpa bilah alamat:
+          <div style="font-size:11px;color:var(--text);margin-bottom:8px;line-height:1.4;" data-i18n="st_pwa_sub">
+            For optimal typing performance without browser address bars or navigation popups:
           </div>
-          <div style="font-size:11px;color:var(--text);margin-bottom:10px;line-height:1.4;background:rgba(255,255,255,0.04);padding:8px 10px;border-radius:6px;border:1px solid var(--border);">
-            <b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiKeyboard APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br>
-            <b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>"Tambahkan ke Layar Utama" (Add shortcut)</b>.
+          <div style="font-size:11px;color:var(--text);margin-bottom:10px;line-height:1.4;background:rgba(255,255,255,0.04);padding:8px 10px;border-radius:6px;border:1px solid var(--border);" data-i18n="st_pwa_box">
+            <b>Recommended Native Solution (Android):</b> Install the dedicated <b>DigiKeyboard APK</b> (True fullscreen, zero browser UI interference).<br><br><b>Chrome Web App:</b> Open the Chrome menu (⋮) and select <b>"Add to Home screen"</b>.
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <a href="/static/DigiKeyboard.apk" download="DigiKeyboard.apk" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:6px 14px;background:#0969da;color:#fff;border:1px solid #1f6feb;border-radius:6px;cursor:pointer;font-weight:600;"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Unduh DigiKeyboard.apk</a>
-            <button type="button" class="btn-primary" id="btn-pwa-install" style="font-size:11px;padding:6px 14px;background:#238636;color:#fff;border:1px solid #2ea043;border-radius:6px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> Pasang Pintasan ke Layar Utama</button>
+            <a href="/static/DigiKeyboard.apk" download="DigiKeyboard.apk" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:6px 14px;background:#0969da;color:#fff;border:1px solid #1f6feb;border-radius:6px;cursor:pointer;font-weight:600;"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> <span data-i18n="st_download_apk">Download DigiKeyboard APK</span></a>
+            <button type="button" class="btn-primary" id="btn-pwa-install" style="font-size:11px;padding:6px 14px;background:#238636;color:#fff;border:1px solid #2ea043;border-radius:6px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> <span data-i18n="st_pwa_install">Add to Home Screen</span></button>
           </div>
         </div>
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
         <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiKeyboard v1.5.0</span>
-        <button class="btn-primary" id="btn-save-settings">Selesai</button>
+        <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
   </div>
@@ -6741,21 +6765,21 @@ body.is-fullscreen {
     <div class="modal-header">
       <div class="modal-title">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
-        <span>Pemulihan Koneksi Wi-Fi</span>
+        <span data-i18n="rc_modal_title">Host Discovery &amp; Reconnection</span>
       </div>
       <button class="modal-close" id="btn-close-reconnect" type="button">✕</button>
     </div>
     <div class="modal-body">
-      <div style="font-size:12px;color:var(--text);line-height:1.5;">
-        Ketika router Wi-Fi baru saja restart, alamat IP PC biasanya berubah secara otomatis oleh DHCP router, menyebabkan browser tidak dapat terhubung ke IP lama.
+      <div style="font-size:12px;color:var(--text);line-height:1.5;" data-i18n="rc_modal_desc">
+        When the local network changes or DHCP assigns a new IP address to the PC host, use the automatic subnet scanner below to rediscover the server.
       </div>
 
       <!-- CURRENT CONNECTION STATUS CARD -->
       <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
-        <div style="font-size:11px;color:var(--text-dim);">Tujuan Host Saat Ini:</div>
+        <div style="font-size:11px;color:var(--text-dim);" data-i18n="rc_current_host">Current Host Endpoint:</div>
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
           <code id="lbl-current-host" style="font-size:13px;font-weight:700;color:var(--accent);font-family:monospace;">--</code>
-          <button type="button" class="btn-primary" id="btn-modal-retry" style="font-size:11px;padding:5px 12px;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> <span>Hubungkan Sekarang</span></button>
+          <button type="button" class="btn-primary" id="btn-modal-retry" style="font-size:11px;padding:5px 12px;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> <span data-i18n="rc_btn_retry">Connect Now</span></button>
         </div>
       </div>
 
@@ -6763,27 +6787,27 @@ body.is-fullscreen {
       <div class="setting-group" style="margin-top:4px;">
         <div class="setting-title">
           <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
-          <span>Pindai PC Otomatis di Jaringan Wi-Fi</span>
+          <span data-i18n="rc_scanner_title">Automatic Local Subnet Scanner</span>
         </div>
-        <div style="font-size:11px;color:var(--text-dim);line-height:1.4;">
-          Memindai alamat IP lokal (subnet) pada port 8080 untuk mendeteksi IP baru PC DigiKeyboard.
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.4;" data-i18n="rc_scanner_desc">
+          Scans active IP addresses on port 8080 across your local subnet to locate DigiKeyboard server.
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
-          <input type="text" id="input-scan-subnet" placeholder="Misal: 192.168.1." style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
-          <button type="button" class="btn-primary" id="btn-start-scan" style="font-size:11px;padding:7px 14px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg> <span>Mulai Pindai</span></button>
+          <input type="text" id="input-scan-subnet" data-i18n-placeholder="rc_scanner_placeholder" placeholder="e.g. 192.168.1." style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
+          <button type="button" class="btn-primary" id="btn-start-scan" style="font-size:11px;padding:7px 14px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg> <span data-i18n="rc_btn_start_scan">Start Scan</span></button>
         </div>
         <div class="scan-progress-bar">
           <div class="scan-progress-fill" id="scan-progress"></div>
         </div>
-        <div id="scan-status" style="font-size:11px;color:var(--text-dim);font-style:italic;">Siap memindai subnet.</div>
+        <div id="scan-status" style="font-size:11px;color:var(--text-dim);font-style:italic;" data-i18n="rc_scanner_ready">Ready to scan local subnet.</div>
 
         <!-- FOUND PC CARD -->
         <div id="scan-found-box" class="scan-found-card hidden">
           <div>
-            <div style="font-size:12px;font-weight:700;color:#3fb950;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> DigiKeyboard Ditemukan!</div>
+            <div style="font-size:12px;font-weight:700;color:#3fb950;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> <span data-i18n="rc_found_title">DigiKeyboard Server Located!</span></div>
             <div id="scan-found-text" style="font-size:11px;color:var(--text);margin-top:2px;">Host: <b id="scan-found-host">--</b></div>
           </div>
-          <button type="button" class="btn-primary" id="btn-jump-found" style="background:#238636;border-color:#2ea043;font-size:11px;padding:6px 12px;white-space:nowrap;">Buka Sekarang</button>
+          <button type="button" class="btn-primary" id="btn-jump-found" style="background:#238636;border-color:#2ea043;font-size:11px;padding:6px 12px;white-space:nowrap;" data-i18n="rc_btn_jump">Connect Now</button>
         </div>
       </div>
 
@@ -6791,20 +6815,20 @@ body.is-fullscreen {
       <div class="setting-group" style="margin-top:4px;">
         <div class="setting-title">
           <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-          <span>Beralih ke IP / Hostname Baru</span>
+          <span data-i18n="rc_manual_title">Direct IP / Hostname Endpoint</span>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" id="input-manual-host" placeholder="Misal: 192.168.1.45 atau Jarvis.local" style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
-          <button type="button" class="btn-primary" id="btn-apply-manual-host" style="font-size:11px;padding:7px 14px;white-space:nowrap;">Buka</button>
+          <input type="text" id="input-manual-host" data-i18n-placeholder="rc_manual_placeholder" placeholder="e.g. 192.168.1.45:8080 or Jarvis.local:8080" style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
+          <button type="button" class="btn-primary" id="btn-apply-manual-host" style="font-size:11px;padding:7px 14px;white-space:nowrap;" data-i18n="rc_btn_open">Connect</button>
         </div>
-        <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">
-          <i>Jika perangkat Anda mendukung mDNS, Anda juga bisa memasukkan nama hostname seperti <b>jarvis.local:8080</b> tanpa perlu mengingat angka IP.</i>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:2px;" data-i18n="rc_manual_hint">
+          <i>If your network supports mDNS, you can enter hostnames such as <b>jarvis.local:8080</b> directly without static IP configuration.</i>
         </div>
       </div>
     </div>
 
     <div class="modal-footer">
-      <button class="btn-primary" id="btn-dismiss-reconnect">Tutup</button>
+      <button class="btn-primary" id="btn-dismiss-reconnect" data-i18n="rc_btn_dismiss">Close</button>
     </div>
   </div>
 </div>
@@ -6824,19 +6848,19 @@ body.is-fullscreen {
     <div class="store-tab-bar">
       <button type="button" class="store-tab-btn active" data-store-tab="all">
         <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-        <span>Semua Produk</span>
+        <span data-i18n="store_tab_all">All Items</span>
       </button>
       <button type="button" class="store-tab-btn" data-store-tab="plugins">
         <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
-        <span>Plugin Pro</span>
+        <span data-i18n="store_tab_plugins">Pro Plugins</span>
       </button>
       <button type="button" class="store-tab-btn" data-store-tab="skins">
         <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
-        <span>Skin &amp; Audio</span>
+        <span data-i18n="store_tab_skins">Skins &amp; Audio</span>
       </button>
       <button type="button" class="store-tab-btn" data-store-tab="affiliate" style="color:#3fb950;">
         <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span>Jalur Afiliasi</span>
+        <span data-i18n="store_tab_affiliate">Partner Network</span>
       </button>
     </div>
 
@@ -6846,38 +6870,38 @@ body.is-fullscreen {
         <div class="store-card-header">
           <div class="store-card-title" style="color:#f1e05a;">
             <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" style="color:#f1e05a;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>Lisensi Pro All-Access (Lifetime Pass)</span>
+            <span data-i18n="store_pro_bundle_title">Pro All-Access Lifetime Pass</span>
           </div>
-          <span class="store-price-tag">Rp 99.000 <s style="opacity:0.6;font-size:10px;">Rp 250k</s></span>
+          <span class="store-price-tag">$6.99 / Rp 99.000 <s style="opacity:0.6;font-size:10px;">Rp 250k</s></span>
         </div>
-        <div class="store-card-desc">
-          Buka <b>SEMUA</b> fitur Pro, seluruh katalog Skin &amp; Switch Sound, serta semua Plugin Pro (Voice Typing, AutoText, AI Prompt, Macro) selamanya dalam 1 lisensi seumur hidup tanpa biaya langganan.
+        <div class="store-card-desc" data-i18n="store_pro_bundle_desc">
+          Unlock all Pro plugins, complete theme skins catalog, mechanical switch audio profiles, and unlimited voice dictation with a single perpetual license.
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <a href="https://mayar.link/digikeyboard-pro" target="_blank" rel="noopener noreferrer" class="store-card-btn gold">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span>Beli Akses Penuh (1-Klik QRIS / Card)</span>
+            <span data-i18n="store_pro_bundle_btn">Purchase Full Access (Instant QRIS / Card)</span>
           </a>
         </div>
       </div>
 
       <!-- SECTION: PRO PLUGINS -->
       <div class="store-item-plugins" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Katalog Plugin Pro</div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;" data-i18n="store_catalog_plugins">Professional Plugin Catalog</div>
         <div class="store-grid">
           <!-- Plugin 1: Voice Typing -->
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
                 <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                <span>Voice Typing Pro</span>
+                <span data-i18n="store_voice_title">Voice Dictation Pro</span>
               </div>
-              <span class="store-price-tag">Rp 49.000</span>
+              <span class="store-price-tag">$3.49 / Rp 49.000</span>
             </div>
-            <div class="store-card-desc">
-              Dikte suara mikrofon HP langsung tertulis real-time di PC (Word, Docs, IDE, Chat). Akurasi tinggi dari jarak santai.
+            <div class="store-card-desc" data-i18n="store_voice_desc">
+              Real-time speech-to-text dictation streamed directly to host PC applications with high linguistic accuracy.
             </div>
-            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-voice">Buka Plugin</button>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-voice" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
 
           <!-- Plugin 2: Advanced AutoText -->
@@ -6885,14 +6909,14 @@ body.is-fullscreen {
             <div class="store-card-header">
               <div class="store-card-title">
                 <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
-                <span>AutoText Expander</span>
+                <span data-i18n="store_autotext_title">AutoText Expander</span>
               </div>
-              <span class="store-price-tag">Rp 39.000</span>
+              <span class="store-price-tag">$2.79 / Rp 39.000</span>
             </div>
-            <div class="store-card-desc">
-              Template teks dinamis multi-baris, auto-date/jam, dan trigger prefix instan (misal ketik <code>;rek</code> langsung terketik nomor rekening).
+            <div class="store-card-desc" data-i18n="store_autotext_desc">
+              Custom multi-line text expansions, dynamic time-date stamps, and instant prefix macros for high-speed typing.
             </div>
-            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-autotext">Buka Plugin</button>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-autotext" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
 
           <!-- Plugin 3: AI Prompt Assistant -->
@@ -6900,14 +6924,14 @@ body.is-fullscreen {
             <div class="store-card-header">
               <div class="store-card-title">
                 <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-                <span>AI Prompt Assistant</span>
+                <span data-i18n="store_ai_title">AI Prompt Assistant</span>
               </div>
-              <span class="store-price-tag">Rp 29.000</span>
+              <span class="store-price-tag">$1.99 / Rp 29.000</span>
             </div>
-            <div class="store-card-desc">
-              Preset generator prompt terstruktur ke ChatGPT, Claude, Gemini &amp; Ollama dengan variabel kustom dalam 1 klik.
+            <div class="store-card-desc" data-i18n="store_ai_desc">
+              Structured prompt templates and quick macro execution for Gemini, Claude, ChatGPT, and local LLMs.
             </div>
-            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-ai">Buka Plugin</button>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-ai" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
 
           <!-- Plugin 4: Macro Chaining -->
@@ -6915,33 +6939,33 @@ body.is-fullscreen {
             <div class="store-card-header">
               <div class="store-card-title">
                 <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>Macro Chaining</span>
+                <span data-i18n="store_macro_title">Macro Sequencer</span>
               </div>
-              <span class="store-price-tag">Rp 29.000</span>
+              <span class="store-price-tag">$1.99 / Rp 29.000</span>
             </div>
-            <div class="store-card-desc">
-              Satu tombol mengeksekusi urutan kombinasi tombol berurutan dengan jeda presisi milidetik untuk game &amp; data entry.
+            <div class="store-card-desc" data-i18n="store_macro_desc">
+              Multi-key sequence automation with precise millisecond interval timings for gaming and productivity.
             </div>
-            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-macro">Buka Plugin</button>
+            <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-macro" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
         </div>
       </div>
 
       <!-- SECTION: SKINS & THEMES -->
       <div class="store-item-skins" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Koleksi Skin &amp; Switch Audio</div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;" data-i18n="store_skins_title">Theme Skins &amp; Acoustic Profiles</div>
         <div class="store-grid">
           <!-- Skin 1 -->
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
                 <div class="theme-preview tp-retro" style="width:16px;height:16px;border-radius:3px;"></div>
-                <span>Retro Mac 1984</span>
+                <span data-i18n="store_retro_title">Retro 1984 Classic</span>
               </div>
-              <span class="store-price-tag">Rp 10.000</span>
+              <span class="store-price-tag">$0.79 / Rp 10.000</span>
             </div>
-            <div class="store-card-desc">Estetika legendaris beige klasik era 1984 dengan aksen font serif.</div>
-            <button type="button" class="store-card-btn btn-buy-item" data-item="skin-retromac">Beli Skin</button>
+            <div class="store-card-desc" data-i18n="store_retro_desc">Iconic beige aesthetic reminiscent of 1980s computing hardware with serif keycap typography.</div>
+            <button type="button" class="store-card-btn btn-buy-item" data-item="skin-retromac" data-i18n="store_btn_buy_skin">Get Theme</button>
           </div>
 
           <!-- Skin 2 -->
@@ -6949,12 +6973,12 @@ body.is-fullscreen {
             <div class="store-card-header">
               <div class="store-card-title">
                 <div class="theme-preview tp-cyberpunk" style="width:16px;height:16px;border-radius:3px;"></div>
-                <span>Cyberpunk Chroma</span>
+                <span data-i18n="store_cyber_title">Cyberpunk Chroma</span>
               </div>
-              <span class="store-price-tag">Rp 10.000</span>
+              <span class="store-price-tag">$0.79 / Rp 10.000</span>
             </div>
-            <div class="store-card-desc">Nuansa neon ultraviolet reaktif dengan aksen font sci-fi Orbitron.</div>
-            <button type="button" class="store-card-btn btn-buy-item" data-item="skin-cyberpunk">Beli Skin</button>
+            <div class="store-card-desc" data-i18n="store_cyber_desc">Reactive neon ultraviolet styling with sci-fi display accents and Orbitron font.</div>
+            <button type="button" class="store-card-btn btn-buy-item" data-item="skin-cyberpunk" data-i18n="store_btn_buy_skin">Get Theme</button>
           </div>
 
           <!-- Switch Audio Pack -->
@@ -6962,54 +6986,54 @@ body.is-fullscreen {
             <div class="store-card-header">
               <div class="store-card-title">
                 <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-                <span>Holy Panda Switch</span>
+                <span data-i18n="store_audio_title">Tactile Switch Pack</span>
               </div>
-              <span class="store-price-tag">Rp 15.000</span>
+              <span class="store-price-tag">$0.99 / Rp 15.000</span>
             </div>
-            <div class="store-card-desc">Paket suara klik tactile renyah dan thock bass dalam switch mekanik premium.</div>
-            <button type="button" class="store-card-btn btn-buy-item" data-item="sound-holypanda">Beli Audio</button>
+            <div class="store-card-desc" data-i18n="store_audio_desc">Crisp tactile click acoustics and acoustic bottom-out dampening inspired by premium mechanical switches.</div>
+            <button type="button" class="store-card-btn btn-buy-item" data-item="sound-holypanda" data-i18n="store_btn_buy_sound">Get Audio</button>
           </div>
         </div>
       </div>
 
-      <!-- SECTION: JALUR AFILIASI MITRA -->
+      <!-- SECTION: PARTNER AFFILIATE PROGRAM -->
       <div class="store-item-affiliate" style="display:flex;flex-direction:column;gap:10px;">
         <div style="background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;align-items:center;gap:8px;color:#3fb950;font-weight:700;font-size:13px;">
             <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>Program Afiliasi &amp; Mitra Kreator DigiKeyboard</span>
+            <span data-i18n="store_affiliate_title">Partner &amp; Creator Affiliate Program</span>
           </div>
-          <div style="font-size:11.5px;color:var(--text);line-height:1.5;">
-            Dapatkan <b>komisi 30% hingga 40%</b> dari setiap penjualan Skin, Plugin Pro, maupun Lisensi All-Access yang berasal dari tautan referral unik Anda.
+          <div style="font-size:11.5px;color:var(--text);line-height:1.5;" data-i18n="store_affiliate_desc">
+            Earn 30% to 40% recurring revenue share on license, plugin, and skin sales generated via your unique referral links.
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
             <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:8px 10px;">
-              <div style="font-size:10px;color:var(--text-dim);">Komisi Skin &amp; Plugin</div>
+              <div style="font-size:10px;color:var(--text-dim);">Skin &amp; Plugin Share</div>
               <div style="font-size:14px;font-weight:700;color:#3fb950;margin-top:2px;">35% per Item</div>
             </div>
             <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:8px 10px;">
-              <div style="font-size:10px;color:var(--text-dim);">Komisi Lisensi Pro</div>
-              <div style="font-size:14px;font-weight:700;color:#3fb950;margin-top:2px;">Rp 30k – 75k</div>
+              <div style="font-size:10px;color:var(--text-dim);">Pro License Revenue</div>
+              <div style="font-size:14px;font-weight:700;color:#3fb950;margin-top:2px;">$2.50 – $5.00</div>
             </div>
             <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:8px 10px;">
-              <div style="font-size:10px;color:var(--text-dim);">Diskon Pengikut</div>
-              <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:2px;">10% Kupon</div>
+              <div style="font-size:10px;color:var(--text-dim);">Audience Coupon</div>
+              <div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:2px;">10% Discount</div>
             </div>
           </div>
           <div style="font-size:11px;color:var(--text-dim);line-height:1.4;">
-            Cocok untuk kreator TikTok, Instagram Reels, YouTube Shorts, tech reviewer, dan keyboard enthusiast. Bagikan video demo unik dan dapatkan penghasilan pasif otomatis.
+            Ideal for content creators, technology reviewers, and keyboard enthusiasts. Showcase workflow setups and monetize automatically.
           </div>
           <a href="https://mayar.link/affiliate/digikeyboard" target="_blank" rel="noopener noreferrer" class="store-card-btn primary" style="background:#238636;padding:9px 14px;font-size:12px;">
             <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            <span>Daftar Menjadi Mitra Afiliasi Sekarang</span>
+            <span data-i18n="store_affiliate_btn">Join Affiliate Network</span>
           </a>
         </div>
       </div>
     </div>
 
     <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:11px;color:var(--text-dim);">Garansi Seumur Hidup • Sekali Bayar</span>
-      <button class="btn-primary" id="btn-dismiss-store">Tutup</button>
+      <span style="font-size:11px;color:var(--text-dim);" data-i18n="store_footer_badge">Perpetual License • Zero Subscription</span>
+      <button class="btn-primary" id="btn-dismiss-store" data-i18n="store_close">Close</button>
     </div>
   </div>
 </div>
@@ -7020,7 +7044,7 @@ body.is-fullscreen {
     <div class="modal-header">
       <div class="modal-title">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>Tentang DigiKeyboard</span>
+        <span data-i18n="about_title">About DigiKeyboard</span>
       </div>
       <button class="modal-close" id="btn-close-about" type="button" title="Tutup">✕</button>
     </div>
@@ -7033,14 +7057,14 @@ body.is-fullscreen {
           <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);">DigiKeyboard v1.17.0</span>
         </div>
         <div style="margin-top:6px;font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.2px;">by King Ali Studio</div>
-        <div style="margin-top:4px;font-size:11px;color:var(--text-dim);line-height:1.4;">Virtual &amp; Remote PC Controller System with Haptic Feedback and AI Deck Integration</div>
+        <div style="margin-top:4px;font-size:11px;color:var(--text-dim);line-height:1.4;" data-i18n="about_desc">Virtual &amp; Remote PC Input Emulation System with Haptic Feedback and AI Workstation Deck</div>
       </div>
 
       <!-- Social Media Section -->
       <div class="setting-group">
         <div class="setting-title">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-          <span>MEDIA SOSIAL</span>
+          <span data-i18n="about_social">COMMUNITY &amp; SOCIAL</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <!-- YouTube -->
@@ -7082,7 +7106,7 @@ body.is-fullscreen {
       <div class="setting-group">
         <div class="setting-title">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span>HUBUNGI KAMI</span>
+          <span data-i18n="about_contact">CONTACT US</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <!-- WhatsApp Contact -->
@@ -7143,21 +7167,433 @@ let reconnectTimer = null;
 let isScanning = false;
 let modLockMode = localStorage.getItem('digi_mod_mode') || 'lock'; // 'lock' (Aktif Terus / Default), 'oneshot' (1x), 'hold' (manual)
 
+// ── Industry Standard Dual-Language Translation System (en / id) ──
+const I18N = {
+  en: {
+    // Header & Quick Modes
+    quick_keyboard: "PC Keyboard",
+    quick_gamepad: "Game Controller",
+    quick_presenter: "Presentation Remote",
+    quick_ai: "AI Workstation",
+    quick_media: "Media Controller",
+    quick_canvas: "Drawing Canvas",
+    toggle_fullscreen: "Toggle Fullscreen",
+    reload_app: "Reload Application",
+    menu_button: "Menu",
+    conn_status_title: "Connection Status",
+
+    // Control Deck
+    menu_title: "Menu",
+    close_menu: "Close Menu",
+    deck_lang_title: "INTERFACE LANGUAGE",
+    deck_layers_title: "KEYBOARD LAYERS",
+    layer_nav: "Navigation",
+    layer_shortcuts: "Shortcuts",
+    deck_utils_title: "SYSTEM & UTILITIES",
+    util_trackpad: "Trackpad",
+    util_trackpad_title: "Toggle Laptop Trackpad Deck",
+    util_modlock: "Mod Lock",
+    util_modlock_title: "Modifier Lock: Sticky Key Mode",
+    util_haptic: "Haptics",
+    util_haptic_title: "Haptic Touch Feedback",
+    util_sound: "Key Sound",
+    util_sound_title: "Mechanical Key Audio",
+    util_settings: "Settings",
+    util_settings_title: "Appearance & Preferences",
+    util_store: "Store",
+    util_store_title: "Store: Skins, Plugins & Licenses",
+
+    // Reconnection Overlay
+    rc_title: "Connecting to Host PC...",
+    rc_sub: "Scanning available communication channels automatically",
+    rc_hint: "Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired.",
+    rc_status_scanning: "Scanning",
+    rc_channel_wifi: "Wi-Fi LAN",
+    rc_channel_usb: "USB Interface",
+    rc_channel_bt: "Bluetooth",
+    rc_modal_title: "Host Discovery & Reconnection",
+    rc_modal_desc: "When the local network changes or DHCP assigns a new IP address to the PC host, use the automatic subnet scanner below to rediscover the server.",
+    rc_current_host: "Current Host Endpoint:",
+    rc_btn_retry: "Connect Now",
+    rc_scanner_title: "Automatic Local Subnet Scanner",
+    rc_scanner_desc: "Scans active IP addresses on port 8080 across your local subnet to locate DigiKeyboard server.",
+    rc_scanner_placeholder: "e.g. 192.168.1.",
+    rc_btn_start_scan: "Start Scan",
+    rc_scanner_ready: "Ready to scan local subnet.",
+    rc_found_title: "DigiKeyboard Server Located!",
+    rc_btn_jump: "Connect Now",
+    rc_manual_title: "Direct IP / Hostname Endpoint",
+    rc_manual_placeholder: "e.g. 192.168.1.45:8080 or Jarvis.local:8080",
+    rc_btn_open: "Connect",
+    rc_manual_hint: "If your network supports mDNS, you can enter hostnames such as <b>jarvis.local:8080</b> directly without static IP configuration.",
+    rc_btn_dismiss: "Close",
+
+    // Trackpad Editor
+    tp_editor_trackpad: "Trackpad:",
+    tp_editor_position: "Position:",
+    tp_editor_top: "Top",
+    tp_editor_bottom: "Bottom",
+    tp_editor_height: "Height:",
+    tp_gear_title: "Trackpad Configuration",
+
+    // Gamepad
+    gp_gear_title: "Gamepad Settings",
+    gp_settings_title: "Gamepad Configuration",
+    gp_dir_control: "Directional Control",
+    gp_stick: "Analog Stick",
+    gp_dpad: "D-Pad",
+    gp_btn_config: "Button Mapping",
+    gp_btn_remap: "Configure Remap...",
+    gp_remap_title: "Gamepad Button Remapping",
+    gp_remap_desc: "Assign a target PC keyboard key for each gamepad button:",
+    gp_btn_reset: "Reset Defaults",
+    gp_btn_save: "Save & Close",
+
+    // AI Workstation
+    ai_mic_title: "Toggle real-time audio dictation",
+    ai_mic_idle: "Tap Mic to Begin Dictation",
+    ai_mic_listening: "Listening... (Tap to pause)",
+    ai_mic_paused: "Transcript buffered. Tap Mic to resume",
+    ai_dictation_lang: "Audio Dictation Language",
+    ai_transcript_empty: "Voice transcription stream will appear here in real time...",
+    ai_auto_send: "Auto-Send",
+    ai_auto_send_title: "Automatically transmit text to host upon silence detection",
+    ai_clear: "Clear",
+    ai_send_host: "Send to Host",
+    ai_target_title: "Keyboard Routing Target: Host PC or Local Input",
+    ai_target_pc: "Host PC",
+    ai_target_device: "Device",
+    ai_pe_title: "AI Prompt Shortcut Configuration",
+    ai_pe_desc: "Configure button labels and automated command prompts for your development workflow:",
+    ai_pe_reset: "Reset Defaults",
+    ai_pe_save: "Save & Apply",
+
+    // Settings Modal
+    st_title: "Display & System Preferences",
+    st_lang_title: "Interface Language",
+    st_target_os: "Target Host Operating System",
+    st_theme: "Theme & Visual Styling",
+    st_font: "Keycap Typography",
+    st_key_size: "Keycap Dimensions",
+    st_tp_title: "Laptop Trackpad Configuration",
+    st_tp_status: "Trackpad Deck State:",
+    st_tp_enable: "Enabled",
+    st_tp_disable: "Disabled",
+    st_tp_pos: "Deck Alignment:",
+    st_tp_scale: "Trackpad Surface Scale:",
+    st_tp_speed: "Pointer Sensitivity:",
+    st_mod_lock_title: "Modifier Key Behavior (Shift / Ctrl / Alt / Win)",
+    st_mod_lock_sub: "Select how modifier keys trigger during interaction:",
+    st_haptic_title: "Haptic & Audio Feedback",
+    st_haptic_enable: "Enable tactile haptic vibration on keypress and trackpad taps",
+    st_haptic_intensity: "Haptic Pulse Duration:",
+    st_haptic_test: "Test Vibration",
+    st_sound_test: "Test Switch Audio",
+    st_sound_notice: "Ensure device media audio volume is enabled. Audio & haptic preferences are persisted locally on this device.",
+    st_pwa_title: "Standalone Fullscreen Experience",
+    st_pwa_sub: "For optimal typing performance without browser address bars or navigation popups:",
+    st_pwa_box: "<b>Recommended Native Solution (Android):</b> Install the dedicated <b>DigiKeyboard APK</b> (True fullscreen, zero browser UI interference).<br><br><b>Chrome Web App:</b> Open the Chrome menu (⋮) and select <b>'Add to Home screen'</b>.",
+    st_download_apk: "Download DigiKeyboard APK",
+    st_pwa_install: "Add to Home Screen",
+    st_btn_save: "Done",
+
+    // Store Modal
+    store_tab_all: "All Items",
+    store_tab_plugins: "Pro Plugins",
+    store_tab_skins: "Skins & Audio",
+    store_tab_affiliate: "Partner Network",
+    store_pro_bundle_title: "Pro All-Access Lifetime Pass",
+    store_pro_bundle_desc: "Unlock all Pro plugins, complete theme skins catalog, mechanical switch audio profiles, and unlimited voice dictation with a single perpetual license.",
+    store_pro_bundle_btn: "Purchase Full Access (Instant QRIS / Card)",
+    store_catalog_plugins: "Professional Plugin Catalog",
+    store_voice_title: "Voice Dictation Pro",
+    store_voice_desc: "Real-time speech-to-text dictation streamed directly to host PC applications with high linguistic accuracy.",
+    store_autotext_title: "AutoText Expander",
+    store_autotext_desc: "Custom multi-line text expansions, dynamic time-date stamps, and instant prefix macros for high-speed typing.",
+    store_ai_title: "AI Prompt Assistant",
+    store_ai_desc: "Structured prompt templates and quick macro execution for Gemini, Claude, ChatGPT, and local LLMs.",
+    store_macro_title: "Macro Sequencer",
+    store_macro_desc: "Multi-key sequence automation with precise millisecond interval timings for gaming and productivity.",
+    store_skins_title: "Theme Skins & Acoustic Profiles",
+    store_retro_title: "Retro 1984 Classic",
+    store_retro_desc: "Iconic beige aesthetic reminiscent of 1980s computing hardware with serif keycap typography.",
+    store_cyber_title: "Cyberpunk Chroma",
+    store_cyber_desc: "Reactive neon ultraviolet styling with sci-fi display accents and Orbitron font.",
+    store_audio_title: "Tactile Switch Pack",
+    store_audio_desc: "Crisp tactile click acoustics and acoustic bottom-out dampening inspired by premium mechanical switches.",
+    store_affiliate_title: "Partner & Creator Affiliate Program",
+    store_affiliate_desc: "Earn 30% to 40% recurring revenue share on license, plugin, and skin sales generated via your unique referral links.",
+    store_affiliate_btn: "Join Affiliate Network",
+    store_btn_buy: "Unlock Feature",
+    store_btn_buy_skin: "Get Theme",
+    store_btn_buy_sound: "Get Audio",
+    store_footer_badge: "Perpetual License • Zero Subscription",
+    store_close: "Close",
+
+    // About Modal
+    about_title: "About DigiKeyboard",
+    about_desc: "Virtual & Remote PC Input Emulation System with Haptic Feedback and AI Workstation Deck",
+    about_social: "COMMUNITY & SOCIAL",
+    about_contact: "CONTACT US"
+  },
+  id: {
+    // Header & Quick Modes
+    quick_keyboard: "Keyboard PC",
+    quick_gamepad: "Gamepad Konsol",
+    quick_presenter: "Remote Presentasi",
+    quick_ai: "AI Workstation",
+    quick_media: "Remote Multimedia",
+    quick_canvas: "Kanvas Gambar",
+    toggle_fullscreen: "Layar Penuh",
+    reload_app: "Muat Ulang Halaman",
+    menu_button: "Menu",
+    conn_status_title: "Status Koneksi",
+
+    // Control Deck
+    menu_title: "Menu",
+    close_menu: "Tutup Menu",
+    deck_lang_title: "BAHASA TAMPILAN",
+    deck_layers_title: "LAYER KEYBOARD",
+    layer_nav: "Navigasi",
+    layer_shortcuts: "Pintasan",
+    deck_utils_title: "SISTEM & UTILITAS",
+    util_trackpad: "Trackpad",
+    util_trackpad_title: "Alihkan Dek Trackpad Laptop",
+    util_modlock: "Kunci Mod",
+    util_modlock_title: "Kunci Modifier: Mode Kunci Tuts",
+    util_haptic: "Getar",
+    util_haptic_title: "Umpan Balik Getaran Sentuh",
+    util_sound: "Suara Klik",
+    util_sound_title: "Suara Klik Mekanikal",
+    util_settings: "Pengaturan",
+    util_settings_title: "Tampilan & Preferensi",
+    util_store: "Store",
+    util_store_title: "Toko: Skin, Plugin & Lisensi",
+
+    // Reconnection Overlay
+    rc_title: "Menghubungkan ke Host PC...",
+    rc_sub: "Memindai seluruh jalur koneksi yang tersedia secara otomatis",
+    rc_hint: "Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang.",
+    rc_status_scanning: "Memindai",
+    rc_channel_wifi: "Wi-Fi LAN",
+    rc_channel_usb: "Kabel USB",
+    rc_channel_bt: "Bluetooth",
+    rc_modal_title: "Pemulihan Koneksi Host",
+    rc_modal_desc: "Ketika jaringan berubah atau DHCP router memperbarui alamat IP PC host, gunakan pemindai subnet otomatis di bawah untuk mendeteksi ulang server.",
+    rc_current_host: "Tujuan Host Saat Ini:",
+    rc_btn_retry: "Hubungkan Sekarang",
+    rc_scanner_title: "Pindai PC Otomatis di Jaringan Lokal",
+    rc_scanner_desc: "Memindai alamat IP lokal pada port 8080 untuk mendeteksi server DigiKeyboard.",
+    rc_scanner_placeholder: "Misal: 192.168.1.",
+    rc_btn_start_scan: "Mulai Pindai",
+    rc_scanner_ready: "Siap memindai subnet lokal.",
+    rc_found_title: "DigiKeyboard Ditemukan!",
+    rc_btn_jump: "Buka Sekarang",
+    rc_manual_title: "Beralih ke IP / Hostname Baru",
+    rc_manual_placeholder: "Misal: 192.168.1.45:8080 atau Jarvis.local:8080",
+    rc_btn_open: "Buka",
+    rc_manual_hint: "Jika perangkat Anda mendukung mDNS, Anda bisa memasukkan nama hostname seperti <b>jarvis.local:8080</b> secara langsung tanpa konfigurasi IP statis.",
+    rc_btn_dismiss: "Tutup",
+
+    // Trackpad Editor
+    tp_editor_trackpad: "Trackpad:",
+    tp_editor_position: "Posisi:",
+    tp_editor_top: "Atas",
+    tp_editor_bottom: "Bawah",
+    tp_editor_height: "Tinggi:",
+    tp_gear_title: "Editor Trackpad",
+
+    // Gamepad
+    gp_gear_title: "Pengaturan Gamepad",
+    gp_settings_title: "Konfigurasi Gamepad",
+    gp_dir_control: "Kontrol Arah",
+    gp_stick: "Stik Analog",
+    gp_dpad: "Arah Panah",
+    gp_btn_config: "Konfigurasi Tombol",
+    gp_btn_remap: "Atur Mapping...",
+    gp_remap_title: "Kustomisasi Mapping Gamepad",
+    gp_remap_desc: "Pilih tombol keyboard PC dari menu drop-down untuk setiap tombol gamepad:",
+    gp_btn_reset: "Reset Default",
+    gp_btn_save: "Simpan & Tutup",
+
+    // AI Workstation
+    ai_mic_title: "Ketuk untuk mulai/berhenti dikte suara",
+    ai_mic_idle: "Ketuk Mic untuk Mulai Dikte",
+    ai_mic_listening: "Mendengarkan... (Ketuk untuk jeda)",
+    ai_mic_paused: "Teks tersimpan. Ketuk Mic untuk lanjut bicara",
+    ai_dictation_lang: "Bahasa Dikte Suara",
+    ai_transcript_empty: "Hasil transkripsi suara akan ditampilkan di sini secara real-time...",
+    ai_auto_send: "Auto-Kirim",
+    ai_auto_send_title: "Kirim teks otomatis ke PC setiap selesai berbicara",
+    ai_clear: "Bersihkan",
+    ai_send_host: "Kirim ke PC",
+    ai_target_title: "Target Kontrol Keyboard: Host PC atau Input Lokal",
+    ai_target_pc: "PC",
+    ai_target_device: "Device",
+    ai_pe_title: "Kustomisasi Shortcut Prompt AI",
+    ai_pe_desc: "Ubah nama tombol dan teks prompt perintah otomatis sesuai alur kerja Anda:",
+    ai_pe_reset: "Reset Default",
+    ai_pe_save: "Simpan & Terapkan",
+
+    // Settings Modal
+    st_title: "Pengaturan Tampilan & Sistem",
+    st_lang_title: "Bahasa Tampilan",
+    st_target_os: "Sistem Operasi Target (Host PC)",
+    st_theme: "Tema & Tampilan Keyboard",
+    st_font: "Font / Tipografi Tombol",
+    st_key_size: "Ukuran Tombol Keyboard",
+    st_tp_title: "Pengaturan Trackpad Laptop",
+    st_tp_status: "Status Dek Trackpad:",
+    st_tp_enable: "Aktif (Tampilkan)",
+    st_tp_disable: "Nonaktif (Matikan)",
+    st_tp_pos: "Posisi Dek:",
+    st_tp_scale: "Ukuran / Skala Trackpad:",
+    st_tp_speed: "Sensitivitas Kursor:",
+    st_mod_lock_title: "Penguncian Tombol Modifier (Shift / Ctrl / Alt / Win)",
+    st_mod_lock_sub: "Pilih bagaimana tombol Shift, Ctrl, Alt & Win beroperasi saat ditekan:",
+    st_haptic_title: "Umpan Balik Getaran & Audio",
+    st_haptic_enable: "Getar saat tombol keyboard & trackpad berhasil diklik",
+    st_haptic_intensity: "Intensitas / Durasi Getaran:",
+    st_haptic_test: "Uji Getaran Sekarang",
+    st_sound_test: "Uji Suara Klik",
+    st_sound_notice: "Pastikan volume Media di HP menyala (tidak dalam mode senyap/silent). Pengaturan suara & getar tersimpan mandiri di tiap peramban/perangkat.",
+    st_pwa_title: "Solusi Layar Penuh Bebas Pop-up",
+    st_pwa_sub: "Untuk pengalaman mengetik terbaik tanpa pop-up peringatan Chrome dan tanpa bilah alamat:",
+    st_pwa_box: "<b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiKeyboard APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br><b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>'Tambahkan ke Layar Utama' (Add shortcut)</b>.",
+    st_download_apk: "Unduh DigiKeyboard.apk",
+    st_pwa_install: "Pasang Pintasan ke Layar Utama",
+    st_btn_save: "Selesai",
+
+    // Store Modal
+    store_tab_all: "Semua Produk",
+    store_tab_plugins: "Plugin Pro",
+    store_tab_skins: "Skin & Audio",
+    store_tab_affiliate: "Jalur Afiliasi",
+    store_pro_bundle_title: "Lisensi Pro All-Access (Lifetime Pass)",
+    store_pro_bundle_desc: "Buka seluruh fitur Pro, katalog skin & switch sound, serta semua plugin profesional (Voice Typing, AutoText, AI Prompt, Macro) selamanya tanpa biaya langganan.",
+    store_pro_bundle_btn: "Beli Akses Penuh (1-Klik QRIS / Card)",
+    store_catalog_plugins: "Katalog Plugin Pro",
+    store_voice_title: "Voice Typing Pro",
+    store_voice_desc: "Dikte suara mikrofon langsung tertulis real-time di aplikasi PC (Word, Docs, IDE, Terminal) dengan akurasi tinggi.",
+    store_autotext_title: "AutoText Expander",
+    store_autotext_desc: "Template teks dinamis multi-baris, auto-date/jam, dan trigger prefix instan untuk produktivitas pengetikan.",
+    store_ai_title: "AI Prompt Assistant",
+    store_ai_desc: "Preset generator prompt terstruktur ke ChatGPT, Claude, Gemini & Ollama dengan variabel kustom dalam 1 klik.",
+    store_macro_title: "Macro Chaining",
+    store_macro_desc: "Satu tombol mengeksekusi urutan kombinasi tombol berurutan dengan jeda presisi milidetik untuk game & data entry.",
+    store_skins_title: "Koleksi Skin & Switch Audio",
+    store_retro_title: "Retro Mac 1984",
+    store_retro_desc: "Estetika legendaris beige klasik era 1984 dengan aksen tipografi retro.",
+    store_cyber_title: "Cyberpunk Chroma",
+    store_cyber_desc: "Nuansa neon ultraviolet reaktif dengan aksen font sci-fi Orbitron.",
+    store_audio_title: "Holy Panda Switch",
+    store_audio_desc: "Paket suara klik tactile renyah dan thock bass dalam switch mekanik premium.",
+    store_affiliate_title: "Program Afiliasi & Mitra Kreator DigiKeyboard",
+    store_affiliate_desc: "Dapatkan komisi 30% hingga 40% dari setiap penjualan Skin, Plugin Pro, maupun Lisensi All-Access yang berasal dari tautan referral unik Anda.",
+    store_affiliate_btn: "Daftar Menjadi Mitra Afiliasi Sekarang",
+    store_btn_buy: "Buka Plugin",
+    store_btn_buy_skin: "Beli Skin",
+    store_btn_buy_sound: "Beli Audio",
+    store_footer_badge: "Garansi Seumur Hidup • Sekali Bayar",
+    store_close: "Tutup",
+
+    // About Modal
+    about_title: "Tentang DigiKeyboard",
+    about_desc: "Sistem Emulasi Input & Remote PC Virtual dengan Haptic Feedback dan AI Workstation Deck",
+    about_social: "MEDIA SOSIAL",
+    about_contact: "HUBUNGI KAMI"
+  }
+};
+
+let currentUiLang = localStorage.getItem('digi_ui_lang') || 'en';
+
+function t(key, fallback = '') {
+  if (I18N[currentUiLang] && I18N[currentUiLang][key] !== undefined) {
+    return I18N[currentUiLang][key];
+  }
+  if (I18N['en'] && I18N['en'][key] !== undefined) {
+    return I18N['en'][key];
+  }
+  return fallback;
+}
+
+function setUiLanguage(lang) {
+  if (lang !== 'en' && lang !== 'id') lang = 'en';
+  currentUiLang = lang;
+  localStorage.setItem('digi_ui_lang', lang);
+
+  // Update text content of elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) {
+      if (val.includes('<') && val.includes('>')) {
+        el.innerHTML = val;
+      } else {
+        el.textContent = val;
+      }
+    }
+  });
+
+  // Update tooltips / titles
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    const val = t(key);
+    if (val) el.title = val;
+  });
+
+  // Update input placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const val = t(key);
+    if (val) el.placeholder = val;
+  });
+
+  // Update Floating Control Deck language buttons
+  const btnEn = $('btn-ui-lang-en');
+  const btnId = $('btn-ui-lang-id');
+  if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+  if (btnId) btnId.classList.toggle('active', lang === 'id');
+
+  // Update Settings modal language buttons
+  document.querySelectorAll('.st-lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+
+  // Update dynamic modules
+  updateModModeUI();
+  if (typeof updateAiMicUI === 'function') updateAiMicUI();
+  if (typeof getCustomAiPrompts === 'function' && typeof applyAiPrompts === 'function') {
+    applyAiPrompts(getCustomAiPrompts());
+  }
+
+  // Update speech preview empty placeholder if not currently populated
+  const previewEl = $('ai-transcript-preview');
+  if (previewEl && previewEl.classList.contains('empty')) {
+    previewEl.textContent = t('ai_transcript_empty');
+  }
+
+  // Update Connection Status badge title if function exists
+  if (typeof setStatus === 'function') {
+    setStatus(connected);
+  }
+}
+
 function updateModModeUI() {
   const btn = $('btn-latch');
   if (btn) {
     if (modLockMode === 'lock') {
-      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>Lock</span>';
+      btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span>' + (currentUiLang === 'id' ? 'Kunci Mod' : 'Mod Lock') + '</span>';
       btn.classList.add('on');
-      btn.title = 'Kunci Modifier: Aktif Terus (Shift/Ctrl/Alt tetap aktif sampai ditekan lagi)';
+      btn.title = currentUiLang === 'id' ? 'Kunci Modifier: Aktif Terus (Shift/Ctrl/Alt tetap aktif sampai ditekan lagi)' : 'Modifier Lock: Sticky Mode (Shift/Ctrl/Alt remain active until pressed again)';
     } else if (modLockMode === 'oneshot') {
       btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span>1-Shot</span>';
       btn.classList.add('on');
-      btn.title = 'Kunci Modifier: 1-Shot (Shift/Ctrl/Alt lepas otomatis setelah 1 tombol)';
+      btn.title = currentUiLang === 'id' ? 'Kunci Modifier: 1-Shot (Shift/Ctrl/Alt lepas otomatis setelah 1 tombol)' : 'Modifier Lock: 1-Shot (Shift/Ctrl/Alt automatically release after 1 keypress)';
     } else {
       btn.innerHTML = '<svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg> <span>Hold</span>';
       btn.classList.remove('on');
-      btn.title = 'Kunci Modifier: Manual (Hanya aktif selama jari menahan tombol)';
+      btn.title = currentUiLang === 'id' ? 'Kunci Modifier: Manual (Hanya aktif selama jari menahan tombol)' : 'Modifier Lock: Manual Hold (Active only while holding key)';
     }
   }
 
@@ -7168,11 +7604,17 @@ function updateModModeUI() {
   const descEl = $('mod-lock-desc');
   if (descEl) {
     if (modLockMode === 'lock') {
-      descEl.innerHTML = '<b>Aktif Terus (Bawaan):</b> Tombol Shift/Ctrl/Alt/Win akan tetap aktif terus sampai ditekan kembali. Operasi sama persis dengan menahan tombol keyboard fisik untuk blok teks, shortcut multi-tuts, atau seleksi.';
+      descEl.innerHTML = currentUiLang === 'id'
+        ? '<b>Aktif Terus (Bawaan):</b> Tombol Shift/Ctrl/Alt/Win akan tetap aktif terus sampai ditekan kembali. Operasi sama persis dengan menahan tombol keyboard fisik untuk blok teks, shortcut multi-tuts, atau seleksi.'
+        : '<b>Sticky Lock (Default):</b> Modifier keys (Shift/Ctrl/Alt/Win) remain engaged until toggled off. Identical to holding physical keys for selection, multi-key shortcuts, and text blocks.';
     } else if (modLockMode === 'oneshot') {
-      descEl.innerHTML = '<b>Kunci Sekali (1-Shot):</b> Tombol modifier aktif untuk 1 tombol berikutnya, lalu otomatis nonaktif.';
+      descEl.innerHTML = currentUiLang === 'id'
+        ? '<b>Kunci Sekali (1-Shot):</b> Tombol modifier aktif untuk 1 tombol berikutnya, lalu otomatis nonaktif.'
+        : '<b>One-Shot Lock:</b> Modifier keys engage for the immediate next keypress, then automatically release.';
     } else {
-      descEl.innerHTML = '<b>Tahan Manual (Hold):</b> Tombol modifier hanya aktif selama jari menekan tombol di layar (multi-touch).';
+      descEl.innerHTML = currentUiLang === 'id'
+        ? '<b>Tahan Manual (Hold):</b> Tombol modifier hanya aktif selama jari menekan tombol di layar (multi-touch).'
+        : '<b>Manual Hold:</b> Modifier keys remain active only while holding contact on the screen (multi-touch).';
     }
   }
 }
@@ -11335,14 +11777,14 @@ function updateAiMicUI() {
   if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
   if (statusEl) {
     if (aiSpeechWanted) {
-      statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
+      statusEl.textContent = currentUiLang === 'id' ? 'Mendengarkan... (Ketuk untuk jeda)' : 'Listening... (Tap to pause)';
       statusEl.style.color = '#3fb950';
     } else {
       if (aiAccumulatedText.trim()) {
-        statusEl.textContent = 'Hasil tersimpan. Ketuk Mic untuk lanjut bicara';
+        statusEl.textContent = currentUiLang === 'id' ? 'Teks tersimpan. Ketuk Mic untuk lanjut bicara' : 'Transcript buffered. Tap Mic to resume';
         statusEl.style.color = '#58a6ff';
       } else {
-        statusEl.textContent = 'Ketuk Mic untuk Mulai Dikte';
+        statusEl.textContent = currentUiLang === 'id' ? 'Ketuk Mic untuk Mulai Dikte' : 'Tap Mic to Begin Dictation';
         statusEl.style.color = '';
       }
     }
@@ -11370,7 +11812,9 @@ function clearTranscriptUI() {
   lastSentLength = 0;
   const previewEl = $('ai-transcript-preview');
   if (previewEl) {
-    previewEl.textContent = 'Hasil ucapan Anda akan muncul di sini secara berkesinambungan...';
+    previewEl.textContent = currentUiLang === 'id'
+      ? 'Hasil transkripsi suara akan ditampilkan di sini secara real-time...'
+      : 'Voice transcription stream will appear here in real time...';
     previewEl.classList.add('empty');
   }
   updateAiMicUI();
@@ -12391,7 +12835,15 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 })();
 
 // ── Kustomisasi Shortcut Prompt AI ──
-const DEFAULT_AI_PROMPTS = [
+const DEFAULT_AI_PROMPTS_EN = [
+  { label: 'Continue', prompt: 'continue' },
+  { label: 'Proceed', prompt: 'proceed' },
+  { label: 'Fix Bug', prompt: 'fix the bug' },
+  { label: 'Generate Docs', prompt: 'generate documentation' },
+  { label: 'Create Checkpoint', prompt: 'create a checkpoint' }
+];
+
+const DEFAULT_AI_PROMPTS_ID = [
   { label: 'Lanjutkan', prompt: 'lanjutkan' },
   { label: 'Proceed', prompt: 'proceed' },
   { label: 'Perbaiki Bug', prompt: 'perbaiki bug' },
@@ -12409,7 +12861,7 @@ function getCustomAiPrompts() {
       }
     }
   } catch(e) {}
-  return DEFAULT_AI_PROMPTS;
+  return currentUiLang === 'id' ? DEFAULT_AI_PROMPTS_ID : DEFAULT_AI_PROMPTS_EN;
 }
 
 function applyAiPrompts(prompts) {
@@ -12472,12 +12924,13 @@ function closeAiPromptEditModal() {
 }
 
 function saveCustomAiPrompts() {
+  const defaults = currentUiLang === 'id' ? DEFAULT_AI_PROMPTS_ID : DEFAULT_AI_PROMPTS_EN;
   const saved = [];
   for (let i = 0; i < 5; i++) {
     const labelInput = $(`ai-pe-label-${i}`);
     const promptInput = $(`ai-pe-prompt-${i}`);
-    const l = (labelInput ? labelInput.value : '').trim() || DEFAULT_AI_PROMPTS[i].label;
-    const pr = (promptInput ? promptInput.value : '').trim() || DEFAULT_AI_PROMPTS[i].prompt;
+    const l = (labelInput ? labelInput.value : '').trim() || defaults[i].label;
+    const pr = (promptInput ? promptInput.value : '').trim() || defaults[i].prompt;
     saved.push({ label: l, prompt: pr });
   }
   localStorage.setItem('digi_ai_custom_prompts', JSON.stringify(saved));
@@ -12489,7 +12942,7 @@ function saveCustomAiPrompts() {
 
 function resetCustomAiPrompts() {
   localStorage.removeItem('digi_ai_custom_prompts');
-  applyAiPrompts(DEFAULT_AI_PROMPTS);
+  applyAiPrompts(currentUiLang === 'id' ? DEFAULT_AI_PROMPTS_ID : DEFAULT_AI_PROMPTS_EN);
   openAiPromptEditModal();
   playClickSound();
   vibe(15);
@@ -13186,6 +13639,34 @@ if (splashScreen) {
     }, 280);
   }, 1050);
 }
+
+// Wire up Language Switcher Click Handlers
+const btnUiLangEn = $('btn-ui-lang-en');
+if (btnUiLangEn) {
+  btnUiLangEn.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    setUiLanguage('en');
+  });
+}
+const btnUiLangId = $('btn-ui-lang-id');
+if (btnUiLangId) {
+  btnUiLangId.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    setUiLanguage('id');
+  });
+}
+document.querySelectorAll('.st-lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    setUiLanguage(btn.dataset.lang);
+  });
+});
+
+// Initialize UI language on application load
+setUiLanguage(currentUiLang);
 
 connect();
 })();
