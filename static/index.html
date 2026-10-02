@@ -6176,7 +6176,7 @@ body.is-fullscreen {
           <button type="button" class="ai-btn-mic" id="btn-ai-mic" data-i18n-title="ai_mic_title" title="Toggle real-time audio dictation">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
           </button>
-          <div class="ai-mic-status-label" id="ai-mic-status" data-i18n="ai_mic_idle">Tap Mic to Begin Dictation</div>
+          <div class="ai-mic-status-label" id="ai-mic-status">Tap Mic to speak</div>
         </div>
 
         <!-- Hidden input element for speech synthesis bridge -->
@@ -7768,7 +7768,7 @@ function setUiLanguage(lang) {
   // Update dynamic modules
   updateModModeUI();
   if (typeof updateSmartContextUI === 'function') updateSmartContextUI();
-  if (typeof updateAiMicUI === 'function') updateAiMicUI();
+  if (typeof updateAiMicUI === 'function') updateAiMicUI(true);
   if (typeof getCustomAiPrompts === 'function' && typeof applyAiPrompts === 'function') {
     applyAiPrompts(getCustomAiPrompts());
   }
@@ -12102,67 +12102,75 @@ function mergeTranscripts(existing, incoming) {
   return deduplicateRepeatedPhrases(merged);
 }
 
-let aiMicCycleTimer = null;
-let aiMicTextPhase = 0;
+let aiMicTransitionTimer = null;
+let currentAiMicState = null;
+let currentAiMicPhase = 1;
 
-function getAiMicTextPair() {
-  if (aiSpeechWanted) {
-    return [
-      t('ai_mic_listen_1', currentUiLang === 'id' ? 'Mendengarkan...' : 'Listening...'),
-      t('ai_mic_listen_2', currentUiLang === 'id' ? 'Ketuk untuk berhenti' : 'Tap to stop')
-    ];
-  } else if (aiAccumulatedText.trim()) {
-    return [
-      t('ai_mic_saved_1', currentUiLang === 'id' ? 'Teks tersimpan' : 'Transcript saved'),
-      t('ai_mic_saved_2', currentUiLang === 'id' ? 'Ketuk Mic untuk lanjut bicara' : 'Tap Mic to resume')
-    ];
+function getAiMicStateConfig(state) {
+  if (state === 'recording') {
+    return {
+      phase1: t('ai_mic_listen_1', currentUiLang === 'id' ? 'Mendengarkan...' : 'Listening...'),
+      phase2: t('ai_mic_listen_2', currentUiLang === 'id' ? 'Ketuk untuk berhenti' : 'Tap to stop'),
+      color: '#3fb950'
+    };
+  } else if (state === 'saved') {
+    return {
+      phase1: t('ai_mic_saved_1', currentUiLang === 'id' ? 'Teks tersimpan' : 'Transcript saved'),
+      phase2: t('ai_mic_saved_2', currentUiLang === 'id' ? 'Ketuk Mic untuk lanjut bicara' : 'Tap Mic to resume'),
+      color: '#58a6ff'
+    };
   } else {
-    return [
-      t('ai_mic_ready_1', currentUiLang === 'id' ? 'Siap Mendikte' : 'Ready to Dictate'),
-      t('ai_mic_ready_2', currentUiLang === 'id' ? 'Ketuk Mic untuk bicara' : 'Tap Mic to speak')
-    ];
+    return {
+      phase1: t('ai_mic_ready_1', currentUiLang === 'id' ? 'Siap Mendikte' : 'Ready to Dictate'),
+      phase2: t('ai_mic_ready_2', currentUiLang === 'id' ? 'Ketuk Mic untuk bicara' : 'Tap Mic to speak'),
+      color: ''
+    };
   }
 }
 
-function renderAiMicStatusText() {
-  const statusEl = $('ai-mic-status');
-  if (!statusEl) return;
-  const pair = getAiMicTextPair();
-  const text = pair[aiMicTextPhase % pair.length];
-  statusEl.textContent = text;
-  if (aiSpeechWanted) {
-    statusEl.style.color = '#3fb950';
-  } else if (aiAccumulatedText.trim()) {
-    statusEl.style.color = '#58a6ff';
-  } else {
-    statusEl.style.color = '';
-  }
-}
-
-function startAiMicCycle() {
-  if (aiMicCycleTimer) clearInterval(aiMicCycleTimer);
-  aiMicCycleTimer = setInterval(() => {
-    const statusEl = $('ai-mic-status');
-    if (!statusEl) return;
-    statusEl.classList.add('anim-fade');
-    setTimeout(() => {
-      aiMicTextPhase = (aiMicTextPhase + 1) % 2;
-      renderAiMicStatusText();
-      statusEl.classList.remove('anim-fade');
-    }, 280);
-  }, 2400);
-}
-
-function updateAiMicUI() {
+function updateAiMicUI(forceReset = false) {
   const micBtn = $('btn-ai-mic');
   if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
-  aiMicTextPhase = 0;
+
   const statusEl = $('ai-mic-status');
-  if (statusEl) {
-    statusEl.classList.remove('anim-fade');
+  if (!statusEl) return;
+
+  const targetState = aiSpeechWanted ? 'recording' : (aiAccumulatedText.trim() ? 'saved' : 'idle');
+
+  // If state hasn't changed and not forced, keep existing text in active language
+  if (!forceReset && currentAiMicState === targetState) {
+    const cfg = getAiMicStateConfig(targetState);
+    statusEl.textContent = currentAiMicPhase === 1 ? cfg.phase1 : cfg.phase2;
+    statusEl.style.color = cfg.color;
+    return;
   }
-  renderAiMicStatusText();
-  startAiMicCycle();
+
+  currentAiMicState = targetState;
+  currentAiMicPhase = 1;
+
+  if (aiMicTransitionTimer) {
+    clearTimeout(aiMicTransitionTimer);
+    aiMicTransitionTimer = null;
+  }
+
+  const cfg = getAiMicStateConfig(targetState);
+  statusEl.classList.remove('anim-fade');
+  statusEl.textContent = cfg.phase1;
+  statusEl.style.color = cfg.color;
+
+  // Single-pass transition (NO looping):
+  // Phase 1 shows for 1.6s -> fades out -> Phase 2 fades in and stays permanently
+  aiMicTransitionTimer = setTimeout(() => {
+    statusEl.classList.add('anim-fade');
+    aiMicTransitionTimer = setTimeout(() => {
+      currentAiMicPhase = 2;
+      const latestCfg = getAiMicStateConfig(currentAiMicState);
+      statusEl.textContent = latestCfg.phase2;
+      statusEl.style.color = latestCfg.color;
+      statusEl.classList.remove('anim-fade');
+      aiMicTransitionTimer = null;
+    }, 280);
+  }, 1600);
 }
 
 function commitCurrentSession() {
@@ -12285,17 +12293,6 @@ function startAiSpeechSession() {
       currentSessionInterim = sessionInterim;
       const confirmedSoFar = mergeTranscripts(aiAccumulatedText, sessionFinal);
 
-      const statusEl = $('ai-mic-status');
-      if (statusEl && aiSpeechWanted) {
-        if (sessionInterim.trim()) {
-          statusEl.textContent = 'Mendengar: ' + sessionInterim.trim();
-          statusEl.style.color = '#3fb950';
-        } else {
-          statusEl.textContent = 'Mendengarkan... (Ketuk untuk Berhenti)';
-          statusEl.style.color = '#3fb950';
-        }
-      }
-
       if (aiAutoSend && confirmedSoFar.length > lastSentLength) {
         const diff = confirmedSoFar.slice(lastSentLength).trim();
         if (diff) {
@@ -12316,9 +12313,13 @@ function startAiSpeechSession() {
         aiSpeechWanted = false;
         isAiRecording = false;
         isAiStarting = false;
-        updateAiMicUI();
+        if (aiMicTransitionTimer) {
+          clearTimeout(aiMicTransitionTimer);
+          aiMicTransitionTimer = null;
+        }
         if (statusEl) {
-          statusEl.textContent = 'Izin mic ditolak di browser.';
+          statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di browser.' : 'Microphone permission denied.';
+          statusEl.style.color = '#f85149';
         }
         return;
       }

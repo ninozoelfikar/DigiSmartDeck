@@ -467,11 +467,12 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 ---
 
 ## 29. CATATAN CHECKPOINT (v0.9.25 - Mekanisme Dinamis Status Mic AI, Ikon Standar USB, & Penyatuan Bahasa 100%)
-- **Mekanisme Teks Dinamis Berganti pada Mic AI Workstation:**
-  - Status teks di bawah tombol mikrofon kini berganti secara otomatis (2 fase siklus) dengan transisi halus (`opacity` & `translateY` 0.28s) sehingga sistem terasa hidup, pintar, dan matang:
-    - Saat Mendengarkan: Fase 1 "Mendengarkan..." -> Fase 2 "Ketuk untuk berhenti".
-    - Saat Teks Tersimpan: Fase 1 "Teks tersimpan" -> Fase 2 "Ketuk Mic untuk lanjut bicara".
-    - Saat Siap/Idle: Fase 1 "Siap Mendikte" -> Fase 2 "Ketuk Mic untuk bicara".
+- **Mekanisme Teks Dinamis Berganti pada Mic AI Workstation (Single-Pass, Tanpa Looping):**
+  - Status teks di bawah tombol mikrofon berganti secara elegan satu kali (transisi halus `opacity` & `translateY` 0.28s) tanpa berulang/looping:
+    - Saat Mendengarkan: Fase 1 "Mendengarkan..." (tampil 1.6s) -> memudar -> Fase 2 "Ketuk untuk berhenti" (menetap).
+    - Saat Teks Tersimpan: Fase 1 "Teks tersimpan" (tampil 1.6s) -> memudar -> Fase 2 "Ketuk Mic untuk lanjut bicara" (menetap).
+    - Saat Siap/Idle: Fase 1 "Siap Mendikte" (tampil 1.6s) -> memudar -> Fase 2 "Ketuk Mic untuk bicara" (menetap).
+  - Menghapus penimpaan teks status lama di `recognition.onresult` ("Mendengar: ..." dan "Mendengarkan... (Ketuk untuk Berhenti)") sehingga saat berbicara teks status tetap konsisten, bersih, dan tidak terdistorsi.
   - Tombol mic berdenyut halus (*breathing animation*) saat sesi perekaman suara aktif.
 - **Ikon Standar Industri USB:**
   - Mengganti ikon rantai (*chain/link*) pada kartu channel rekoneksi dengan simbol standar industri USB trident SVG yang presisi.
