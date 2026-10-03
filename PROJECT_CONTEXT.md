@@ -746,6 +746,25 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
   - Audio klik mekanikal dan haptik responsif berjalan normal.
 
+---
+
+## 43. CATATAN CHECKPOINT (v0.9.39 - Desain Ulang Terpadu Aplikasi PC Host & Installer Selaras Web Client)
+- **Desain Ulang Menyeluruh PC Host Manager (`digikeyboard_gui.py`):**
+  - Palet warna dan hierarki visual diselaraskan 100% dengan Web Client (`#0d1117` background obsidian navy, `#161b22` header & nav bar, `#1c2128` card panels, `#ff6b00` aksen oranye brand, `#3fb950` status online, `#58a6ff` cyber blue).
+  - Top Deck Bar: Menampilkan logo `DIGIKEYBOARD HOST`, badge status pulsa real-time, chip indikator latensi (<1ms), dan tombol pintas `Buka Web Client`.
+  - Navigasi Deck Chips:
+    - Tab 1 (Pusat Kendali): Tampilan 6-Digit PIN bergaya tombol keycap mekanikal individual terpisah (`[ 6 ] [ 6 ] [ 7 ] [ 2 ] [ 3 ] [ 0 ]`), modul QR code scanner beresolusi tinggi, dan panduan metode koneksi (Wi-Fi vs kabel USB tethering).
+    - Tab 2 (Perangkat Terdaftar): Tabel daftar perangkat terotorisasi dengan opsi putuskan koneksi per-perangkat atau putuskan semua.
+    - Tab 3 (Lisensi SaaS): Kartu status paket aktif, 3 kartu pilihan paket komersial (Trial Rp 0, Bulanan Rp 15.000, Lifetime Pro Rp 250.000), serta form aktivasi kunci lisensi.
+    - Tab 4 (Wizard Setup & Layanan): Pengecekan status izin kernel hardware (`/dev/uinput`), status layanan background (`digikeyboard.service`), kontrol restart layanan, dan penampil log aktivitas server real-time (`journalctl`).
+- **Pembaruan Skrip Installer Linux (`install-linux.sh`):**
+  - CLI installer diharmonisasikan dengan identitas visual DigiKeyboard.
+  - Otomatis mendaftarkan dependensi PyQt5 & Pillow, memasang pintasan desktop, dan meluncurkan antarmuka GUI Host Manager setelah instalasi.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
+  - Audio klik mekanikal dan haptik responsif dipertahankan.
+
+
 
 
 
