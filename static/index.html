@@ -9601,6 +9601,76 @@ function playStartupTypingJingle() {
   } catch(e) {}
 }
 
+function playPairingSuccessSound() {
+  if (localStorage.getItem('digi_sound') === 'false') return;
+  try {
+    unlockAudio();
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+    const now = Math.max(audioCtx.currentTime, 0.005);
+    const vol = soundVolume || 0.7;
+
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(vol * 0.9, now);
+    masterGain.connect(audioCtx.destination);
+
+    // Warm sub foundation (293.66 Hz - D4)
+    const oscSub = audioCtx.createOscillator();
+    const gainSub = audioCtx.createGain();
+    oscSub.type = 'sine';
+    oscSub.frequency.setValueAtTime(293.66, now);
+    gainSub.gain.setValueAtTime(0.0001, now);
+    gainSub.gain.exponentialRampToValueAtTime(0.22, now + 0.008);
+    gainSub.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
+    oscSub.connect(gainSub);
+    gainSub.connect(masterGain);
+    oscSub.start(now);
+    oscSub.stop(now + 0.080);
+
+    // Note 1: Tone inisiasi (587.33 Hz - D5)
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(587.33, now);
+    gain1.gain.setValueAtTime(0.0001, now);
+    gain1.gain.exponentialRampToValueAtTime(0.40, now + 0.006);
+    gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
+    osc1.connect(gain1);
+    gain1.connect(masterGain);
+    osc1.start(now);
+    osc1.stop(now + 0.080);
+
+    // Note 2: Tone penerimaan sistem (880.00 Hz - A5)
+    const t2 = now + 0.065;
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(880.0, t2);
+    gain2.gain.setValueAtTime(0.0001, t2);
+    gain2.gain.exponentialRampToValueAtTime(0.50, t2 + 0.008);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, t2 + 0.190);
+    osc2.connect(gain2);
+    gain2.connect(masterGain);
+    osc2.start(t2);
+    osc2.stop(t2 + 0.200);
+
+    // Sheen kristal digital aksen canggih (1760.00 Hz - A6)
+    const oscHigh = audioCtx.createOscillator();
+    const gainHigh = audioCtx.createGain();
+    oscHigh.type = 'triangle';
+    oscHigh.frequency.setValueAtTime(1760.0, t2);
+    gainHigh.gain.setValueAtTime(0.0001, t2);
+    gainHigh.gain.exponentialRampToValueAtTime(0.12, t2 + 0.008);
+    gainHigh.gain.exponentialRampToValueAtTime(0.0001, t2 + 0.130);
+    oscHigh.connect(gainHigh);
+    gainHigh.connect(masterGain);
+    oscHigh.start(t2);
+    oscHigh.stop(t2 + 0.140);
+  } catch(e) {}
+}
+
 function vibe(ms = null) {
   if (!haptic || !navigator.vibrate) return;
   const dur = ms !== null ? ms : vibeDuration;
@@ -9781,7 +9851,7 @@ function connect() {
           if (d.license) updateLicenseDisplay(d.license);
           closePairingModal();
           document.body.classList.remove('controller-standby');
-          playClickSound();
+          playPairingSuccessSound();
           vibe([30, 40]);
           showSmartToast(currentUiLang === 'id' ? 'Perangkat Berhasil Terhubung' : 'Device Connected Successfully', 'PC Host');
         } else {
@@ -9802,6 +9872,7 @@ function connect() {
           licenseStatusMsg.classList.remove('hidden');
         }
         if (d.success) {
+          playPairingSuccessSound();
           vibe(25);
           setTimeout(closeLicenseModal, 1500);
         } else {
