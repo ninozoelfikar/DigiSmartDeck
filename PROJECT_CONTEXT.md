@@ -764,7 +764,15 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
   - Audio klik mekanikal dan haptik responsif dipertahankan.
 
+---
 
-
-
-
+## 44. CATATAN CHECKPOINT (v0.9.40 - Pembersihan Efek Garis Berwarna di Tombol Shortcut Mode AI)
+- **Pembersihan Garis Aksen Berwarna pada Shortcut AI:**
+  - Menghilangkan `border-left: 3px solid var(--accent);` pada `.ai-btn-sh.ai-prompt-chip` di `static/index.html`.
+  - Seluruh tombol pintasan di deck AI Workstation (`.ai-btn-sh` dan prompt chips) kini memiliki border netral yang seragam dan bersih (`border: 1px solid var(--key-border)`) di semua tema.
+  - Tampilan visual tidak lagi terganggu oleh garis aksen vertikal di tepi tombol shortcut AI.
+- **Preservasi Desain Garis pada Keyboard Fisik / Virtual:**
+  - Desain garis berwarna pada tombol keyboard fisik/virtual (`.k`) pada tema-tema seperti Racing Supercar (`border-bottom: 2px solid #e63946`), Anime Mecha (`border-bottom: 2px solid #00e5ff`), Sakura Floral (`border-bottom: 2px solid #ff80bf`), dan Pastel Chic (`border-top: 2px solid ...`) tetap dipertahankan penuh sesuai permintaan.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
+  - Audio klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
