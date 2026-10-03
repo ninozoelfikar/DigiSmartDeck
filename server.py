@@ -1051,6 +1051,114 @@ def activate_and_focus_window(win_id, maximize=True):
             return False
     return False
 
+def minimize_window(win_id):
+    """Meminimalkan (minimize) jendela PC host."""
+    global CACHED_X11_ENV
+    if not win_id:
+        return False
+    if sys.platform.startswith('linux'):
+        try:
+            env = get_x11_env()
+            # Coba menggunakan ctypes libX11 XIconifyWindow (standar X11 asli)
+            try:
+                import ctypes
+                x11 = ctypes.cdll.LoadLibrary('libX11.so.6')
+                x11.XOpenDisplay.restype = ctypes.c_void_p
+                disp = x11.XOpenDisplay(env.get('DISPLAY', ':1').encode('utf-8'))
+                if disp:
+                    screen = x11.XDefaultScreen(ctypes.c_void_p(disp))
+                    w_int = int(win_id, 16) if str(win_id).startswith('0x') else int(win_id)
+                    x11.XIconifyWindow(ctypes.c_void_p(disp), ctypes.c_ulong(w_int), ctypes.c_int(screen))
+                    x11.XFlush(ctypes.c_void_p(disp))
+                    x11.XCloseDisplay(ctypes.c_void_p(disp))
+                    return True
+            except Exception:
+                pass
+            # Fallback ke wmctrl
+            subprocess.run(
+                ['wmctrl', '-i', '-r', win_id, '-b', 'add,hidden'],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.8
+            )
+            return True
+        except Exception:
+            return False
+    elif sys.platform == 'win32':
+        try:
+            import win32gui, win32con
+            hwnd = int(win_id)
+            if win32gui.IsWindow(hwnd):
+                win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
+                return True
+        except Exception:
+            return False
+    return False
+
+def maximize_window(win_id):
+    """Memaksimalkan (maximize) atau memulihkan (restore) ukuran jendela PC host."""
+    global CACHED_X11_ENV
+    if not win_id:
+        return False
+    if sys.platform.startswith('linux'):
+        try:
+            env = get_x11_env()
+            subprocess.run(
+                ['wmctrl', '-i', '-r', win_id, '-b', 'toggle,maximized_vert,maximized_horz'],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.8
+            )
+            return True
+        except Exception:
+            return False
+    elif sys.platform == 'win32':
+        try:
+            import win32gui, win32con
+            hwnd = int(win_id)
+            if win32gui.IsWindow(hwnd):
+                placement = win32gui.GetWindowPlacement(hwnd)
+                if placement[1] == win32con.SW_SHOWMAXIMIZED:
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                else:
+                    win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+                win32gui.SetForegroundWindow(hwnd)
+                return True
+        except Exception:
+            return False
+    return False
+
+def close_window(win_id):
+    """Menutup jendela PC host secara anggun (graceful close)."""
+    global CACHED_X11_ENV
+    if not win_id:
+        return False
+    if sys.platform.startswith('linux'):
+        try:
+            env = get_x11_env()
+            subprocess.run(
+                ['wmctrl', '-i', '-c', win_id],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=0.8
+            )
+            return True
+        except Exception:
+            return False
+    elif sys.platform == 'win32':
+        try:
+            import win32gui, win32con
+            hwnd = int(win_id)
+            if win32gui.IsWindow(hwnd):
+                win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+                return True
+        except Exception:
+            return False
+    return False
+
 async def smart_context_tracker_loop():
     """Background task memeriksa jendela aktif PC setiap 800ms dan memancarkan perubahan ke client."""
     global CURRENT_APP_CONTEXT
@@ -1434,6 +1542,50 @@ async def websocket_handler(request):
                         }))
                     except Exception:
                         pass
+
+                elif msg_type == 'control_window':
+                    win_id = data.get('win_id')
+                    action = data.get('action')
+                    if win_id and action:
+                        if action == 'minimize':
+                            await asyncio.to_thread(minimize_window, win_id)
+                        elif action == 'maximize':
+                            await asyncio.to_thread(maximize_window, win_id)
+                        elif action == 'close':
+                            await asyncio.to_thread(close_window, win_id)
+                        elif action == 'activate':
+                            maximize = data.get('maximize', False)
+                            await asyncio.to_thread(activate_and_focus_window, win_id, maximize)
+
+                        # Jeda singkat agar OS Window Manager menyelesaikan perubahan state
+                        await asyncio.sleep(0.18)
+                        new_info = await asyncio.to_thread(get_active_window_info)
+                        if new_info:
+                            CURRENT_APP_CONTEXT = new_info
+                            broadcast_payload = json.dumps({
+                                'type': 'app_context',
+                                'app': new_info['app'],
+                                'title': new_info['title'],
+                                'suggested_mode': new_info['suggested_mode'],
+                                'class_name': new_info['class_name']
+                            })
+                            for client in list(CONNECTED_CLIENTS):
+                                try:
+                                    await client.send_str(broadcast_payload)
+                                except Exception:
+                                    pass
+
+                        # Siarkan daftar jendela terbaru ke semua client aktif
+                        windows = await asyncio.to_thread(get_open_windows_list)
+                        list_payload = json.dumps({
+                            'type': 'window_list',
+                            'windows': windows
+                        })
+                        for client in list(CONNECTED_CLIENTS):
+                            try:
+                                await client.send_str(list_payload)
+                            except Exception:
+                                pass
 
                 elif msg_type == 'activate_window':
                     win_id = data.get('win_id')

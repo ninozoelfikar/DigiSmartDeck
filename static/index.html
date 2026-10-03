@@ -5584,6 +5584,12 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.win-switcher-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
 .win-switcher-mode-tag {
   display: inline-block;
   font-size: 10px;
@@ -5595,6 +5601,62 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   border: 1px solid rgba(88, 166, 255, 0.25);
   white-space: nowrap;
   flex-shrink: 0;
+}
+.win-switcher-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 2px 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.win-ctrl-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--key-bg, #21262d);
+  border: 1px solid var(--key-border, rgba(56, 139, 253, 0.2));
+  color: var(--text, #c9d1d9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+.win-ctrl-btn:hover {
+  transform: translateY(-1px);
+}
+.win-ctrl-btn:active {
+  transform: translateY(1px);
+}
+.win-ctrl-btn.win-ctrl-min:hover,
+.win-ctrl-btn.win-ctrl-min:active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+.win-ctrl-btn.win-ctrl-max:hover,
+.win-ctrl-btn.win-ctrl-max:active {
+  background: rgba(88, 166, 255, 0.25);
+  border-color: var(--accent, #58a6ff);
+  color: var(--accent, #58a6ff);
+}
+.win-ctrl-btn.win-ctrl-close:hover,
+.win-ctrl-btn.win-ctrl-close:active {
+  background: rgba(230, 57, 70, 0.28);
+  border-color: #e63946;
+  color: #ff6b64;
+}
+@media (max-width: 480px) {
+  .win-switcher-right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
 }
 .win-switcher-empty, .win-switcher-loading {
   text-align: center;
@@ -7903,6 +7965,12 @@ const I18N = {
     win_switcher_active_badge: "Active",
     win_switcher_toast: "Activating",
     win_switcher_maximized: "Maximized",
+    win_ctrl_min: "Minimize",
+    win_ctrl_max: "Maximize / Restore",
+    win_ctrl_close: "Close",
+    win_status_minimized: "Minimized",
+    win_status_maximized: "Maximized",
+    win_status_closed: "Closed",
     // Pairing & Licensing
     util_license_title: "DigiKeyboard SaaS License",
     util_pairing: "Pairing",
@@ -8155,6 +8223,12 @@ const I18N = {
     win_switcher_active_badge: "Aktif",
     win_switcher_toast: "Mengaktifkan",
     win_switcher_maximized: "Jendela Penuh",
+    win_ctrl_min: "Kecilkan (Minimize)",
+    win_ctrl_max: "Maksimalkan / Pulihkan",
+    win_ctrl_close: "Tutup (Close)",
+    win_status_minimized: "Diminimalkan",
+    win_status_maximized: "Dimaksimalkan",
+    win_status_closed: "Ditutup",
     // Pairing & Licensing
     util_license_title: "Lisensi SaaS DigiKeyboard",
     util_pairing: "Pairing",
@@ -9342,12 +9416,68 @@ function renderWindowList(windows) {
     left.appendChild(iconBox);
     left.appendChild(meta);
 
+    const right = document.createElement('div');
+    right.className = 'win-switcher-right';
+
     const tag = document.createElement('span');
     tag.className = 'win-switcher-mode-tag';
     tag.textContent = modeLabel;
+    right.appendChild(tag);
+
+    const ctrlGroup = document.createElement('div');
+    ctrlGroup.className = 'win-switcher-controls';
+
+    // 1. Tombol Minimize
+    const btnMin = document.createElement('button');
+    btnMin.type = 'button';
+    btnMin.className = 'win-ctrl-btn win-ctrl-min';
+    btnMin.title = t('win_ctrl_min', 'Kecilkan (Minimize)');
+    btnMin.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
+    btnMin.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playClickSound();
+      vibe(15);
+      send({ type: 'control_window', win_id: win.win_id, action: 'minimize' });
+      showSmartContextToast(win.app || 'App', t('win_status_minimized', 'Diminimalkan'));
+    });
+
+    // 2. Tombol Maximize / Restore
+    const btnMax = document.createElement('button');
+    btnMax.type = 'button';
+    btnMax.className = 'win-ctrl-btn win-ctrl-max';
+    btnMax.title = t('win_ctrl_max', 'Maksimalkan / Pulihkan');
+    btnMax.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="15" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>';
+    btnMax.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playClickSound();
+      vibe(15);
+      send({ type: 'control_window', win_id: win.win_id, action: 'maximize' });
+      showSmartContextToast(win.app || 'App', t('win_status_maximized', 'Dimaksimalkan'));
+    });
+
+    // 3. Tombol Close
+    const btnClose = document.createElement('button');
+    btnClose.type = 'button';
+    btnClose.className = 'win-ctrl-btn win-ctrl-close';
+    btnClose.title = t('win_ctrl_close', 'Tutup (Close)');
+    btnClose.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    btnClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playClickSound();
+      vibe(25);
+      item.style.opacity = '0.35';
+      item.style.pointerEvents = 'none';
+      send({ type: 'control_window', win_id: win.win_id, action: 'close' });
+      showSmartContextToast(win.app || 'App', t('win_status_closed', 'Ditutup'));
+    });
+
+    ctrlGroup.appendChild(btnMin);
+    ctrlGroup.appendChild(btnMax);
+    ctrlGroup.appendChild(btnClose);
+    right.appendChild(ctrlGroup);
 
     item.appendChild(left);
-    item.appendChild(tag);
+    item.appendChild(right);
 
     item.addEventListener('click', () => {
       playClickSound();

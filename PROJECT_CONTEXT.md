@@ -791,3 +791,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
 
+---
+
+## 46. CATATAN CHECKPOINT (v0.9.42 - Kontrol Jendela PC: Tombol Minimize, Maximize, dan Close per Aplikasi)
+- **Kontrol Jendela di Daftar Aplikasi Aktif (Modal Window Switcher):**
+  - Pada popup daftar aplikasi PC (`modal-window-switcher` yang dibuka via indikator aplikasi aktif `#smart-context-chip`), kini setiap baris aplikasi dilengkapi dengan 3 tombol kontrol jendela interaktif:
+    1. **Minimize (`[ - ]`)**: Meminimalkan jendela ke taskbar tanpa menutupnya (menggunakan X11 `XIconifyWindow` dan `wmctrl -b add,hidden` di Linux, serta `ShowWindow(SW_MINIMIZE)` di Windows).
+    2. **Maximize / Restore (`[ ▢ ]`)**: Memaksimalkan jendela ke layar penuh atau memulihkan ukuran jendela sebelumnya (`wmctrl -b toggle,maximized_vert,maximized_horz` di Linux, `ShowWindow(SW_MAXIMIZE/SW_RESTORE)` di Windows).
+    3. **Close (`[ ✕ ]`)**: Menutup jendela aplikasi secara anggun (`wmctrl -c` di Linux, `WM_CLOSE` di Windows) dengan animasi transisi memudar dan pembaruan otomatis daftar jendela.
+  - Mengetuk badan kartu aplikasi tetap berfungsi untuk mengaktifkan/membawa jendela ke depan di PC dan menyesuaikan mode layout DigiKeyboard.
+  - Setiap tombol kontrol jendela dilengkapi isolasi event (`stopPropagation()`), efek suara klik mekanikal (`playClickSound()`), getaran haptik (`vibe()`), dan notifikasi toast status di layar ponsel.
+- **Backend & Protokol WebSocket (`server.py`):**
+  - Menambahkan endpoint pesan `control_window` (`action`: `minimize`, `maximize`, `close`, `activate`) yang dieksekusi secara asinkron (`asyncio.to_thread`).
+  - Setelah aksi jendela dilakukan, server otomatis menyiarkan status konteks aplikasi aktif yang baru (`app_context`) dan daftar jendela terkini (`window_list`) ke seluruh klien yang terhubung secara real-time.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Audio klik mekanikal dan respons haptik dipertahankan penuh.
