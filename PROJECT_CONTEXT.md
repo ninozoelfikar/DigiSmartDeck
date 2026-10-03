@@ -776,3 +776,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
   - Audio klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 45. CATATAN CHECKPOINT (v0.9.41 - Perbaikan Tombol Shoulder Gamepad L1, L2, R1, R2)
+- **Penyebab Masalah:**
+  - Tombol bahu gamepad (L1, L2, R1, R2) berada di dalam container HTML `<div class="gp-top-row">`.
+  - Pada event listener multi-touch dan mouse di `#gamepad-view` (`touchstart`, `touchend`, dan `mousedown`), terdapat pengecekan pengabaian: `if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;`.
+  - Akibatnya, setiap sentuhan atau klik pada tombol L1, L2, R1, dan R2 terdeteksi berada di dalam `.gp-top-row` dan langsung dihentikan (`early return`) sebelum sempat memicu fungsi penanganan tombol (`handleButtonTouch` / `mousedown`).
+- **Solusi yang Diterapkan:**
+  - Menghapus selektor `.gp-top-row` dari daftar pengecualian di event `touchstart`, `touchend`, dan `mousedown` pada `#gamepad-view`.
+  - Menambahkan fallback `|| t.target` pada `document.elementFromPoint` di `handleButtonTouch` agar pendeteksian elemen tombol pada perangkat layar sentuh selalu akurat dan andal.
+  - Tombol L1, L2, R1, R2 kini dapat diklik dan disentuh normal, merespons dengan audio klik mekanikal (`playClickSound()`), getaran haptik (`vibe()`), dan mengirim sinyal tombol ke PC host via WebSocket.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+

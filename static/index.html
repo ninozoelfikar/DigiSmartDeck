@@ -11678,7 +11678,7 @@ function handleButtonTouch(e) {
   if (!isGameModeActive) return;
 
   for (const t of e.changedTouches) {
-    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const el = document.elementFromPoint(t.clientX, t.clientY) || t.target;
     const btn = el ? el.closest('.gp-act-btn, .gp-sh-btn, .gp-pill-btn') : null;
     if (btn && btn.dataset.gp) {
       const gpKey = btn.dataset.gp;
@@ -11964,14 +11964,14 @@ if (gamepadView) {
   gamepadView.addEventListener('touchstart', (e) => {
     if (e.target.closest('#gp-gear-btn, #gamepad-settings-overlay, #gamepad-remap-modal')) return;
     unlockAudio();
-    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;
+    if (e.target.closest('#gp-dpad, #gp-stick-container')) return;
     e.preventDefault();
     handleButtonTouch(e);
   }, { passive: false });
 
   gamepadView.addEventListener('touchend', (e) => {
     if (e.target.closest('#gp-gear-btn, #gamepad-settings-overlay, #gamepad-remap-modal')) return;
-    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;
+    if (e.target.closest('#gp-dpad, #gp-stick-container')) return;
     e.preventDefault();
     handleButtonEnd(e);
   }, { passive: false });
@@ -11985,7 +11985,7 @@ if (gamepadView) {
   gamepadView.addEventListener('mousedown', (e) => {
     if (e.target.closest('#gp-gear-btn, #gamepad-settings-overlay, #gamepad-remap-modal')) return;
     unlockAudio();
-    if (e.target.closest('#gp-dpad, #gp-stick-container, .gp-top-row')) return;
+    if (e.target.closest('#gp-dpad, #gp-stick-container')) return;
     const btn = e.target.closest('.gp-act-btn, .gp-sh-btn, .gp-pill-btn');
     if (btn && btn.dataset.gp) {
       const pcKey = getPcKeyForGp(btn.dataset.gp);
