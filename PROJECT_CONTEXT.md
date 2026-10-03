@@ -844,3 +844,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) pada tuts keyboard dan workstation tetap dipertahankan penuh.
 
+---
+
+## 49. CATATAN CHECKPOINT (v0.9.45 - Desain Ulang Modal Info Aplikasi: Borderless, Bersih & Bahasa Marketing Awam)
+- **Pembersihan Total Elemen & Border (Zero Clutter):**
+  - Menghilangkan seluruh border pada modal dialog, kartu, header, dan footer (`border: none;`).
+  - Menghapus seksi media sosial (YouTube, Instagram, TikTok, Website) dan seksi kontak (WhatsApp, Telepon, Email).
+  - Menghapus judul/label "About DigiKeyboard" dan icon pendukung.
+  - Menyediakan tombol tutup '✕' minimalis tanpa border di sudut kanan atas dialog serta penutupan instan saat mengetuk latar belakang (backdrop).
+- **Tata Letak Informasi Ringkas 4 Elemen Utama:**
+  - *Line 1*: Nama aplikasi `DigiKeyboard` berbobot tebal dan proporsional.
+  - *Line 2*: Badge versi aplikasi `v1.17.0` berbentuk kapsul aksen biru elegan.
+  - *Line 3*: Teks studio `by King Ali Studiō` dengan karakter 'ō' beraksen macron yang presisi.
+  - *Subtitle*: Deskripsi bahasa awam berorientasi marketing yang ramah pengguna, mudah dipahami, serta menonjolkan fitur unggulan dan kegunaan nyata:
+    - ID: "Ubah ponsel atau tablet Anda menjadi keyboard nirkabel, mouse sentuh (trackpad), stik game, dan pengetik suara otomatis untuk laptop atau PC. Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel."
+    - EN: "Turn your phone or tablet into a wireless keyboard, smooth touch trackpad, game controller, and voice-typing tool for your PC or laptop. Control your computer effortlessly from anywhere without messy cables."
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna.
+
