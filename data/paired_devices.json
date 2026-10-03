@@ -1,7 +1,7 @@
 {
   "pairing_enabled": true,
-  "current_pin": "834990",
-  "pin_created_at": 1791057606.8259697,
+  "current_pin": "233389",
+  "pin_created_at": 1791058508.8218317,
   "paired_devices": {
     "454fc6ba96c00de537953910dac2056b7cf2a17a450e6c34": {
       "device_id": "dev_bdb85ef4",
@@ -18,6 +18,14 @@
       "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
       "paired_at": "2026-10-04 01:47:59",
       "last_seen": "2026-10-04 01:47:59"
+    },
+    "50785fac66ec7a78cac0a95e11b39b915b406b3f4652e8b6": {
+      "device_id": "dev_a8fad118",
+      "name": "Android Device",
+      "ip": "192.168.8.100",
+      "user_agent": "Mozilla/5.0 (Linux; Android 16; HEY3-W00 Build/HONORHEY3-W09; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/153.0.8010.36 Safari/537.36",
+      "paired_at": "2026-10-04 03:13:08",
+      "last_seen": "2026-10-04 03:13:08"
     }
   }
 }
