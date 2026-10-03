@@ -863,3 +863,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna.
 
+---
+
+## 50. CATATAN CHECKPOINT (v0.9.46 - Kalimat Ringkas Subtitle & Integrasi Tombol Periksa Pembaruan)
+- **Penyederhanaan Subtitle Aplikasi (Kalimat Terakhir Sah):**
+  - Mengurangi teks penjelasan info aplikasi menjadi hanya satu kalimat penutup yang padat, ringkas, dan fokus pada manfaat utama:
+    - ID: "Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel."
+    - EN: "Control your computer effortlessly from anywhere without messy cables."
+- **Penempatan Tombol Update di Posisi Bawah Tengah (Bottom Center):**
+  - Tombol kapsul minimalis `#btn-check-update` diletakkan di bagian paling bawah tengah dialog modal.
+  - Sesuai standar industri UI/UX (visual flow dari info ke aksi, serta kemudahan jangkauan ibu jari / thumb zone pada layar sentuh).
+  - Dilengkapi ikon putar sinkronisasi SVG dan efek animasi putar halus (`spin-icon 0.8s`).
+  - Mengambil data versi dari endpoint `/api/version`, memicu audio penerimaan sistem (`playPairingSuccessSound()`), getaran haptik (`vibe(15)`), dan toast notifikasi status.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) pada tuts keyboard dan workstation tetap dipertahankan penuh.
+

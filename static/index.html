@@ -1542,6 +1542,17 @@ body.is-fullscreen {
   border-color: rgba(255, 255, 255, 0.25);
   color: #fff;
 }
+.btn-check-update:hover {
+  background: rgba(88, 166, 255, 0.22) !important;
+  border-color: var(--accent) !important;
+}
+.btn-check-update:active {
+  transform: scale(0.96);
+}
+@keyframes spin-icon {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 .modal-body {
   padding: 16px 18px;
   overflow-y: auto;
@@ -7693,8 +7704,16 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <!-- Line 3: By Nama Studio -->
     <div style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.2px;margin-bottom:14px;">by King Ali Studiō</div>
 
-    <!-- Subtitle (Bahasa awam, marketing-oriented, fokus kegunaan) -->
-    <div style="font-size:12px;color:var(--text-dim);line-height:1.55;max-width:340px;margin:0 auto;" data-i18n="about_desc">Ubah ponsel atau tablet Anda menjadi keyboard nirkabel, mouse sentuh (trackpad), stik game, dan pengetik suara otomatis untuk laptop atau PC. Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel.</div>
+    <!-- Subtitle (Kalimat terakhir saja, fokus kegunaan) -->
+    <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto;" data-i18n="about_desc">Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel.</div>
+
+    <!-- Tombol Update Paling Bawah Tengah -->
+    <div style="margin-top:20px;">
+      <button type="button" id="btn-check-update" class="btn-check-update" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 18px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:all 0.2s ease;">
+        <svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+        <span id="txt-check-update" data-i18n="about_btn_update">Periksa Pembaruan</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -8095,7 +8114,8 @@ const I18N = {
     store_close: "Close",
 
     // About Modal
-    about_desc: "Turn your phone or tablet into a wireless keyboard, smooth touch trackpad, game controller, and voice-typing tool for your PC or laptop. Control your computer effortlessly from anywhere without messy cables."
+    about_desc: "Control your computer effortlessly from anywhere without messy cables.",
+    about_btn_update: "Check for Updates"
   },
   id: {
     brand_title: "Tentang DigiKeyboard - King Ali Studiō",
@@ -8350,7 +8370,8 @@ const I18N = {
     store_close: "Tutup",
 
     // About Modal
-    about_desc: "Ubah ponsel atau tablet Anda menjadi keyboard nirkabel, mouse sentuh (trackpad), stik game, dan pengetik suara otomatis untuk laptop atau PC. Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel."
+    about_desc: "Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel.",
+    about_btn_update: "Periksa Pembaruan"
   }
 };
 
@@ -8748,6 +8769,39 @@ if (btnBrandToggle) {
     // Jangan buka modal jika user mengklik status koneksi untuk bantuan Wi-Fi
     if (e.target.closest('#badge')) return;
     openAboutModal();
+  });
+}
+
+const btnCheckUpdate = $('btn-check-update');
+if (btnCheckUpdate) {
+  btnCheckUpdate.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    const txtEl = $('txt-check-update');
+    const spinIcon = $('icon-update-spin');
+    if (spinIcon) spinIcon.style.animation = 'spin-icon 0.8s linear infinite';
+    if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Memeriksa...' : 'Checking...';
+    btnCheckUpdate.disabled = true;
+
+    setTimeout(() => {
+      fetch('/api/version')
+        .then(r => r.json())
+        .then(d => {
+          if (spinIcon) spinIcon.style.animation = '';
+          btnCheckUpdate.disabled = false;
+          if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Versi Terbaru' : 'Up to Date';
+          showSmartToast(currentUiLang === 'id' ? 'Aplikasi sudah versi terbaru' : 'App is up to date', 'DigiKeyboard');
+          playPairingSuccessSound();
+          setTimeout(() => {
+            if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
+          }, 2400);
+        })
+        .catch(() => {
+          if (spinIcon) spinIcon.style.animation = '';
+          btnCheckUpdate.disabled = false;
+          if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
+        });
+    }, 600);
   });
 }
 
