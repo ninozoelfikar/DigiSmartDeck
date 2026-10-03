@@ -662,3 +662,33 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - Nol emoji / emotikon di seluruh berkas dan antarmuka.
   - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+---
+
+## 39. CATATAN CHECKPOINT (v0.9.35 - Device Pairing Otentikasi 6-Digit PIN & Sistem SaaS Licensing)
+- **Percabangan Git Baru:**
+  - Dibuat percabangan `feature/pairing-and-auth` dari `test/concept-a-deck`.
+- **Modul Keamanan & Lisensi Mandiri (`auth_manager.py`):**
+  - `DevicePairingManager`:
+    - Mengenerate 6 digit PIN acak yang dicetak di terminal host PC saat server mulai/restart.
+    - Memverifikasi PIN perangkat mobile saat pertama kali tersambung dan menerbitkan token otentikasi permanen 48-char hex (`data/paired_devices.json`).
+    - Otomatis mem-bypass localhost/koneksi kabel internal (127.0.0.1, ::1).
+    - Mendukung unpairing / pencabutan otorisasi perangkat dari daftar.
+  - `LicenseManager`:
+    - Mengelola model bisnis SaaS: Free Trial 7 Hari (otomatis aktif saat instalasi baru), Paket Bulanan (Rp 15.000 / bulan), dan Paket Seumur Hidup (Rp 250.000).
+    - Menggunakan verifikasi tanda tangan digital HMAC-SHA256 untuk aktivasi lisensi offline/online tanpa ketergantungan server luar (`DIGI-MONT-XXXX-XXXX`, `DIGI-LIFE-XXXX-XXXX`).
+    - Status tersimpan persisten di `data/license.json`.
+- **Integrasi Server Host (`server.py`):**
+  - Banner startup menampilkan PIN Pairing 6-digit dan status lisensi SaaS secara transparan.
+  - Endpoint REST: `GET /api/license`, `GET /api/pairing/pin`.
+  - Protokol WebSocket: Penjagaan pesan (`keypress`, `text`, `mouse`, `action`, dll.). Klien yang belum ter-pairing dibatasi dan diminta memasukkan PIN.
+  - Penanganan pesan WS baru: `auth`, `pair_request`, `get_pairing_info`, `unpair_device`, `activate_license`.
+- **Antarmuka Klien Mobile & Deck (`static/index.html`):**
+  - Modal Otorisasi Pairing Baru (`#modal-pairing`) dengan 6 kotak input PIN angka otomatis melompat (auto-jump / backspace handler).
+  - Modal Lisensi & Akun SaaS (`#modal-license`) menampilkan status aktif, sisa hari aktif, paket harga berlangganan (Rp 15.000/bln & Rp 250.000), serta input aktivasi lisensi.
+  - Tombol akses cepat status lisensi (`#btn-license`) dan pairing (`#btn-pairing`) di Control Deck.
+  - Dukungan dwibahasa penuh (EN & ID) di kamus `I18N`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
+  - Mechanical click sound (`playClickSound()`) and haptics (`vibe()`) preserved on all new UI buttons.
+

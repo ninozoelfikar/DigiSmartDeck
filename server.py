@@ -16,6 +16,8 @@ import re
 import subprocess
 from aiohttp import web
 
+from auth_manager import pairing_manager, license_manager
+
 BASE_DIR = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
 def load_version():
@@ -1132,7 +1134,11 @@ async def websocket_handler(request):
     device_label = get_device_label(request)
     print(f"[+] Client terhubung: {client_ip} | {device_label} (Total terhubung: {len(CONNECTED_CLIENTS)})")
 
-    # Kirim handshake inisialisasi ke client (Semua client langsung aktif sebagai pengendali)
+    # Inisialisasi status otentikasi client (localhost diizinkan cepat jika dev/usb)
+    is_client_authorized = pairing_manager.is_authorized("", client_ip)
+    client_token = None
+
+    # Kirim handshake inisialisasi ke client
     try:
         await ws.send_str(json.dumps({
             'type': 'init',
@@ -1140,13 +1146,23 @@ async def websocket_handler(request):
             'host_os': get_host_os(),
             'platform': sys.platform,
             'uinput_active': UINPUT_AVAILABLE,
-            'caps_lock': is_caps_lock_on()
+            'caps_lock': is_caps_lock_on(),
+            'pairing_required': not is_client_authorized,
+            'host_name': socket.gethostname(),
+            'license': license_manager.get_info()
         }))
-        await ws.send_str(json.dumps({
-            'type': 'controller_status',
-            'role': 'active',
-            'message': 'Perangkat terhubung sebagai Pengendali PC.'
-        }))
+        if is_client_authorized:
+            await ws.send_str(json.dumps({
+                'type': 'controller_status',
+                'role': 'active',
+                'message': 'Perangkat terhubung sebagai Pengendali PC.'
+            }))
+        else:
+            await ws.send_str(json.dumps({
+                'type': 'controller_status',
+                'role': 'pairing_required',
+                'message': 'Perangkat membutuhkan pairing dengan PIN PC.'
+            }))
         await ws.send_str(json.dumps({
             'type': 'app_context',
             'app': CURRENT_APP_CONTEXT['app'],
@@ -1179,6 +1195,115 @@ async def websocket_handler(request):
 
                 elif msg_type == 'takeover':
                     continue
+
+                # ── Handler Otentikasi & Pairing Perangkat ──
+                elif msg_type == 'auth':
+                    token = data.get('token', '')
+                    dev_name = data.get('device_name') or device_label
+                    if pairing_manager.is_authorized(token, client_ip):
+                        is_client_authorized = True
+                        client_token = token
+                        await ws.send_str(json.dumps({
+                            'type': 'auth_status',
+                            'authorized': True,
+                            'token': token,
+                            'device_name': dev_name,
+                            'license': license_manager.get_info()
+                        }))
+                        await ws.send_str(json.dumps({
+                            'type': 'controller_status',
+                            'role': 'active',
+                            'message': 'Perangkat terhubung sebagai Pengendali PC.'
+                        }))
+                    else:
+                        is_client_authorized = False
+                        await ws.send_str(json.dumps({
+                            'type': 'auth_status',
+                            'authorized': False,
+                            'reason': 'pairing_required',
+                            'pin_required': True,
+                            'host_name': socket.gethostname(),
+                            'license': license_manager.get_info()
+                        }))
+                    continue
+
+                elif msg_type == 'pair_request':
+                    pin = data.get('pin', '')
+                    dev_name = data.get('device_name') or device_label
+                    token, msg_str = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua)
+                    if token:
+                        is_client_authorized = True
+                        client_token = token
+                        await ws.send_str(json.dumps({
+                            'type': 'pairing_result',
+                            'success': True,
+                            'token': token,
+                            'device_name': dev_name,
+                            'message': msg_str,
+                            'license': license_manager.get_info()
+                        }))
+                        await ws.send_str(json.dumps({
+                            'type': 'controller_status',
+                            'role': 'active',
+                            'message': 'Perangkat terhubung sebagai Pengendali PC.'
+                        }))
+                        print(f"[PAIR] Perangkat ter-pairing: {dev_name} ({client_ip})")
+                    else:
+                        await ws.send_str(json.dumps({
+                            'type': 'pairing_result',
+                            'success': False,
+                            'message': msg_str
+                        }))
+                    continue
+
+                elif msg_type == 'get_pairing_info':
+                    await ws.send_str(json.dumps({
+                        'type': 'pairing_info',
+                        'pin': pairing_manager.get_or_create_pin(),
+                        'devices': pairing_manager.get_paired_list()
+                    }))
+                    continue
+
+                elif msg_type == 'unpair_device':
+                    dev_id = data.get('device_id') or data.get('token_prefix')
+                    if dev_id:
+                        pairing_manager.unpair_device(dev_id)
+                        await ws.send_str(json.dumps({
+                            'type': 'pairing_info',
+                            'pin': pairing_manager.get_or_create_pin(),
+                            'devices': pairing_manager.get_paired_list()
+                        }))
+                    continue
+
+                elif msg_type == 'activate_license':
+                    key_str = data.get('key', '')
+                    email = data.get('email', '')
+                    ok, act_msg = license_manager.activate_key(key_str, email)
+                    lic_info = license_manager.get_info()
+                    await ws.send_str(json.dumps({
+                        'type': 'license_activation_result',
+                        'success': ok,
+                        'message': act_msg,
+                        'license': lic_info
+                    }))
+                    if ok:
+                        bcast = json.dumps({'type': 'license_update', 'license': lic_info})
+                        for c in list(CONNECTED_CLIENTS):
+                            try:
+                                await c.send_str(bcast)
+                            except Exception:
+                                pass
+                    continue
+
+                # ── Proteksi Pairing: Blokir input kontrol jika perangkat belum ter-pairing ──
+                if not is_client_authorized and pairing_manager.pairing_enabled:
+                    if not pairing_manager.is_authorized(client_token, client_ip):
+                        await ws.send_str(json.dumps({
+                            'type': 'error',
+                            'code': 'UNAUTHORIZED',
+                            'message': 'Perangkat belum di-pairing dengan PC host. Silakan masukkan PIN.'
+                        }))
+                        continue
 
                 if msg_type == 'keypress':
                     key_name = data.get('key')
@@ -1372,6 +1497,14 @@ def print_banner(ports, ips):
     print(f"  http://localhost:{port}")
     print("-" * 60)
 
+    cur_pin = pairing_manager.get_or_create_pin()
+    lic_info = license_manager.get_info()
+    formatted_pin = f"{cur_pin[:3]} {cur_pin[3:]}" if len(cur_pin) == 6 else cur_pin
+    print(f"KODE PIN PAIRING PERANGKAT: [ {formatted_pin} ]")
+    print("Masukkan 6 digit PIN di atas pada HP Anda saat pertama kali menyambung.")
+    print(f"STATUS LISENSI SAAS: {lic_info['plan_name']} | Status: {lic_info['status'].upper()}")
+    print("-" * 60)
+
     if HAS_QR:
         print("Atau scan QR Code berikut dengan kamera HP Anda:")
         qr = qrcode.QRCode(
@@ -1481,6 +1614,8 @@ def create_app(ports=[8080]):
     app.router.add_options('/api/version', options_handler)
     app.router.add_get('/api/info', api_info_handler)
     app.router.add_options('/api/info', options_handler)
+    app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
+    app.router.add_get('/api/pairing/pin', lambda r: web.json_response({'pin': pairing_manager.get_or_create_pin()}, headers={'Access-Control-Allow-Origin': '*'}))
     app.router.add_static('/static/', path=static_dir, name='static')
     # Juga route langsung untuk style.css, app.js, manifest.json, sw.js, dan favicon jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))

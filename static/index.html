@@ -4477,6 +4477,160 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   gap: 6px;
 }
 
+
+/* ── PAIRING & SAAS LICENSE STYLES ── */
+.pin-box-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+}
+.pin-digit {
+  width: 44px;
+  height: 54px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  border: 2px solid var(--key-border);
+  background: var(--key-bg);
+  color: var(--text);
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.pin-digit:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.35);
+  background: var(--panel-bg);
+}
+.pairing-msg {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 12px;
+  text-align: center;
+  line-height: 1.4;
+}
+.pairing-msg.error {
+  background: rgba(230, 57, 70, 0.18);
+  border: 1px solid var(--danger);
+  color: #ff8080;
+}
+.pairing-msg.success {
+  background: rgba(46, 160, 67, 0.18);
+  border: 1px solid #3fb950;
+  color: #56d364;
+}
+.license-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.license-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.license-plan-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.license-plan-badge.lifetime {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #111;
+}
+.license-plan-badge.monthly {
+  background: linear-gradient(135deg, #00e5ff 0%, #0077b6 100%);
+  color: #fff;
+}
+.license-plan-badge.trial {
+  background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+  color: #fff;
+}
+.license-plan-badge.expired {
+  background: #d32f2f;
+  color: #fff;
+}
+.license-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 11.5px;
+}
+.pricing-plans-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.pricing-plan-item {
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.pricing-plan-item.highlight {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
+}
+.pricing-plan-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+.pricing-plan-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 4px 0;
+}
+.pricing-plan-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.license-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.license-key-input {
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--key-border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  outline: none;
+}
+.license-key-input:focus {
+  border-color: var(--accent);
+}
+.btn-activate-lic {
+  padding: 9px 16px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #0d1117;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.btn-activate-lic:active {
+  filter: brightness(0.9);
+}
 /* ── STORE / MARKETPLACE MODAL STYLES ── */
 .store-tab-bar {
   display: flex;
@@ -5639,6 +5793,14 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <button type="button" class="tbtn deck-chip" id="btn-sound" data-i18n-title="util_sound_title" title="Mechanical Key Click Audio">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
             <span data-i18n="util_sound">Key Sound</span>
+          </button>
+          <button type="button" class="tbtn deck-chip" id="btn-license" data-i18n-title="util_license_title" title="DigiKeyboard SaaS License">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+            <span id="deck-license-badge">License</span>
+          </button>
+          <button type="button" class="tbtn deck-chip" id="btn-pairing" data-i18n-title="util_pairing_title" title="Device Pairing &amp; Security">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+            <span data-i18n="util_pairing">Pairing</span>
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-settings" data-i18n-title="util_settings_title" title="Appearance &amp; Preferences">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -7591,6 +7753,100 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 </div>
 
 <!-- SMART CONTEXT TOAST HUD -->
+
+<!-- DEVICE PAIRING MODAL -->
+<div class="modal-backdrop hidden" id="modal-pairing">
+  <div class="modal-dialog" style="max-width:440px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+        <span data-i18n="pairing_title">Pairing Perangkat Baru</span>
+      </div>
+      <button class="modal-close" id="btn-close-pairing" type="button" title="Tutup">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px;">
+      <div class="pairing-msg hidden" id="pairing-status-msg"></div>
+      <p style="font-size:12px;color:var(--text);line-height:1.5;margin-bottom:12px;" data-i18n="pairing_desc">
+        Masukkan 6 digit kode PIN yang tampil di layar monitor atau terminal PC host Anda untuk menyambungkan perangkat ini.
+      </p>
+      <div class="pin-box-group">
+        <input type="tel" maxlength="1" class="pin-digit" id="pin-0" autocomplete="off" inputmode="numeric">
+        <input type="tel" maxlength="1" class="pin-digit" id="pin-1" autocomplete="off" inputmode="numeric">
+        <input type="tel" maxlength="1" class="pin-digit" id="pin-2" autocomplete="off" inputmode="numeric">
+        <input type="tel" maxlength="1" class="pin-digit" id="pin-3" autocomplete="off" inputmode="numeric">
+        <input type="tel" maxlength="1" class="pin-digit" id="pin-4" autocomplete="off" inputmode="numeric">
+        <input type="tel" maxlength="1" class="pin-digit" id="pin-5" autocomplete="off" inputmode="numeric">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button type="button" class="btn-primary" id="btn-submit-pair" style="flex:1;padding:10px;font-weight:700;background:var(--accent);color:#0d1117;border:none;border-radius:6px;cursor:pointer;" data-i18n="pairing_btn_connect">
+          Sambungkan
+        </button>
+      </div>
+      <div class="pairing-hint" style="margin-top:12px;font-size:11px;color:var(--text-dim);text-align:center;" data-i18n="pairing_hint">
+        Kode PIN dapat dilihat di jendela terminal server PC host Anda.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SAAS LICENSE & ACCOUNT MODAL -->
+<div class="modal-backdrop hidden" id="modal-license">
+  <div class="modal-dialog" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+        <span data-i18n="license_title">Lisensi &amp; Akun DigiKeyboard</span>
+      </div>
+      <button class="modal-close" id="btn-close-license" type="button" title="Tutup">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px;max-height:min(70vh, 460px);overflow-y:auto;">
+      <!-- Current Plan Card -->
+      <div class="license-card">
+        <div class="license-header-row">
+          <div>
+            <div style="font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;" data-i18n="license_plan_lbl">Status Paket Aktif</div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);" id="lic-card-plan">Memuat...</div>
+          </div>
+          <span class="license-plan-badge trial" id="lic-card-badge">TRIAL</span>
+        </div>
+        <div class="license-info-grid">
+          <div><span style="color:var(--text-dim);" data-i18n="license_expires_lbl">Masa Aktif:</span> <b id="lic-card-exp">-</b></div>
+          <div><span style="color:var(--text-dim);" data-i18n="license_days_lbl">Sisa Hari:</span> <b id="lic-card-days">-</b></div>
+          <div style="grid-column:span 2;"><span style="color:var(--text-dim);" data-i18n="license_key_lbl">Kunci:</span> <code id="lic-card-key" style="font-size:11px;color:var(--accent);">-</code></div>
+        </div>
+      </div>
+
+      <!-- Activation Form -->
+      <div class="license-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;" data-i18n="license_act_title">Aktivasi Kunci Lisensi</div>
+        <div class="pairing-msg hidden" id="license-status-msg"></div>
+        <div class="license-form">
+          <input type="text" class="license-key-input" id="inp-license-key" placeholder="DIGI-XXXX-XXXX-XXXX" maxlength="24" autocomplete="off" spellcheck="false">
+          <input type="email" class="license-key-input" id="inp-license-email" placeholder="email@anda.com (opsional)" style="text-transform:none;letter-spacing:normal;">
+          <button type="button" class="btn-activate-lic" id="btn-activate-lic" data-i18n="license_act_btn">Aktifkan Lisensi</button>
+        </div>
+      </div>
+
+      <!-- Commercial SaaS Pricing Info -->
+      <div class="license-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;" data-i18n="pricing_title">Pilihan Paket Komersial</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;" data-i18n="pricing_sub">Mendukung koneksi multi-perangkat, tanpa batas waktu hening pada AI mic, dan pemrosesan offline lokal.</div>
+        <div class="pricing-plans-grid">
+          <div class="pricing-plan-item">
+            <div class="pricing-plan-title" data-i18n="pricing_monthly_title">Langganan Bulanan</div>
+            <div class="pricing-plan-price">Rp 15.000</div>
+            <div class="pricing-plan-sub" data-i18n="pricing_monthly_sub">Per bulan (Hemat &amp; Fleksibel)</div>
+          </div>
+          <div class="pricing-plan-item highlight">
+            <div class="pricing-plan-title" data-i18n="pricing_lifetime_title">Lisensi Seumur Hidup</div>
+            <div class="pricing-plan-price">Rp 250.000</div>
+            <div class="pricing-plan-sub" data-i18n="pricing_lifetime_sub">Sekali bayar untuk selamanya</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="smart-context-toast" class="smart-context-toast">
   <span class="toast-icon">
     <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -7648,6 +7904,28 @@ const I18N = {
     win_switcher_active_badge: "Active",
     win_switcher_toast: "Activating",
     win_switcher_maximized: "Maximized",
+    // Pairing & Licensing
+    util_license_title: "DigiKeyboard SaaS License",
+    util_pairing: "Pairing",
+    util_pairing_title: "Device Pairing & Security",
+    pairing_title: "Pair New Device",
+    pairing_desc: "Enter the 6-digit PIN shown on your PC monitor or terminal to securely authorize this device.",
+    pairing_btn_connect: "Connect Device",
+    pairing_hint: "The 6-digit PIN is displayed in your PC host terminal window.",
+    license_title: "DigiKeyboard License & Account",
+    license_plan_lbl: "Active Plan Status",
+    license_expires_lbl: "Valid Until:",
+    license_days_lbl: "Days Remaining:",
+    license_key_lbl: "License Key:",
+    license_act_title: "Activate License Key",
+    license_act_btn: "Activate License",
+    pricing_title: "Commercial SaaS Plans",
+    pricing_sub: "Includes unlimited AI dictation, low latency control, and 100% offline local processing.",
+    pricing_monthly_title: "Monthly Subscription",
+    pricing_monthly_sub: "Per month (Flexible)",
+    pricing_lifetime_title: "Lifetime License",
+    pricing_lifetime_sub: "One-time payment forever",
+
 
     // Control Deck
     menu_title: "Menu",
@@ -7878,6 +8156,28 @@ const I18N = {
     win_switcher_active_badge: "Aktif",
     win_switcher_toast: "Mengaktifkan",
     win_switcher_maximized: "Jendela Penuh",
+    // Pairing & Licensing
+    util_license_title: "Lisensi SaaS DigiKeyboard",
+    util_pairing: "Pairing",
+    util_pairing_title: "Pairing & Keamanan Perangkat",
+    pairing_title: "Pairing Perangkat Baru",
+    pairing_desc: "Masukkan 6 digit kode PIN yang tampil di layar monitor atau terminal PC host Anda untuk menyambungkan perangkat ini.",
+    pairing_btn_connect: "Sambungkan",
+    pairing_hint: "Kode PIN 6 digit dapat dilihat di jendela terminal server PC host Anda.",
+    license_title: "Lisensi & Akun DigiKeyboard",
+    license_plan_lbl: "Status Paket Aktif",
+    license_expires_lbl: "Masa Berlaku:",
+    license_days_lbl: "Sisa Hari:",
+    license_key_lbl: "Kunci Lisensi:",
+    license_act_title: "Aktivasi Kunci Lisensi",
+    license_act_btn: "Aktifkan Lisensi",
+    pricing_title: "Pilihan Paket Komersial",
+    pricing_sub: "Termasuk dikte AI tanpa batas waktu hening, latensi ultra-rendah, dan pemrosesan offline lokal.",
+    pricing_monthly_title: "Langganan Bulanan",
+    pricing_monthly_sub: "Per bulan (Hemat & Fleksibel)",
+    pricing_lifetime_title: "Lisensi Seumur Hidup",
+    pricing_lifetime_sub: "Sekali bayar untuk selamanya",
+
 
     // Control Deck
     menu_title: "Menu",
@@ -8526,6 +8826,192 @@ document.addEventListener('click', handleUniversalClose);
 document.addEventListener('touchend', handleUniversalClose, { passive: false });
 
 // Auto-tutup saat memilih layer atau utilitas agar layar langsung siap dipakai
+
+// ── Device Pairing & SaaS License System Handlers ──
+let currentLicenseInfo = null;
+
+const modalPairing = $('modal-pairing');
+const btnClosePairing = $('btn-close-pairing');
+const btnSubmitPair = $('btn-submit-pair');
+const pairingStatusMsg = $('pairing-status-msg');
+const pinInputs = [
+  $('pin-0'), $('pin-1'), $('pin-2'), $('pin-3'), $('pin-4'), $('pin-5')
+];
+
+function openPairingModal() {
+  if (modalPairing) {
+    modalPairing.classList.remove('hidden');
+    if (pairingStatusMsg) {
+      pairingStatusMsg.classList.add('hidden');
+      pairingStatusMsg.textContent = '';
+    }
+    pinInputs.forEach(inp => { if (inp) inp.value = ''; });
+    setTimeout(() => { if (pinInputs[0]) pinInputs[0].focus(); }, 150);
+  }
+}
+
+function closePairingModal() {
+  if (modalPairing) modalPairing.classList.add('hidden');
+}
+
+pinInputs.forEach((inp, idx) => {
+  if (!inp) return;
+  inp.addEventListener('input', () => {
+    playClickSound();
+    vibe(10);
+    const val = inp.value.replace(/[^0-9]/g, '');
+    inp.value = val;
+    if (val && idx < 5 && pinInputs[idx + 1]) {
+      pinInputs[idx + 1].focus();
+    }
+    if (idx === 5 && val && getFullPinValue().length === 6) {
+      submitPairingPin();
+    }
+  });
+
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !inp.value && idx > 0 && pinInputs[idx - 1]) {
+      pinInputs[idx - 1].focus();
+    } else if (e.key === 'Enter') {
+      submitPairingPin();
+    }
+  });
+
+  inp.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+    if (pasteData.length >= 6) {
+      for (let i = 0; i < 6; i++) {
+        if (pinInputs[i]) pinInputs[i].value = pasteData[i];
+      }
+      if (pinInputs[5]) pinInputs[5].focus();
+      submitPairingPin();
+    }
+  });
+});
+
+function getFullPinValue() {
+  return pinInputs.map(inp => (inp ? inp.value : '')).join('');
+}
+
+function submitPairingPin() {
+  const pin = getFullPinValue();
+  if (pin.length !== 6) {
+    if (pairingStatusMsg) {
+      pairingStatusMsg.className = 'pairing-msg error';
+      pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Masukkan 6 digit kode PIN lengkap.' : 'Please enter all 6 PIN digits.';
+      pairingStatusMsg.classList.remove('hidden');
+    }
+    return;
+  }
+  if (pairingStatusMsg) {
+    pairingStatusMsg.className = 'pairing-msg';
+    pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Menghubungkan ke PC...' : 'Connecting to PC...';
+    pairingStatusMsg.classList.remove('hidden');
+  }
+  send({
+    type: 'pair_request',
+    pin: pin,
+    device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client Device'
+  });
+}
+
+if (btnSubmitPair) btnSubmitPair.onclick = () => { playClickSound(); vibe(20); submitPairingPin(); };
+if (btnClosePairing) btnClosePairing.onclick = () => { playClickSound(); vibe(10); closePairingModal(); };
+if (modalPairing) {
+  modalPairing.addEventListener('click', (e) => {
+    if (e.target === modalPairing) closePairingModal();
+  });
+}
+
+// ── SaaS License Modal Handlers ──
+const modalLicense = $('modal-license');
+const btnCloseLicense = $('btn-close-license');
+const btnLicenseDeck = $('btn-license');
+const btnPairingDeck = $('btn-pairing');
+const btnActivateLic = $('btn-activate-lic');
+const inpLicenseKey = $('inp-license-key');
+const inpLicenseEmail = $('inp-license-email');
+const licenseStatusMsg = $('license-status-msg');
+
+function openLicenseModal() {
+  if (modalLicense) {
+    modalLicense.classList.remove('hidden');
+    if (currentLicenseInfo) updateLicenseDisplay(currentLicenseInfo);
+  }
+}
+
+function closeLicenseModal() {
+  if (modalLicense) modalLicense.classList.add('hidden');
+}
+
+if (btnLicenseDeck) btnLicenseDeck.onclick = () => { playClickSound(); vibe(15); openLicenseModal(); };
+if (btnPairingDeck) btnPairingDeck.onclick = () => { playClickSound(); vibe(15); openPairingModal(); };
+if (btnCloseLicense) btnCloseLicense.onclick = () => { playClickSound(); vibe(10); closeLicenseModal(); };
+if (modalLicense) {
+  modalLicense.addEventListener('click', (e) => {
+    if (e.target === modalLicense) closeLicenseModal();
+  });
+}
+
+function updateLicenseDisplay(lic) {
+  if (!lic) return;
+  currentLicenseInfo = lic;
+
+  const deckBadge = $('deck-license-badge');
+  if (deckBadge) {
+    if (lic.tier === 'lifetime') deckBadge.textContent = 'Lifetime';
+    else if (lic.tier === 'monthly') deckBadge.textContent = 'Pro 15k';
+    else deckBadge.textContent = `Trial ${lic.days_left !== null && lic.days_left !== undefined ? lic.days_left + 'd' : ''}`;
+  }
+
+  const planEl = $('lic-card-plan');
+  const badgeEl = $('lic-card-badge');
+  const expEl = $('lic-card-exp');
+  const daysEl = $('lic-card-days');
+  const keyEl = $('lic-card-key');
+
+  if (planEl) planEl.textContent = lic.plan_name || 'DigiKeyboard Pro';
+  if (badgeEl) {
+    badgeEl.textContent = (lic.tier || 'TRIAL').toUpperCase();
+    badgeEl.className = `license-plan-badge ${lic.tier || 'trial'}`;
+    if (lic.status === 'expired') {
+      badgeEl.textContent = 'EXPIRED';
+      badgeEl.className = 'license-plan-badge expired';
+    }
+  }
+  if (expEl) expEl.textContent = lic.expires_at || (lic.tier === 'lifetime' ? (currentUiLang === 'id' ? 'Seumur Hidup (Permanen)' : 'Lifetime (Permanent)') : '-');
+  if (daysEl) daysEl.textContent = lic.tier === 'lifetime' ? '∞' : (lic.days_left !== null && lic.days_left !== undefined ? `${lic.days_left} ${currentUiLang === 'id' ? 'Hari' : 'Days'}` : '-');
+  if (keyEl) keyEl.textContent = lic.license_key || '-';
+}
+
+if (btnActivateLic) {
+  btnActivateLic.onclick = () => {
+    playClickSound();
+    vibe(20);
+    const key = (inpLicenseKey ? inpLicenseKey.value : '').trim();
+    const email = (inpLicenseEmail ? inpLicenseEmail.value : '').trim();
+    if (!key) {
+      if (licenseStatusMsg) {
+        licenseStatusMsg.className = 'pairing-msg error';
+        licenseStatusMsg.textContent = currentUiLang === 'id' ? 'Masukkan kode lisensi.' : 'Please enter license key.';
+        licenseStatusMsg.classList.remove('hidden');
+      }
+      return;
+    }
+    if (licenseStatusMsg) {
+      licenseStatusMsg.className = 'pairing-msg';
+      licenseStatusMsg.textContent = currentUiLang === 'id' ? 'Memverifikasi lisensi...' : 'Verifying license...';
+      licenseStatusMsg.classList.remove('hidden');
+    }
+    send({
+      type: 'activate_license',
+      key: key,
+      email: email
+    });
+  };
+}
+
 ['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-store'].forEach(id => {
   const el = $(id);
   if (el) {
@@ -9070,6 +9556,14 @@ function connect() {
     setStatus(true, 'Terhubung');
     hideReconnectBanner();
     startHeartbeatAndWatchdog();
+    const savedToken = localStorage.getItem('digi_device_token');
+    if (savedToken) {
+      send({
+        type: 'auth',
+        token: savedToken,
+        device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client'
+      });
+    }
   };
 
   ws.onmessage = (e) => {
@@ -9087,6 +9581,13 @@ function connect() {
           refreshMods();
         }
       } else if (d.type === 'init') {
+        if (d.license) updateLicenseDisplay(d.license);
+        if (d.pairing_required) {
+          const savedToken = localStorage.getItem('digi_device_token');
+          if (!savedToken) {
+            openPairingModal();
+          }
+        }
         if (d.host_os && !localStorage.getItem('digi_os_manual')) {
           applyOS(d.host_os);
         }
@@ -9110,6 +9611,43 @@ function connect() {
         handleAppContextUpdate(d);
       } else if (d.type === 'window_list') {
         renderWindowList(d.windows);
+      } else if (d.type === 'auth_status') {
+        if (d.license) updateLicenseDisplay(d.license);
+        if (d.authorized) {
+          closePairingModal();
+        } else if (d.pin_required) {
+          openPairingModal();
+        }
+      } else if (d.type === 'pairing_result') {
+        if (d.success) {
+          if (d.token) localStorage.setItem('digi_device_token', d.token);
+          if (d.license) updateLicenseDisplay(d.license);
+          closePairingModal();
+          vibe(25);
+          showSmartToast(currentUiLang === 'id' ? 'Perangkat Berhasil Di-pairing' : 'Device Paired Successfully', 'PC Host');
+        } else {
+          if (pairingStatusMsg) {
+            pairingStatusMsg.className = 'pairing-msg error';
+            pairingStatusMsg.textContent = d.message || (currentUiLang === 'id' ? 'Pairing gagal. Periksa PIN Anda.' : 'Pairing failed. Check your PIN.');
+            pairingStatusMsg.classList.remove('hidden');
+          }
+          vibe([40, 60, 40]);
+        }
+      } else if (d.type === 'license_activation_result') {
+        if (d.license) updateLicenseDisplay(d.license);
+        if (licenseStatusMsg) {
+          licenseStatusMsg.className = d.success ? 'pairing-msg success' : 'pairing-msg error';
+          licenseStatusMsg.textContent = d.message;
+          licenseStatusMsg.classList.remove('hidden');
+        }
+        if (d.success) {
+          vibe(25);
+          setTimeout(closeLicenseModal, 1500);
+        } else {
+          vibe([40, 60, 40]);
+        }
+      } else if (d.type === 'license_update') {
+        if (d.license) updateLicenseDisplay(d.license);
       }
     } catch(err) {}
   };

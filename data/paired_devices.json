@@ -1,0 +1,37 @@
+{
+  "pairing_enabled": true,
+  "paired_devices": {
+    "36f49474239d2b98096fff01cd2e3fafee7facb56ac4b047": {
+      "device_id": "dev_a2dc410e",
+      "name": "Automated Test Client",
+      "ip": "127.0.0.1",
+      "user_agent": "Python/3.12 websockets/16.1.1",
+      "paired_at": "2026-10-03 10:34:26",
+      "last_seen": "2026-10-03 10:34:26"
+    },
+    "a72309556c241bad7a8e3a13fa4c9f6bce4581c8c2ac9314": {
+      "device_id": "dev_8b86bc57",
+      "name": "Test Device",
+      "ip": "127.0.0.1",
+      "user_agent": "Python/3.12 websockets/16.1.1",
+      "paired_at": "2026-10-03 10:34:32",
+      "last_seen": "2026-10-03 10:34:32"
+    },
+    "16fe93df48194dbd7a0fc6346d7aef625ba2b5b29779f14d": {
+      "device_id": "dev_da11551b",
+      "name": "Test Device",
+      "ip": "127.0.0.1",
+      "user_agent": "Python/3.12 websockets/16.1.1",
+      "paired_at": "2026-10-03 10:34:41",
+      "last_seen": "2026-10-03 10:34:41"
+    },
+    "d3eb23e74edeaf4942518601efdd5a0a1988240a78865815": {
+      "device_id": "dev_2cf2fd32",
+      "name": "Test Device",
+      "ip": "127.0.0.1",
+      "user_agent": "Python/3.12 websockets/16.1.1",
+      "paired_at": "2026-10-03 10:35:08",
+      "last_seen": "2026-10-03 10:35:08"
+    }
+  }
+}
