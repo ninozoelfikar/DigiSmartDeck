@@ -2,5 +2,22 @@
   "pairing_enabled": true,
   "current_pin": "378725",
   "pin_created_at": 1791005946.9366496,
-  "paired_devices": {}
+  "paired_devices": {
+    "b796b44a050bf2ca3d9e0f6c70fc53942fe73e8c1e582f5f": {
+      "device_id": "dev_a6d5dec5",
+      "name": "Android Device",
+      "ip": "192.168.8.103",
+      "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "paired_at": "2026-10-03 12:47:56",
+      "last_seen": "2026-10-03 12:47:56"
+    },
+    "ae25dee9a321990dd35ba1c3ea90778175ee37378b4554d8": {
+      "device_id": "dev_bcf04384",
+      "name": "Android Device",
+      "ip": "192.168.8.102",
+      "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+      "paired_at": "2026-10-03 12:49:47",
+      "last_seen": "2026-10-03 12:49:47"
+    }
+  }
 }
