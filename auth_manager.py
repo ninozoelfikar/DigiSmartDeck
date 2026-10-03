@@ -41,6 +41,11 @@ class DevicePairingManager:
                     data = json.load(f)
                     self.pairing_enabled = data.get('pairing_enabled', True)
                     self.paired_devices = data.get('paired_devices', {})
+                    saved_pin = data.get('current_pin')
+                    saved_pin_time = data.get('pin_created_at', 0)
+                    if saved_pin:
+                        self.pin = str(saved_pin)
+                        self.pin_created_at = float(saved_pin_time)
             except Exception as e:
                 print(f"[!] Gagal memuat data pairing: {e}")
                 self.paired_devices = {}
@@ -51,21 +56,28 @@ class DevicePairingManager:
             with open(PAIRED_DEVICES_FILE, 'w', encoding='utf-8') as f:
                 json.dump({
                     'pairing_enabled': self.pairing_enabled,
+                    'current_pin': self.pin,
+                    'pin_created_at': self.pin_created_at,
                     'paired_devices': self.paired_devices
                 }, f, indent=2)
         except Exception as e:
             print(f"[!] Gagal menyimpan data pairing: {e}")
 
     def get_or_create_pin(self, force_new=False):
+        self._load()
         now = time.time()
         if force_new or not self.pin or (now - self.pin_created_at > self.pin_ttl_seconds):
-            # Generate 6-digit PIN acak
             self.pin = f"{secrets.randbelow(900000) + 100000}"
             self.pin_created_at = now
+            self._save()
         return self.pin
+
+    def generate_pin(self):
+        return self.get_or_create_pin(force_new=True)
 
     def verify_and_register(self, pin_input, device_name, ip, user_agent):
         """Verifikasi PIN dari client. Jika valid, buatkan token otentikasi permanen."""
+        self._load()
         clean_pin = str(pin_input).replace(" ", "").replace("-", "").strip()
         if not clean_pin:
             return None, "PIN tidak boleh kosong."

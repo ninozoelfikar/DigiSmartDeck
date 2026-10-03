@@ -1,4 +1,6 @@
 {
   "pairing_enabled": true,
+  "current_pin": "378725",
+  "pin_created_at": 1791005946.9366496,
   "paired_devices": {}
 }

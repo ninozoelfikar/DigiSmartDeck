@@ -7777,13 +7777,13 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <input type="tel" maxlength="1" class="pin-digit" id="pin-4" autocomplete="off" inputmode="numeric">
         <input type="tel" maxlength="1" class="pin-digit" id="pin-5" autocomplete="off" inputmode="numeric">
       </div>
-      <div style="display:flex;gap:8px;margin-top:16px;">
-        <button type="button" class="btn-primary" id="btn-submit-pair" style="flex:1;padding:10px;font-weight:700;background:var(--accent);color:#0d1117;border:none;border-radius:6px;cursor:pointer;" data-i18n="pairing_btn_connect">
+      <div style="display:none;margin-top:16px;">
+        <button type="button" class="btn-primary" id="btn-submit-pair" data-i18n="pairing_btn_connect">
           Sambungkan
         </button>
       </div>
-      <div class="pairing-hint" style="margin-top:12px;font-size:11px;color:var(--text-dim);text-align:center;" data-i18n="pairing_hint">
-        Kode PIN dapat dilihat di jendela terminal server PC host Anda.
+      <div class="pairing-hint" style="margin-top:14px;font-size:12px;color:var(--accent);text-align:center;font-weight:600;" data-i18n="pairing_hint">
+        Perangkat otomatis tersambung begitu 6 digit PIN benar dimasukkan.
       </div>
     </div>
   </div>
@@ -7911,7 +7911,7 @@ const I18N = {
     pairing_title: "Pair New Device",
     pairing_desc: "Enter the 6-digit PIN shown on your PC monitor or terminal to securely authorize this device.",
     pairing_btn_connect: "Connect Device",
-    pairing_hint: "The 6-digit PIN is displayed in your PC host terminal window.",
+    pairing_hint: "Device connects automatically once the 6-digit PIN is entered.",
     license_title: "DigiKeyboard License & Account",
     license_plan_lbl: "Active Plan Status",
     license_expires_lbl: "Valid Until:",
@@ -8163,7 +8163,7 @@ const I18N = {
     pairing_title: "Pairing Perangkat Baru",
     pairing_desc: "Masukkan 6 digit kode PIN yang tampil di layar monitor atau terminal PC host Anda untuk menyambungkan perangkat ini.",
     pairing_btn_connect: "Sambungkan",
-    pairing_hint: "Kode PIN 6 digit dapat dilihat di jendela terminal server PC host Anda.",
+    pairing_hint: "Perangkat otomatis tersambung begitu 6 digit PIN benar dimasukkan.",
     license_title: "Lisensi & Akun DigiKeyboard",
     license_plan_lbl: "Status Paket Aktif",
     license_expires_lbl: "Masa Berlaku:",
@@ -8854,24 +8854,38 @@ function closePairingModal() {
   if (modalPairing) modalPairing.classList.add('hidden');
 }
 
+let isPairingSubmitting = false;
+
 pinInputs.forEach((inp, idx) => {
   if (!inp) return;
   inp.addEventListener('input', () => {
     playClickSound();
     vibe(10);
-    const val = inp.value.replace(/[^0-9]/g, '');
-    inp.value = val;
-    if (val && idx < 5 && pinInputs[idx + 1]) {
-      pinInputs[idx + 1].focus();
+    const rawVal = inp.value.replace(/[^0-9]/g, '');
+    if (rawVal.length > 1) {
+      for (let i = 0; i < rawVal.length && (idx + i) < 6; i++) {
+        if (pinInputs[idx + i]) pinInputs[idx + i].value = rawVal[i];
+      }
+      const nextIdx = Math.min(5, idx + rawVal.length);
+      if (pinInputs[nextIdx]) pinInputs[nextIdx].focus();
+    } else {
+      inp.value = rawVal;
+      if (rawVal && idx < 5 && pinInputs[idx + 1]) {
+        pinInputs[idx + 1].focus();
+      }
     }
-    if (idx === 5 && val && getFullPinValue().length === 6) {
+    const fullPin = getFullPinValue();
+    if (fullPin.length === 6) {
       submitPairingPin();
     }
   });
 
   inp.addEventListener('keydown', (e) => {
-    if (e.key === 'Backspace' && !inp.value && idx > 0 && pinInputs[idx - 1]) {
-      pinInputs[idx - 1].focus();
+    if (e.key === 'Backspace') {
+      if (!inp.value && idx > 0 && pinInputs[idx - 1]) {
+        pinInputs[idx - 1].focus();
+        pinInputs[idx - 1].value = '';
+      }
     } else if (e.key === 'Enter') {
       submitPairingPin();
     }
@@ -8880,12 +8894,17 @@ pinInputs.forEach((inp, idx) => {
   inp.addEventListener('paste', (e) => {
     e.preventDefault();
     const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
-    if (pasteData.length >= 6) {
-      for (let i = 0; i < 6; i++) {
+    if (pasteData.length > 0) {
+      for (let i = 0; i < pasteData.length && i < 6; i++) {
         if (pinInputs[i]) pinInputs[i].value = pasteData[i];
       }
-      if (pinInputs[5]) pinInputs[5].focus();
-      submitPairingPin();
+      if (pasteData.length >= 6) {
+        if (pinInputs[5]) pinInputs[5].focus();
+        submitPairingPin();
+      } else {
+        const nextIdx = Math.min(5, pasteData.length);
+        if (pinInputs[nextIdx]) pinInputs[nextIdx].focus();
+      }
     }
   });
 });
@@ -8896,17 +8915,12 @@ function getFullPinValue() {
 
 function submitPairingPin() {
   const pin = getFullPinValue();
-  if (pin.length !== 6) {
-    if (pairingStatusMsg) {
-      pairingStatusMsg.className = 'pairing-msg error';
-      pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Masukkan 6 digit kode PIN lengkap.' : 'Please enter all 6 PIN digits.';
-      pairingStatusMsg.classList.remove('hidden');
-    }
-    return;
-  }
+  if (pin.length !== 6 || isPairingSubmitting) return;
+  isPairingSubmitting = true;
+
   if (pairingStatusMsg) {
     pairingStatusMsg.className = 'pairing-msg';
-    pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Menghubungkan ke PC...' : 'Connecting to PC...';
+    pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Memverifikasi PIN...' : 'Verifying PIN...';
     pairingStatusMsg.classList.remove('hidden');
   }
   send({
@@ -9614,23 +9628,30 @@ function connect() {
       } else if (d.type === 'auth_status') {
         if (d.license) updateLicenseDisplay(d.license);
         if (d.authorized) {
+          isPairingSubmitting = false;
           closePairingModal();
+          document.body.classList.remove('controller-standby');
         } else if (d.pin_required) {
           openPairingModal();
         }
       } else if (d.type === 'pairing_result') {
+        isPairingSubmitting = false;
         if (d.success) {
           if (d.token) localStorage.setItem('digi_device_token', d.token);
           if (d.license) updateLicenseDisplay(d.license);
           closePairingModal();
-          vibe(25);
-          showSmartToast(currentUiLang === 'id' ? 'Perangkat Berhasil Di-pairing' : 'Device Paired Successfully', 'PC Host');
+          document.body.classList.remove('controller-standby');
+          playClickSound();
+          vibe([30, 40]);
+          showSmartToast(currentUiLang === 'id' ? 'Perangkat Berhasil Terhubung' : 'Device Connected Successfully', 'PC Host');
         } else {
           if (pairingStatusMsg) {
             pairingStatusMsg.className = 'pairing-msg error';
-            pairingStatusMsg.textContent = d.message || (currentUiLang === 'id' ? 'Pairing gagal. Periksa PIN Anda.' : 'Pairing failed. Check your PIN.');
+            pairingStatusMsg.textContent = d.message || (currentUiLang === 'id' ? 'PIN tidak sesuai. Periksa layar PC.' : 'Invalid PIN. Check your PC.');
             pairingStatusMsg.classList.remove('hidden');
           }
+          pinInputs.forEach(i => { if (i) i.value = ''; });
+          if (pinInputs[0]) pinInputs[0].focus();
           vibe([40, 60, 40]);
         }
       } else if (d.type === 'license_activation_result') {

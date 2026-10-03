@@ -713,4 +713,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
   - APK client Android tetap ringan (~20 MB).
 
+---
+
+## 41. CATATAN CHECKPOINT (v0.9.37 - Sinkronisasi PIN Multi-Proses & Auto-Connect Otomatis Tanpa Tekan Tombol)
+- **Sinkronisasi Shared PIN Antara Server & Desktop GUI:**
+  - Masalah teridentifikasi: `server.py` dan `digikeyboard_gui.py` berjalan sebagai proses terpisah. Sebelumnya PIN hanya tersimpan di memori instance masing-masing sehingga PIN yang ditampilkan di GUI berbeda dengan yang diverifikasi server.
+  - Solusi: `DevicePairingManager` di `auth_manager.py` kini menyimpan `current_pin` dan `pin_created_at` secara terpusat di `data/paired_devices.json`.
+  - GUI desktop memprioritaskan pengambilan PIN langsung dari endpoint REST `http://127.0.0.1:8080/api/pairing/pin` sehingga nilai PIN di GUI, terminal, dan server selalu 100% identik.
+- **Otomasi Pairing Instan (Zero-Click Auto-Connect):**
+  - Pada antarmuka client mobile (`static/index.html`), begitu digit ke-6 selesai dimasukkan atau dipaste:
+    - Permintaan pairing (`pair_request`) langsung dikirim seketika melalui WebSocket tanpa mengharuskan pengguna menekan tombol "Sambungkan".
+    - Tombol manual "Sambungkan" disembunyikan dan digantikan teks panduan otomatis.
+    - Begitu verifikasi server sukses (`pairing_result.success: true`), token langsung tersimpan di `localStorage`, modal pairing otomatis menutup, kelas `controller-standby` dilepas ("otomatis on"), dan keyboard langsung aktif digunakan dengan feedback haptik dan audio mekanikal.
+    - Jika PIN salah, 6 kotak input otomatis dikosongkan dan kursor otomatis kembali fokus ke kotak pertama untuk memudahkan pengetikan ulang.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
+  - Suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`) dipertahankan penuh.
+
+
 

@@ -318,7 +318,17 @@ class DigiKeyboardGUI(QMainWindow):
 
     def refresh_status(self):
         # 1. Update PIN
-        pin = pairing_manager.get_or_create_pin()
+        pin = None
+        try:
+            req = urllib.request.Request("http://127.0.0.1:8080/api/pairing/pin", headers={"User-Agent": "DigiGUI"})
+            with urllib.request.urlopen(req, timeout=0.5) as resp:
+                if resp.status == 200:
+                    d = json.loads(resp.read().decode('utf-8'))
+                    pin = d.get("pin")
+        except Exception:
+            pass
+        if not pin:
+            pin = pairing_manager.get_or_create_pin()
         formatted_pin = f"{pin[:3]} {pin[3:]}" if len(pin) == 6 else pin
         self.lbl_pin.setText(formatted_pin)
 
