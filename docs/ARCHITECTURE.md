@@ -6,7 +6,7 @@
 
 ## 🇮🇩 Arsitektur Sistem (Bahasa Indonesia)
 
-Dokumen ini menjelaskan desain arsitektur internal, alur data, protokol komunikasi, subsistem pemulihan jaringan, state machine tombol modifier, dan spesifikasi teknis dari **DigiKeyboard**.
+Dokumen ini menjelaskan desain arsitektur internal, alur data, protokol komunikasi, subsistem pemulihan jaringan, state machine tombol modifier, dan spesifikasi teknis dari **DigiSmartDeck**.
 
 ### 1. Diagram Alur Arsitektur
 
@@ -20,7 +20,7 @@ flowchart TD
         NetWatchdog["Self-Healing Network Subsystem\n(5.5s Watchdog, Backoff, Subnet Scanner)"]
         PWA["Service Worker & Offline Cache (PWA)"]
         
-        subgraph NativeAndroid["🤖 Android Native App (DigiKeyboard.apk)"]
+        subgraph NativeAndroid["🤖 Android Native App (DigiSmartDeck.apk)"]
             Immersive["True Immersive Sticky Fullscreen\n(Zero Chrome Popup / Toast)"]
             Bridge["DigiAndroidBridge (JS Interface)"]
             BtHid["Bluetooth HID Hardware Emulation\n(Keyboard + Mouse Composite HID)"]
@@ -91,7 +91,7 @@ flowchart TD
    - Klien membuka koneksi WebSocket persisten dua arah ke `/ws` dengan pemantau ping/pong real-time (latensi 1–5 ms).
 
 3. **Persistent Modifier Lock & State Machine Tombol (Paritas Keyboard Fisik):**
-   - Mengetik kombinasi shortcut PC di layar sentuh memerlukan penanganan modifier yang fleksibel dan andal. DigiKeyboard menerapkan state machine tombol aktif dua arah (Client & Server):
+   - Mengetik kombinasi shortcut PC di layar sentuh memerlukan penanganan modifier yang fleksibel dan andal. DigiSmartDeck menerapkan state machine tombol aktif dua arah (Client & Server):
      - **Mode 🔒 Lock (Default):** Mengetuk `Shift`, `Ctrl`, `Alt`, atau `Win`/`Cmd` akan mengunci tombol tersebut secara terus-menerus di OS hingga pengguna mengetuknya kembali untuk melepaskan. Ini memberikan paritas 1:1 dengan keyboard fisik PC: pengguna dapat melakukan seleksi teks multi-baris (`Shift + ⬇️ + ⬇️`), navigasi tab aplikasi berturut-turut (`Alt + Tab + Tab`), dan pengetikan huruf kapital berkelanjutan tanpa modifier lepas otomatis.
      - **Mode ⚡ 1-Shot:** Mengetuk modifier mengunci status untuk tepat 1 karakter berikutnya, lalu otomatis melepas modifier setelah tombol ditekan.
      - **Mode 🖐️ Hold:** Modifier hanya aktif selama jari pengguna menyentuh layar, dan otomatis lepas saat jari diangkat.
@@ -105,8 +105,8 @@ flowchart TD
    - **mDNS Fallback:** Menyediakan resolusi nama domain lokal permanen (`http://Jarvis.local:8080`).
 
 5. **Dual Input Controller Pipeline (Linux uinput & pynput Fallback):**
-   - **Linux Kernel Virtual Hardware Driver (`uinput`):** Saat berjalan di Linux dengan izin akses `/dev/uinput` (dikonfigurasi via `setup-uinput.sh`), DigiKeyboard mendaftarkan perangkat virtual keyboard pada level kernel Linux. Ini memungkinkan input keyboard berfungsi penuh pada Layar Login Display Manager (GDM/SDDM/LightDM), Lock Screen, terminal, dan prompt kata sandi root (`sudo`).
-   - **Pynput Controller Fallback:** Jika `uinput` tidak tersedia atau saat berjalan di sistem operasi Windows dan macOS, DigiKeyboard secara otomatis beralih ke controller `pynput` pada level *user space*.
+   - **Linux Kernel Virtual Hardware Driver (`uinput`):** Saat berjalan di Linux dengan izin akses `/dev/uinput` (dikonfigurasi via `setup-uinput.sh`), DigiSmartDeck mendaftarkan perangkat virtual keyboard pada level kernel Linux. Ini memungkinkan input keyboard berfungsi penuh pada Layar Login Display Manager (GDM/SDDM/LightDM), Lock Screen, terminal, dan prompt kata sandi root (`sudo`).
+   - **Pynput Controller Fallback:** Jika `uinput` tidak tersedia atau saat berjalan di sistem operasi Windows dan macOS, DigiSmartDeck secara otomatis beralih ke controller `pynput` pada level *user space*.
 
 6. **Penanganan Multi-Touch & Gesture Trackpad Laptop:**
    - Komponen sentuh diatur dengan `touch-action: none` dan `preventDefault()` menyeluruh untuk mengeliminasi zoom ganda, scroll bawaan browser, atau kemunculan keyboard virtual Android/iOS.
@@ -126,7 +126,7 @@ flowchart TD
 
 
 8. **Anti-Collision Single Active Controller Arbitration (Manajemen Anti-Tabrakan Multi-User):**
-   - **Masalah:** Jika beberapa perangkat (HP anak, tablet, laptop lain) membuka URL DigiKeyboard yang sama secara bersamaan, input keyboard dan kursor mouse akan saling tumpang tindih (*interleaved keystrokes* dan jitter mouse acak).
+   - **Masalah:** Jika beberapa perangkat (HP anak, tablet, laptop lain) membuka URL DigiSmartDeck yang sama secara bersamaan, input keyboard dan kursor mouse akan saling tumpang tindih (*interleaved keystrokes* dan jitter mouse acak).
    - **Solusi Arbitrase Server-Side:**
      - `ACTIVE_CONTROLLER_WS` dan `ACTIVE_CONTROLLER_INFO`: Server menetapkan koneksi pertama yang terhubung sebagai **Pengendali Aktif** (`🟢 👑 Pengendali Aktif`).
      - **Mode Siaga Otomatis (Standby Mode):** Klien berikutnya yang terhubung secara otomatis ditempatkan dalam status `standby` (`🟡 ⚡ Siaga (Ambil Alih)`). Seluruh payload pengetikan dan pergerakan mouse dari klien standby diabaikan (*dropped/suppressed*) oleh server demi melindungi integritas sesi.
@@ -135,7 +135,7 @@ flowchart TD
      - **Clean Modifier Release on Handoff/Disconnect:** Saat pengendali aktif terputus (*disconnect*) atau diambil alih, fungsi `release_all_client_keys()` otomatis melepas semua modifier OS yang tertahan (Shift, Ctrl, Alt, Win/Cmd) agar tombol fisik PC tidak "tersangkut" (*stuck keys*).
 
 9. **Android Native Client & Bluetooth HID Hardware Emulation:**
-   - **Android Native Wrapper (`DigiKeyboard.apk`):**
+   - **Android Native Wrapper (`DigiSmartDeck.apk`):**
      - Dibangun menggunakan Gradle 8.5 dan Android SDK 34 dengan arsitektur web-to-native terpadu (`WebView` + `DigiAndroidBridge`).
      - **True Immersive Sticky Fullscreen:** Menghilangkan batasan browser mobile Chrome seperti bilah navigasi OS, status bar, dan pop-up peringatan Chrome (*"Swipe down to exit fullscreen"*) yang kerap mengganggu.
      - Orientasi lanskap terkunci otomatis (*locked landscape*) dan layar dicegah mati (*Keep Screen Awake*).
@@ -148,13 +148,13 @@ flowchart TD
 10. **System Pre-Flight Diagnostics Engine & Standalone Packaging:**
     - **Pemeriksa Pra-Jalan Interaktif (`system_checker.py`):**
       - Dirancang khusus agar ramah bagi pengguna awam (zero-panic, zero-traceback).
-      - **Pendeteksi Tabrakan Port 8080:** Jika port 8080 telah digunakan, sistem memeriksa apakah proses tersebut adalah daemon DigiKeyboard yang sudah aktif. Jika ya, program menampilkan pesan sukses dan IP tanpa error. Jika digunakan aplikasi lain, sistem memandu pengguna dengan instruksi ramah.
+      - **Pendeteksi Tabrakan Port 8080:** Jika port 8080 telah digunakan, sistem memeriksa apakah proses tersebut adalah daemon DigiSmartDeck yang sudah aktif. Jika ya, program menampilkan pesan sukses dan IP tanpa error. Jika digunakan aplikasi lain, sistem memandu pengguna dengan instruksi ramah.
       - **Otomatisasi Izin Kernel Linux (`/dev/uinput`):** Memeriksa hak akses uinput dan menawarkan perbaikan instan via `setfacl` tanpa restart.
       - **Pemeriksaan Firewall:** Memverifikasi status UFW pada Linux.
     - **Executable Mandiri (Zero-Python Installation):**
-      - Linux: `build-linux.sh` menghasilkan binary mandiri ELF 64-bit `dist/DigiKeyboard` (39MB).
-      - Windows: `build-exe.bat` menghasilkan `dist/DigiKeyboard.exe` mandiri via PyInstaller.
-      - macOS: `build-macos.sh` menghasilkan `dist/DigiKeyboardApp.app`.
+      - Linux: `build-linux.sh` menghasilkan binary mandiri ELF 64-bit `dist/DigiSmartDeck` (39MB).
+      - Windows: `build-exe.bat` menghasilkan `dist/DigiSmartDeck.exe` mandiri via PyInstaller.
+      - macOS: `build-macos.sh` menghasilkan `dist/DigiSmartDeckApp.app`.
 
 ---
 
@@ -229,7 +229,7 @@ Komunikasi antara browser mobile dan host PC menggunakan payload JSON ringkas be
 
 ## 🇬🇧 System Architecture (English)
 
-This document outlines the internal architectural design, data pipelines, communication protocols, network self-healing subsystems, modifier key state machines, and technical specifications of **DigiKeyboard**.
+This document outlines the internal architectural design, data pipelines, communication protocols, network self-healing subsystems, modifier key state machines, and technical specifications of **DigiSmartDeck**.
 
 ### 1. High-Level Architecture Overview
 
@@ -238,7 +238,7 @@ The system consists of two decoupled components communicating over a local high-
 - **Server (Backend):** Asynchronous Python daemon powered by `aiohttp`. It dispatches WebSocket payloads, tracks active key state machines, resolves host interfaces, and injects native hardware keyboard/mouse events via Linux kernel `uinput` or `pynput` user-space controllers.
 
 ### 2. Dual Input Controller Pipeline
-To guarantee seamless input injection across all display managers and security environments, DigiKeyboard implements a layered dual controller strategy:
+To guarantee seamless input injection across all display managers and security environments, DigiSmartDeck implements a layered dual controller strategy:
 1. **Linux Kernel Virtual Hardware Driver (`uinput`):**
    - Configured via `setup-uinput.sh` and `/dev/uinput` udev rules.
    - Emulates an authentic USB HID input device at the kernel level.
@@ -247,14 +247,14 @@ To guarantee seamless input injection across all display managers and security e
    - Serves as the primary driver on Windows and macOS systems, and automatic fallback on Linux desktop environments when `uinput` is not provisioned.
 
 ### 3. Persistent Modifier Lock & State Machine
-Typing desktop keyboard shortcuts on mobile touchscreens requires flexible modifier behavior. DigiKeyboard provides three distinct modifier modes:
+Typing desktop keyboard shortcuts on mobile touchscreens requires flexible modifier behavior. DigiSmartDeck provides three distinct modifier modes:
 - **🔒 Lock Mode (Default):** Modifier keys (`Shift`, `Ctrl`, `Alt`, `Win`/`Cmd`) remain actively held down on the host operating system until tapped again to release. This mirrors real physical PC keyboard behavior, unlocking seamless multi-line text selection (`Shift + ⬇️ + ⬇️`), serialized window switching (`Alt + Tab + Tab`), continuous uppercase/symbol entry, and multi-key developer shortcuts.
 - **⚡ 1-Shot Mode:** Modifier locks for exactly one subsequent keystroke, auto-releasing immediately after.
 - **🖐️ Hold Mode:** Modifier remains active strictly while the user's finger is physically contacting the keycap.
 - **Server-Side Active Key Tracking:** The backend server (`server.py`) maintains an authoritative `ACTIVE_KEYS` set. When processing standard `keypress` and `simulate_tap` events, the server checks `ACTIVE_KEYS` to ensure held modifier keys are never prematurely released before an explicit `keyup` event is received.
 
 ### 4. Self-Healing Wi-Fi Subsystem & Dynamic IP Discovery
-Mobile clients frequently experience connection loss when host Wi-Fi routers reboot or DHCP reassigns IP addresses. DigiKeyboard employs a resilient recovery stack:
+Mobile clients frequently experience connection loss when host Wi-Fi routers reboot or DHCP reassigns IP addresses. DigiSmartDeck employs a resilient recovery stack:
 1. **5.5s Heartbeat Ping/Pong Watchdog:** Unconditionally terminates zombie TCP sockets when no `pong` packet is received within 5.5 seconds, even if the mobile OS socket stack receives no TCP FIN/RST packet.
 2. **Jittered Exponential Backoff:** Automatically re-establishes connection without flooding the host network.
 3. **Screen-Wake & Network State Listeners:** Immediately triggers reconnect probes on `visibilitychange` (when waking from sleep or phone unlock) and `online` events.
@@ -262,7 +262,7 @@ Mobile clients frequently experience connection loss when host Wi-Fi routers reb
 5. **Zero-Config mDNS:** Supports permanent local hostname resolution via `http://Jarvis.local:8080`.
 
 ### 5. Anti-Collision Single Active Controller Arbitration
-When multiple mobile devices or family members open the DigiKeyboard URL concurrently, concurrent uncoordinated keystrokes and trackpad motions would result in garbled text and erratic cursor jumping. DigiKeyboard solves this through a server-side state machine:
+When multiple mobile devices or family members open the DigiSmartDeck URL concurrently, concurrent uncoordinated keystrokes and trackpad motions would result in garbled text and erratic cursor jumping. DigiSmartDeck solves this through a server-side state machine:
 - **Authoritative Controller:** The first client WebSocket to connect is designated as the **Active Controller** (`🟢 👑 Active Controller`).
 - **Standby Isolation Mode:** Subsequent connecting clients automatically enter **Standby Mode** (`🟡 ⚡ Standby (Takeover)`). All typing, hotkey combinations, and mouse payloads from standby clients are dropped server-side to guarantee input session integrity.
 - **Manual Takeover:** A standby user can tap the badge to dispatch `{ "type": "takeover" }`. The server transfers active control instantly and broadcasts updated status to all clients.
@@ -270,7 +270,7 @@ When multiple mobile devices or family members open the DigiKeyboard URL concurr
 - **Clean Modifier Release on Handoff/Disconnect:** Whenever an active session disconnects or is transferred, `release_all_client_keys()` releases any stuck OS modifiers (`Shift`, `Ctrl`, `Alt`, `Win`/`Cmd`).
 
 ### 6. Android Native Client & Bluetooth HID Composite Profile
-- **Android Native App (`DigiKeyboard.apk`):**
+- **Android Native App (`DigiSmartDeck.apk`):**
   - Compiled using Android SDK 34 and Gradle 8.5 with an optimized WebView architecture and `DigiAndroidBridge` JavaScript interface.
   - **True Immersive Sticky Fullscreen:** Completely eliminates Chrome browser bars, Android system gesture navigation bars, and the disruptive Chrome fullscreen warning toast.
   - Locked landscape orientation and screen keep-awake flag (`FLAG_KEEP_SCREEN_ON`).
@@ -283,10 +283,10 @@ When multiple mobile devices or family members open the DigiKeyboard URL concurr
 ### 7. System Pre-Flight Diagnostics Engine & Standalone Packaging
 - **Interactive Pre-Flight Checker (`system_checker.py`):**
   - Designed for non-technical users with zero traceback panic.
-  - Detects port 8080 conflicts intelligently: if the port is already used by an active DigiKeyboard systemd daemon, it prints a clean success message and IP URLs without errors.
+  - Detects port 8080 conflicts intelligently: if the port is already used by an active DigiSmartDeck systemd daemon, it prints a clean success message and IP URLs without errors.
   - Automatically verifies and provisions Linux `/dev/uinput` permissions using `setfacl`.
   - Audits Linux UFW firewall status.
 - **Standalone Binary Packaging:**
-  - Linux standalone 64-bit ELF binary `dist/DigiKeyboard` (39MB) via `build-linux.sh`.
-  - Windows standalone `dist/DigiKeyboard.exe` via `build-exe.bat`.
-  - macOS standalone bundle `dist/DigiKeyboardApp.app` via `build-macos.sh`.
+  - Linux standalone 64-bit ELF binary `dist/DigiSmartDeck` (39MB) via `build-linux.sh`.
+  - Windows standalone `dist/DigiSmartDeck.exe` via `build-exe.bat`.
+  - macOS standalone bundle `dist/DigiSmartDeckApp.app` via `build-macos.sh`.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# DigiKeyboard - Standalone App & Binary Builder untuk macOS
+# DigiSmartDeck - Standalone App & Binary Builder untuk macOS
 # Menghasilkan .app bundle dan binary mandiri tanpa perlu Python di PC target
 # ==============================================================================
 
@@ -16,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${BLUE}============================================================${NC}"
-echo -e "${BLUE}  🍏  DigiKeyboard - Build macOS App & Standalone Executable${NC}"
+echo -e "${BLUE}  🍏  DigiSmartDeck - Build macOS App & Standalone Executable${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo ""
 
@@ -53,11 +53,11 @@ python3 -m PyInstaller \
     --noconfirm \
     --clean \
     --onefile \
-    --name "DigiKeyboard" \
+    --name "DigiSmartDeck" \
     "${ICON_OPT[@]}" \
     --add-data "static:static" \
     --add-data "VERSION:." \
-    --osx-bundle-identifier "com.digikeyboard.remote" \
+    --osx-bundle-identifier "com.digismartdeck.remote" \
     --hidden-import "pynput.keyboard._darwin" \
     --hidden-import "pynput.mouse._darwin" \
     --hidden-import "aiohttp" \
@@ -65,33 +65,33 @@ python3 -m PyInstaller \
     server.py
 
 # 4. Build .app Bundle
-echo -e "${YELLOW}[3/3] Mengompilasi DigiKeyboard.app bundle (untuk GUI/Finder)...${NC}"
+echo -e "${YELLOW}[3/3] Mengompilasi DigiSmartDeck.app bundle (untuk GUI/Finder)...${NC}"
 python3 -m PyInstaller \
     --noconfirm \
     --clean \
     --windowed \
-    --name "DigiKeyboardApp" \
+    --name "DigiSmartDeckApp" \
     "${ICON_OPT[@]}" \
     --add-data "static:static" \
     --add-data "VERSION:." \
-    --osx-bundle-identifier "com.digikeyboard.app" \
+    --osx-bundle-identifier "com.digismartdeck.app" \
     --hidden-import "pynput.keyboard._darwin" \
     --hidden-import "pynput.mouse._darwin" \
     --hidden-import "aiohttp" \
     --hidden-import "qrcode" \
     server.py
 
-chmod +x dist/DigiKeyboard
+chmod +x dist/DigiSmartDeck
 
 echo ""
 echo -e "${GREEN}============================================================${NC}"
 echo -e "${GREEN}[✓] BERHASIL! File executable macOS telah dibuat di folder dist/:${NC}"
-echo -e "    1. Binary Terminal:  ${BLUE}${SCRIPT_DIR}/dist/DigiKeyboard${NC}"
-echo -e "    2. macOS App Bundle: ${BLUE}${SCRIPT_DIR}/dist/DigiKeyboardApp.app${NC}"
+echo -e "    1. Binary Terminal:  ${BLUE}${SCRIPT_DIR}/dist/DigiSmartDeck${NC}"
+echo -e "    2. macOS App Bundle: ${BLUE}${SCRIPT_DIR}/dist/DigiSmartDeckApp.app${NC}"
 echo -e "${GREEN}============================================================${NC}"
 echo ""
 echo -e "${YELLOW}[i] PENTING untuk macOS:${NC}"
 echo "    Beri izin 'Accessibility' di:"
 echo "    System Settings > Privacy & Security > Accessibility"
-echo "    untuk Terminal / DigiKeyboardApp agar keyboard & mouse dapat dikontrol."
+echo "    untuk Terminal / DigiSmartDeckApp agar keyboard & mouse dapat dikontrol."
 echo ""

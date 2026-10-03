@@ -1,4 +1,4 @@
-# AGENT INSTRUCTIONS FOR DIGIKEYBOARD
+# AGENT INSTRUCTIONS FOR DIGISMARTDECK
 
 Whenever you start a session in this repository, you MUST read `PROJECT_CONTEXT.md` first.
 

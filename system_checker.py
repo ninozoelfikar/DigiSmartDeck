@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DigiKeyboard - Layman-Friendly System & Permission Checker
+DigiSmartDeck - Layman-Friendly System & Permission Checker
 Pemeriksa kebutuhan sistem dan izin akses yang interaktif dan ramah pengguna awam.
 Mendukung: Linux, macOS, dan Windows.
 """
@@ -73,7 +73,7 @@ def check_network():
         return True, local_ip
     else:
         print(f"  {c_yellow('🟡 Perhatian:')} Komputer tampaknya belum terhubung ke jaringan Wi-Fi.")
-        print(c_dim("     DigiKeyboard memerlukan Wi-Fi yang sama antara komputer dan HP."))
+        print(c_dim("     DigiSmartDeck memerlukan Wi-Fi yang sama antara komputer dan HP."))
         print(c_dim("     Tips: Anda juga bisa menyalakan Hotspot dari HP lalu sambungkan laptop ke hotspot tersebut."))
         return False, local_ip
 
@@ -93,7 +93,7 @@ def check_port(port=8080):
         print(f"  {c_green('🟢 Siap!')} Port {port} tersedia untuk komunikasi dengan HP.")
         return True, "available"
     except OSError:
-        # Port sedang dipakai. Mari periksa apakah DigiKeyboard yang sedang memakainya!
+        # Port sedang dipakai. Mari periksa apakah DigiSmartDeck yang sedang memakainya!
         print(f"  {c_yellow('🟡 Port ' + str(port) + ' sedang digunakan.')} Memeriksa aplikasi yang memakainya...")
         is_digikeyboard = False
         try:
@@ -107,7 +107,7 @@ def check_port(port=8080):
             pass
 
         if is_digikeyboard:
-            print(f"  {c_green('🎉 DigiKeyboard sudah aktif dan berjalan!')} (Versi: {server_ver})")
+            print(f"  {c_green('🎉 DigiSmartDeck sudah aktif dan berjalan!')} (Versi: {server_ver})")
             print(c_dim("     Aplikasi sedang berjalan di latar belakang (Background Service)."))
             return False, "already_running"
         else:
@@ -167,10 +167,10 @@ def check_and_request_input_permissions():
                     return True
             except Exception as ex:
                 print(f"  {c_red('Gagal meminta izin otomatis:')} {ex}")
-                print(c_dim("  Anda tetap bisa menjalankan DigiKeyboard via simulasi pynput bawaan."))
+                print(c_dim("  Anda tetap bisa menjalankan DigiSmartDeck via simulasi pynput bawaan."))
                 return False
         else:
-            print(c_dim("     Dilewati. DigiKeyboard akan berjalan dalam mode fallback standar."))
+            print(c_dim("     Dilewati. DigiSmartDeck akan berjalan dalam mode fallback standar."))
             return False
 
     # === B. MACOS (Accessibility Permission) ===
@@ -198,7 +198,7 @@ def check_and_request_input_permissions():
                     subprocess.run(["open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"])
                     print(c_green("\n     ✓ Menu Pengaturan macOS telah dibuka!"))
                     print("     Langkah mudah:")
-                    print("     1. Cari 'Terminal' atau 'DigiKeyboard' di daftar.")
+                    print("     1. Cari 'Terminal' atau 'DigiSmartDeck' di daftar.")
                     print("     2. Geser tombol ke posisi AKTIF (warna biru/centang).")
                     print("     3. Kembali ke jendela ini.")
                     input(c_cyan("\n     Tekan Enter setelah Anda selesai memberi izin... "))
@@ -265,7 +265,7 @@ def print_layman_guide(local_ip, port=8080, port_status="available"):
     print("━" * 60)
 
     if port_status == "already_running":
-        print(f"  {c_green('✨ DigiKeyboard sudah berjalan di background PC Anda!')}")
+        print(f"  {c_green('✨ DigiSmartDeck sudah berjalan di background PC Anda!')}")
         print(f"  Anda tidak perlu menjalankan server lagi.")
     else:
         print(f"  {c_green('✓ Semua pemeriksaan sistem selesai! Sistem siap digunakan.')}")
@@ -287,19 +287,19 @@ def run_preflight_check(interactive=True, port=8080):
     maupun di dalam server.py sebelum server dijalankan.
     Mengembalikan dict hasil pemeriksaan.
     """
-    print(c_bold("\n🔍 Memeriksa Kesiapan Sistem DigiKeyboard..."))
+    print(c_bold("\n🔍 Memeriksa Kesiapan Sistem DigiSmartDeck..."))
     print(c_dim("Pemeriksaan otomatis untuk memastikan aplikasi berjalan lancar.\n"))
 
     net_ok, local_ip = check_network()
     port_ok, port_status = check_port(port)
 
-    # Jika port sudah dipakai oleh DigiKeyboard background service
+    # Jika port sudah dipakai oleh DigiSmartDeck background service
     if port_status == "already_running":
         print_layman_guide(local_ip, port, port_status)
         if interactive:
             print("Pilihan tindakan:")
             print("  [1] Tetap biarkan berjalan di background & selesai (Rekomendasi)")
-            print("  [2] Buka halaman DigiKeyboard di browser komputer sekarang")
+            print("  [2] Buka halaman DigiSmartDeck di browser komputer sekarang")
             print("  [3] Keluar")
             try:
                 sys.stdout.write(c_cyan("\nPilih [1/2/3] (Default: 1): "))

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-DigiKeyboard PC Host Manager & Setup Wizard
-Aplikasi Desktop Pusat Kendali & Installer untuk DigiKeyboard Host (Linux/X11)
-Desain visual selaras penuh dengan antarmuka Web Client DigiKeyboard.
+DigiSmartDeck PC Host Manager & Setup Wizard
+Aplikasi Desktop Pusat Kendali & Installer untuk DigiSmartDeck Host (Linux/X11)
+Desain visual selaras penuh dengan antarmuka Web Client DigiSmartDeck.
 """
 
 import os
@@ -65,10 +65,10 @@ def get_preferred_ip():
     return candidates[0] if candidates else '127.0.0.1'
 
 
-class DigiKeyboardGUI(QMainWindow):
+class DigiSmartDeckGUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("DigiKeyboard Host Manager")
+        self.setWindowTitle("DigiSmartDeck Host Manager")
         self.resize(920, 680)
         self.setMinimumSize(860, 620)
 
@@ -86,7 +86,7 @@ class DigiKeyboardGUI(QMainWindow):
         self.refresh_status()
 
     def apply_theme(self):
-        """Menerapkan stylesheet QSS modern yang identik dengan Web Client DigiKeyboard"""
+        """Menerapkan stylesheet QSS modern yang identik dengan Web Client DigiSmartDeck"""
         self.setStyleSheet("""
             QMainWindow, QWidget#centralWidget {
                 background-color: #0d1117;
@@ -256,9 +256,16 @@ class DigiKeyboardGUI(QMainWindow):
         top_layout = QHBoxLayout(top_deck)
         top_layout.setContentsMargins(16, 10, 16, 10)
 
+        if os.path.exists(ICON_PATH):
+            logo_lbl = QLabel()
+            pix = QPixmap(ICON_PATH).scaled(38, 38, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            logo_lbl.setPixmap(pix)
+            top_layout.addWidget(logo_lbl)
+            top_layout.addSpacing(10)
+
         logo_title_layout = QVBoxLayout()
         logo_title_layout.setSpacing(2)
-        app_title = QLabel("DIGIKEYBOARD HOST")
+        app_title = QLabel("DIGISMARTDECK HOST")
         app_title.setStyleSheet("font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: 0.8px;")
         app_sub = QLabel("Pusat Kendali Otorisasi & Layanan Input PC")
         app_sub.setStyleSheet("font-size: 11px; color: #8b949e;")
@@ -346,7 +353,7 @@ class DigiKeyboardGUI(QMainWindow):
 
         footer_layout.addStretch()
 
-        ver_lbl = QLabel("DigiKeyboard v0.9.38 (Linux Host Edition)")
+        ver_lbl = QLabel("DigiSmartDeck v0.9.38 (Linux Host Edition)")
         ver_lbl.setStyleSheet("color: #484f58; font-size: 11px;")
         footer_layout.addWidget(ver_lbl)
 
@@ -962,12 +969,12 @@ def acquire_single_instance_lock():
 def main():
     lock = acquire_single_instance_lock()
     if not lock:
-        print("[*] DigiKeyboard Host Manager sudah berjalan di sistem. Mengaktifkan jendela yang ada.")
+        print("[*] DigiSmartDeck Host Manager sudah berjalan di sistem. Mengaktifkan jendela yang ada.")
         sys.exit(0)
 
     app = QApplication(sys.argv)
-    app.setApplicationName("DigiKeyboard Host")
-    gui = DigiKeyboardGUI()
+    app.setApplicationName("DigiSmartDeck Host")
+    gui = DigiSmartDeckGUI()
     gui.show()
     sys.exit(app.exec_())
 

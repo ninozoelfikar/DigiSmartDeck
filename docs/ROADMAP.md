@@ -6,11 +6,11 @@
 
 ## 🇮🇩 Roadmap Produk (Bahasa Indonesia)
 
-Roadmap ini memetakan tahapan rilis fitur untuk mentransformasi DigiKeyboard dari utilitas keyboard sederhana menjadi **wireless multi-mode workstation & entertainment controller** kelas profesional, dengan fokus mempertahankan keunggulan visual utamanya: **Zero Native Mobile Keyboard Popup & True 1:1 Physical PC Canvas**.
+Roadmap ini memetakan tahapan rilis fitur untuk mentransformasi DigiSmartDeck dari utilitas keyboard sederhana menjadi **wireless multi-mode workstation & entertainment controller** kelas profesional, dengan fokus mempertahankan keunggulan visual utamanya: **Zero Native Mobile Keyboard Popup & True 1:1 Physical PC Canvas**.
 
 ```mermaid
 gantt
-    title Roadmap Pengembangan DigiKeyboard
+    title Roadmap Pengembangan DigiSmartDeck
     dateFormat  YYYY-Q1
     section Phase 1 (Visual, UX & PWA)
     PWA & Zero-Browser Frame        :done, p1, 2026-Q1, 30d
@@ -39,7 +39,7 @@ gantt
 ### 🎨 Celah Pasar Visual (Visual White Space & USP)
 Sebagian besar aplikasi remote PC (seperti *Unified Remote* atau *WiFi Mouse*) memunculkan kotak input teks yang memicu **keyboard bawaan HP (Gboard/iOS)** menutupi separuh layar, menghilangkan tombol penting PC (`Esc`, `Tab`, `Ctrl`, `Alt`, `F1-F12`, `|`, `~`).
 
-**DigiKeyboard** mengambil pendekatan berbeda: **menggambar kanvas interaktif fungsional langsung di layar ponsel/tablet**, bebas dari gangguan keyboard virtual bawaan HP.
+**DigiSmartDeck** mengambil pendekatan berbeda: **menggambar kanvas interaktif fungsional langsung di layar ponsel/tablet**, bebas dari gangguan keyboard virtual bawaan HP.
 
 ---
 
@@ -179,10 +179,10 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
 
 ### 📌 Fase 5: Kesiapan Komersial, Distribusi & Hardware (Selesai Sebagian di v1.16.0 - v1.17.0)
 - [x] **Script Build Executable Mandiri Multi-Platform (PyInstaller):**
-  - **Linux Standalone Binary (`build-linux.sh`):** Menghasilkan executable ELF 64-bit mandiri `dist/DigiKeyboard` (39MB) tanpa dependensi Python di target PC.
-  - **Windows Executable (`build-exe.bat`):** Script kompilasi menghasilkan `dist/DigiKeyboard.exe` mandiri beserta aset ikon `.ico`.
-  - **macOS Bundle (`build-macos.sh`):** Menghasilkan bundle aplikasi `dist/DigiKeyboardApp.app` dan binary CLI macOS.
-- [x] **Aplikasi Android Native & Bluetooth HID (`DigiKeyboard.apk`):**
+  - **Linux Standalone Binary (`build-linux.sh`):** Menghasilkan executable ELF 64-bit mandiri `dist/DigiSmartDeck` (39MB) tanpa dependensi Python di target PC.
+  - **Windows Executable (`build-exe.bat`):** Script kompilasi menghasilkan `dist/DigiSmartDeck.exe` mandiri beserta aset ikon `.ico`.
+  - **macOS Bundle (`build-macos.sh`):** Menghasilkan bundle aplikasi `dist/DigiSmartDeckApp.app` dan binary CLI macOS.
+- [x] **Aplikasi Android Native & Bluetooth HID (`DigiSmartDeck.apk`):**
   - Pengemasan APK Android native via Gradle 8.5 & Android SDK 34 (`build-apk.sh`).
   - True Immersive Sticky Fullscreen bebas gangguan popup Chrome.
   - Emulasi perangkat keras Bluetooth HID komposit (Keyboard + Mouse) via `BluetoothHidDevice` (Android 9+) untuk koneksi langsung tanpa software server.
@@ -200,16 +200,16 @@ Rencana penambahan ragam mode kerja dan kontroler interaktif terdedikasi tanpa m
   - Firmware mikrokontroler USB Plug-and-Play yang langsung dikenali sebagai keyboard USB hardware tanpa instal software di PC.
 - [ ] **Hardware Khusus Keyboard Fisik OLED by King Ali Studio (DigiBoard OLED Workstation Deck):**
   - Keyboard mekanikal fisik premium dengan keycaps layar mini OLED dinamis di setiap tuts / macro keys (desain hybrid ala Optimus Maximus & Stream Deck).
-  - **Sinkronisasi Dua Arah Real-Time:** Tuts OLED fisik secara otomatis mengubah icon grafis, label, dan fungsinya mengikuti mode kerja yang aktif di aplikasi DigiKeyboard (Mode AI Prompting, Game Console, Slide Remote, AutoText Snippet, Editing Video, dsb.).
-  - **Dukungan Plugin & Skin Terpadu:** Tema dan plugin visual yang dibeli di DigiKeyboard Store dapat langsung diproyeksikan ke layar fisik OLED tuts keyboard.
-  - **Bundling Penjualan & Ekosistem:** Dijual eksklusif direct-to-consumer (DTC) bundling gratis lisensi DigiKeyboard Lifetime Pro All-Access, memperluas jangkauan bisnis King Ali Studio dari software murni ke perangkat keras bernilai tinggi (*high-ticket hardware*).
+  - **Sinkronisasi Dua Arah Real-Time:** Tuts OLED fisik secara otomatis mengubah icon grafis, label, dan fungsinya mengikuti mode kerja yang aktif di aplikasi DigiSmartDeck (Mode AI Prompting, Game Console, Slide Remote, AutoText Snippet, Editing Video, dsb.).
+  - **Dukungan Plugin & Skin Terpadu:** Tema dan plugin visual yang dibeli di DigiSmartDeck Store dapat langsung diproyeksikan ke layar fisik OLED tuts keyboard.
+  - **Bundling Penjualan & Ekosistem:** Dijual eksklusif direct-to-consumer (DTC) bundling gratis lisensi DigiSmartDeck Lifetime Pro All-Access, memperluas jangkauan bisnis King Ali Studio dari software murni ke perangkat keras bernilai tinggi (*high-ticket hardware*).
 
 ---
 
 ## 🇬🇧 Product Roadmap (English)
 
 ### 🎨 Visual Differentiation (USP)
-Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward native mobile keyboards (Gboard/iOS) that swallow half the display, DigiKeyboard renders a **full-fidelity interactive canvas**, keeping all essential controls immediately reachable without software keyboard interference.
+Unlike conventional remote apps (e.g., Unified Remote) which invoke awkward native mobile keyboards (Gboard/iOS) that swallow half the display, DigiSmartDeck renders a **full-fidelity interactive canvas**, keeping all essential controls immediately reachable without software keyboard interference.
 
 ### 📌 Phase 1: Progressive Web App & Mechanical Aesthetics (Completed)
 - [x] **PWA & Edge-to-Edge Experience:** Zero-browser address bar and zero Chrome fullscreen popups when launched from the home screen via Web App Manifest & Service Worker.
@@ -259,7 +259,7 @@ Upcoming dedicated functional controllers designed for specialized workflows:
     - **Oversized `Enter` Key:** Extra-large dispatch key for comfortable, error-free 1-thumb prompt execution.
     - **4 Directional Arrows (`▲`, `▼`, `◀`, `▶`):** Rapid history command traversal, text cursor adjustment, and option browsing.
     - **Wireless Voice Typing (Speech-to-Text):** Direct speech dictation streaming from mobile microphone to PC host in real-time.
-  - Bundled exclusively within the **DigiKeyboard Pro All-Access License**.
+  - Bundled exclusively within the **DigiSmartDeck Pro All-Access License**.
 - [ ] **Media Controller Mode:**
   - Dedicated multimedia deck for Spotify, YouTube, VLC, and Netflix.
   - Large Play/Pause, track skip, 10s scrub buttons, and a master volume knob/slider with instant mute.
@@ -279,10 +279,10 @@ Upcoming dedicated functional controllers designed for specialized workflows:
 
 ### 📌 Phase 5: Commercial Readiness, Packaging & Hardware (Completed Partially in v1.16.0 - v1.17.0)
 - [x] **Multi-Platform Standalone Executable Build Scripts (PyInstaller):**
-  - **Linux Standalone ELF Binary (`build-linux.sh`):** Compiles single-file 64-bit binary `dist/DigiKeyboard` (39MB) with zero Python dependencies needed on target machines.
-  - **Windows Executable (`build-exe.bat`):** Automated build script producing standalone `dist/DigiKeyboard.exe` with bundled icons and static assets.
-  - **macOS Bundle (`build-macos.sh`):** Automated build script for `dist/DigiKeyboardApp.app`.
-- [x] **Android Native Client & Bluetooth HID (`DigiKeyboard.apk`):**
+  - **Linux Standalone ELF Binary (`build-linux.sh`):** Compiles single-file 64-bit binary `dist/DigiSmartDeck` (39MB) with zero Python dependencies needed on target machines.
+  - **Windows Executable (`build-exe.bat`):** Automated build script producing standalone `dist/DigiSmartDeck.exe` with bundled icons and static assets.
+  - **macOS Bundle (`build-macos.sh`):** Automated build script for `dist/DigiSmartDeckApp.app`.
+- [x] **Android Native Client & Bluetooth HID (`DigiSmartDeck.apk`):**
   - Native APK packaged using Gradle 8.5 & Android SDK 34 (`build-apk.sh`).
   - True Immersive Sticky Fullscreen eliminating Chrome fullscreen warning toasts and browser address bars.
   - Bluetooth HID composite device emulation (Keyboard + Mouse) via `BluetoothHidDevice` (Android 9+) for direct pairing without server software.
@@ -298,6 +298,6 @@ Upcoming dedicated functional controllers designed for specialized workflows:
 - [ ] **Standalone Hardware Dongle (ESP32-S3):** Plug-and-play USB hardware HID firmware.
 - [ ] **King Ali Studio Dedicated Physical OLED Keyboard (DigiBoard OLED Workstation Deck):**
   - Premium physical mechanical keyboard featuring dynamic micro-OLED displays embedded into individual keycaps and macro clusters (Optimus Maximus + Stream Deck hybrid architecture).
-  - **Bidirectional Real-Time Synchronization:** Physical OLED keycaps automatically transform their displayed graphic icons, labels, and macro functions to match active DigiKeyboard software modes (AI Prompting, Gamepad, Slide Remote, AutoText Snippets, Video Scrubbing, etc.).
-  - **Unified Ecosystem & Plugin Store:** Visual themes, icon packs, and macro plugins purchased through the DigiKeyboard Store render natively on physical key displays.
-  - **Hardware + Software Commercial Bundling:** Sold direct-to-consumer (DTC) bundled with a complimentary DigiKeyboard Lifetime Pro All-Access license, scaling King Ali Studio into high-margin physical workstation hardware.
+  - **Bidirectional Real-Time Synchronization:** Physical OLED keycaps automatically transform their displayed graphic icons, labels, and macro functions to match active DigiSmartDeck software modes (AI Prompting, Gamepad, Slide Remote, AutoText Snippets, Video Scrubbing, etc.).
+  - **Unified Ecosystem & Plugin Store:** Visual themes, icon packs, and macro plugins purchased through the DigiSmartDeck Store render natively on physical key displays.
+  - **Hardware + Software Commercial Bundling:** Sold direct-to-consumer (DTC) bundled with a complimentary DigiSmartDeck Lifetime Pro All-Access license, scaling King Ali Studio into high-margin physical workstation hardware.

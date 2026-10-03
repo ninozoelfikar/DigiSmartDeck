@@ -1,4 +1,4 @@
-# 📈 Analisis Potensi Pasar & Proyeksi Penghasilan: DigiKeyboard (AirDeck)
+# 📈 Analisis Potensi Pasar & Proyeksi Penghasilan: DigiSmartDeck (AirDeck)
 
 ---
 

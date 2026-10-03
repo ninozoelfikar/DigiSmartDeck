@@ -1,7 +1,7 @@
 #!/bin/bash
 # ==============================================================================
-# DigiKeyboard - Linux uinput Kernel Hardware Driver Setup
-# Memungkinkan DigiKeyboard bertindak sebagai Keyboard & Mouse USB Fisik di Level Kernel.
+# DigiSmartDeck - Linux uinput Kernel Hardware Driver Setup
+# Memungkinkan DigiSmartDeck bertindak sebagai Keyboard & Mouse USB Fisik di Level Kernel.
 # Mendukung Layar Login Ubuntu (GDM), Lock Screen, Password Prompt, Wayland & X11.
 # ==============================================================================
 
@@ -14,7 +14,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 echo -e "${BLUE}============================================================${NC}"
-echo -e "${BLUE}  ⌨️  DigiKeyboard - Setup Akses Layar Login Ubuntu (uinput)${NC}"
+echo -e "${BLUE}  ⌨️  DigiSmartDeck - Setup Akses Layar Login Ubuntu (uinput)${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo ""
 
@@ -60,7 +60,7 @@ SERVICE_DST="/etc/systemd/system/digikeyboard.service"
 if [ -f "$SERVICE_SRC" ]; then
     cat << EOF > "$SERVICE_DST"
 [Unit]
-Description=DigiKeyboard Remote PC Keyboard Server (Kernel uinput)
+Description=DigiSmartDeck Remote PC Keyboard Server (Kernel uinput)
 After=network.target network-online.target
 Wants=network-online.target
 
@@ -92,7 +92,7 @@ fi
 
 echo ""
 echo -e "${BLUE}============================================================${NC}"
-echo -e "${GREEN}🎉 SUKSES! Driver Kernel Virtual USB DigiKeyboard telah aktif!${NC}"
+echo -e "${GREEN}🎉 SUKSES! Driver Kernel Virtual USB DigiSmartDeck telah aktif!${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo "Status service:"
 systemctl status digikeyboard.service --no-pager -n 5 || true

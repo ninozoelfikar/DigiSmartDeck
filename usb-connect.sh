@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# DigiKeyboard 1-Click USB Connection Helper
-# Otomatis mengaktifkan port reverse forwarding & membuka DigiKeyboard di HP via kabel USB
+# DigiSmartDeck 1-Click USB Connection Helper
+# Otomatis mengaktifkan port reverse forwarding & membuka DigiSmartDeck di HP via kabel USB
 set -e
 
 PORT=${1:-8080}
 echo "============================================================"
-echo "  🔌 DigiKeyboard USB Connection Helper (<1ms Latency)"
+echo "  🔌 DigiSmartDeck USB Connection Helper (<1ms Latency)"
 echo "============================================================"
 
 if ! command -v adb &> /dev/null; then
@@ -33,11 +33,11 @@ fi
 for DEV in $DEVICES; do
     echo "[✓] Mengaktifkan port reverse forwarding untuk perangkat: $DEV"
     adb -s "$DEV" reverse "tcp:$PORT" "tcp:$PORT"
-    echo "[🚀] Membuka DigiKeyboard di Google Chrome HP..."
+    echo "[🚀] Membuka DigiSmartDeck di Google Chrome HP..."
     adb -s "$DEV" shell am start -a android.intent.action.VIEW -d "http://localhost:$PORT" > /dev/null 2>&1 || true
 done
 
 echo "============================================================"
-echo "[🎉] BERHASIL! DigiKeyboard terhubung via USB di HP: http://localhost:$PORT"
+echo "[🎉] BERHASIL! DigiSmartDeck terhubung via USB di HP: http://localhost:$PORT"
 echo "     Latensi super rendah (<1ms) & bebas gangguan sinyal Wi-Fi."
 echo "============================================================"

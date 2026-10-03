@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# DigiKeyboard Semantic Versioning Automation Script (SemVer 2.0.0)
+# DigiSmartDeck Semantic Versioning Automation Script (SemVer 2.0.0)
 # ==============================================================================
 # Penggunaan:
 #   ./bump-version.sh patch   (1.4.1 -> 1.4.2 : Bugfix / perbaikan kecil)
@@ -67,7 +67,7 @@ esac
 TODAY=$(date +"%Y-%m-%d")
 
 echo "============================================================"
-echo "  🚀 DigiKeyboard Automatic Version Bumper"
+echo "  🚀 DigiSmartDeck Automatic Version Bumper"
 echo "============================================================"
 echo "  Versi Saat Ini : v${CURRENT_VERSION}"
 echo "  Versi Baru     : v${NEW_VERSION} ($BUMP_TYPE)"

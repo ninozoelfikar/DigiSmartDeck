@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title DigiKeyboard - Remote PC Keyboard Server
+title DigiSmartDeck - Remote PC Keyboard Server
 cd /d "%~dp0"
 
 echo ============================================================
-echo   ⌨️  DigiKeyboard - Remote PC Keyboard Server (Windows)
+echo   ⌨️  DigiSmartDeck - Remote PC Keyboard Server (Windows)
 echo ============================================================
 echo.
 
@@ -42,7 +42,7 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [i] Menjalankan server DigiKeyboard...
+echo [i] Menjalankan server DigiSmartDeck...
 %PYCMD% server.py
 
 if %errorlevel% neq 0 (

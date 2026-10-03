@@ -1,6 +1,6 @@
 # 📦 Panduan Instalasi & Penggunaan Multi-Platform
 
-DigiKeyboard dirancang untuk bekerja secara mulus di berbagai sistem operasi:
+DigiSmartDeck dirancang untuk bekerja secara mulus di berbagai sistem operasi:
 - **Host Server (PC yang dikendalikan):** Windows, Linux, macOS
 - **Client (HP/Tablet/Browser pengendali):** Android, iOS (iPhone & iPad), Windows, Mac, Linux
 
@@ -28,7 +28,7 @@ DigiKeyboard dirancang untuk bekerja secara mulus di berbagai sistem operasi:
    chmod +x setup-uinput.sh
    ./setup-uinput.sh
    ```
-   *Mengaktifkan modul kernel Linux `uinput` sehingga DigiKeyboard bertindak sebagai keyboard USB fisik.*
+   *Mengaktifkan modul kernel Linux `uinput` sehingga DigiSmartDeck bertindak sebagai keyboard USB fisik.*
 3. **Atau jalankan langsung melalui runner:**
    ```bash
    chmod +x run.sh
@@ -57,7 +57,7 @@ DigiKeyboard dirancang untuk bekerja secara mulus di berbagai sistem operasi:
 3. Putar HP ke posisi **Landscape (Mendatar)**.
 4. **Tips Fullscreen / PWA:**
    - Ketuk menu titik tiga di browser > pilih **"Add to Home screen" / "Instal Aplikasi"**.
-   - DigiKeyboard akan terbuka dalam layar penuh tanpa toolbar browser!
+   - DigiSmartDeck akan terbuka dalam layar penuh tanpa toolbar browser!
 
 ### 2. iOS (iPhone & iPad - Safari)
 1. Hubungkan iPhone/iPad ke **Wi-Fi yang sama** dengan PC.
@@ -65,8 +65,8 @@ DigiKeyboard dirancang untuk bekerja secara mulus di berbagai sistem operasi:
 3. **Tips Fullscreen di iOS (Sangat Direkomendasikan):**
    - Ketuk tombol **Share (Bagikan)** di Safari (ikon kotak dengan panah atas).
    - Pilih **"Add to Home Screen" (Tambahkan ke Layar Utama)**.
-   - Buka ikon DigiKeyboard dari Home Screen Anda.
-   - DigiKeyboard akan berjalan dalam mode **Standalone Fullscreen** dengan dukungan safe-area notch iPhone dan home bar!
+   - Buka ikon DigiSmartDeck dari Home Screen Anda.
+   - DigiSmartDeck akan berjalan dalam mode **Standalone Fullscreen** dengan dukungan safe-area notch iPhone dan home bar!
 
 ---
 
@@ -96,7 +96,7 @@ Jalankan file batch:
 ```cmd
 build-exe.bat
 ```
-Hasil: `dist\DigiKeyboard.exe` (Standalone Windows Executable dengan icon).
+Hasil: `dist\DigiSmartDeck.exe` (Standalone Windows Executable dengan icon).
 
 ### 2. Linux (Binary Executable)
 Jalankan script bash:
@@ -104,7 +104,7 @@ Jalankan script bash:
 chmod +x build-linux.sh
 ./build-linux.sh
 ```
-Hasil: `dist/DigiKeyboard` (Standalone ELF Binary). Jalankan langsung dengan `./dist/DigiKeyboard`.
+Hasil: `dist/DigiSmartDeck` (Standalone ELF Binary). Jalankan langsung dengan `./dist/DigiSmartDeck`.
 
 ### 3. macOS (`.app` Bundle & Binary)
 Jalankan script bash di macOS:
@@ -113,23 +113,23 @@ chmod +x build-macos.sh
 ./build-macos.sh
 ```
 Hasil:
-- Terminal Binary: `dist/DigiKeyboard`
-- macOS Application Bundle: `dist/DigiKeyboardApp.app`
+- Terminal Binary: `dist/DigiSmartDeck`
+- macOS Application Bundle: `dist/DigiSmartDeckApp.app`
 
 ---
 
 ## 📱 Build & Penggunaan Android Native APK (Solusi Bebas Pop-up Chrome & Bluetooth HID)
 
-Untuk pengalaman terbaik di HP/Tablet Android tanpa pop-up keamanan Chrome (*"Swipe down to exit fullscreen"*), tanpa bilah alamat browser, dan dengan opsi **Bluetooth HID**, gunakan aplikasi **DigiKeyboard APK**.
+Untuk pengalaman terbaik di HP/Tablet Android tanpa pop-up keamanan Chrome (*"Swipe down to exit fullscreen"*), tanpa bilah alamat browser, dan dengan opsi **Bluetooth HID**, gunakan aplikasi **DigiSmartDeck APK**.
 
 ### 1. Cara Download Langsung dari HP (Paling Cepat):
-1. Jalankan server DigiKeyboard di PC.
+1. Jalankan server DigiSmartDeck di PC.
 2. Buka browser di HP ke alamat:
    ```text
    http://<PC_IP>:8080/download/apk
    ```
    Atau buka `http://<PC_IP>:8080` dan klik tombol **"📱 Download Android APK"** di header atas.
-3. Pasang file `DigiKeyboard.apk` di HP Android Anda.
+3. Pasang file `DigiSmartDeck.apk` di HP Android Anda.
 
 ### 2. Fitur Spesial Android APK:
 - **True Immersive Sticky Fullscreen:** 100% bebas dari pop-up peringatan Chrome.
@@ -144,7 +144,7 @@ Untuk pengalaman terbaik di HP/Tablet Android tanpa pop-up keamanan Chrome (*"Sw
    ```bash
    ./build-apk.sh
    ```
-   Hasil APK siap pakai akan otomatis disimpan di `dist/DigiKeyboard.apk` dan `static/DigiKeyboard.apk`.
+   Hasil APK siap pakai akan otomatis disimpan di `dist/DigiSmartDeck.apk` dan `static/DigiSmartDeck.apk`.
 2. **Menggunakan Android Studio:**
    - Buka Android Studio > pilih **Open** > arahkan ke folder `android/`.
    - Pilih menu **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
@@ -155,7 +155,7 @@ Untuk pengalaman terbaik di HP/Tablet Android tanpa pop-up keamanan Chrome (*"Sw
 
 ## 🛡️ Fitur Anti-Tabrakan Pengendali (Multi-Device Arbitration)
 
-Jika Anda memiliki beberapa HP atau tablet yang membuka DigiKeyboard secara bersamaan:
+Jika Anda memiliki beberapa HP atau tablet yang membuka DigiSmartDeck secara bersamaan:
 1. **Pengendali Aktif (`🟢 👑`):** Perangkat pertama yang tersambung menjadi pengendali utama yang dapat mengetik dan menggerakkan mouse.
 2. **Mode Siaga (`🟡 ⚡`):** Perangkat kedua dan seterusnya otomatis berstatus siaga. Tombol yang diketik tidak akan dikirimkan ke PC untuk mencegah teks bertabrakan atau kursor mouse bergerak liar.
 3. **Ambil Alih Kendali (Takeover):**
@@ -168,6 +168,6 @@ Jika Anda memiliki beberapa HP atau tablet yang membuka DigiKeyboard secara bers
 
 Saat Anda menjalankan server:
 - Skrip [`system_checker.py`](system_checker.py) akan memverifikasi kesehatan jaringan lokal, ketersediaan port 8080, status firewall, dan hak akses Linux `/dev/uinput`.
-- Jika port 8080 sudah digunakan oleh daemon DigiKeyboard lain, aplikasi mendeteksinya secara cerdas dan menampilkan URL aktif tanpa error crash atau traceback.
+- Jika port 8080 sudah digunakan oleh daemon DigiSmartDeck lain, aplikasi mendeteksinya secara cerdas dan menampilkan URL aktif tanpa error crash atau traceback.
 
 

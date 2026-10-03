@@ -1,4 +1,4 @@
-# ⌨️ DigiKeyboard (Remote PC Keyboard)
+# ⌨️ DigiSmartDeck (Remote PC Keyboard)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-v1.17.0-brightgreen.svg)](CHANGELOG.md)
@@ -17,10 +17,10 @@
 
 ## 🇮🇩 Bahasa Indonesia
 
-### 🌟 Mengapa DigiKeyboard?
+### 🌟 Mengapa DigiSmartDeck?
 Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keyboard bawaan HP (Gboard / SwiftKey). Hal ini menyulitkan akses ke tombol-tombol fungsional PC seperti **Esc, Tab, Ctrl, Alt, Win/Super, F1-F12, Backspace, Panah**, hingga **Numpad**.
 
-**DigiKeyboard** menyajikan antarmuka visual layout keyboard fisik PC sesungguhnya langsung di layar HP/Tablet Anda dengan latensi ultra-rendah (1-5 ms) melalui WebSocket Wi-Fi lokal atau emulasi perangkat keras Bluetooth HID.
+**DigiSmartDeck** menyajikan antarmuka visual layout keyboard fisik PC sesungguhnya langsung di layar HP/Tablet Anda dengan latensi ultra-rendah (1-5 ms) melalui WebSocket Wi-Fi lokal atau emulasi perangkat keras Bluetooth HID.
 
 ---
 
@@ -43,7 +43,7 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
    - **Suara Klik Mekanikal Sintetis:** Menghasilkan klik switch mekanik renyah via Web Audio API, terdengar jelas di speaker kecil HP, tablet, maupun PC.
    - **Pengontrol Volume Suara:** Slider granular (10% - 100%), preset Pelan (30%), Sedang (70%), Keras (100%), dan tombol uji suara (`🧪 Uji Suara Klik`).
 4. **🛡️ Anti-Collision Controller Arbitration (Anti-Tabrakan Pengendali):**
-   - **Mencegah Tabrakan Multi-User:** Jika beberapa HP atau tablet membuka URL DigiKeyboard secara bersamaan di jaringan yang sama, sistem arbitrase memastikan hanya 1 perangkat yang menjadi **Pengendali Aktif** (`🟢 👑 Pengendali Aktif`).
+   - **Mencegah Tabrakan Multi-User:** Jika beberapa HP atau tablet membuka URL DigiSmartDeck secara bersamaan di jaringan yang sama, sistem arbitrase memastikan hanya 1 perangkat yang menjadi **Pengendali Aktif** (`🟢 👑 Pengendali Aktif`).
    - **Mode Siaga Otomatis (Standby):** Perangkat lain yang terhubung otomatis masuk ke mode `🟡 ⚡ Siaga (Ambil Alih)` dengan pengetikan diabaikan server agar tidak mengacaukan sesi yang sedang berjalan.
    - **Pengambilan Alih Instan (Takeover):** Pengguna di mode siaga dapat mengetuk tombol status untuk mengambil alih kendali dengan konfirmasi 1-ketuk.
    - **Auto-Takeover:** Mengalihkan kendali secara otomatis jika pengendali aktif tidak melakukan pengetikan selama 30 detik.
@@ -123,7 +123,7 @@ chmod +x run.sh
 > *Catatan macOS:* Berikan izin Accessibility untuk aplikasi Terminal/iTerm Anda di **System Settings > Privacy & Security > Accessibility**.
 
 #### Menjalankan di Background (Linux Systemd / PM2):
-Untuk menjalankan DigiKeyboard sebagai background daemon permanen saat komputer menyala:
+Untuk menjalankan DigiSmartDeck sebagai background daemon permanen saat komputer menyala:
 ```bash
 # Systemd Service (Otomatis aktif sebelum login):
 sudo systemctl enable --now digikeyboard.service
@@ -144,7 +144,7 @@ pm2 start server.py --name digikeyboard --interpreter python3
 3. **Pilihan Cara Menggunakan:**
    - **📱 Aplikasi Android Native (Direkomendasikan untuk Pengalaman Terbaik):**
      - Buka `http://<PC_IP>:8080/download/apk` di browser HP atau klik tombol **"📱 Download Android APK"** di header web.
-     - Pasang APK `DigiKeyboard.apk` di HP Anda.
+     - Pasang APK `DigiSmartDeck.apk` di HP Anda.
      - Nikmati fullscreen murni tanpa popup peringatan Chrome, orientasi landscape terkunci, dan opsi **Bluetooth HID**.
    - **🌐 Mode Web Browser / PWA:**
      - **Android:** Buka menu Chrome > ketuk **"Add to Home Screen"** / **"Install App"**.
@@ -174,7 +174,7 @@ pm2 start server.py --name digikeyboard --interpreter python3
 ### 🌟 Overview
 Most remote keyboard applications rely on native text inputs that trigger clumsy mobile virtual keyboards (Gboard/SwiftKey), concealing essential PC keys such as **Esc, Tab, Function keys (F1-F12), Alt, Windows/Super, and Arrows**.
 
-**DigiKeyboard** solves this by projecting an authentic, full-fidelity mechanical PC keyboard layout directly onto your mobile canvas via low-latency WebSocket communication (1-5 ms) or direct Bluetooth HID hardware emulation.
+**DigiSmartDeck** solves this by projecting an authentic, full-fidelity mechanical PC keyboard layout directly onto your mobile canvas via low-latency WebSocket communication (1-5 ms) or direct Bluetooth HID hardware emulation.
 
 ### ✨ Key Features
 - **True 1:1 PC Keyboard Canvas:** Number row, full QWERTY, navigation keys, latching modifiers, and Numpad without mobile OS keyboard popup.
@@ -192,7 +192,7 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
 - **🛠️ System Pre-Flight Diagnostics:** Non-technical friendly preflight audit (`system_checker.py`) gracefully handling port 8080 conflicts, Linux `/dev/uinput` permissions, and firewalls without panic tracebacks.
 - **📽️ Presentation & Meeting Remote Mode:** Oversized 1-tap `NEXT ➡` and `PREV ⬅` keys, blank/black screen (`B`), white screen (`W`), laser pointer (`Ctrl+L`), and pen annotations (`Ctrl+P`). Features a digital countdown timer with silent haptic reminder alerts, mini laser trackpad, and motion-based **Gyro Air Pointer** (tilt smartphone to aim). Includes 1-tap online meeting controls for Zoom, Google Meet, and Microsoft Teams (Mute, Video, Raise Hand, Screen Share).
 - **🎮 Game Console Mode (Virtual Gamepad):** Full-screen touch gamepad featuring an 8-way kinetic D-Pad or Virtual Thumbstick, diamond action buttons (`A/B/X/Y`), shoulder bumpers (`L1/R1`), and analog triggers (`L2/R2`). Built-in presets for RetroArch, GBA, PlayStation, and Modern PC WASD with custom remapping modal.
-- **📦 Standalone Portable Executables:** Ready-to-run binaries without manual Python setup for Linux (`dist/DigiKeyboard`), Windows (`dist/DigiKeyboard.exe`), and macOS (`dist/DigiKeyboardApp.app`).
+- **📦 Standalone Portable Executables:** Ready-to-run binaries without manual Python setup for Linux (`dist/DigiSmartDeck`), Windows (`dist/DigiSmartDeck.exe`), and macOS (`dist/DigiSmartDeckApp.app`).
 - **Instant Connect:** Automatic LAN IP detection and terminal ASCII QR code.
 
 ---
@@ -203,10 +203,10 @@ Most remote keyboard applications rely on native text inputs that trigger clumsy
    ```bash
    chmod +x install-linux.sh && ./install-linux.sh
    # Or run the standalone executable:
-   ./dist/DigiKeyboard
+   ./dist/DigiSmartDeck
    ```
 3. Run on Windows:
-   Double-click `run.bat` or run `dist\DigiKeyboard.exe`.
+   Double-click `run.bat` or run `dist\DigiSmartDeck.exe`.
 4. Scan the terminal ASCII QR code or visit `http://<PC_IP>:8080` in your mobile browser, or download `http://<PC_IP>:8080/download/apk` on Android.
 
 ---

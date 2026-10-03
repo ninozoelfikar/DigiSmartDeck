@@ -93,7 +93,7 @@ if sys.platform.startswith('linux'):
                     e.REL_X, e.REL_Y, e.REL_WHEEL, e.REL_HWHEEL
                 ]
             }
-            uinput_device = UInput(cap, name="DigiKeyboard Virtual USB Device", vendor=0x1234, product=0x5678)
+            uinput_device = UInput(cap, name="DigiSmartDeck Virtual USB Device", vendor=0x1234, product=0x5678)
             UINPUT_AVAILABLE = True
             KEYBOARD_AVAILABLE = True
             MOUSE_AVAILABLE = True
@@ -898,7 +898,7 @@ def get_active_window_info():
                 title = title_match.group(1) or title_match.group(2) or ''
 
             wm_str = ' '.join(wm_classes).lower()
-            if 'digikeyboard_gui' in wm_str or ('digikeyboard' in wm_str and 'host' in wm_str) or 'host manager' in title.lower():
+            if 'digikeyboard_gui' in wm_str or 'digismartdeck' in wm_str or ('digikeyboard' in wm_str and 'host' in wm_str) or 'host manager' in title.lower():
                 return None
 
             suggested_mode, friendly_name = classify_app_context(wm_classes, title)
@@ -966,10 +966,10 @@ def get_open_windows_list():
                     if not title or title.strip() == 'Desktop Icons':
                         continue
 
-                    # Filter keluar aplikasi internal DigiKeyboard Host Manager / Installer sendiri
-                    if 'digikeyboard_gui' in wm_class_lower or ('digikeyboard' in wm_class_lower and 'host' in wm_class_lower):
+                    # Filter keluar aplikasi internal DigiSmartDeck Host Manager / Installer sendiri
+                    if 'digikeyboard_gui' in wm_class_lower or 'digismartdeck' in wm_class_lower or ('digikeyboard' in wm_class_lower and 'host' in wm_class_lower):
                         continue
-                    if 'host manager' in title.lower() or title.strip() == 'DigiKeyboard Host':
+                    if 'host manager' in title.lower() or title.strip() == 'DigiSmartDeck Host':
                         continue
 
                     classes = [c for c in wm_class.split('.') if c]
@@ -1001,7 +1001,7 @@ def get_open_windows_list():
                     title = win32gui.GetWindowText(hwnd) or ''
                     if title and title != 'Program Manager':
                         class_name = win32gui.GetClassName(hwnd) or ''
-                        if 'digikeyboard' in class_name.lower() or 'host manager' in title.lower():
+                        if 'digikeyboard' in class_name.lower() or 'digismartdeck' in class_name.lower() or 'host manager' in title.lower():
                             return
                         suggested_mode, friendly_name = classify_app_context([class_name], title)
                         is_active = (str(hwnd) == str(current_active_id))
@@ -1740,7 +1740,7 @@ async def cleanup_background_tasks(app):
 
 async def api_version_handler(request):
     return web.json_response(
-        {'version': __version__, 'name': 'DigiKeyboard', 'hostname': socket.gethostname()},
+        {'version': __version__, 'name': 'DigiSmartDeck', 'hostname': socket.gethostname()},
         headers={'Access-Control-Allow-Origin': '*'}
     )
 
@@ -1748,7 +1748,7 @@ async def api_version_handler(request):
 async def api_info_handler(request):
     return web.json_response({
         'version': __version__,
-        'name': 'DigiKeyboard',
+        'name': 'DigiSmartDeck',
         'hostname': socket.gethostname(),
         'host_os': get_host_os(),
         'platform': sys.platform,
@@ -1788,10 +1788,10 @@ def create_app(ports=[8080]):
     app.router.add_get('/sw.js', lambda r: web.FileResponse(os.path.join(static_dir, 'sw.js'), headers={'Content-Type': 'application/javascript'}))
     app.router.add_get('/favicon.ico', lambda r: web.FileResponse(os.path.join(static_dir, 'icon-192.png')))
     # Route unduh langsung Android APK
-    apk_file = os.path.join(static_dir, 'DigiKeyboard.apk')
+    apk_file = os.path.join(static_dir, 'DigiSmartDeck.apk')
     if os.path.exists(apk_file):
-        app.router.add_get('/download/apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiKeyboard.apk"'}))
-        app.router.add_get('/DigiKeyboard.apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiKeyboard.apk"'}))
+        app.router.add_get('/download/apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiSmartDeck.apk"'}))
+        app.router.add_get('/DigiSmartDeck.apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiSmartDeck.apk"'}))
     return app
 
 

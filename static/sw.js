@@ -1,5 +1,5 @@
-// DigiKeyboard Service Worker for PWA (Progressive Web App)
-const CACHE_NAME = 'digikeyboard-cache-v1';
+// DigiSmartDeck Service Worker for PWA (Progressive Web App)
+const CACHE_NAME = 'digismartdeck-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',

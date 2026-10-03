@@ -6,7 +6,7 @@
 
 ## 🇮🇩 Panduan Komersialisasi (Bahasa Indonesia)
 
-Dokumen ini membedah potensi bisnis, positioning pasar, alternatif branding, model monetisasi, serta strategi peluncuran produk komersial berbasis teknologi DigiKeyboard.
+Dokumen ini membedah potensi bisnis, positioning pasar, alternatif branding, model monetisasi, serta strategi peluncuran produk komersial berbasis teknologi DigiSmartDeck.
 
 ---
 
@@ -20,7 +20,7 @@ Untuk pasar komersial, nama produk harus mencerminkan nilai fungsional, modern, 
 | **DeskPilot** | Produktivitas kerja, kontrol penuh | Pekerja remote, programmer, power user | *"Your Personal Secondary Desktop Cockpit"* |
 | **KeyCast** | Cepat, nirkabel, instan | Pengguna umum, media center, presentasi | *"Instant Wireless PC Keyboard & Remote in Your Pocket"* |
 | **TapDeck Studio** | Taktil, kreatif, modular | Editor video, desainer, live streamer | *"The Free-form Touch Control Deck for PC Power Users"* |
-| **DigiKeyboard Pro** | Langsung, teknis, to-the-point | Pengguna yang butuh keyboard pengganti darurat | *"Full PC Mechanical Keyboard Layout for Mobile Screens"* |
+| **DigiSmartDeck Pro** | Langsung, teknis, to-the-point | Pengguna yang butuh keyboard pengganti darurat | *"Full PC Mechanical Keyboard Layout for Mobile Screens"* |
 
 ---
 
@@ -32,7 +32,7 @@ Untuk pasar komersial, nama produk harus mencerminkan nilai fungsional, modern, 
 | **Unified Remote** | Freemium ($4.99 full unlock) | Mendukung banyak plugin aplikasi | Tampilan UI terasa usang (era 2014); input teks memicu Gboard HP yang menutupi setengah layar |
 | **Touch Portal** | Freemium ($13.99 Pro) | Fitur macro sangat kaya | Sangat berat; kurva belajar rumit untuk pengguna awam; bukan keyboard QWERTY |
 | **KDE Connect** | Gratis (Open Source) | Fitur lengkap (clipboard, SMS, remote) | Bukan berorientasi komersial; keyboard HP tetap memicu Gboard bawaan HP |
-| **Produk Anda (AirDeck / DigiKeyboard)** | **One-time purchase / Freemium** | **Satu-satunya yang menggambar layout keyboard PC 1:1 di kanvas, BEBAS keyboard virtual HP (zero Gboard popup), PWA zero-install, latensi ultra-rendah** | Produk baru; perlu membangun kredibilitas dan integrasi plugin |
+| **Produk Anda (AirDeck / DigiSmartDeck)** | **One-time purchase / Freemium** | **Satu-satunya yang menggambar layout keyboard PC 1:1 di kanvas, BEBAS keyboard virtual HP (zero Gboard popup), PWA zero-install, latensi ultra-rendah** | Produk baru; perlu membangun kredibilitas dan integrasi plugin |
 
 ---
 
@@ -85,7 +85,7 @@ Tidak ada produk remote PC komersial terkemuka yang menyajikan **kanvas fisik ke
 
 ## 🇬🇧 Commercialization Guide (English)
 
-This document provides a commercial roadmap, competitor landscape analysis, product positioning strategies, branding alternatives, and monetization funnels for commercializing the DigiKeyboard technology.
+This document provides a commercial roadmap, competitor landscape analysis, product positioning strategies, branding alternatives, and monetization funnels for commercializing the DigiSmartDeck technology.
 
 ---
 

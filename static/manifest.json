@@ -1,6 +1,6 @@
 {
-  "name": "DigiKeyboard - Remote PC Keyboard",
-  "short_name": "DigiKeyboard",
+  "name": "DigiSmartDeck - Remote PC Keyboard",
+  "short_name": "DigiSmartDeck",
   "description": "Full-Fidelity Remote PC Keyboard with Multi-Touch Trackpad & Haptic Audio Feedback",
   "start_url": "/?pwa=1",
   "scope": "/",

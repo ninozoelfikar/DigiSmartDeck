@@ -24,8 +24,8 @@ import java.util.concurrent.Executors;
 public class BluetoothHidHelper {
 
     private static final String TAG = "DigiBluetoothHid";
-    private static final String APP_NAME = "DigiKeyboard HID";
-    private static final String PROVIDER = "DigiKeyboard";
+    private static final String APP_NAME = "DigiSmartDeck HID";
+    private static final String PROVIDER = "DigiSmartDeck";
 
     private static final byte[] HID_REPORT_DESCRIPTOR = new byte[]{
         // Keyboard (Report ID 1)
@@ -192,7 +192,7 @@ public class BluetoothHidHelper {
 
         BluetoothHidDeviceAppSdpSettings sdp = new BluetoothHidDeviceAppSdpSettings(
             APP_NAME,
-            "DigiKeyboard Remote Hardware Controller",
+            "DigiSmartDeck Remote Hardware Controller",
             PROVIDER,
             BluetoothHidDevice.SUBCLASS1_COMBO,
             HID_REPORT_DESCRIPTOR

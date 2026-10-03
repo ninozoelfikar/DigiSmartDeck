@@ -1,6 +1,6 @@
-# 📝 Changelog / Catatan Perubahan DigiKeyboard
+# 📝 Changelog / Catatan Perubahan DigiSmartDeck
 
-Semua perubahan penting pada proyek **DigiKeyboard** dicatat dalam berkas ini.  
+Semua perubahan penting pada proyek **DigiSmartDeck** dicatat dalam berkas ini.  
 Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1.0.0/) dan mengikuti standar [Semantic Versioning](https://semver.org/).
 
 *Read in: [Bahasa Indonesia](#-bahasa-indonesia) | [English](#-english)*
@@ -11,11 +11,11 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ### [1.17.0] - 2026-09-28
 #### ✨ Fitur Baru (Added)
-- **Aplikasi Native Android (DigiKeyboard.apk):**
+- **Aplikasi Native Android (DigiSmartDeck.apk):**
   - Pembuatan project Android mandiri di folder `android/` berbasis WebView berperforma tinggi dan SDK Android 14.
   - **Mode True Immersive Sticky Fullscreen:** Mengeliminasi seluruh pop-up dan peringatan browser Chrome (*"Swipe down from the top to exit full screen"* dan *"This app cannot be installed"*).
   - Fitur *Auto-Landscape*, *Keep Screen Awake*, dan *Soft Keyboard Suppressed* (mencegah keyboard virtual bawaan HP muncul menutupi tuts).
-  - Tautan download instan langsung di server lokal: `http://<IP-PC>:8080/static/DigiKeyboard.apk` dan tombol 1-klik di modal Pengaturan.
+  - Tautan download instan langsung di server lokal: `http://<IP-PC>:8080/static/DigiSmartDeck.apk` dan tombol 1-klik di modal Pengaturan.
 - **Dukungan Bluetooth HID Hardware (Plug & Play Tanpa Server PC):**
   - Implementasi modul `BluetoothHidHelper.java` (Android 9+ API 28) dengan standar USB Composite HID Report Descriptor (Keyboard + Mouse).
   - Menyamarkan HP menjadi keyboard & mouse fisik nirkabel asli yang langsung dikenali oleh Windows, macOS, Linux, iPad, Android TV, bahkan menu BIOS/UEFI tanpa perlu software server di PC.
@@ -47,7 +47,7 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
   - **Mini Laser Trackpad & Air Mouse (Gyro Pointer):** Geser jari untuk mengarahkan pointer di proyektor, atau aktifkan mode Gyro Air untuk mengarahkan laser dengan memiringkan bodi HP secara kinetik (*Device Orientation*).
   - Tombol pintas meeting online (Zoom, Google Meet, Microsoft Teams): Toggle Mute Mikrofon, Kamera Video, Angkat Tangan (*Raise Hand*), dan Bagikan Layar (*Share Screen*).
 - **Paket Standalone Executable Lintas Platform:**
-  - Skrip build PyInstaller untuk Windows (`build-exe.bat` -> `dist/DigiKeyboard.exe`), Linux (`build-linux.sh` -> `dist/DigiKeyboard`), dan macOS (`build-macos.sh` -> `dist/DigiKeyboardApp.app`).
+  - Skrip build PyInstaller untuk Windows (`build-exe.bat` -> `dist/DigiSmartDeck.exe`), Linux (`build-linux.sh` -> `dist/DigiSmartDeck`), dan macOS (`build-macos.sh` -> `dist/DigiSmartDeckApp.app`).
 
 ---
 
@@ -234,7 +234,7 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ### [1.17.0] - 2026-09-28
 #### ✨ Added
-- **Native Android Client App (`DigiKeyboard.apk`):**
+- **Native Android Client App (`DigiSmartDeck.apk`):**
   - Dedicated Android standalone project located in `android/` utilizing high-performance WebView and modern Android 14 SDK.
   - **True Immersive Sticky Fullscreen:** Eliminates browser Chrome warning toasts (*"Swipe down from the top to exit full screen"*) and installation banners.
   - Features *Auto-Landscape*, *Keep Screen Awake*, and *Soft Keyboard Suppressed* (guaranteeing that native virtual keyboards never cover keycaps).
@@ -269,7 +269,7 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
   - **Mini Laser Trackpad & Gyro Air Pointer:** 1-finger touchpad for cursor navigation, plus kinetic device orientation air-mouse mode (tilt smartphone to aim pointer directly on the projector screen).
   - Online meeting quick toggles (Zoom, Google Meet, Microsoft Teams): Mic Mute, Video Camera, Raise Hand, and Screen Share.
 - **Multi-Platform Standalone Portable Executables:**
-  - Automated PyInstaller compilation scripts for Windows (`build-exe.bat` -> `dist/DigiKeyboard.exe`), Linux (`build-linux.sh` -> `dist/DigiKeyboard`), and macOS (`build-macos.sh` -> `dist/DigiKeyboardApp.app`).
+  - Automated PyInstaller compilation scripts for Windows (`build-exe.bat` -> `dist/DigiSmartDeck.exe`), Linux (`build-linux.sh` -> `dist/DigiSmartDeck`), and macOS (`build-macos.sh` -> `dist/DigiSmartDeckApp.app`).
 
 ---
 

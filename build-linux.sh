@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# DigiKeyboard - Standalone Binary Builder untuk Linux
+# DigiSmartDeck - Standalone Binary Builder untuk Linux
 # Menghasilkan executable mandiri (ELF binary) tanpa perlu Python di PC target
 # ==============================================================================
 
@@ -16,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${BLUE}============================================================${NC}"
-echo -e "${BLUE}  📦  DigiKeyboard - Build Standalone Linux Executable${NC}"
+echo -e "${BLUE}  📦  DigiSmartDeck - Build Standalone Linux Executable${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo ""
 
@@ -48,7 +48,7 @@ python3 -m PyInstaller \
     --noconfirm \
     --clean \
     --onefile \
-    --name "DigiKeyboard" \
+    --name "DigiSmartDeck" \
     --add-data "static:static" \
     --add-data "VERSION:." \
     --hidden-import "pynput.keyboard._xorg" \
@@ -60,15 +60,15 @@ python3 -m PyInstaller \
     server.py
 
 # 4. Beri permission executable
-chmod +x dist/DigiKeyboard
+chmod +x dist/DigiSmartDeck
 
 echo ""
 echo -e "${GREEN}============================================================${NC}"
 echo -e "${GREEN}[✓] BERHASIL! File binary executable mandiri telah dibuat:${NC}"
-echo -e "    ${BLUE}${SCRIPT_DIR}/dist/DigiKeyboard${NC}"
+echo -e "    ${BLUE}${SCRIPT_DIR}/dist/DigiSmartDeck${NC}"
 echo -e "${GREEN}============================================================${NC}"
 echo "Anda dapat menjalankan langsung file tersebut:"
-echo -e "    ${YELLOW}./dist/DigiKeyboard${NC}"
+echo -e "    ${YELLOW}./dist/DigiSmartDeck${NC}"
 echo ""
 echo "Catatan untuk akses Linux hardware uinput (Layar Login / Wayland):"
 echo -e "    ${YELLOW}sudo setfacl -m u:\$USER:rw /dev/uinput${NC} (atau jalankan setup-uinput.sh)"

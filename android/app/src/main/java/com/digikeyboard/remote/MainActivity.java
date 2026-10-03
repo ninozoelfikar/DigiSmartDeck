@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         webView.setBackgroundColor(Color.parseColor("#0d1117"));
 
-        // Cegah keyboard virtual HP bawaan muncul menutupi DigiKeyboard
+        // Cegah keyboard virtual HP bawaan muncul menutupi DigiSmartDeck
         webView.setOnTouchListener((v, event) -> {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Tampilkan konfirmasi keluar atau ganti server
         new AlertDialog.Builder(this)
-            .setTitle("DigiKeyboard")
+            .setTitle("DigiSmartDeck")
             .setMessage("Apakah Anda ingin keluar dari aplikasi atau mengganti alamat server PC?")
             .setPositiveButton("Ganti Server", (d, w) -> showServerConfigDialog())
             .setNegativeButton("Keluar", (d, w) -> finish())

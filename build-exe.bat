@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title DigiKeyboard - Build Windows EXE
+title DigiSmartDeck - Build Windows EXE
 cd /d "%~dp0"
 
 echo ============================================================
-echo   📦  DigiKeyboard - Build Standalone Windows EXE
+echo   📦  DigiSmartDeck - Build Standalone Windows EXE
 echo ============================================================
 echo.
 
@@ -47,7 +47,7 @@ echo [2/3] Memulai proses compile ke file EXE...
     --clean ^
     --onefile ^
     --console ^
-    --name "DigiKeyboard" ^
+    --name "DigiSmartDeck" ^
     --icon "static/icon.ico" ^
     --add-data "static;static" ^
     --add-data "VERSION;." ^
@@ -67,9 +67,9 @@ if %errorlevel% neq 0 (
 echo.
 echo ============================================================
 echo [✓] BERHASIL! File executable telah dibuat:
-echo     dist\DigiKeyboard.exe
+echo     dist\DigiSmartDeck.exe
 echo ============================================================
-echo Anda dapat menyalin file "dist\DigiKeyboard.exe" dan langsung
+echo Anda dapat menyalin file "dist\DigiSmartDeck.exe" dan langsung
 echo menjalankannya di komputer Windows mana saja tanpa perlu instal Python!
 echo.
 pause

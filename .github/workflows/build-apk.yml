@@ -30,8 +30,8 @@ jobs:
         chmod +x gradlew || true
         gradle assembleDebug || gradle assembleRelease
 
-    - name: Upload DigiKeyboard APK
+    - name: Upload DigiSmartDeck APK
       uses: actions/upload-artifact@v4
       with:
-        name: DigiKeyboard-Android-APK
+        name: DigiSmartDeck-Android-APK
         path: android/app/build/outputs/apk/*/*.apk

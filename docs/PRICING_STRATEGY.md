@@ -1,7 +1,7 @@
 # 🏷️ Strategi Penetapan Harga Komprehensif (Comprehensive Pricing Strategy)
-### DigiKeyboard / AirDeck Multi-Stream Monetization Blueprint
+### DigiSmartDeck / AirDeck Multi-Stream Monetization Blueprint
 
-Dokumen ini membedah strategi penetapan harga, taktik psikologis (*price anchoring*), kemasan penawaran (*packaging*), dan mekanisme pemicu konversi (*conversion triggers*) untuk **5 aliran pendapatan (*income streams*)** DigiKeyboard.
+Dokumen ini membedah strategi penetapan harga, taktik psikologis (*price anchoring*), kemasan penawaran (*packaging*), dan mekanisme pemicu konversi (*conversion triggers*) untuk **5 aliran pendapatan (*income streams*)** DigiSmartDeck.
 
 ---
 
@@ -10,7 +10,7 @@ Semua produk berbayar (Skin/Tema, Plugin Pro, dan Lisensi Seumur Hidup) dipusatk
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        EKOSISTEM STORE & MONETISASI DIGIKEYBOARD                       │
+│                        EKOSISTEM STORE & MONETISASI DIGISMARTDECK                       │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │  MENU STORE (HUB TERPUSAT)                                                             │
 │  ├─ 1. KATALOG SKIN & AUDIO │ Mikrotransaksi Impulsif (Rp 10.000 / $0.99 per item)     │
@@ -45,7 +45,7 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 
 ### C. Taktik Konversi & Eksekusi
 * **Penempatan CTA:** Letakkan tombol tip yang manis dan tidak agresif di bagian bawah menu *Settings (⚙️)* dan layar transisi:  
-  > *"DigiKeyboard membantumu hari ini? Traktir kopi pengembang agar server & kopi tetap mengalir ☕"*
+  > *"DigiSmartDeck membantumu hari ini? Traktir kopi pengembang agar server & kopi tetap mengalir ☕"*
 * **Platform:**
   - **Indonesia:** **Saweria** & **Trakteer** (Mendukung QRIS, GoPay, OVO, ShopeePay, DANA instan).
   - **Global:** **Ko-fi** & **GitHub Sponsors** (Tanpa potongan komisi platform).
@@ -87,7 +87,7 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 | **1. Affiliate Links** | **Komisi 5% – 12%** per checkout barang | Marketplace e-commerce (Tokopedia, Shopee, Amazon) | Stiker stiker berbentuk promo: *"Diskon Keyboard 30%"*, *"Voucher Steam Sale"*. |
 | **2. Sewa Slot Sponsor (Bulanan)** | **Rp 1.500.000 / slot / bulan** | Brand periferal lokal (Fantech, Rexus, VortexSeries) | Slot Palm Rest Kiri atau Kanan eksklusif menampilkan stiker logo brand mereka yang bisa diklik. |
 | **3. Paket Dual Palm Rest (Eksklusif)**| **Rp 2.500.000 / bulan** | Brand gaming gear / minuman energi | Menguasai kedua sisi palm rest (Kiri + Kanan) selama 30 hari penuh. |
-| **4. House Ads (Internal)** | **Rp 0 (Internal Funnel)** | Promosi DigiKeyboard Sendiri | Digunakan saat belum ada sponsor luar: mempromosikan Skin Rp 10k dan Lisensi Pro Rp 250k. |
+| **4. House Ads (Internal)** | **Rp 0 (Internal Funnel)** | Promosi DigiSmartDeck Sendiri | Digunakan saat belum ada sponsor luar: mempromosikan Skin Rp 10k dan Lisensi Pro Rp 250k. |
 
 ### C. Taktik & Ketentuan Teknis
 * **Pemberian Nilai Tambah Versi Pro:** Pembeli lisensi Pro All-Access otomatis mendapatkan tampilan palm rest bersih minimalis (*Clean Desk Mode*) atau opsi bebas mengunggah stiker kustom pribadi.
@@ -157,34 +157,34 @@ Hindari kolom donasi kosong tanpa panduan. Sediakan preset nominal bertingkat de
 ## 🖥️ 6. Income Stream 6: Hardware Fisik Premium — DigiBoard OLED Workstation Deck by King Ali Studio
 
 ### A. Tujuan & Positioning Pasar
-* **Tujuan:** Menembus pasar periferal workstation dan mechanical keyboard kustom bernilai tinggi (*high-ticket physical goods*) dengan hardware fisik eksklusif yang dirancang dari nol untuk menyatu dengan ekosistem DigiKeyboard.
-* **Konsep Produk:** Keyboard mekanikal kustom dengan keycaps mini OLED dinamis di setiap tuts / macro cluster (desain ala Optimus Maximus & Stream Deck). Tuts fisik berubah tampilan ikon dan fungsi secara dinamis mengikuti mode kerja DigiKeyboard (Mode AI Prompting, Game Console, Slide Remote, AutoText Snippets, Timeline Video Scrubbing).
+* **Tujuan:** Menembus pasar periferal workstation dan mechanical keyboard kustom bernilai tinggi (*high-ticket physical goods*) dengan hardware fisik eksklusif yang dirancang dari nol untuk menyatu dengan ekosistem DigiSmartDeck.
+* **Konsep Produk:** Keyboard mekanikal kustom dengan keycaps mini OLED dinamis di setiap tuts / macro cluster (desain ala Optimus Maximus & Stream Deck). Tuts fisik berubah tampilan ikon dan fungsi secara dinamis mengikuti mode kerja DigiSmartDeck (Mode AI Prompting, Game Console, Slide Remote, AutoText Snippets, Timeline Video Scrubbing).
 * **Prinsip Psikologi:** *Tactile Craftsmanship + Status Symbol*. Pengguna workstation profesional, software engineer, video editor, dan penggemar keyboard antusias bersedia membayar harga premium untuk alat kerja fisik yang estetis, fungsional, dan memiliki kepuasan taktil mekanik sejati.
 
 ### B. Struktur Harga & Paket Penjualan (Pricing & Bundling)
 
 | Varian Hardware | Harga Domestik (IDR) | Harga Global (USD) | Spesifikasi & Bundling |
 | :--- | :---: | :---: | :--- |
-| **DigiBoard OLED Macro Pad (12 Tuts OLED)** | **Rp 1.499.000** | **$99.00** | 12 tombol OLED dinamis + rotary knob encoder, casing aluminium CNC anodized, hot-swappable switches, **Free Lisensi DigiKeyboard Pro Lifetime**. |
+| **DigiBoard OLED Macro Pad (12 Tuts OLED)** | **Rp 1.499.000** | **$99.00** | 12 tombol OLED dinamis + rotary knob encoder, casing aluminium CNC anodized, hot-swappable switches, **Free Lisensi DigiSmartDeck Pro Lifetime**. |
 | **DigiBoard OLED 65% Full Workstation** | **Rp 3.499.000** | **$229.00** | 68 tuts mekanik dengan OLED display keycaps per tuts, wireless tri-mode (Wi-Fi, Bluetooth, USB-C), **Free Lisensi Pro + Paket Semua Skin Eksklusif King Ali Studio**. |
 | **Collector Founder Edition (Numbered 1-100)** | **Rp 4.999.000** | **$329.00** | Edisi terbatas 100 unit dengan ukiran plat serial Founder King Ali Studio, hardcase premium, custom artisan keycap, lisensi B2B/Studio tak terbatas. |
 
 ### C. Strategi Margin & Penjualan Direct-to-Consumer (DTC)
 1. **Target Gross Margin 45% - 55%:** Biaya produksi (COGS) di kisaran Rp 650.000 untuk Macro Pad dan Rp 1.600.000 untuk 65% Workstation melalui manufaktur mitra spesialis PCB dan injection molding.
 2. **Pre-Order Crowdfunding:** Peluncuran batch pertama dilakukan dengan skema Pre-Order (Kickstarter / Tokopedia / website resmi King Ali Studio) untuk memvalidasi permintaan pasar dan meniadakan risiko modal kerja inventori mati.
-3. **Hardware-Software Synergy Moat:** Tidak seperti keyboard biasa yang statis, DigiBoard OLED terhubung langsung ke mesin software DigiKeyboard sehingga setiap plugin baru (misal Voice Typing atau AutoText) langsung memiliki integrasi visual di hardware.
+3. **Hardware-Software Synergy Moat:** Tidak seperti keyboard biasa yang statis, DigiBoard OLED terhubung langsung ke mesin software DigiSmartDeck sehingga setiap plugin baru (misal Voice Typing atau AutoText) langsung memiliki integrasi visual di hardware.
 
 ---
 
 ## 🤝 7. Jalur Afiliasi & Ekonomi Viralitas (Affiliate & Creator Economics)
 
 ### A. Tujuan & Desain Insentif
-* **Tujuan:** Mengubah setiap kreator, reviewer teknologi, streamer, dan pengguna puas menjadi armada pemasar (*growth engine*) yang mempromosikan DigiKeyboard dan hardware King Ali Studio secara masif di media sosial (TikTok, Reels, Shorts, Twitter/X, YouTube).
+* **Tujuan:** Mengubah setiap kreator, reviewer teknologi, streamer, dan pengguna puas menjadi armada pemasar (*growth engine*) yang mempromosikan DigiSmartDeck dan hardware King Ali Studio secara masif di media sosial (TikTok, Reels, Shorts, Twitter/X, YouTube).
 * **Mekanisme Pintu Masuk:** Pengguna dapat mendaftar langsung dari tab **"Afiliasi"** di dalam **Menu Store**.
 
 ### B. Struktur Pembagian Komisi (*Commission Split*)
 
-| Kategori Produk Store | Harga Jual | Komisi Mitra Afiliasi (30% - 40%) | Pendapatan Bersih DigiKeyboard |
+| Kategori Produk Store | Harga Jual | Komisi Mitra Afiliasi (30% - 40%) | Pendapatan Bersih DigiSmartDeck |
 | :--- | :---: | :---: | :---: |
 | **Koleksi Skin & Switch Audio** | Rp 10.000 | **Rp 3.500 (35%)** | Rp 6.500 |
 | **Plugin Pro Satuan (Voice Typing / AutoText)** | Rp 49.000 | **Rp 17.000 (35%)** | Rp 32.000 |

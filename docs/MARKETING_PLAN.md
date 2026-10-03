@@ -1,10 +1,10 @@
-# 🚀 Dokumen Rencana Pemasaran Strategis: DigiKeyboard (AirDeck)
+# 🚀 Dokumen Rencana Pemasaran Strategis: DigiSmartDeck (AirDeck)
 
 ---
 
 ## 📌 Ringkasan Eksekutif (Executive Summary)
 
-**DigiKeyboard** (dengan nama komersial yang direkomendasikan: **AirDeck**) adalah solusi software utilitas yang mengubah smartphone atau tablet menjadi keyboard fisik PC standar lengkap dan multitouch trackpad nirkabel via Wi-Fi lokal berlatensi ultra-rendah (1–5 ms), tanpa memicu keyboard virtual bawaan HP (Gboard/SwiftKey).
+**DigiSmartDeck** (dengan nama komersial yang direkomendasikan: **AirDeck**) adalah solusi software utilitas yang mengubah smartphone atau tablet menjadi keyboard fisik PC standar lengkap dan multitouch trackpad nirkabel via Wi-Fi lokal berlatensi ultra-rendah (1–5 ms), tanpa memicu keyboard virtual bawaan HP (Gboard/SwiftKey).
 
 Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar dengan pendekatan **Product-Led Growth (PLG)** dan **Bootstrapping**, memanfaatkan kekuatan open-source untuk membangun basis pengguna setia (*early adopters*), kemudian mengonversinya menjadi pendapatan melalui produk *Pro/Commercial License* berbiaya terjangkau.
 
@@ -13,7 +13,7 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
 ## 🎯 1. Positioning & Proposisi Nilai (Unique Value Proposition)
 
 ### Pernyataan Positioning
-> *"Bagi pengguna PC, teknisi, dan kreator konten yang membutuhkan kendali nirkabel instan atau keyboard cadangan darurat, **DigiKeyboard** adalah solusi remote controller PC tercepat dan paling presisi di browser tanpa instalasi aplikasi HP, berbeda dengan aplikasi remote lain yang memunculkan keyboard HP bawaan yang menutupi layar."*
+> *"Bagi pengguna PC, teknisi, dan kreator konten yang membutuhkan kendali nirkabel instan atau keyboard cadangan darurat, **DigiSmartDeck** adalah solusi remote controller PC tercepat dan paling presisi di browser tanpa instalasi aplikasi HP, berbeda dengan aplikasi remote lain yang memunculkan keyboard HP bawaan yang menutupi layar."*
 
 ### Pilar Nilai Utama:
 1. **Zero Client Friction (Tanpa Install di HP):** Berjalan langsung di browser modern / PWA via QR scan.
@@ -53,7 +53,7 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
     5. *Cloud / Multi-Device Sync Profile:* Sinkronisasi instan snippet AutoText dan layout kustom antar ponsel, tablet, dan PC host.
 * **Tier Hardware (Ekspansi Fisik King Ali Studio):**
   - **Dongle USB ESP32-S3:** Modul USB dongle plug-and-play siap pakai tanpa software PC.
-  - **DigiBoard OLED Workstation Deck by King Ali Studio:** Hardware fisik keyboard mekanikal kustom berlayar mini OLED dinamis di tiap tuts/macro key. Tuts fisik bersinkronisasi dua arah secara real-time dengan mode DigiKeyboard (AI mode, Gamepad, Presentasi, Video Scrubbing), sekaligus menjadi etalase fisik tema dan plugin dari DigiKeyboard Store.
+  - **DigiBoard OLED Workstation Deck by King Ali Studio:** Hardware fisik keyboard mekanikal kustom berlayar mini OLED dinamis di tiap tuts/macro key. Tuts fisik bersinkronisasi dua arah secara real-time dengan mode DigiSmartDeck (AI mode, Gamepad, Presentasi, Video Scrubbing), sekaligus menjadi etalase fisik tema dan plugin dari DigiSmartDeck Store.
 
 ### B. Price (Harga)
 * **Free Tier (Personal & Game Mode):** **Rp 0** (Keyboard PC, Trackpad, Gamepad & Steering Wheel Gyro gratis selamanya; monetisasi via donasi sukarela/Saweria/Trakteer).
@@ -93,7 +93,7 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
   - **Tautan Referral & Kupon Personal:** Setiap mitra mendapat URL unik (`digikeyboard.app/ref/nama_kreator`) dan kode promo diskon 10% untuk pengikutnya.
   - **Viral Loop Kreator (TikTok / Reels / Shorts):**
     1. Kreator membuat video demonstrasi visual (contoh: *"Mengetik suara di PC cuma ngomong ke HP"* atau *"Bikin tablet jadul jadi keyboard anime mecha"*).
-    2. Tautan bio kreator mengarahkan langsung ke **Menu Store** DigiKeyboard.
+    2. Tautan bio kreator mengarahkan langsung ke **Menu Store** DigiSmartDeck.
     3. Penonton membeli item karena terbukti fungsional; kreator mendapatkan komisi otomatis; pembeli terdorong membagikan tautan referral miliknya ke teman atau komunitas.
 * Mengutamakan kanal organik, konten video pendek demonstratif, dan komunitas teknis (dibedah di Bagian 4).
 
@@ -139,7 +139,7 @@ Rencana pemasaran ini dirancang untuk mengeksekusi strategi penetrasi pasar deng
   - **Hook 3 (Living Room Hack):** *"Nonton film di TV dari kasur tapi males bawa mouse keyboard gede? Cukup buka browser HP!"*
 * **Komunitas Teknis Global:**
   - **Reddit:** Thread demonstrasi di `r/selfhosted`, `r/homelab`, `r/raspberry_pi`, `r/linux`, `r/badUIbattles` (irony marketing).
-  - **Hacker News (Show HN):** *"Show HN: DigiKeyboard – Full physical PC keyboard layout on mobile screen without triggering Gboard"*.
+  - **Hacker News (Show HN):** *"Show HN: DigiSmartDeck – Full physical PC keyboard layout on mobile screen without triggering Gboard"*.
 
 ### 2. Kanal MOFU (Middle of Funnel - Pertimbangan)
 * **SEO & Content Marketing:**
@@ -182,7 +182,7 @@ M-2 (Persiapan)     M-1 (Beta & Teaser)       M-0 (Hari Peluncuran)     M+1 s/d 
 * **Fase 4: Ekspansi Hardware DigiBoard OLED by King Ali Studio (Bulan 4 s/d 6):**
   - Membuka kampanye Pre-Order / Crowdfunding terbatas (100–200 unit batch perdana) untuk keyboard fisik *DigiBoard OLED Workstation Deck*.
   - Mengirim unit prototipe fisik ke YouTuber reviewer keyboard mekanik & tech desk setup ternama untuk review viral.
-  - Mengintegrasikan banner etalase hardware langsung di dalam Menu Store aplikasi DigiKeyboard.
+  - Mengintegrasikan banner etalase hardware langsung di dalam Menu Store aplikasi DigiSmartDeck.
 
 ---
 

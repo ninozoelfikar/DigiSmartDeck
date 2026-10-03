@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DigiKeyboard Authentication & Licensing Manager
+DigiSmartDeck Authentication & Licensing Manager
 Modul untuk menangani:
 1. Pairing Perangkat Aman (PIN 6-Digit & Whitelist Token Perangkat)
 2. Sistem Lisensi Komersial SaaS (Free Trial, Langganan Bulanan Rp 15rb, Lisensi Lifetime Rp 250rb)
@@ -152,7 +152,7 @@ class DevicePairingManager:
 
 class LicenseManager:
     """
-    Mengelola lisensi SaaS komersial DigiKeyboard:
+    Mengelola lisensi SaaS komersial DigiSmartDeck:
     - Free Trial: 7 Hari Akses Penuh
     - Langganan Bulanan: Rp 15.000 / bulan
     - Lisensi Seumur Hidup: Rp 250.000 (Lifetime Pro)
@@ -180,7 +180,7 @@ class LicenseManager:
         self.license_data = {
             'tier': 'trial',
             'status': 'active',
-            'email': 'trial@digikeyboard.local',
+            'email': 'trial@digismartdeck.local',
             'plan_name': 'Free Trial (7 Hari)',
             'created_at': now.strftime("%Y-%m-%d %H:%M:%S"),
             'activated_at': now.strftime("%Y-%m-%d %H:%M:%S"),
@@ -241,7 +241,7 @@ class LicenseManager:
             return False, "Kode lisensi tidak valid atau format salah."
 
         now = datetime.now()
-        email_clean = email.strip() if email else self.license_data.get('email', 'customer@digikeyboard.com')
+        email_clean = email.strip() if email else self.license_data.get('email', 'customer@digismartdeck.com')
 
         if tier == "lifetime":
             self.license_data = {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# DigiKeyboard - Runner untuk Linux & macOS
+# DigiSmartDeck - Runner untuk Linux & macOS
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,7 +13,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${BLUE}============================================================${NC}"
-echo -e "${BLUE}  ⌨️  DigiKeyboard - Remote PC Keyboard Server${NC}"
+echo -e "${BLUE}  ⌨️  DigiSmartDeck - Remote PC Keyboard Server${NC}"
 echo -e "${BLUE}============================================================${NC}"
 
 # 1. Periksa ketersediaan Python 3

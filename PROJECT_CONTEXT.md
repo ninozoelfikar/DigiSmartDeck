@@ -1,4 +1,4 @@
-# DOKUMEN HANDOVER & KONTEKS PROYEK DIGIKEYBOARD
+# DOKUMEN HANDOVER & KONTEKS PROYEK DIGISMARTDECK
 File ini dibuat untuk memastikan keberlanjutan pengembangan tanpa kehilangan progres atau konteks saat beralih akun Antigravity, sesi chat baru, atau pengembang baru.
 
 ---
@@ -12,7 +12,7 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
 3. Aturan mutlak:
    - DILARANG menggunakan emoticon atau emoji dalam bentuk apa pun di seluruh kode, log terminal, antarmuka UI, maupun respons chat.
    - Efek suara klik mekanikal (`playClickSound()`) pada tombol interaktif harus selalu dipertahankan.
-   - File instalasi aplikasi ponsel Android (`DigiKeyboard.apk`) harus tetap sangat ringan (~20 MB). Tidak boleh membundel model AI ke dalam APK ponsel.
+   - File instalasi aplikasi ponsel Android (`DigiSmartDeck.apk`) harus tetap sangat ringan (~20 MB). Tidak boleh membundel model AI ke dalam APK ponsel.
    - Setelah menyelesaikan tugas, asisten cukup merespons dengan 'Selesai' atau 'Done', KECUALI jika pengguna secara eksplisit meminta penjelasan.
 4. Server berjalan sebagai layanan systemd Linux:
    - Nama layanan: `digikeyboard.service`
@@ -22,7 +22,7 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
 ---
 
 ## 2. TUJUAN BISNIS & MODEL KOMERSIAL
-- Nama Produk: DigiKeyboard
+- Nama Produk: DigiSmartDeck
 - Fungsi: Pengendali keyboard, touchpad, gamepad, dan deck pintasan AI untuk PC berbasis perangkat ponsel/tablet melalui jaringan lokal (Wi-Fi dan kabel USB).
 - Model Monetisasi: Perangkat lunak komersial berbayar (SaaS):
   - Paket Langganan: Rp 15.000 per bulan
@@ -68,7 +68,7 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
 ## 4. KEPUTUSAN PRODUK: PENETAPAN METODE TUNGGAL (GOOGLE SPEECH)
 Berdasarkan uji coba langsung dan instruksi pengguna:
 1. Metode alternatif (Whisper AI Mic lokal) dan konfigurasi dual-port (8081) telah dihapus sepenuhnya dari kode.
-2. DigiKeyboard kini menggunakan SATU metode tunggal untuk dikte suara: **Google Web Speech API**.
+2. DigiSmartDeck kini menggunakan SATU metode tunggal untuk dikte suara: **Google Web Speech API**.
 3. Tombol pemilihan engine di antarmuka (`[Google]` vs `[AI Mic]`) telah dihilangkan agar tampilan bersih, intuitif, dan tidak membingungkan pengguna.
 4. Nilai keunggulan dari arsitektur tunggal ini:
    - Antarmuka sangat simpel (*zero clutter*): hanya ada tombol Mic utama, pemilih bahasa (ID / EN), dan Auto-Kirim.
@@ -81,7 +81,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 
 ## 5. PENGALAMAN PENGGUNA & ARSITEKTUR KLIEN
 - Port tunggal standar: **8080** (baik via Wi-Fi lokal maupun kabel USB via ADB reverse).
-- Klien komersial (pembeli APK Android) tidak perlu menyetel port di `chrome://flags` karena aplikasi Android resmi (`DigiKeyboard.apk`) menggunakan WebView dengan izin mikrofon internal native.
+- Klien komersial (pembeli APK Android) tidak perlu menyetel port di `chrome://flags` karena aplikasi Android resmi (`DigiSmartDeck.apk`) menggunakan WebView dengan izin mikrofon internal native.
 - Sesi dikte berhenti secara wajar saat jeda hening tanpa memicu bunyi notifikasi berulang-ulang.
 - Efek suara klik mekanikal (`playClickSound()`) selalu dipertahankan di setiap interaksi tombol.
 - Tombol `ENTER` di AI Workstation selalu mengirim teks transkrip ke PC, mengeksekusi Enter di PC, dan mengosongkan box di ponsel dalam satu ketukan efisien.
@@ -517,7 +517,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Tipografi King Ali Studiō (Huruf o dengan Garis Atas / Macron):**
   - Mengubah penulisan nama studio menjadi "King Ali Studiō" dengan karakter 'ō' (U+014D):
     - Subtitle layar pembuka / flash screen (`.splash-sub`): "by King Ali Studiō".
-    - Header atas tombol branding (`#btn-brand-toggle`): tooltip title "About DigiKeyboard - King Ali Studiō" (EN) / "Tentang DigiKeyboard - King Ali Studiō" (ID).
+    - Header atas tombol branding (`#btn-brand-toggle`): tooltip title "About DigiSmartDeck - King Ali Studiō" (EN) / "Tentang DigiSmartDeck - King Ali Studiō" (ID).
     - Modal Tentang / Informasi Aplikasi (`#modal-about`): subtitle pahlawan "by King Ali Studiō".
     - Kamus terjemahan `I18N.en` dan `I18N.id` untuk entri `brand_title`.
 - **Proteksi Mutlak Bebas Pop-up Saat Flash Screen (Splash Screen):**
@@ -578,7 +578,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Penanganan pesan WebSocket `get_window_list` dan `activate_window` yang secara langsung menyiarkan status aplikasi aktif terbaru ke seluruh client.
 - **Antarmuka Interaktif Pengalihan Jendela & Otomatisasi Mode:**
   - Setiap item jendela dalam daftar menampilkan ikon kategori mode (Terminal/AI, Media, Game, Kanvas, Keyboard), nama aplikasi, badge "Aktif" untuk jendela yang sedang fokus, judul jendela, serta tag mode kerja.
-  - Mengetuk jendela pilihan akan memicu bunyi klik mekanikal (`playClickSound()`), getaran haptik (`vibe(20)`), menutup popover, mengirim perintah aktivasi & pemaksimalan ke PC, serta langsung mengubah mode DigiKeyboard di ponsel agar sesuai dengan aplikasi tersebut (misal Terminal/VS Code langsung masuk ke AI Workstation).
+  - Mengetuk jendela pilihan akan memicu bunyi klik mekanikal (`playClickSound()`), getaran haptik (`vibe(20)`), menutup popover, mengirim perintah aktivasi & pemaksimalan ke PC, serta langsung mengubah mode DigiSmartDeck di ponsel agar sesuai dengan aplikasi tersebut (misal Terminal/VS Code langsung masuk ke AI Workstation).
   - Dilengkapi tombol Segarkan (`#btn-refresh-win-switcher`) untuk memperbarui daftar jendela secara real-time.
 - **Dukungan Dua Bahasa Lengkap (ID / EN):**
   - Entri kamus terjemahan `win_switcher_*` terpasang penuh di `I18N.id` dan `I18N.en`.
@@ -697,14 +697,14 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 ## 40. CATATAN CHECKPOINT (v0.9.36 - Aplikasi Desktop PC Host Control GUI & Pintasan Linux)
 - **Aplikasi Desktop PC Host Manager (`digikeyboard_gui.py`):**
   - Dibangun aplikasi desktop native menggunakan PyQt5 untuk PC host (Linux/Ubuntu/X11).
-  - Tampilan modern bertema gelap selaras dengan branding DigiKeyboard.
+  - Tampilan modern bertema gelap selaras dengan branding DigiSmartDeck.
   - Fitur Pusat Kendali Desktop:
     - Status Server Real-time: Badge indikator aktif di port 8080.
     - PIN Pairing 6-Digit: Ditampilkan besar dan jelas dengan tombol salin dan acak ulang PIN.
     - Alamat Koneksi & QR Code: Menampilkan IP Wi-Fi fisik lokal (`192.168.8.x`) serta QR Code presisi tinggi (`Pillow` + `io.BytesIO`) yang siap discan kamera ponsel.
     - Manajemen Perangkat Terhubung: Tabel daftar perangkat yang sudah ter-pairing dengan tombol putuskan/unpair.
     - Manajemen Lisensi SaaS: Status paket aktif (Trial, Monthly, Lifetime), sisa hari, dan dialog aktivasi lisensi.
-    - Aksi Cepat: Tombol "Buka DigiKeyboard di Browser" (`xdg-open`) dan "Restart Layanan Server".
+    - Aksi Cepat: Tombol "Buka DigiSmartDeck di Browser" (`xdg-open`) dan "Restart Layanan Server".
 - **Ikon Aplikasi & Pintasan Desktop Linux:**
   - Ikon aplikasi resmi dibuat: `assets/icon.png` dan `static/icon.png`.
   - File Desktop Entry dibuat di `~/.local/share/applications/digikeyboard.desktop` (muncul di menu aplikasi sistem operasi) dan `~/Desktop/digikeyboard.desktop` (pintasan desktop langsung).
@@ -751,14 +751,14 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 ## 43. CATATAN CHECKPOINT (v0.9.39 - Desain Ulang Terpadu Aplikasi PC Host & Installer Selaras Web Client)
 - **Desain Ulang Menyeluruh PC Host Manager (`digikeyboard_gui.py`):**
   - Palet warna dan hierarki visual diselaraskan 100% dengan Web Client (`#0d1117` background obsidian navy, `#161b22` header & nav bar, `#1c2128` card panels, `#ff6b00` aksen oranye brand, `#3fb950` status online, `#58a6ff` cyber blue).
-  - Top Deck Bar: Menampilkan logo `DIGIKEYBOARD HOST`, badge status pulsa real-time, chip indikator latensi (<1ms), dan tombol pintas `Buka Web Client`.
+  - Top Deck Bar: Menampilkan logo `DIGISMARTDECK HOST`, badge status pulsa real-time, chip indikator latensi (<1ms), dan tombol pintas `Buka Web Client`.
   - Navigasi Deck Chips:
     - Tab 1 (Pusat Kendali): Tampilan 6-Digit PIN bergaya tombol keycap mekanikal individual terpisah (`[ 6 ] [ 6 ] [ 7 ] [ 2 ] [ 3 ] [ 0 ]`), modul QR code scanner beresolusi tinggi, dan panduan metode koneksi (Wi-Fi vs kabel USB tethering).
     - Tab 2 (Perangkat Terdaftar): Tabel daftar perangkat terotorisasi dengan opsi putuskan koneksi per-perangkat atau putuskan semua.
     - Tab 3 (Lisensi SaaS): Kartu status paket aktif, 3 kartu pilihan paket komersial (Trial Rp 0, Bulanan Rp 15.000, Lifetime Pro Rp 250.000), serta form aktivasi kunci lisensi.
     - Tab 4 (Wizard Setup & Layanan): Pengecekan status izin kernel hardware (`/dev/uinput`), status layanan background (`digikeyboard.service`), kontrol restart layanan, dan penampil log aktivitas server real-time (`journalctl`).
 - **Pembaruan Skrip Installer Linux (`install-linux.sh`):**
-  - CLI installer diharmonisasikan dengan identitas visual DigiKeyboard.
+  - CLI installer diharmonisasikan dengan identitas visual DigiSmartDeck.
   - Otomatis mendaftarkan dependensi PyQt5 & Pillow, memasang pintasan desktop, dan meluncurkan antarmuka GUI Host Manager setelah instalasi.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
@@ -799,7 +799,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
     1. **Minimize (`[ - ]`)**: Meminimalkan jendela ke taskbar tanpa menutupnya (menggunakan X11 `XIconifyWindow` dan `wmctrl -b add,hidden` di Linux, serta `ShowWindow(SW_MINIMIZE)` di Windows).
     2. **Maximize / Restore (`[ ▢ ]`)**: Memaksimalkan jendela ke layar penuh atau memulihkan ukuran jendela sebelumnya (`wmctrl -b toggle,maximized_vert,maximized_horz` di Linux, `ShowWindow(SW_MAXIMIZE/SW_RESTORE)` di Windows).
     3. **Close (`[ ✕ ]`)**: Menutup jendela aplikasi secara anggun (`wmctrl -c` di Linux, `WM_CLOSE` di Windows) dengan animasi transisi memudar dan pembaruan otomatis daftar jendela.
-  - Mengetuk badan kartu aplikasi tetap berfungsi untuk mengaktifkan/membawa jendela ke depan di PC dan menyesuaikan mode layout DigiKeyboard.
+  - Mengetuk badan kartu aplikasi tetap berfungsi untuk mengaktifkan/membawa jendela ke depan di PC dan menyesuaikan mode layout DigiSmartDeck.
   - Setiap tombol kontrol jendela dilengkapi isolasi event (`stopPropagation()`), efek suara klik mekanikal (`playClickSound()`), getaran haptik (`vibe()`), dan notifikasi toast status di layar ponsel.
 - **Backend & Protokol WebSocket (`server.py`):**
   - Menambahkan endpoint pesan `control_window` (`action`: `minimize`, `maximize`, `close`, `activate`) yang dieksekusi secara asinkron (`asyncio.to_thread`).
@@ -850,10 +850,10 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Pembersihan Total Elemen & Border (Zero Clutter):**
   - Menghilangkan seluruh border pada modal dialog, kartu, header, dan footer (`border: none;`).
   - Menghapus seksi media sosial (YouTube, Instagram, TikTok, Website) dan seksi kontak (WhatsApp, Telepon, Email).
-  - Menghapus judul/label "About DigiKeyboard" dan icon pendukung.
+  - Menghapus judul/label "About DigiSmartDeck" dan icon pendukung.
   - Menyediakan tombol tutup '✕' minimalis tanpa border di sudut kanan atas dialog serta penutupan instan saat mengetuk latar belakang (backdrop).
 - **Tata Letak Informasi Ringkas 4 Elemen Utama:**
-  - *Line 1*: Nama aplikasi `DigiKeyboard` berbobot tebal dan proporsional.
+  - *Line 1*: Nama aplikasi `DigiSmartDeck` berbobot tebal dan proporsional.
   - *Line 2*: Badge versi aplikasi `v1.17.0` berbentuk kapsul aksen biru elegan.
   - *Line 3*: Teks studio `by King Ali Studiō` dengan karakter 'ō' beraksen macron yang presisi.
   - *Subtitle*: Deskripsi bahasa awam berorientasi marketing yang ramah pengguna, mudah dipahami, serta menonjolkan fitur unggulan dan kegunaan nyata:
@@ -884,7 +884,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 ## 51. CATATAN CHECKPOINT (v0.9.47 - Perbaikan Deteksi Terminal di Window List & Konsistensi Audio Mechanical Keyboard)
 - **Perbaikan Masalah Jendela Terminal Tidak Muncul di Window List:**
   - *Akar Masalah*: Pada `get_open_windows_list()`, filter aplikasi internal sebelumnya mengecek substring `'digikeyboard' in title.lower()`. Ketika pengguna membuka folder repositori `~/digikeyboard` di terminal, window title terminal otomatis menjadi `nino@Jarvis: ~/digikeyboard`, yang secara keliru ikut tersaring keluar.
-  - *Solusi*: Filter diperketat hanya untuk aplikasi Host GUI (`'digikeyboard_gui'` pada `wm_class` atau `'host manager'` / `'DigiKeyboard Host'` pada window title), sehingga jendela Terminal, VS Code, maupun editor lain yang membuka direktori `digikeyboard` tetap tampil 100% di daftar aplikasi aktif.
+  - *Solusi*: Filter diperketat hanya untuk aplikasi Host GUI (`'digikeyboard_gui'` pada `wm_class` atau `'host manager'` / `'DigiSmartDeck Host'` pada window title), sehingga jendela Terminal, VS Code, maupun editor lain yang membuka direktori `digikeyboard` tetap tampil 100% di daftar aplikasi aktif.
 - **Konsistensi Audio & Pengalaman Mengetik Mechanical Keyboard:**
   - *Penyebab Suara Tidak Aktif pada Sentuhan/Huruf Pertama*:
     1. Status default `soundEnabled` sebelumnya diuji dengan `=== 'true'`, sehingga pengguna baru yang belum menyetel preferensi memiliki nilai default false (terbisu). Diperbaiki menjadi `!== 'false'` agar audio aktif secara default.
@@ -913,4 +913,32 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 53. CATATAN CHECKPOINT (v0.9.49 - Rebranding Penuh DigiSmartDeck & Integrasi Aset Desain Logo Baru)
+- **Rebranding Menyeluruh Proyek ke DigiSmartDeck:**
+  - Pembaruan nama brand resmi dari `DigiKeyboard` menjadi `DigiSmartDeck` secara konsisten di seluruh kode sumber backend, frontend, dokumen arsitektur, panduan komersial, skrip build/installer, workflow CI/CD GitHub Actions, dan konfigurasi Android.
+  - File cache PWA di `sw.js` diperbarui ke `digismartdeck-cache-v1`.
+  - Tautan aktivasi SaaS dan jaringan affiliasi diarahkan ke `https://mayar.link/digismartdeck-pro` dan `https://mayar.link/affiliate/digismartdeck`.
+- **Integrasi Desain & Generasi Aset Logo Baru (`DigiSmartDeck/`):**
+  - Mengonversi aset logo beresolusi tinggi `DigiSmartDeck/Ikon aplikasi@2x.png` (960x960), `Logo utama@2x.png`, dan `Versi gelap@2x.png` ke dalam seluruh ukuran aset produksi:
+    - `assets/icon.png`: Ikon utama PC Host (512x512).
+    - `assets/logo.png` & `static/logo.png`: Banner horizontal transparent logo (1280x260).
+    - `static/icon-512.png`, `static/icon-192.png`, `static/icon.png`: Ikon web dan PWA.
+    - `static/icon-maskable.png`: Ikon PWA maskable berlatar navy `#0e1738` dengan padding zona aman native.
+    - `static/icon.ico`: Multi-resolusi icon Windows/Favicon (16px hingga 256px).
+    - `static/icon.svg`: Vektor SVG resolusi tinggi dengan embedding data baru.
+    - Android Mipmap (`ic_launcher.png`): Menghasilkan aset launcher untuk `mipmap-xxxhdpi`, `xxhdpi`, `xhdpi`, `hdpi`, dan `mdpi`.
+- **Integrasi Antarmuka UI:**
+  - Splash screen awal memuat ikon logo baru DigiSmartDeck.
+  - Header top bar menampilkan ikon logo baru di samping teks DigiSmartDeck.
+  - Modal About menampilkan badge logo baru, nama DigiSmartDeck, versi, dan tombol update.
+  - GUI Host Manager (`digikeyboard_gui.py`) menampilkan logo ikon baru pada header deck atas.
+- **Kompilasi APK Android Mandiri:**
+  - Berhasil mengompilasi `DigiSmartDeck.apk` (5.4 MB, jauh di bawah batas 20 MB).
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
 

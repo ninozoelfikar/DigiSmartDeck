@@ -1,6 +1,6 @@
 # STANDAR DESAIN UI/UX & REKAYASA APLIKASI
-### Berbasis Pembelajaran & Studi Kasus Proyek DigiKeyboard
-Dokumen master tersimpan di Obsidian Vault: `[[Referensi/Standar Desain dan Rekayasa Aplikasi - Studi Kasus DigiKeyboard]]`
+### Berbasis Pembelajaran & Studi Kasus Proyek DigiSmartDeck
+Dokumen master tersimpan di Obsidian Vault: `[[Referensi/Standar Desain dan Rekayasa Aplikasi - Studi Kasus DigiSmartDeck]]`
 
 ---
 
@@ -49,7 +49,7 @@ Dokumen master tersimpan di Obsidian Vault: `[[Referensi/Standar Desain dan Reka
   - Klien di ponsel pintar/tablet harus mempertahankan ukuran instalasi sekecil mungkin (~20 MB APK).
   - Dilarang membundel model AI berat (seperti Whisper, LLM, atau model neural besar) ke dalam paket aplikasi klien seluler.
   - Alihkan seluruh beban komputasi berat ke host server PC atau gunakan API bawaan sistem operasi (seperti Web Speech API native browser/WebView).
-- **Hasil Terbukti di DigiKeyboard:**
+- **Hasil Terbukti di DigiSmartDeck:**
   - Penggunaan RAM server turun drastis dari ~554 MB menjadi hanya ~31 MB.
   - Waktu startup aplikasi menjadi instan (< 0.1 detik).
 

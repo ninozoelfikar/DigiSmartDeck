@@ -6,7 +6,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="DigiKeyboard">
+  <meta name="apple-mobile-web-app-title" content="DigiSmartDeck">
   <meta name="theme-color" content="#0d1117">
   <meta name="format-detection" content="telephone=no">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,7 @@
   <link rel="icon" type="image/svg+xml" href="/static/icon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png">
   <link rel="apple-touch-icon" href="/static/icon-192.png">
-  <title>DigiKeyboard - Remote PC Keyboard</title>
+  <title>DigiSmartDeck - Remote PC Keyboard</title>
   <style>
 :root {
   --bg: #0d1117;
@@ -5733,7 +5733,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </svg>
     </div>
     <div class="orientation-guard-title">Gunakan Posisi Melintang</div>
-    <div class="orientation-guard-desc">DigiKeyboard didesain khusus untuk tampilan landscape mendatar. Silakan miringkan ponsel Anda ke posisi horizontal.</div>
+    <div class="orientation-guard-desc">DigiSmartDeck didesain khusus untuk tampilan landscape mendatar. Silakan miringkan ponsel Anda ke posisi horizontal.</div>
     <button type="button" class="orientation-guard-btn" id="btn-lock-landscape-fs">Kunci Mode Melintang (Landscape)</button>
   </div>
 </div>
@@ -5742,7 +5742,8 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   <!-- STARTUP FLASH / SPLASH SCREEN (0.8s) -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
-      <div class="splash-title">DigiKeyboard</div>
+      <img src="/static/icon-192.png" alt="DigiSmartDeck" style="width: 60px; height: 60px; border-radius: 14px; margin-bottom: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);" />
+      <div class="splash-title">DigiSmartDeck</div>
       <div class="splash-sub">by King Ali Studiō</div>
     </div>
   </div>
@@ -5750,9 +5751,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
     <div class="left-controls">
-      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" data-i18n-title="brand_title" title="About DigiKeyboard - King Ali Studiō">
+      <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center;" data-i18n-title="brand_title" title="About DigiSmartDeck - King Ali Studiō">
         <span class="logo">
-          <span>DigiKeyboard</span>
+          <img src="/static/icon-192.png" alt="Logo" style="width: 18px; height: 18px; border-radius: 4px; vertical-align: middle; flex-shrink: 0;" />
+          <span>DigiSmartDeck</span>
         </span>
       </div>
 
@@ -5869,7 +5871,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
             <span data-i18n="util_sound">Key Sound</span>
           </button>
-          <button type="button" class="tbtn deck-chip" id="btn-license" data-i18n-title="util_license_title" title="DigiKeyboard SaaS License">
+          <button type="button" class="tbtn deck-chip" id="btn-license" data-i18n-title="util_license_title" title="DigiSmartDeck SaaS License">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
             <span id="deck-license-badge">License</span>
           </button>
@@ -7403,7 +7405,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiKeyboard v1.5.0</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.5.0</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -7441,7 +7443,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <span data-i18n="rc_scanner_title">Automatic Local Subnet Scanner</span>
         </div>
         <div style="font-size:11px;color:var(--text-dim);line-height:1.4;" data-i18n="rc_scanner_desc">
-          Scans active IP addresses on port 8080 across your local subnet to locate DigiKeyboard server.
+          Scans active IP addresses on port 8080 across your local subnet to locate DigiSmartDeck server.
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
           <input type="text" id="input-scan-subnet" data-i18n-placeholder="rc_scanner_placeholder" placeholder="e.g. 192.168.1." style="flex:1;background:var(--panel-bg);border:1px solid var(--key-border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text);font-family:monospace;">
@@ -7455,7 +7457,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <!-- FOUND PC CARD -->
         <div id="scan-found-box" class="scan-found-card hidden">
           <div>
-            <div style="font-size:12px;font-weight:700;color:#3fb950;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> <span data-i18n="rc_found_title">DigiKeyboard Server Located!</span></div>
+            <div style="font-size:12px;font-weight:700;color:#3fb950;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> <span data-i18n="rc_found_title">DigiSmartDeck Server Located!</span></div>
             <div id="scan-found-text" style="font-size:11px;color:var(--text);margin-top:2px;">Host: <b id="scan-found-host">--</b></div>
           </div>
           <button type="button" class="btn-primary" id="btn-jump-found" style="background:#238636;border-color:#2ea043;font-size:11px;padding:6px 12px;white-space:nowrap;" data-i18n="rc_btn_jump">Connect Now</button>
@@ -7490,7 +7492,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <div class="modal-header">
       <div class="modal-title">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span data-i18n="store_modal_title">DigiKeyboard Store</span>
+        <span data-i18n="store_modal_title">DigiSmartDeck Store</span>
       </div>
       <button class="modal-close" id="btn-close-store" type="button">✕</button>
     </div>
@@ -7529,7 +7531,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           Unlock all Pro plugins, complete theme skins catalog, mechanical switch audio profiles, and unlimited voice dictation with a single perpetual license.
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <a href="https://mayar.link/digikeyboard-pro" target="_blank" rel="noopener noreferrer" class="store-card-btn gold">
+          <a href="https://mayar.link/digismartdeck-pro" target="_blank" rel="noopener noreferrer" class="store-card-btn gold">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             <span data-i18n="store_pro_bundle_btn">Purchase Full Access (Instant QRIS / Card)</span>
           </a>
@@ -7674,7 +7676,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <div style="font-size:11px;color:var(--text-dim);line-height:1.4;">
             Ideal for content creators, technology reviewers, and keyboard enthusiasts. Showcase workflow setups and monetize automatically.
           </div>
-          <a href="https://mayar.link/affiliate/digikeyboard" target="_blank" rel="noopener noreferrer" class="store-card-btn primary" style="background:#238636;padding:9px 14px;font-size:12px;">
+          <a href="https://mayar.link/affiliate/digismartdeck" target="_blank" rel="noopener noreferrer" class="store-card-btn primary" style="background:#238636;padding:9px 14px;font-size:12px;">
             <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             <span data-i18n="store_affiliate_btn">Join Affiliate Network</span>
           </a>
@@ -7694,8 +7696,13 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   <div class="modal-dialog" style="max-width:400px;width:min(400px, 90vw);border:none;box-shadow:0 16px 40px rgba(0,0,0,0.65);position:relative;padding:32px 24px 28px;text-align:center;background:var(--header-bg);border-radius:16px;">
     <button class="modal-close" id="btn-close-about" type="button" title="Tutup" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:6px;line-height:1;border-radius:6px;">✕</button>
 
+    <!-- App Logo -->
+    <div style="margin-bottom:12px;">
+      <img src="/static/icon-192.png" alt="DigiSmartDeck Logo" style="width:56px;height:56px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.35);vertical-align:middle;" />
+    </div>
+
     <!-- Line 1: Nama Aplikasi -->
-    <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:0.4px;margin-bottom:6px;">DigiKeyboard</div>
+    <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:0.4px;margin-bottom:6px;">DigiSmartDeck</div>
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
@@ -7784,7 +7791,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <div class="modal-header">
       <div class="modal-title">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
-        <span data-i18n="license_title">Lisensi &amp; Akun DigiKeyboard</span>
+        <span data-i18n="license_title">Lisensi &amp; Akun DigiSmartDeck</span>
       </div>
       <button class="modal-close" id="btn-close-license" type="button" title="Tutup">✕</button>
     </div>
@@ -7863,7 +7870,7 @@ let toastTimeout = null;
 // ── Industry Standard Dual-Language Translation System (en / id) ──
 const I18N = {
   en: {
-    brand_title: "About DigiKeyboard - King Ali Studiō",
+    brand_title: "About DigiSmartDeck - King Ali Studiō",
     // Header & Quick Modes
     quick_keyboard: "PC Keyboard",
     quick_gamepad: "Game Controller",
@@ -7900,14 +7907,14 @@ const I18N = {
     win_status_maximized: "Maximized",
     win_status_closed: "Closed",
     // Pairing & Licensing
-    util_license_title: "DigiKeyboard SaaS License",
+    util_license_title: "DigiSmartDeck SaaS License",
     util_pairing: "Pairing",
     util_pairing_title: "Device Pairing & Security",
     pairing_title: "Pair New Device",
     pairing_desc: "Enter the 6-digit PIN shown on your PC monitor or terminal to securely authorize this device.",
     pairing_btn_connect: "Connect Device",
     pairing_hint: "Device connects automatically once the 6-digit PIN is entered.",
-    license_title: "DigiKeyboard License & Account",
+    license_title: "DigiSmartDeck License & Account",
     license_plan_lbl: "Active Plan Status",
     license_expires_lbl: "Valid Until:",
     license_days_lbl: "Days Remaining:",
@@ -7958,11 +7965,11 @@ const I18N = {
     rc_current_host: "Current Host Endpoint:",
     rc_btn_retry: "Connect Now",
     rc_scanner_title: "Automatic Local Subnet Scanner",
-    rc_scanner_desc: "Scans active IP addresses on port 8080 across your local subnet to locate DigiKeyboard server.",
+    rc_scanner_desc: "Scans active IP addresses on port 8080 across your local subnet to locate DigiSmartDeck server.",
     rc_scanner_placeholder: "e.g. 192.168.1.",
     rc_btn_start_scan: "Start Scan",
     rc_scanner_ready: "Ready to scan local subnet.",
-    rc_found_title: "DigiKeyboard Server Located!",
+    rc_found_title: "DigiSmartDeck Server Located!",
     rc_btn_jump: "Connect Now",
     rc_manual_title: "Direct IP / Hostname Endpoint",
     rc_manual_placeholder: "e.g. 192.168.1.45:8080 or Jarvis.local:8080",
@@ -8074,11 +8081,11 @@ const I18N = {
     vol_low: "Low (30%)",
     vol_med: "Medium (70%)",
     vol_high: "High (100%)",
-    store_modal_title: "DigiKeyboard Store",
+    store_modal_title: "DigiSmartDeck Store",
     st_pwa_title: "Standalone Fullscreen Experience",
     st_pwa_sub: "For optimal typing performance without browser address bars or navigation popups:",
-    st_pwa_box: "<b>Recommended Native Solution (Android):</b> Install the dedicated <b>DigiKeyboard APK</b> (True fullscreen, zero browser UI interference).<br><br><b>Chrome Web App:</b> Open the Chrome menu (⋮) and select <b>'Add to Home screen'</b>.",
-    st_download_apk: "Download DigiKeyboard APK",
+    st_pwa_box: "<b>Recommended Native Solution (Android):</b> Install the dedicated <b>DigiSmartDeck APK</b> (True fullscreen, zero browser UI interference).<br><br><b>Chrome Web App:</b> Open the Chrome menu (⋮) and select <b>'Add to Home screen'</b>.",
+    st_download_apk: "Download DigiSmartDeck APK",
     st_pwa_install: "Add to Home Screen",
     st_btn_save: "Done",
 
@@ -8120,7 +8127,7 @@ const I18N = {
     about_btn_update: "Check for Updates"
   },
   id: {
-    brand_title: "Tentang DigiKeyboard - King Ali Studiō",
+    brand_title: "Tentang DigiSmartDeck - King Ali Studiō",
     // Header & Quick Modes
     quick_keyboard: "Keyboard PC",
     quick_gamepad: "Gamepad Konsol",
@@ -8157,14 +8164,14 @@ const I18N = {
     win_status_maximized: "Dimaksimalkan",
     win_status_closed: "Ditutup",
     // Pairing & Licensing
-    util_license_title: "Lisensi SaaS DigiKeyboard",
+    util_license_title: "Lisensi SaaS DigiSmartDeck",
     util_pairing: "Pairing",
     util_pairing_title: "Pairing & Keamanan Perangkat",
     pairing_title: "Pairing Perangkat Baru",
     pairing_desc: "Masukkan 6 digit kode PIN yang tampil di layar monitor atau terminal PC host Anda untuk menyambungkan perangkat ini.",
     pairing_btn_connect: "Sambungkan",
     pairing_hint: "Perangkat otomatis tersambung begitu 6 digit PIN benar dimasukkan.",
-    license_title: "Lisensi & Akun DigiKeyboard",
+    license_title: "Lisensi & Akun DigiSmartDeck",
     license_plan_lbl: "Status Paket Aktif",
     license_expires_lbl: "Masa Berlaku:",
     license_days_lbl: "Sisa Hari:",
@@ -8215,11 +8222,11 @@ const I18N = {
     rc_current_host: "Tujuan Host Saat Ini:",
     rc_btn_retry: "Hubungkan Sekarang",
     rc_scanner_title: "Pindai PC Otomatis di Jaringan Lokal",
-    rc_scanner_desc: "Memindai alamat IP lokal pada port 8080 untuk mendeteksi server DigiKeyboard.",
+    rc_scanner_desc: "Memindai alamat IP lokal pada port 8080 untuk mendeteksi server DigiSmartDeck.",
     rc_scanner_placeholder: "Misal: 192.168.1.",
     rc_btn_start_scan: "Mulai Pindai",
     rc_scanner_ready: "Siap memindai subnet lokal.",
-    rc_found_title: "DigiKeyboard Ditemukan!",
+    rc_found_title: "DigiSmartDeck Ditemukan!",
     rc_btn_jump: "Buka Sekarang",
     rc_manual_title: "Beralih ke IP / Hostname Baru",
     rc_manual_placeholder: "Misal: 192.168.1.45:8080 atau Jarvis.local:8080",
@@ -8331,11 +8338,11 @@ const I18N = {
     vol_low: "Pelan (30%)",
     vol_med: "Sedang (70%)",
     vol_high: "Keras (100%)",
-    store_modal_title: "Toko DigiKeyboard",
+    store_modal_title: "Toko DigiSmartDeck",
     st_pwa_title: "Solusi Layar Penuh Bebas Pop-up",
     st_pwa_sub: "Untuk pengalaman mengetik terbaik tanpa pop-up peringatan Chrome dan tanpa bilah alamat:",
-    st_pwa_box: "<b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiKeyboard APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br><b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>'Tambahkan ke Layar Utama' (Add shortcut)</b>.",
-    st_download_apk: "Unduh DigiKeyboard.apk",
+    st_pwa_box: "<b>Standar Industri Terbaik (Android):</b> Gunakan aplikasi <b>DigiSmartDeck APK</b> (Layar penuh sejati, 100% bebas dari segala popup browser).<br><br><b>Jika Lewat Browser Chrome:</b> Buka menu titik tiga (⋮) di Chrome lalu pilih <b>'Tambahkan ke Layar Utama' (Add shortcut)</b>.",
+    st_download_apk: "Unduh DigiSmartDeck.apk",
     st_pwa_install: "Pasang Pintasan ke Layar Utama",
     st_btn_save: "Selesai",
 
@@ -8363,7 +8370,7 @@ const I18N = {
     store_cyber_desc: "Nuansa neon ultraviolet reaktif dengan aksen font sci-fi Orbitron.",
     store_audio_title: "Holy Panda Switch",
     store_audio_desc: "Paket suara klik tactile renyah dan thock bass dalam switch mekanik premium.",
-    store_affiliate_title: "Program Afiliasi & Mitra Kreator DigiKeyboard",
+    store_affiliate_title: "Program Afiliasi & Mitra Kreator DigiSmartDeck",
     store_affiliate_desc: "Dapatkan komisi 30% hingga 40% dari setiap penjualan Skin, Plugin Pro, maupun Lisensi All-Access yang berasal dari tautan referral unik Anda.",
     store_affiliate_btn: "Daftar Menjadi Mitra Afiliasi Sekarang",
     store_btn_buy: "Buka Plugin",
@@ -8793,7 +8800,7 @@ if (btnCheckUpdate) {
           if (spinIcon) spinIcon.style.animation = '';
           btnCheckUpdate.disabled = false;
           if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Versi Terbaru' : 'Up to Date';
-          showSmartToast(currentUiLang === 'id' ? 'Aplikasi sudah versi terbaru' : 'App is up to date', 'DigiKeyboard');
+          showSmartToast(currentUiLang === 'id' ? 'Aplikasi sudah versi terbaru' : 'App is up to date', 'DigiSmartDeck');
           playPairingSuccessSound();
           setTimeout(() => {
             if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
@@ -9017,7 +9024,7 @@ function updateLicenseDisplay(lic) {
   const daysEl = $('lic-card-days');
   const keyEl = $('lic-card-key');
 
-  if (planEl) planEl.textContent = lic.plan_name || 'DigiKeyboard Pro';
+  if (planEl) planEl.textContent = lic.plan_name || 'DigiSmartDeck Pro';
   if (badgeEl) {
     badgeEl.textContent = (lic.tier || 'TRIAL').toUpperCase();
     badgeEl.className = `license-plan-badge ${lic.tier || 'trial'}`;
@@ -9802,7 +9809,7 @@ function connect() {
         }
         if (d.version) {
           const vBadge = $('app-version-badge');
-          if (vBadge) vBadge.textContent = 'DigiKeyboard v' + d.version;
+          if (vBadge) vBadge.textContent = 'DigiSmartDeck v' + d.version;
           const vAbout = $('about-app-version');
           if (vAbout) vAbout.textContent = 'v' + d.version;
         }
@@ -9897,7 +9904,7 @@ function startHeartbeatAndWatchdog() {
       // Jika pong tidak diterima selama > 5500ms (misal router Wi-Fi reboot tanpa TCP RST),
       // hancurkan zombie socket dan lakukan reconnect
       if (elapsed > 5500) {
-        console.warn(`[DigiKeyboard] Watchdog timeout: no pong for ${elapsed}ms. Reconnecting...`);
+        console.warn(`[DigiSmartDeck] Watchdog timeout: no pong for ${elapsed}ms. Reconnecting...`);
         handleDisconnect('Timeout (Router restart?)');
       }
     }
@@ -9938,13 +9945,13 @@ function setStatus(ok, txt) {
 
 // ── Network Lifecycle & Screen Wake Listeners ──
 window.addEventListener('online', () => {
-  console.log('[DigiKeyboard] Wi-Fi online terdeteksi. Menyambung segera...');
+  console.log('[DigiSmartDeck] Wi-Fi online terdeteksi. Menyambung segera...');
   setStatus(false, 'Wi-Fi terhubung, menyambung...');
   scheduleReconnect(true);
 });
 
 window.addEventListener('offline', () => {
-  console.log('[DigiKeyboard] Wi-Fi offline terdeteksi.');
+  console.log('[DigiSmartDeck] Wi-Fi offline terdeteksi.');
   handleDisconnect('Wi-Fi Terputus');
 });
 
@@ -9952,7 +9959,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     // Bangun dari layar mati / latar belakang: jika socket terputus, hubungkan segera
     if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
-      console.log('[DigiKeyboard] App kembali aktif. Menyambung ulang...');
+      console.log('[DigiSmartDeck] App kembali aktif. Menyambung ulang...');
       scheduleReconnect(true);
     } else {
       // Jika socket terlihat aktif, kirim ping langsung untuk memastikan tidak zombie
@@ -10039,8 +10046,8 @@ if (btnRcUsb) {
     if (typeof vibe === 'function') vibe(15);
     const isCurrentUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const confirmMsg = currentUiLang === 'id'
-      ? "Beralih ke Koneksi Kabel USB?\n\nPastikan kabel USB sudah terhubung dari HP ke PC.\nBuka DigiKeyboard via USB (http://localhost:8080)?"
-      : "Switch to USB Cable Connection?\n\nEnsure USB cable is connected from mobile to PC.\nOpen DigiKeyboard via USB (http://localhost:8080)?";
+      ? "Beralih ke Koneksi Kabel USB?\n\nPastikan kabel USB sudah terhubung dari HP ke PC.\nBuka DigiSmartDeck via USB (http://localhost:8080)?"
+      : "Switch to USB Cable Connection?\n\nEnsure USB cable is connected from mobile to PC.\nOpen DigiSmartDeck via USB (http://localhost:8080)?";
     if (!isCurrentUsb && confirm(confirmMsg)) {
       window.location.href = 'http://localhost:' + (window.location.port || '8080');
     } else {
@@ -10081,14 +10088,14 @@ if (btnRcBt) {
     } else {
       alert(currentUiLang === 'id' ? (
         "PANDUAN KONEKSI BLUETOOTH HID:\n\n" +
-        "1. Mode Bluetooth HID Hardware didukung penuh pada aplikasi resmi DigiKeyboard Android (.apk).\n" +
+        "1. Mode Bluetooth HID Hardware didukung penuh pada aplikasi resmi DigiSmartDeck Android (.apk).\n" +
         "2. Melalui aplikasi Android, HP Anda akan terdeteksi langsung sebagai keyboard & mouse Bluetooth native tanpa kabel atau jaringan Wi-Fi.\n" +
-        "3. Untuk mengaktifkan, buka DigiKeyboard melalui aplikasi APK dan izinkan akses Bluetooth."
+        "3. Untuk mengaktifkan, buka DigiSmartDeck melalui aplikasi APK dan izinkan akses Bluetooth."
       ) : (
         "BLUETOOTH HID CONNECTION GUIDE:\n\n" +
-        "1. Hardware Bluetooth HID mode is natively supported in the official DigiKeyboard Android APK.\n" +
+        "1. Hardware Bluetooth HID mode is natively supported in the official DigiSmartDeck Android APK.\n" +
         "2. Through the Android app, your phone is detected directly as a native Bluetooth keyboard & mouse without Wi-Fi or cables.\n" +
-        "3. To activate, launch DigiKeyboard via the APK and grant Bluetooth permissions."
+        "3. To activate, launch DigiSmartDeck via the APK and grant Bluetooth permissions."
       ));
     }
   };
@@ -10169,7 +10176,7 @@ async function scanSubnet(subnetBase = null) {
       });
       if (res.ok) {
         const d = await res.json();
-        if (d && (d.name === 'DigiKeyboard' || d.version)) {
+        if (d && (d.name === 'DigiSmartDeck' || d.version)) {
           showFoundHost(cand, d.version || 'Aktif');
           isScanning = false;
           if (startBtn) startBtn.disabled = false;
@@ -10199,7 +10206,7 @@ async function scanSubnet(subnetBase = null) {
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
-            if (data && (data.name === 'DigiKeyboard' || data.version)) {
+            if (data && (data.name === 'DigiSmartDeck' || data.version)) {
               return { host: targetHost, version: data.version || 'Aktif' };
             }
           }
@@ -10227,7 +10234,7 @@ async function scanSubnet(subnetBase = null) {
 
   isScanning = false;
   if (startBtn) startBtn.disabled = false;
-  if (statusEl) statusEl.textContent = `Selesai. DigiKeyboard tidak ditemukan di ${subnet}1–254 (Port ${port}).`;
+  if (statusEl) statusEl.textContent = `Selesai. DigiSmartDeck tidak ditemukan di ${subnet}1–254 (Port ${port}).`;
 }
 
 function showFoundHost(targetHost, version) {
@@ -10236,7 +10243,7 @@ function showFoundHost(targetHost, version) {
   const statusEl = $('scan-status');
   const progEl = $('scan-progress');
   if (progEl) progEl.style.width = '100%';
-  if (statusEl) statusEl.textContent = `DigiKeyboard ditemukan di ${targetHost}!`;
+  if (statusEl) statusEl.textContent = `DigiSmartDeck ditemukan di ${targetHost}!`;
   if (foundHost) foundHost.textContent = `${targetHost} (v${version})`;
   if (foundBox) foundBox.classList.remove('hidden');
 
@@ -10950,7 +10957,7 @@ storeTabBtns.forEach(btn => {
 document.querySelectorAll('.btn-buy-item').forEach(btn => {
   btn.addEventListener('click', () => {
     vibe(20);
-    window.open('https://mayar.link/digikeyboard-pro', '_blank');
+    window.open('https://mayar.link/digismartdeck-pro', '_blank');
   });
 });
 
@@ -11582,7 +11589,7 @@ try {
     .then(d => {
       if (d && d.version) {
         const vEl = document.getElementById('app-version-badge');
-        if (vEl) vEl.textContent = `DigiKeyboard v${d.version}`;
+        if (vEl) vEl.textContent = `DigiSmartDeck v${d.version}`;
         const vAbout = document.getElementById('about-app-version');
         if (vAbout) vAbout.textContent = `v${d.version}`;
       }
@@ -11614,8 +11621,8 @@ if (btnPwaInstall) {
   btnPwaInstall.addEventListener('click', async () => {
     if (!deferredInstallPrompt) {
       alert(currentUiLang === 'id'
-        ? 'Untuk memasang di HP tanpa pop-up Chrome:\n\n1. Ketuk menu titik tiga (⋮) di pojok kanan atas Chrome.\n2. Pilih "Tambahkan ke Layar Utama" (Add to Home screen).\n\nAtau gunakan aplikasi native DigiKeyboard APK untuk pengalaman layar penuh murni 100% bebas pop-up.'
-        : 'To install without browser popups:\n\n1. Tap the three dots menu (⋮) in Chrome.\n2. Select "Add to Home screen".\n\nOr install the native DigiKeyboard APK for true fullscreen experience.');
+        ? 'Untuk memasang di HP tanpa pop-up Chrome:\n\n1. Ketuk menu titik tiga (⋮) di pojok kanan atas Chrome.\n2. Pilih "Tambahkan ke Layar Utama" (Add to Home screen).\n\nAtau gunakan aplikasi native DigiSmartDeck APK untuk pengalaman layar penuh murni 100% bebas pop-up.'
+        : 'To install without browser popups:\n\n1. Tap the three dots menu (⋮) in Chrome.\n2. Select "Add to Home screen".\n\nOr install the native DigiSmartDeck APK for true fullscreen experience.');
       return;
     }
     try {
