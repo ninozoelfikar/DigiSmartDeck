@@ -945,7 +945,26 @@ class DigiKeyboardGUI(QMainWindow):
             self.log_viewer.setPlainText(f"Gagal membaca log: {e}")
 
 
+def acquire_single_instance_lock():
+    """Mencegah multiple instance GUI berjalan bersamaan."""
+    lock_socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    try:
+        lock_socket.bind('\0digikeyboard_host_gui_lock')
+        return lock_socket
+    except (socket.error, OSError):
+        try:
+            subprocess.run(['wmctrl', '-x', '-a', 'digikeyboard_gui.py'], timeout=0.5)
+        except Exception:
+            pass
+        return None
+
+
 def main():
+    lock = acquire_single_instance_lock()
+    if not lock:
+        print("[*] DigiKeyboard Host Manager sudah berjalan di sistem. Mengaktifkan jendela yang ada.")
+        sys.exit(0)
+
     app = QApplication(sys.argv)
     app.setApplicationName("DigiKeyboard Host")
     gui = DigiKeyboardGUI()

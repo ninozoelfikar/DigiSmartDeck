@@ -5633,6 +5633,9 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 .win-ctrl-btn:active {
   transform: translateY(1px);
 }
+.win-ctrl-btn svg, .win-ctrl-btn svg * {
+  pointer-events: none;
+}
 .win-ctrl-btn.win-ctrl-min:hover,
 .win-ctrl-btn.win-ctrl-min:active {
   background: rgba(255, 255, 255, 0.15);
@@ -9471,6 +9474,10 @@ function renderWindowList(windows) {
       showSmartContextToast(win.app || 'App', t('win_status_closed', 'Ditutup'));
     });
 
+    ctrlGroup.addEventListener('click', (e) => e.stopPropagation());
+    ctrlGroup.addEventListener('pointerdown', (e) => e.stopPropagation());
+    ctrlGroup.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+
     ctrlGroup.appendChild(btnMin);
     ctrlGroup.appendChild(btnMax);
     ctrlGroup.appendChild(btnClose);
@@ -9479,13 +9486,17 @@ function renderWindowList(windows) {
     item.appendChild(left);
     item.appendChild(right);
 
-    item.addEventListener('click', () => {
+    item.addEventListener('click', (e) => {
+      // Jika sentuhan berada di area tombol kontrol, jangan picu aktivasi item
+      if (e.target && e.target.closest('.win-switcher-controls, .win-ctrl-btn')) {
+        return;
+      }
       playClickSound();
       vibe(20);
       closeWindowSwitcherModal();
 
-      // Aktifkan jendela dan maksimalkan di PC host
-      send({ type: 'activate_window', win_id: win.win_id, maximize: true });
+      // Aktifkan jendela dan bawa ke depan (tanpa memaksa maximize layar penuh)
+      send({ type: 'activate_window', win_id: win.win_id, maximize: false });
 
       // Otomatis ubah mode di HP ke mode aplikasi tersebut
       const targetMode = win.suggested_mode || 'standard';

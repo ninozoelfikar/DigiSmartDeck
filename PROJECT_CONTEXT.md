@@ -807,3 +807,21 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Audio klik mekanikal dan respons haptik dipertahankan penuh.
+
+---
+
+## 47. CATATAN CHECKPOINT (v0.9.43 - Pencegahan Trigger Tidak Disengaja pada Host Manager & Single-Instance Lock)
+- **Penyebab Terpicunya Aplikasi Host / Installer (`digikeyboard_gui.py`):**
+  1. *Host Manager Muncul di Window Switcher:* Pemindaian jendela di `get_open_windows_list()` sebelumnya tidak menyaring `digikeyboard_gui.py`. Akibatnya, jendela Host Manager muncul di daftar switcher dan ketika disentuh atau tertekan akan mengeksekusi `activate_window` yang mengangkat Host Manager ke layar penuh.
+  2. *Event Bubbling pada Kartu Switcher:* Ketukan pada tombol kontrol jendela sebelumnya dapat merambat ke event listener `item` yang memaksa aktivasi layar penuh (`maximize: true`).
+  3. *Ketiadaan Single-Instance Lock:* `digikeyboard_gui.py` dapat diluncurkan berkali-kali tanpa batasan, sehingga penekanan shortcut atau aktivasi berulang membuat beberapa jendela host manager terbuka sekaligus.
+  4. *Fokus Desktop:* Jika seluruh jendela diminimalkan ke desktop di mana `~/Desktop/digikeyboard.desktop` aktif, penekanan tombol `Enter` dapat mengeksekusi launcher desktop tersebut.
+- **Solusi yang Diterapkan:**
+  1. *Filter Jendela Internal di `server.py`:* Menyaring dan mengecualikan secara mutlak jendela `digikeyboard`, `digikeyboard_gui`, dan `host manager` dari `get_open_windows_list()` dan `get_active_window_info()`. Host Manager tidak akan pernah muncul di daftar popup dan tidak akan mengacaukan smart context auto-switch.
+  2. *Isolasi Event & Aktivasi Tanpa Paksaan di `static/index.html`:*
+     - Menambahkan pencegahan perambatan event (`pointerdown`, `touchstart`, `click` di `.win-switcher-controls` dan `pointer-events: none` pada icon SVG).
+     - Mengubah aktivasi default kartu menjadi `maximize: false` agar jendela hanya dibawa ke depan sesuai ukuran aslinya.
+  3. *Single-Instance Lock di `digikeyboard_gui.py`:* Mengimplementasikan abstract UNIX domain socket lock (`\0digikeyboard_host_gui_lock`). Jika instance GUI sudah berjalan di sistem, proses baru tidak akan membuat jendela duplikat, melainkan mengangkat jendela yang ada atau keluar dengan bersih.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+
