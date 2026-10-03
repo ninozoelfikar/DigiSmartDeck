@@ -6731,6 +6731,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
               <span data-i18n="ai_auto_send">Auto-Send</span>
             </label>
             <div class="ai-tr-btns">
+              <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-undo" data-i18n="ai_undo" title="Kembalikan teks yang terakhir dikirim atau dibersihkan">Undo</button>
               <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear" data-i18n="ai_clear">Clear</button>
               <button type="button" class="ai-btn-tr-act primary" id="btn-ai-tr-send" data-i18n="ai_send_host">Send to Host</button>
             </div>
@@ -8005,6 +8006,7 @@ const I18N = {
     ai_transcript_empty: "Speak to dictate...",
     ai_auto_send: "Auto-Send",
     ai_auto_send_title: "Automatically transmit text to host upon silence detection",
+    ai_undo: "Undo",
     ai_clear: "Clear",
     ai_send_host: "Send to Host",
     ai_target_label: "Target:",
@@ -8261,6 +8263,7 @@ const I18N = {
     ai_transcript_empty: "Bicara untuk mendikte...",
     ai_auto_send: "Auto-Kirim",
     ai_auto_send_title: "Kirim teks otomatis ke PC setiap selesai berbicara",
+    ai_undo: "Undo",
     ai_clear: "Bersihkan",
     ai_send_host: "Kirim ke PC",
     ai_target_label: "Target:",
@@ -13462,7 +13465,25 @@ function commitCurrentSession() {
   aiCursorPos = aiAccumulatedText.length;
 }
 
-function clearTranscriptUI() {
+let aiUndoHistory = [];
+
+function pushAiUndoState(customText, customPos) {
+  const currentText = (customText !== undefined && customText !== null ? customText : aiAccumulatedText || '').trim();
+  if (currentText) {
+    if (aiUndoHistory.length === 0 || aiUndoHistory[aiUndoHistory.length - 1].text !== currentText) {
+      aiUndoHistory.push({
+        text: currentText,
+        cursorPos: (customPos !== undefined && customPos !== null) ? customPos : (aiCursorPos || currentText.length)
+      });
+      if (aiUndoHistory.length > 15) aiUndoHistory.shift();
+    }
+  }
+}
+
+function clearTranscriptUI(saveHistory = true) {
+  if (saveHistory) {
+    pushAiUndoState();
+  }
   aiAccumulatedText = '';
   aiCursorPos = 0;
   currentSessionFinal = '';
@@ -13474,6 +13495,26 @@ function clearTranscriptUI() {
     previewEl.classList.add('empty');
   }
   updateAiMicUI();
+}
+
+function undoAiTranscript() {
+  playClickSound();
+  vibe(15);
+  if (!aiUndoHistory || aiUndoHistory.length === 0) {
+    showSmartToast(currentUiLang === 'id' ? 'Tidak ada riwayat untuk dikembalikan' : 'No history to restore', 'AI Workstation');
+    return;
+  }
+  const lastState = aiUndoHistory.pop();
+  if (lastState && lastState.text) {
+    aiAccumulatedText = lastState.text;
+    aiCursorPos = lastState.cursorPos ?? lastState.text.length;
+    currentSessionFinal = '';
+    currentSessionInterim = '';
+    lastSentLength = aiAutoSend ? aiAccumulatedText.length : 0;
+    renderTranscriptPreview(aiAccumulatedText);
+    updateAiMicUI();
+    showSmartToast(currentUiLang === 'id' ? 'Kotak teks berhasil dikembalikan' : 'Text restored to box', 'AI Workstation');
+  }
 }
 
 function renderTranscriptPreview(fullText) {
@@ -13844,7 +13885,11 @@ if (lblAutoSend) {
   });
 }
 
-// Tombol Transcript (Kosongkan & Kirim ke PC)
+// Tombol Transcript (Undo, Kosongkan & Kirim ke PC)
+bindAiKey('btn-ai-tr-undo', () => {
+  undoAiTranscript();
+});
+
 bindAiKey('btn-ai-tr-clear', () => {
   playClickSound();
   if (aiSpeechWanted || isAiRecording) {

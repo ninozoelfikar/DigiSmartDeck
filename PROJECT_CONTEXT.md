@@ -899,3 +899,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 52. CATATAN CHECKPOINT (v0.9.48 - Tombol Undo Pemulihan Kotak Teks AI Workstation)
+- **Tombol Aksi Undo pada Baris Tindakan Kotak Teks (`#btn-ai-tr-undo`):**
+  - Ditambahkan tombol `Undo` berdampingan dengan `Clear` dan `Send to Host` di bagian kanan bawah kotak teks dikte AI Workstation.
+  - Menyelaraskan alur kerja produktivitas: jika pengguna salah mengirim prompt, mengirim teks yang belum selesai, atau tidak sengaja mengosongkan kotak teks, kondisi teks sebelumnya dapat dipulihkan secara instan tanpa perlu mengetik atau mendikte ulang dari awal.
+- **Sistem Riwayat Undo State (`pushAiUndoState` & `undoAiTranscript`):**
+  - Menyimpan snapshot teks (`aiAccumulatedText`) dan posisi kursor (`aiCursorPos`) ke dalam stack riwayat (`aiUndoHistory`) hingga 15 entri sebelum kotak dikosongkan (`clearTranscriptUI`).
+  - Menekan tombol Undo memulihkan teks dan posisi kursor secara langsung ke pratinjau (`renderTranscriptPreview`).
+  - Mengunci `lastSentLength` ke panjang teks yang dipulihkan saat Auto-Send aktif, mencegah teks terkirim ulang secara otomatis ke PC sebelum pengguna selesai menyunting.
+  - Memberikan umpan balik suara klik mekanikal (`playClickSound()`), getaran haptik (`vibe(15)`), dan notifikasi toast status.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
