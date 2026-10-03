@@ -9462,7 +9462,7 @@ function renderWindowList(windows) {
 }
 
 let audioCtx = null;
-let soundEnabled = localStorage.getItem('digi_sound') === 'true';
+let soundEnabled = localStorage.getItem('digi_sound') !== 'false';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
 if (isNaN(soundVolume) || soundVolume <= 0) soundVolume = 0.7;
 
@@ -9476,44 +9476,73 @@ function unlockAudio() {
 }
 window.addEventListener('touchstart', unlockAudio, { passive: true });
 window.addEventListener('pointerdown', unlockAudio, { passive: true });
+window.addEventListener('mousedown', unlockAudio, { passive: true });
+window.addEventListener('keydown', unlockAudio, { passive: true });
+
+function doSynthesizeClick(atTime, pitch) {
+  if (!audioCtx) return;
+  const now = atTime !== null && atTime !== undefined ? atTime : Math.max(audioCtx.currentTime, 0.005);
+  const vol = soundVolume || 0.7;
+
+  // Variasi micro-pitch natural layaknya susunan tuts pada keyboard mekanikal fisik
+  let finalPitch = pitch || 1.0;
+  if (finalPitch === 1.0) {
+    finalPitch = 0.98 + (Math.random() * 0.04);
+  }
+  const bodyPitch = 1 + (finalPitch - 1) * 0.35;
+
+  // 1. Transient click (snap switch mekanikal tajam 1800Hz -> 380Hz)
+  const osc1 = audioCtx.createOscillator();
+  const gain1 = audioCtx.createGain();
+  osc1.type = 'triangle';
+  osc1.frequency.setValueAtTime(1800 * finalPitch, now);
+  osc1.frequency.exponentialRampToValueAtTime(Math.max(40, 380 * finalPitch), now + 0.015);
+  gain1.gain.setValueAtTime(2.7 * vol, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+  osc1.connect(gain1);
+  gain1.connect(audioCtx.destination);
+  osc1.start(now);
+  osc1.stop(now + 0.018);
+
+  // 2. Body thock (benturan housing bawah tuts 320Hz -> 85Hz, tergrounding mantap)
+  const osc2 = audioCtx.createOscillator();
+  const gain2 = audioCtx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(320 * bodyPitch, now);
+  osc2.frequency.exponentialRampToValueAtTime(Math.max(20, 85 * bodyPitch), now + 0.026);
+  gain2.gain.setValueAtTime(2.2 * vol, now);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.026);
+  osc2.connect(gain2);
+  gain2.connect(audioCtx.destination);
+  osc2.start(now);
+  osc2.stop(now + 0.030);
+
+  // 3. Metallic spring ping (tekstur per mekanikal renyah 2600Hz -> 900Hz)
+  const osc3 = audioCtx.createOscillator();
+  const gain3 = audioCtx.createGain();
+  osc3.type = 'triangle';
+  osc3.frequency.setValueAtTime(2600 * finalPitch, now);
+  osc3.frequency.exponentialRampToValueAtTime(Math.max(60, 900 * finalPitch), now + 0.010);
+  gain3.gain.setValueAtTime(0.35 * vol, now);
+  gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.010);
+  osc3.connect(gain3);
+  gain3.connect(audioCtx.destination);
+  osc3.start(now);
+  osc3.stop(now + 0.012);
+}
 
 function playClickSound(force = false, atTime = null, pitch = 1.0) {
   if (!soundEnabled && !force) return;
   try {
     unlockAudio();
-    if (!audioCtx) return;
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(() => {});
+      audioCtx.resume().then(() => {
+        doSynthesizeClick(audioCtx.currentTime, pitch);
+      }).catch(() => {});
+      return;
     }
-    const now = atTime !== null ? atTime : Math.max(audioCtx.currentTime, 0.005);
-    const vol = soundVolume || 0.7;
-    const bodyPitch = 1 + (pitch - 1) * 0.35;
-
-    // 1. Transient click (frekuensi tajam 1500Hz -> 350Hz untuk speaker kecil HP)
-    const osc1 = audioCtx.createOscillator();
-    const gain1 = audioCtx.createGain();
-    osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(1500 * pitch, now);
-    osc1.frequency.exponentialRampToValueAtTime(Math.max(40, 350 * pitch), now + 0.018);
-    gain1.gain.setValueAtTime(2.8 * vol, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
-    osc1.connect(gain1);
-    gain1.connect(audioCtx.destination);
-    osc1.start(now);
-    osc1.stop(now + 0.022);
-
-    // 2. Body tap (frekuensi rendah 300Hz -> 90Hz untuk tablet & PC, tergrounding mantap)
-    const osc2 = audioCtx.createOscillator();
-    const gain2 = audioCtx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(300 * bodyPitch, now);
-    osc2.frequency.exponentialRampToValueAtTime(Math.max(20, 90 * bodyPitch), now + 0.025);
-    gain2.gain.setValueAtTime(2.0 * vol, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-    osc2.connect(gain2);
-    gain2.connect(audioCtx.destination);
-    osc2.start(now);
-    osc2.stop(now + 0.030);
+    doSynthesizeClick(atTime, pitch);
   } catch(e) {}
 }
 
@@ -13641,17 +13670,26 @@ function bindAiKey(btnId, action) {
   let lastTouch = 0;
   el.addEventListener('touchstart', (e) => {
     e.stopPropagation();
+    lastTouch = Date.now();
+    unlockAudio();
+    el.classList.add('pressed');
+    action();
   }, { passive: true });
   el.addEventListener('touchend', (e) => {
     e.stopPropagation();
-    if (e.cancelable) e.preventDefault();
-    lastTouch = Date.now();
-    action();
-  }, { passive: false });
-  el.addEventListener('click', (e) => {
-    e.stopPropagation();
+    el.classList.remove('pressed');
+  }, { passive: true });
+  el.addEventListener('touchcancel', () => {
+    el.classList.remove('pressed');
+  }, { passive: true });
+  el.addEventListener('mousedown', (e) => {
     if (Date.now() - lastTouch < 450) return;
+    unlockAudio();
+    el.classList.add('pressed');
     action();
+  });
+  window.addEventListener('mouseup', () => {
+    el.classList.remove('pressed');
   });
 }
 
@@ -13674,6 +13712,7 @@ function bindAiRepeatKey(btnId, action) {
     if (isPressed) return;
     isPressed = true;
     el.classList.add('pressed');
+    unlockAudio();
     // bunyi dan haptic hanya pada sentuhan pertama
     playClickSound();
     vibe(12);

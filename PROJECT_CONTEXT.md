@@ -879,3 +879,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) pada tuts keyboard dan workstation tetap dipertahankan penuh.
 
+---
+
+## 51. CATATAN CHECKPOINT (v0.9.47 - Perbaikan Deteksi Terminal di Window List & Konsistensi Audio Mechanical Keyboard)
+- **Perbaikan Masalah Jendela Terminal Tidak Muncul di Window List:**
+  - *Akar Masalah*: Pada `get_open_windows_list()`, filter aplikasi internal sebelumnya mengecek substring `'digikeyboard' in title.lower()`. Ketika pengguna membuka folder repositori `~/digikeyboard` di terminal, window title terminal otomatis menjadi `nino@Jarvis: ~/digikeyboard`, yang secara keliru ikut tersaring keluar.
+  - *Solusi*: Filter diperketat hanya untuk aplikasi Host GUI (`'digikeyboard_gui'` pada `wm_class` atau `'host manager'` / `'DigiKeyboard Host'` pada window title), sehingga jendela Terminal, VS Code, maupun editor lain yang membuka direktori `digikeyboard` tetap tampil 100% di daftar aplikasi aktif.
+- **Konsistensi Audio & Pengalaman Mengetik Mechanical Keyboard:**
+  - *Penyebab Suara Tidak Aktif pada Sentuhan/Huruf Pertama*:
+    1. Status default `soundEnabled` sebelumnya diuji dengan `=== 'true'`, sehingga pengguna baru yang belum menyetel preferensi memiliki nilai default false (terbisu). Diperbaiki menjadi `!== 'false'` agar audio aktif secara default.
+    2. Browser membatasi Web Audio pada status `suspended` sebelum interaksi pengguna. Sebelumnya pemanggilan `resume()` bersifat asinkron sehingga audio pada ketukan pertama terpotong sebelum konteks audio aktif. Kini `playClickSound` secara otomatis meresume dan menjadwalkan suara klik begitu status audio siap (`audioCtx.resume().then(...)`).
+    3. Pada AI Workstation, fungsi `bindAiKey` sebelumnya menunda aksi hingga `touchend`. Kini tombol bereaksi seketika pada downstroke (`touchstart`), mengeliminasi jeda sentuh dan membuka kunci audio secara instan.
+  - *Peningkatan Akustik Tuts Keyboard Mekanikal (Tactile & Clack)*:
+    - Lapisan 1: Transient click tajam (1800Hz -> 380Hz, gelombang segitiga snap switch).
+    - Lapisan 2: Resonansi housing bawah tuts (320Hz -> 85Hz, gelombang sinus thock mantap).
+    - Lapisan 3: Metallic spring ping (2600Hz -> 900Hz, tekstur per mekanikal renyah).
+    - Micro-pitch randomization alami per tuts agar suara ketikan beruntun terdengar organik layaknya keyboard mekanikal fisik asli.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+

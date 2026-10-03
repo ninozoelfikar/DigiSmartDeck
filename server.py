@@ -898,7 +898,7 @@ def get_active_window_info():
                 title = title_match.group(1) or title_match.group(2) or ''
 
             wm_str = ' '.join(wm_classes).lower()
-            if 'digikeyboard' in wm_str or 'digikeyboard_gui' in wm_str or 'host manager' in title.lower():
+            if 'digikeyboard_gui' in wm_str or ('digikeyboard' in wm_str and 'host' in wm_str) or 'host manager' in title.lower():
                 return None
 
             suggested_mode, friendly_name = classify_app_context(wm_classes, title)
@@ -967,9 +967,9 @@ def get_open_windows_list():
                         continue
 
                     # Filter keluar aplikasi internal DigiKeyboard Host Manager / Installer sendiri
-                    if 'digikeyboard' in wm_class_lower or 'digikeyboard_gui' in wm_class_lower:
+                    if 'digikeyboard_gui' in wm_class_lower or ('digikeyboard' in wm_class_lower and 'host' in wm_class_lower):
                         continue
-                    if 'digikeyboard' in title.lower() or 'host manager' in title.lower():
+                    if 'host manager' in title.lower() or title.strip() == 'DigiKeyboard Host':
                         continue
 
                     classes = [c for c in wm_class.split('.') if c]
