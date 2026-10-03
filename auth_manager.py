@@ -118,11 +118,12 @@ class DevicePairingManager:
             })
         return result
 
-    def unpair_device(self, token_prefix):
+    def unpair_device(self, identifier):
         """Hapus perangkat berdasarkan prefix token atau device_id."""
+        clean_id = identifier.rstrip('.') if identifier else ''
         to_del = []
         for token, info in self.paired_devices.items():
-            if token.startswith(token_prefix) or info.get('device_id') == token_prefix:
+            if (clean_id and token.startswith(clean_id)) or info.get('device_id') == identifier:
                 to_del.append(token)
         for t in to_del:
             del self.paired_devices[t]

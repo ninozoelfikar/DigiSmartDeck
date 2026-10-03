@@ -692,3 +692,25 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
   - Mechanical click sound (`playClickSound()`) and haptics (`vibe()`) preserved on all new UI buttons.
 
+---
+
+## 40. CATATAN CHECKPOINT (v0.9.36 - Aplikasi Desktop PC Host Control GUI & Pintasan Linux)
+- **Aplikasi Desktop PC Host Manager (`digikeyboard_gui.py`):**
+  - Dibangun aplikasi desktop native menggunakan PyQt5 untuk PC host (Linux/Ubuntu/X11).
+  - Tampilan modern bertema gelap selaras dengan branding DigiKeyboard.
+  - Fitur Pusat Kendali Desktop:
+    - Status Server Real-time: Badge indikator aktif di port 8080.
+    - PIN Pairing 6-Digit: Ditampilkan besar dan jelas dengan tombol salin dan acak ulang PIN.
+    - Alamat Koneksi & QR Code: Menampilkan IP Wi-Fi fisik lokal (`192.168.8.x`) serta QR Code presisi tinggi (`Pillow` + `io.BytesIO`) yang siap discan kamera ponsel.
+    - Manajemen Perangkat Terhubung: Tabel daftar perangkat yang sudah ter-pairing dengan tombol putuskan/unpair.
+    - Manajemen Lisensi SaaS: Status paket aktif (Trial, Monthly, Lifetime), sisa hari, dan dialog aktivasi lisensi.
+    - Aksi Cepat: Tombol "Buka DigiKeyboard di Browser" (`xdg-open`) dan "Restart Layanan Server".
+- **Ikon Aplikasi & Pintasan Desktop Linux:**
+  - Ikon aplikasi resmi dibuat: `assets/icon.png` dan `static/icon.png`.
+  - File Desktop Entry dibuat di `~/.local/share/applications/digikeyboard.desktop` (muncul di menu aplikasi sistem operasi) dan `~/Desktop/digikeyboard.desktop` (pintasan desktop langsung).
+  - CLI symlink: `~/.local/bin/digikeyboard` sehingga aplikasi dapat dipanggil dari terminal mana saja.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, and assistant responses.
+  - APK client Android tetap ringan (~20 MB).
+
+
