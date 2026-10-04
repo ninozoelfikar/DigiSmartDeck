@@ -1185,5 +1185,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 68. CATATAN CHECKPOINT (v0.9.64 - Finalisasi & Penguncian Desain UI Mode AI, Game, Keyboard, dan Dialog Update)
+- **Status Validasi & Penguncian Desain Menyeluruh:**
+  - **Mode AI Workstation (HP & Tablet):**
+    - Tombol Mic AI (`#btn-ai-mic`) berada 100% rata tengah secara geometris dan visual antara top bar (`.top-bar`) dan kotak transkrip (`.ai-transcript-box`).
+    - Skala tombol Mic pada ponsel HP landscape (`@media (max-height: 439px)`) diperbesar ~30% menjadi 68px (ikon SVG 32px), dan pada ultra-compact menjadi 65px (ikon SVG 31px). Pada tablet dan desktop tetap terkunci di 86px asli.
+    - Kolom kiri dan kanan seimbang simetris (`160px 1fr 160px`, `144px 1fr 144px`, `125px 1fr 125px`).
+    - Grid kontrol edit ditata ulang rapi: Baris 1 `[ Kustom | Cut ]`, Baris 2 `[ Copy | Paste ]`.
+    - Tombol Kustom (`#ai-btn-custom-prompt`) dilengkapi ikon pensil konfigurasi SVG dan aksen visual `.ai-btn-custom-tool`, serta langsung membuka modal dalam 1 kali klik/tap tanpa perlu ditahan.
+    - Soft QWERTY keyboard tablet bersih dari tombol kustomisasi duplikat dengan tuts spasi proporsional (`flex: 3.5`).
+  - **Mode Keyboard PC Standar & Game Controller:**
+    - Tampilan dan fungsionalitas kedua mode telah divalidasi matang dan dikunci.
+  - **Modal About & Dialog Pembaruan:**
+    - Teks status pembaruan bersih dan bebas dari duplikasi nomor versi, karena versi aplikasi (`#about-app-version`) sudah tercantum di bagian atas modal.
+  - **Struktur Repositori:**
+    - Direktori resmi proyek bernama `DigiSmartDeck` dengan symlink backward-compatibility penuh untuk unit layanan systemd Linux (`digikeyboard.service`).
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
