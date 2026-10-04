@@ -1022,6 +1022,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 58. CATATAN CHECKPOINT & ROADMAP (v0.9.54 - Roadmap Screen Mirroring & Analisis Alur Onboarding/Lisensi)
+- **Roadmap Fitur Masa Depan (Ditangguhkan):**
+  - *Remote Screen Mirroring / Window Peek*:
+    - Rencana fitur untuk menampilkan cuplikan layar PC atau jendela aktif di layar tablet/HP secara nirkabel.
+    - Status: Ditangguhkan sementara untuk memprioritaskan alur konversi penjualan, stabilitas inti input deck, dan latensi ultra-rendah (1-3 ms).
+    - Desain teknis masa depan yang disepakati: Menggunakan WebRTC on-demand (bukan streaming 60 FPS penuh tanpa henti) agar baterai tablet tidak cepat panas dan tidak membebani jaringan Wi-Fi lokal.
+- **Rancangan Alur Pembelian & Autentikasi Pengguna (Zero-Friction Onboarding):**
+  - *Pertimbangan Login Akun vs Kunci Lisensi (License Key)*:
+    - Login akun (email/password) di aplikasi HP menambah friksi tinggi (*drop-off rate*) saat pengguna pertama kali mencoba menyambungkan perangkat di jaringan lokal.
+    - Model yang direkomendasikan adalah **License Key + Email Magic Link**:
+      1. Pengguna membeli paket di website utama (input email saat checkout).
+      2. Sistem menerbitkan *License Key* dan link unduh installer server PC.
+      3. Pengguna menjalankan server di PC -> PC menampilkan QR code untuk unduh APK ponsel dan otomatis memvalidasi lisensi.
+      4. Ponsel langsung tersambung ke PC via PIN pairing lokal tanpa perlu repot mengetik username/password di layar kecil.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
