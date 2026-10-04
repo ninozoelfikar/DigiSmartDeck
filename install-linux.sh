@@ -10,9 +10,9 @@ CYAN='\033[0;36m'; GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; NC
 
 echo -e "${CYAN}"
 echo "  DIGISMARTDECK HOST & DESKTOP SUITE"
-echo "  Pusat Kendali Keyboard, Touchpad & AI Workstation"
+echo "  AI Workstation & Vibe Coding Companion"
 echo -e "${NC}"
-echo -e "${GREEN}  Remote PC Keyboard - Linux Installer & Setup Wizard${NC}"
+echo -e "${GREEN}  AI Workstation & Vibe Coding Companion - Linux Installer & Setup Wizard${NC}"
 echo "--------------------------------------------------"
 echo ""
 
@@ -72,8 +72,8 @@ cat > ~/.local/share/applications/digismartdeck.desktop << 'EOF'
 Version=1.0
 Type=Application
 Name=DigiSmartDeck
-GenericName=Remote Keyboard & AI Workstation
-Comment=DigiSmartDeck PC Host Manager and Device Pairing
+GenericName=AI Workstation & Vibe Coding Companion
+Comment=DigiSmartDeck - AI Workstation & Vibe Coding Companion
 Exec=/usr/bin/python3 /home/nino/digikeyboard/digikeyboard_gui.py
 Path=/home/nino/digikeyboard
 Icon=/home/nino/digikeyboard/assets/icon.png

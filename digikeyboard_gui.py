@@ -267,7 +267,7 @@ class DigiSmartDeckGUI(QMainWindow):
         logo_title_layout.setSpacing(2)
         app_title = QLabel("DIGISMARTDECK HOST")
         app_title.setStyleSheet("font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: 0.8px;")
-        app_sub = QLabel("Pusat Kendali Otorisasi & Layanan Input PC")
+        app_sub = QLabel("AI Workstation & Vibe Coding Companion")
         app_sub.setStyleSheet("font-size: 11px; color: #8b949e;")
         logo_title_layout.addWidget(app_title)
         logo_title_layout.addWidget(app_sub)
