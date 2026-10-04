@@ -14312,14 +14312,24 @@ function sendAiText(txt) {
 function bindAiKey(btnId, action) {
   const el = typeof btnId === 'string' ? $(btnId) : btnId;
   if (!el) return;
-  let lastTouch = 0;
-  el.addEventListener('touchstart', (e) => {
-    e.stopPropagation();
-    lastTouch = Date.now();
+  let lastTriggerTime = 0;
+
+  function handleTrigger(e) {
+    if (e) {
+      e.stopPropagation();
+      if (e.cancelable && e.type === 'touchstart') {
+        e.preventDefault();
+      }
+    }
+    const now = Date.now();
+    if (now - lastTriggerTime < 320) return;
+    lastTriggerTime = now;
     unlockAudio();
     el.classList.add('pressed');
     action();
-  }, { passive: true });
+  }
+
+  el.addEventListener('touchstart', handleTrigger, { passive: false });
   el.addEventListener('touchend', (e) => {
     e.stopPropagation();
     el.classList.remove('pressed');
@@ -14328,10 +14338,7 @@ function bindAiKey(btnId, action) {
     el.classList.remove('pressed');
   }, { passive: true });
   el.addEventListener('mousedown', (e) => {
-    if (Date.now() - lastTouch < 450) return;
-    unlockAudio();
-    el.classList.add('pressed');
-    action();
+    handleTrigger(e);
   });
   window.addEventListener('mouseup', () => {
     el.classList.remove('pressed');
@@ -14517,7 +14524,7 @@ bindAiKey('btn-ai-tr-send', () => {
   } else {
     const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
     if (textToSend) {
-      sendAiText(textToSend + ' ');
+      sendAiText(textToSend.startsWith('/') ? textToSend : (textToSend + ' '));
     }
     // Box otomatis dikosongkan setelah kirim
     clearTranscriptUI();
@@ -14526,7 +14533,12 @@ bindAiKey('btn-ai-tr-send', () => {
 });
 
 // Enter & Navigasi
+let lastAiEnterTime = 0;
 bindAiKey('ai-btn-enter', () => {
+  const now = Date.now();
+  if (now - lastAiEnterTime < 400) return;
+  lastAiEnterTime = now;
+
   playClickSound();
   vibe(25);
   if (aiSpeechWanted || isAiRecording) {
@@ -14543,7 +14555,7 @@ bindAiKey('ai-btn-enter', () => {
     // Mode normal: kirim teks yang ada di box, tekan Enter di PC, kosongkan box
     const textToSend = deduplicateRepeatedPhrases(aiAccumulatedText).trim();
     if (textToSend) {
-      sendAiText(textToSend + ' ');
+      sendAiText(textToSend);
       clearTranscriptUI();
     }
     send({ type: 'keypress', key: 'enter' });

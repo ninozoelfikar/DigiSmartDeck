@@ -1338,3 +1338,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 76. CATATAN CHECKPOINT (v0.9.72 - Perbaikan Double Enter pada Perintah Slash & Debounce Tuts Enter AI Workstation)
+- **Akar Masalah Double Enter pada Perintah Slash (seperti `/model`):**
+  1. *Spasi Tambahan Sebelum Enter*: Pada `ai-btn-enter`, pengiriman teks sebelumnya menyertakan spasi trailing (`textToSend + ' '`). Pada CLI interaktif (seperti Antigravity CLI, Claude Code), perintah slash yang diakhiri spasi langsung memicu mode autokomplit/daftar opsi dropdown. Ketika tombol Enter hardware dikirim 5ms kemudian, Enter tersebut langsung memilih opsi pertama yang sedang tersorot.
+  2. *Ghost Mousedown Event*: Pada `bindAiKey`, ketiadaan `e.preventDefault()` pada `touchstart` memungkinkan browser seluler mensintesis event `mousedown` tiruan dengan jeda waktu di atas ambang batas lama, sehingga fungsi eksekusi tombol terpanggil dua kali berturut-turut.
+  3. *Ketiadaan Debounce di Tombol Enter*: Tombol `#ai-btn-enter` belum memiliki pengaman selang waktu (cooldown window) saat menerima ketukan cepat.
+- **Solusi yang Diterapkan:**
+  1. *Eliminasi Spasi Trailing Sebelum Enter*: Teks dikirim secara murni (`sendAiText(textToSend)`) tanpa imbuhan spasi di belakangnya saat menekan Enter, sehingga perintah slash seperti `/model` tereksekusi bersih tanpa memicu dropdown instan.
+  2. *Pengaman Event Touch & Debounce Global (`bindAiKey`)*:
+     - Menambahkan `e.preventDefault()` pada `touchstart` untuk menghentikan sintesis event `mousedown` dan `click` tiruan di peramban mobile/WebView.
+     - Menerapkan pengaman selang waktu `lastTriggerTime` (320ms) agar aksi tuts tidak dapat terpicu ganda.
+  3. *Debounce Khusus Tombol Enter (`lastAiEnterTime`)*: Menambahkan batas cooldown 400ms pada penanganan klik `#ai-btn-enter`.
+  4. *Pembaruan Versi Cache PWA*: Versi cache di `static/sw.js` diperbarui ke `digismartdeck-cache-v11`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
