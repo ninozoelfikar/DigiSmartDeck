@@ -626,7 +626,7 @@ class DigiSmartDeckGUI(QMainWindow):
             return box
 
         plans_row.addWidget(make_plan_card("FREE TRIAL", "Akses Penuh 7 Hari", "Rp 0", "#3fb950"))
-        plans_row.addWidget(make_plan_card("BERLANGGANAN", "Akses Penuh Bulanan", "Rp 15.000 / bln", "#58a6ff"))
+        plans_row.addWidget(make_plan_card("BERLANGGANAN", "Akses Penuh Bulanan", "Rp 25.000 / bln", "#58a6ff"))
         plans_row.addWidget(make_plan_card("LIFETIME PRO", "Seumur Hidup Tanpa Batas", "Rp 250.000", "#ff6b00", "#ff6b00"))
 
         plans_layout.addLayout(plans_row)

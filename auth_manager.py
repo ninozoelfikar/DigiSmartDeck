@@ -154,7 +154,7 @@ class LicenseManager:
     """
     Mengelola lisensi SaaS komersial DigiSmartDeck:
     - Free Trial: 7 Hari Akses Penuh
-    - Langganan Bulanan: Rp 15.000 / bulan
+    - Langganan Bulanan: Rp 25.000 / bulan
     - Lisensi Seumur Hidup: Rp 250.000 (Lifetime Pro)
     """
     def __init__(self):
@@ -273,7 +273,7 @@ class LicenseManager:
                 'status': 'active',
                 'email': email_clean,
                 'plan_name': 'Langganan Bulanan Pro',
-                'price': 'Rp 15.000 / bln',
+                'price': 'Rp 25.000 / bln',
                 'activated_at': now.strftime("%Y-%m-%d %H:%M:%S"),
                 'expires_at': new_exp.strftime("%Y-%m-%d %H:%M:%S"),
                 'license_key': key_str.strip().upper()
@@ -323,7 +323,7 @@ class LicenseManager:
             'expires_at': expires_at_str,
             'days_left': days_left,
             'pricing': {
-                'monthly': 'Rp 15.000 / bulan',
+                'monthly': 'Rp 25.000 / bulan',
                 'lifetime': 'Rp 250.000 (Lifetime)'
             }
         }
