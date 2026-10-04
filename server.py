@@ -1257,16 +1257,37 @@ async def smart_context_tracker_loop():
                         if ACTIVE_WINDOW_DIALOG_ID:
                             await broadcast_prompt_dismiss(ACTIVE_WINDOW_DIALOG_ID)
                         ACTIVE_WINDOW_DIALOG_ID = dialog_pid
+
+                        title_lower = (info.get('title') or '').lower()
+                        if any(w in title_lower for w in ('save', 'simpan')):
+                            dialog_options = [
+                                {'label': 'Simpan (Enter)', 'key': 'enter', 'primary': True},
+                                {'label': 'Jangan Simpan', 'key': 'd', 'combo': ['alt', 'd']},
+                                {'label': 'Batal (Esc)', 'key': 'escape', 'danger': True}
+                            ]
+                        elif any(w in title_lower for w in ('delete', 'hapus', 'remove')):
+                            dialog_options = [
+                                {'label': 'Hapus (Enter)', 'key': 'enter', 'danger': True},
+                                {'label': 'Batal (Esc)', 'key': 'escape', 'primary': True}
+                            ]
+                        elif any(w in title_lower for w in ('quit', 'close', 'keluar')):
+                            dialog_options = [
+                                {'label': 'Keluar (Enter)', 'key': 'enter', 'danger': True},
+                                {'label': 'Batal (Esc)', 'key': 'escape', 'primary': True}
+                            ]
+                        else:
+                            dialog_options = [
+                                {'label': 'OK (Enter)', 'key': 'enter', 'primary': True},
+                                {'label': 'Batal (Esc)', 'key': 'escape', 'danger': True}
+                            ]
+
                         dialog_prompt = {
                             'type': 'remote_prompt',
                             'prompt_id': dialog_pid,
                             'app': info['app'],
                             'title': info['title'] or f"Dialog {info['app']}",
                             'message': f"Aplikasi {info['app']} membutuhkan konfirmasi tindakan di PC.",
-                            'options': [
-                                {'label': 'OK (Enter)', 'key': 'enter', 'primary': True},
-                                {'label': 'Batal (Esc)', 'key': 'escape', 'danger': True}
-                            ],
+                            'options': dialog_options,
                             'is_window_dialog': True,
                             'win_id': info.get('win_id')
                         }
@@ -1529,7 +1550,21 @@ async def websocket_handler(request):
 
                     # Jalankan simulasi input ke jendela PC jika diizinkan
                     if execute_pc and action != 'dismiss':
-                        if text_to_type:
+                        win_id = data.get('win_id')
+                        if win_id:
+                            await asyncio.to_thread(activate_and_focus_window, win_id, False)
+                            await asyncio.sleep(0.05)
+
+                        combo = data.get('combo')
+                        if combo and isinstance(combo, list):
+                            for k in combo:
+                                target_k = resolve_key(k) or k
+                                simulate_key(target_k, True)
+                            await asyncio.sleep(0.02)
+                            for k in reversed(combo):
+                                target_k = resolve_key(k) or k
+                                simulate_key(target_k, False)
+                        elif text_to_type:
                             for ch in str(text_to_type):
                                 simulate_tap(ch)
                                 await asyncio.sleep(0.003)
@@ -1538,7 +1573,7 @@ async def websocket_handler(request):
                             await asyncio.sleep(0.02)
                             simulate_tap('enter')
 
-                        if key:
+                        if key and not combo:
                             target_k = resolve_key(key) or key
                             simulate_tap(target_k)
 

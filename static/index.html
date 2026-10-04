@@ -9871,8 +9871,10 @@ function showRemotePrompt(data) {
           type: 'prompt_response',
           prompt_id: currentPromptId,
           key: opt.key || null,
+          combo: opt.combo || null,
           value: opt.value !== undefined ? opt.value : null,
           text: opt.text || null,
+          win_id: data.win_id || null,
           execute_on_pc: opt.execute_on_pc !== false,
           action: 'responded'
         });

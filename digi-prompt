@@ -5,22 +5,69 @@ import argparse
 import urllib.request
 import urllib.error
 
+def parse_options(options_arg):
+    """Parse string options (comma-separated or JSON) into list of option dicts."""
+    if not options_arg:
+        return None
+    try:
+        parsed = json.loads(options_arg)
+        if isinstance(parsed, list):
+            res = []
+            for i, it in enumerate(parsed):
+                if isinstance(it, dict):
+                    res.append(it)
+                elif isinstance(it, str):
+                    res.append({"label": it, "value": str(i + 1), "key": str(i + 1)})
+            return res
+    except Exception:
+        pass
+
+    # Comma-separated format: "Izinkan Sekali,Selalu Izinkan,Tolak"
+    parts = [p.strip() for p in options_arg.split(",") if p.strip()]
+    res = []
+    total = len(parts)
+    for i, p in enumerate(parts):
+        lower_p = p.lower()
+        is_cancel = any(w in lower_p for w in ("batal", "tolak", "cancel", "deny", "abort", "tidak", "no"))
+        is_first = (i == 0)
+
+        opt = {
+            "label": p,
+            "value": p,
+            "key": "escape" if is_cancel else ("enter" if (is_first and total <= 2) else str(i + 1))
+        }
+        if is_first and not is_cancel:
+            opt["primary"] = True
+        elif is_cancel:
+            opt["danger"] = True
+        res.append(opt)
+    return res
+
 def main():
     parser = argparse.ArgumentParser(description="DigiSmartDeck Remote Action Prompt CLI")
-    parser.add_argument("message", nargs="?", default="Lanjutkan proses?", help="Pesan prompt konfirmasi")
+    parser.add_argument("message", nargs="?", default="Lanjutkan proses?", help="Pesan prompt konfirmasi (gunakan '-' untuk membaca dari stdin)")
     parser.add_argument("--app", default="Terminal", help="Nama aplikasi pengirim prompt")
     parser.add_argument("--title", default="Konfirmasi Tindakan", help="Judul modal prompt")
-    parser.add_argument("--yes", default="Ya (Enter)", help="Label tombol konfirmasi/positif")
-    parser.add_argument("--no", default="Batal (Esc)", help="Label tombol pembatalan/negatif")
+    parser.add_argument("--options", default=None, help="Daftar opsi pilihan dipisahkan koma (contoh: 'Izinkan Sekali,Selalu Izinkan,Tolak') atau format JSON")
+    parser.add_argument("--yes", default="Ya (Enter)", help="Label tombol konfirmasi/positif jika tanpa --options")
+    parser.add_argument("--no", default="Batal (Esc)", help="Label tombol pembatalan/negatif jika tanpa --options")
     parser.add_argument("--timeout", type=int, default=60, help="Batas waktu tunggu (detik)")
     parser.add_argument("--port", type=int, default=8080, help="Port server DigiSmartDeck")
     parser.add_argument("--no-pc-exec", action="store_true", help="Jangan simulasikan tombol ke PC (hanya kembalikan hasil ke CLI)")
+    parser.add_argument("-q", "--value-only", action="store_true", help="Hanya cetak nilai opsi terpilih ke stdout")
+    parser.add_argument("--json", action="store_true", help="Cetak respon lengkap dalam format JSON")
     args = parser.parse_args()
 
-    options = [
-        {"label": args.yes, "value": "y", "key": "enter", "primary": True},
-        {"label": args.no, "value": "n", "key": "escape", "danger": True}
-    ]
+    # Baca pesan dari stdin jika '-'
+    if args.message == "-":
+        args.message = sys.stdin.read().strip() or "Lanjutkan proses?"
+
+    options = parse_options(args.options)
+    if not options:
+        options = [
+            {"label": args.yes, "value": "y", "key": "enter", "primary": True},
+            {"label": args.no, "value": "n", "key": "escape", "danger": True}
+        ]
 
     payload = {
         "app": args.app,
@@ -41,10 +88,18 @@ def main():
     try:
         with urllib.request.urlopen(req, timeout=args.timeout + 5) as resp:
             data = json.loads(resp.read().decode("utf-8"))
+            if args.json:
+                print(json.dumps(data))
+                sys.exit(0)
+
             res = data.get("response", {})
             action = res.get("action", "")
             key = res.get("key", "")
             val = res.get("value", "")
+
+            if args.value_only:
+                print(val if val is not None else (key or action))
+                sys.exit(0)
 
             if key in ("enter", "y", "yes") or val in ("y", "yes") or action == "responded":
                 print(f"[OK] Dikonfirmasi via DigiSmartDeck (key={key}, val={val})")
@@ -54,7 +109,8 @@ def main():
                 sys.exit(1)
     except urllib.error.HTTPError as e:
         if e.code == 408:
-            print("[TIMEOUT] Prompt di DigiSmartDeck telah kedaluwarsa.")
+            if not args.value_only:
+                print("[TIMEOUT] Prompt di DigiSmartDeck telah kedaluwarsa.")
             sys.exit(2)
         print(f"[ERROR] HTTP Error {e.code}: {e.read().decode('utf-8')}")
         sys.exit(3)

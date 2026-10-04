@@ -1206,6 +1206,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 69. CATATAN CHECKPOINT (v0.9.65 - Integrasi Dialog Konfirmasi CLI Interaktif Multi-Opsi & Otomatisasi Dialog GUI Desktop Jarak Jauh)
+- **Ekstensi CLI `digi-prompt` Multi-Opsi & Integrasi Shell/Terminal:**
+  - Menambahkan argumen `--options` pada `digi-prompt` yang mendukung daftar opsi fleksibel (berupa format koma bebas seperti `--options "Izinkan Sekali,Selalu Izinkan,Tolak"` atau format array/objek JSON terstruktur).
+  - Menyertakan dukungan parsing input via stdin (`digi-prompt -`) untuk piping langsung dari script atau terminal CLI.
+  - Menambahkan argumen `-q / --value-only` untuk mengeluarkan nilai opsi terpilih secara murni ke stdout guna kemudahan integrasi dengan skrip bash/zsh/python.
+  - Menambahkan opsi output `--json` untuk mencetak payload respons lengkap.
+- **Deteksi Dialog GUI Desktop Kontekstual & Refocus Otomatis:**
+  - Pada `server.py` (`smart_context_tracker_loop`), mendeteksi dialog sistem/aplikasi desktop secara otomatis berdasarkan kata kunci judul jendela (Save/Simpan: `Simpan (Enter)`, `Jangan Simpan (Alt+D)`, `Batal (Esc)`; Delete/Hapus: `Hapus (Enter)`, `Batal (Esc)`; Quit/Keluar: `Keluar (Enter)`, `Batal (Esc)`).
+  - Pada penanganan `prompt_response`, server kini mengaktifkan dan memfokuskan kembali jendela target (`win_id`) secara presisi (`activate_and_focus_window`) sebelum mengirimkan tombol/kombinasi tombol, sehingga tindakan dialog GUI di PC tereksekusi akurat tanpa terganggu perpindahan jendela.
+  - Mendukung simulasi kombinasi tombol berganda (`combo`, misal: `['alt', 'd']`).
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
