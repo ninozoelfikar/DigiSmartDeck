@@ -962,5 +962,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 55. CATATAN CHECKPOINT (v0.9.51 - Jembatan Native Android SpeechRecognizer & Eliminasi Cache WebView/Service Worker)
+- **Penyebab Masalah pada Aplikasi APK yang Terpasang:**
+  1. *Limitasi Web Speech API di Android WebView*: Berdasarkan spesifikasi Chromium, API `window.webkitSpeechRecognition` tidak didukung secara native oleh komponen embedded WebView Android (berbeda dengan browser Google Chrome mandiri). Memanggilnya di WebView menyebabkan error silent atau tidak dapat terhubung ke cloud speech service.
+  2. *Cache WebView & Service Worker*: WebView secara default (`LOAD_DEFAULT`) membaca cache lokal halaman `index.html` dan Service Worker lama (`v1`). Akibatnya, meskipun server di PC telah diperbarui dengan menu dan fitur baru, layar ponsel tetap menampilkan aset cache versi lama.
+- **Solusi Komprehensif:**
+  1. *Jembatan Native Android SpeechRecognizer (`android.speech.SpeechRecognizer`)*:
+     - Mengimplementasikan `SpeechRecognizer` native langsung di `MainActivity.java`.
+     - Menghubungkan event native (`onReadyForSpeech`, `onPartialResults`, `onResults`, `onError`, `onEndOfSpeech`) ke JavaScript WebView melalui `window.onNativeSpeech*`.
+     - Mengaktifkan streaming partial recognition langsung ke teks preview AI Workstation dan mekanisme Auto-Send.
+  2. *Eliminasi Cache Total (Instant Real-time Update)*:
+     - Server backend (`server.py`): Menambahkan header HTTP `Cache-Control: no-cache, no-store, must-revalidate` pada `index_handler`.
+     - WebView Client (`MainActivity.java`): Mengatur `settings.setCacheMode(WebSettings.LOAD_NO_CACHE)` dan mengeksekusi `webView.clearCache(true)` saat memuat server.
+     - PWA Service Worker (`sw.js`): Meningkatkan versi cache ke `digismartdeck-cache-v2` yang otomatis memusnahkan cache lama saat aktivasi.
+  3. *Kompilasi Ulang APK Mandiri*:
+     - File APK baru (`DigiSmartDeck.apk`, 5.5 MB) telah dikompilasi dan siap diunduh ulang dari `http://<IP-PC>:8080/static/DigiSmartDeck.apk`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 

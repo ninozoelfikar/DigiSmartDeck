@@ -28,6 +28,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.content.Intent;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences prefs;
     private BluetoothHidHelper bluetoothHidHelper;
     private PermissionRequest pendingPermissionRequest;
+    private SpeechRecognizer speechRecognizer;
+    private Intent speechRecognizerIntent;
 
     public class WebAppInterface {
         @android.webkit.JavascriptInterface
@@ -59,6 +65,58 @@ public class MainActivity extends AppCompatActivity {
         @android.webkit.JavascriptInterface
         public boolean hasAudioPermission() {
             return ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        @android.webkit.JavascriptInterface
+        public boolean isNativeSpeechAvailable() {
+            return SpeechRecognizer.isRecognitionAvailable(MainActivity.this);
+        }
+
+        @android.webkit.JavascriptInterface
+        public void startNativeSpeech(String lang) {
+            runOnUiThread(() -> {
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_PERMISSIONS);
+                    return;
+                }
+                if (speechRecognizer == null) {
+                    initSpeechRecognizer();
+                }
+                if (speechRecognizer != null) {
+                    speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, (lang != null && !lang.isEmpty()) ? lang : "id-ID");
+                    try {
+                        speechRecognizer.startListening(speechRecognizerIntent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @android.webkit.JavascriptInterface
+        public void stopNativeSpeech() {
+            runOnUiThread(() -> {
+                if (speechRecognizer != null) {
+                    try {
+                        speechRecognizer.stopListening();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @android.webkit.JavascriptInterface
+        public void cancelNativeSpeech() {
+            runOnUiThread(() -> {
+                if (speechRecognizer != null) {
+                    try {
+                        speechRecognizer.cancel();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @android.webkit.JavascriptInterface
@@ -194,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowContentAccess(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         // Optimasi sentuhan & rendering
         webView.setHapticFeedbackEnabled(true);
@@ -262,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         prefs.edit().putString(KEY_SERVER_URL, cleanUrl).apply();
+        webView.clearCache(true);
         webView.loadUrl(cleanUrl);
     }
 
@@ -366,11 +425,99 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initSpeechRecognizer() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            return;
+        }
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+                runOnUiThread(() -> {
+                    if (webView != null) {
+                        webView.evaluateJavascript("if (window.onNativeSpeechStart) window.onNativeSpeechStart();", null);
+                    }
+                });
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {}
+
+            @Override
+            public void onRmsChanged(float rmsdB) {}
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {}
+
+            @Override
+            public void onEndOfSpeech() {
+                runOnUiThread(() -> {
+                    if (webView != null) {
+                        webView.evaluateJavascript("if (window.onNativeSpeechEnd) window.onNativeSpeechEnd();", null);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(int error) {
+                runOnUiThread(() -> {
+                    if (webView != null) {
+                        webView.evaluateJavascript("if (window.onNativeSpeechError) window.onNativeSpeechError(" + error + ");", null);
+                    }
+                });
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                if (results != null) {
+                    ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    if (matches != null && !matches.isEmpty()) {
+                        String text = matches.get(0);
+                        runOnUiThread(() -> {
+                            if (webView != null) {
+                                String escaped = text.replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
+                                webView.evaluateJavascript("if (window.onNativeSpeechResult) window.onNativeSpeechResult('" + escaped + "');", null);
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+                if (partialResults != null) {
+                    ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    if (matches != null && !matches.isEmpty()) {
+                        String text = matches.get(0);
+                        runOnUiThread(() -> {
+                            if (webView != null) {
+                                String escaped = text.replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
+                                webView.evaluateJavascript("if (window.onNativeSpeechPartial) window.onNativeSpeechPartial('" + escaped + "');", null);
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {}
+        });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (bluetoothHidHelper != null) {
             bluetoothHidHelper.unregister();
+        }
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+            speechRecognizer = null;
         }
     }
 }

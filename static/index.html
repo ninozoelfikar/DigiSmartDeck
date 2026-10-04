@@ -13543,9 +13543,87 @@ function renderTranscriptPreview(fullText) {
   }
 }
 
-// ─── GOOGLE WEB SPEECH API ENGINE ───
+// ─── GOOGLE WEB SPEECH & NATIVE ANDROID SPEECH ENGINE ───
+function renderLiveTranscript() {
+  const currentSessionText = mergeTranscripts(currentSessionFinal, currentSessionInterim);
+  const liveText = mergeTranscripts(aiAccumulatedText, currentSessionText);
+
+  if (aiAutoSend) {
+    const confirmedSoFar = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+    if (lastSentLength > confirmedSoFar.length) {
+      lastSentLength = confirmedSoFar.length;
+    }
+    if (confirmedSoFar.length > lastSentLength) {
+      const diff = confirmedSoFar.slice(lastSentLength).trim();
+      if (diff) {
+        sendAiText(diff + ' ');
+        lastSentLength = confirmedSoFar.length;
+      }
+    }
+  }
+
+  aiCursorPos = liveText.length;
+  renderTranscriptPreview(liveText);
+}
+
+// Global Callback Bridge untuk Native Android SpeechRecognizer
+window.onNativeSpeechStart = function() {
+  isAiStarting = false;
+  isAiRecording = true;
+  updateAiMicUI();
+};
+
+window.onNativeSpeechPartial = function(text) {
+  if (!text) return;
+  currentSessionInterim = text.trim();
+  renderLiveTranscript();
+};
+
+window.onNativeSpeechResult = function(text) {
+  if (!text) return;
+  currentSessionFinal = mergeTranscripts(currentSessionFinal, text.trim());
+  currentSessionInterim = '';
+  renderLiveTranscript();
+  commitCurrentSession();
+  updateAiMicUI();
+};
+
+window.onNativeSpeechEnd = function() {
+  isAiRecording = false;
+  isAiStarting = false;
+  aiSpeechWanted = false;
+  commitCurrentSession();
+  updateAiMicUI();
+};
+
+window.onNativeSpeechError = function(code) {
+  console.warn('[Native Speech Error Code]:', code);
+  isAiRecording = false;
+  isAiStarting = false;
+  aiSpeechWanted = false;
+  const statusEl = $('ai-mic-status');
+  if (statusEl) {
+    if (code === 9) {
+      statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di sistem Android.' : 'Android mic permission denied.';
+      statusEl.style.color = '#f85149';
+    } else if (code === 7) {
+      statusEl.textContent = currentUiLang === 'id' ? 'Suara tidak terdeteksi.' : 'No speech detected.';
+      statusEl.style.color = 'var(--text-dim)';
+    } else {
+      statusEl.textContent = currentUiLang === 'id' ? 'Sesi dikte selesai.' : 'Speech ended.';
+      statusEl.style.color = 'var(--text-dim)';
+    }
+  }
+  updateAiMicUI();
+};
+
 function stopAiSpeechRecognition() {
   aiSpeechWanted = false;
+  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.stopNativeSpeech === 'function') {
+    try {
+      window.DigiAndroidBridge.stopNativeSpeech();
+    } catch(e) {}
+  }
   if (aiSpeechRecognition) {
     try {
       aiSpeechRecognition.onresult = null;
@@ -13569,9 +13647,28 @@ function startAiSpeechSession() {
   if (isAiStarting) return null;
   isAiStarting = true;
 
+  // 1. Prioritaskan Native Android SpeechRecognizer jika berjalan di APK WebView
+  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.startNativeSpeech === 'function' && window.DigiAndroidBridge.isNativeSpeechAvailable()) {
+    try {
+      window.DigiAndroidBridge.startNativeSpeech(aiSpeechLang);
+      return { native: true };
+    } catch(e) {
+      console.warn('Fallback ke Web Speech API:', e);
+    }
+  }
+
+  // 2. Fallback ke Web Speech API standar browser
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     isAiStarting = false;
+    isAiRecording = false;
+    aiSpeechWanted = false;
+    const statusEl = $('ai-mic-status');
+    if (statusEl) {
+      statusEl.textContent = currentUiLang === 'id' ? 'Browser tidak mendukung Web Speech.' : 'Web Speech not supported.';
+      statusEl.style.color = '#f85149';
+    }
+    updateAiMicUI();
     return null;
   }
 
@@ -13614,43 +13711,19 @@ function startAiSpeechSession() {
         }
       }
 
-      // Gabungkan final chunks secara cerdas tanpa pengulangan buffer
       let mergedFinal = '';
       for (const piece of finalPieces) {
         mergedFinal = mergeTranscripts(mergedFinal, piece);
       }
       currentSessionFinal = mergedFinal;
 
-      // Gabungkan interim chunks secara cerdas
       let mergedInterim = '';
       for (const piece of interimPieces) {
         mergedInterim = mergeTranscripts(mergedInterim, piece);
       }
       currentSessionInterim = mergedInterim;
 
-      // Satukan final dan interim sesi saat ini
-      const currentSessionText = mergeTranscripts(currentSessionFinal, currentSessionInterim);
-
-      // Teks utuh live di layar (menggabungkan teks tersimpan + sesi suara aktif tanpa duplikasi)
-      const liveText = mergeTranscripts(aiAccumulatedText, currentSessionText);
-
-      // Auto-Kirim: HANYA kirim teks yang sudah FINAL
-      if (aiAutoSend) {
-        const confirmedSoFar = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
-        if (lastSentLength > confirmedSoFar.length) {
-          lastSentLength = confirmedSoFar.length;
-        }
-        if (confirmedSoFar.length > lastSentLength) {
-          const diff = confirmedSoFar.slice(lastSentLength).trim();
-          if (diff) {
-            sendAiText(diff + ' ');
-            lastSentLength = confirmedSoFar.length;
-          }
-        }
-      }
-
-      aiCursorPos = liveText.length;
-      renderTranscriptPreview(liveText);
+      renderLiveTranscript();
     };
 
     recognition.onerror = (err) => {

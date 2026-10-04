@@ -1642,7 +1642,14 @@ async def websocket_handler(request):
 # --- HTTP Index Handler ---
 async def index_handler(request):
     static_dir = os.path.join(BASE_DIR, 'static')
-    return web.FileResponse(os.path.join(static_dir, 'index.html'))
+    return web.FileResponse(
+        os.path.join(static_dir, 'index.html'),
+        headers={
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+    )
 
 
 def print_banner(ports, ips):
