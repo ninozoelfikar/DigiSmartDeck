@@ -9069,8 +9069,8 @@ function syncAppUpdateDisplay(serverVer) {
       statusBadge.style.display = 'inline-flex';
       if (txtStatus) {
         txtStatus.textContent = currentUiLang === 'id'
-          ? `Aplikasi Sudah Versi Terbaru (${vStr})`
-          : `App is Up to Date (${vStr})`;
+          ? 'Aplikasi Sudah Versi Terbaru'
+          : 'App is Up to Date';
       }
     }
     if (btnUpdate) {
@@ -9085,8 +9085,8 @@ function syncAppUpdateDisplay(serverVer) {
       btnUpdate.style.display = 'inline-flex';
       if (txtUpdate) {
         txtUpdate.textContent = currentUiLang === 'id'
-          ? `Pembaruan Tersedia (${vStr}) - Unduh`
-          : `Update Available (${vStr}) - Download`;
+          ? 'Pembaruan Tersedia - Unduh'
+          : 'Update Available - Download';
       }
     }
   }
@@ -9149,6 +9149,8 @@ if (deckBackdrop) {
 }
 
 // ── Universal Modal & Popup Close Handler (Menjamin 100% tombol close berfungsi seketika di semua device) ──
+let lastModalOpenTime = 0;
+
 function handleUniversalClose(e) {
   const target = e.target;
   if (!target) return;
@@ -9170,6 +9172,7 @@ function handleUniversalClose(e) {
 
   // 2. Cek klik langsung pada backdrop modal
   if (target.classList.contains('modal-backdrop')) {
+    if (Date.now() - lastModalOpenTime < 350) return;
     if (e.cancelable) e.preventDefault();
     target.classList.add('hidden');
     vibe(10);
@@ -15179,6 +15182,7 @@ function applyAiPrompts(prompts) {
 }
 
 function openAiPromptEditModal() {
+  lastModalOpenTime = Date.now();
   playClickSound();
   vibe(15);
   const container = $('ai-prompt-edit-list');
@@ -15249,13 +15253,9 @@ if (btnResetAiPrompts) {
 }
 const btnCustomPrompt = $('ai-btn-custom-prompt');
 if (btnCustomPrompt) {
-  bindAiKey(btnCustomPrompt, () => {
-    openAiPromptEditModal();
-  });
-}
-const btnCustomPromptHeader = $('btn-ai-custom-prompt-header');
-if (btnCustomPromptHeader) {
-  bindAiKey(btnCustomPromptHeader, () => {
+  btnCustomPrompt.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     openAiPromptEditModal();
   });
 }

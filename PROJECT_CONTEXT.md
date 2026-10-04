@@ -1171,4 +1171,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 67. CATATAN CHECKPOINT (v0.9.63 - Pembukaan Instan Modal Kustomisasi & Penyederhanaan Notifikasi Pembaruan)
+- **Respons Seketika Tombol Kustomisasi Prompt (Tanpa Ditahan):**
+  - Mengubah penanganan event tombol Kustom (`#ai-btn-custom-prompt`) dari `bindAiKey` (yang sebelumnya memicu modal di `touchstart` sehingga pelepasan sentuhan `touchend` pengguna mengenai backdrop modal dan langsung menutupnya) menjadi standard click/tap listener dengan stopPropagation.
+  - Menambahkan pengaman timestamp `lastModalOpenTime` pada `handleUniversalClose` (guard window 350ms) guna mencegah penutupan backdrop modal instan yang tidak disengaja oleh event sentuhan perangkat seluler.
+  - Modal konfigurasi prompt kini langsung muncul seketika dalam satu kali klik/ketukan biasa tanpa perlu ditahan.
+- **Penyederhanaan Notifikasi Pembaruan (Modal About):**
+  - Menghilangkan teks versi `(${vStr})` dari label badge status pembaruan dan tombol unduh di bagian bawah modal About, karena versi aplikasi (`#about-app-version`) sudah ditampilkan secara jelas di bagian atas modal.
+  - Teks kini bersih dan rapi: "Aplikasi Sudah Versi Terbaru" / "App is Up to Date" jika sudah mutakhir, atau "Pembaruan Tersedia - Unduh" / "Update Available - Download" jika terdapat rilis baru.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
