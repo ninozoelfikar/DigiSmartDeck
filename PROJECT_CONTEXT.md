@@ -1038,9 +1038,29 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
       2. Sistem menerbitkan *License Key* dan link unduh installer server PC.
       3. Pengguna menjalankan server di PC -> PC menampilkan QR code untuk unduh APK ponsel dan otomatis memvalidasi lisensi.
       4. Ponsel langsung tersambung ke PC via PIN pairing lokal tanpa perlu repot mengetik username/password di layar kecil.
+
+---
+
+## 59. CATATAN CHECKPOINT (v0.9.55 - Harmonisasi AI Workstation di Ponsel & Kustomisasi Prompt Tombol HP)
+- **Harmonisasi Tata Letak AI Workstation di Ponsel (Smartphone Landscape):**
+  - Mengadaptasi Android-style Soft QWERTY Keyboard agar aktif di tablet maupun ponsel (`display: flex`).
+  - Menghadirkan styling responsif compact untuk layar ponsel landscape (`max-height: 439px`):
+    - Tuts keyboard disesuaikan ke tinggi 26px dan font 11.5px sehingga tidak menyebabkan overflow atau scrolling vertikal.
+    - Tombol microphone disesuaikan ke 46x46px dengan ikon proporsional 22px.
+    - Kotak transkripsi teks dibuat fleksibel (min-height 44px, max-height 72px).
+  - Menambahkan fitur lipat/buka keyboard:
+    - Tombol "Tutup" (`#btn-ai-tk-toggle`) pada bar kontrol keyboard untuk menyembunyikan keyboard saat pengguna membutuhkan ruang transkripsi lebih luas.
+    - Tombol pintas "Keyboard" (`#btn-ai-open-kb`) pada header transkripsi untuk memunculkan kembali soft keyboard seketika.
+    - Status visibilitas keyboard tersimpan di `localStorage` (`digi_ai_kb_collapsed`).
+- **Akses Kustomisasi Tombol Prompt AI di HP & Tablet:**
+  - Menambahkan tombol "Kustom" (`#btn-ai-edit-prompts-footer`) langsung pada footer kolom kiri AI Deck, tepat di samping badge "AI WORKSTATION".
+  - Pengguna HP kini dapat mengkustomisasi 5 tombol prompt perintah (label nama dan teks prompt) dengan 1 sentuhan tanpa harus mencari tombol di dalam keyboard tablet.
+  - Modal dialog kustomisasi prompt terhubung responsif dengan dukungan audio klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`).
+  - Kamus terjemahan bilingual (`en` & `id`) diperbarui dengan key `ai_custom_prompts`, `ai_custom_prompts_title`, `ai_kb_hide`, `ai_kb_toggle_title`, `ai_kb_open`, `ai_kb_show_title`.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
 
 
 
