@@ -1,10 +1,12 @@
 package com.digikeyboard.remote;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -15,6 +17,7 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -26,18 +29,26 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "DigiKeyboardPrefs";
     private static final String KEY_SERVER_URL = "server_url";
     private static final String DEFAULT_URL = "http://192.168.8.100:8080";
+    private static final int REQUEST_CODE_PERMISSIONS = 2001;
 
     private WebView webView;
     private ImageButton btnServerSettings;
     private SharedPreferences prefs;
     private BluetoothHidHelper bluetoothHidHelper;
+    private PermissionRequest pendingPermissionRequest;
 
     public class WebAppInterface {
         @android.webkit.JavascriptInterface
@@ -46,8 +57,32 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @android.webkit.JavascriptInterface
+        public boolean hasAudioPermission() {
+            return ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        @android.webkit.JavascriptInterface
+        public void requestAudioPermission() {
+            runOnUiThread(() -> {
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_PERMISSIONS);
+                }
+            });
+        }
+
+        @android.webkit.JavascriptInterface
         public void enableBluetoothHid() {
             runOnUiThread(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                            Manifest.permission.BLUETOOTH_CONNECT,
+                            Manifest.permission.BLUETOOTH_SCAN,
+                            Manifest.permission.BLUETOOTH_ADVERTISE
+                        }, REQUEST_CODE_PERMISSIONS);
+                        return;
+                    }
+                }
                 if (bluetoothHidHelper != null) bluetoothHidHelper.register();
             });
         }
@@ -97,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
         // 3. Konfigurasi WebView berperforma tinggi
         setupWebView();
         webView.addJavascriptInterface(new WebAppInterface(), "DigiAndroidBridge");
+
+        // Periksa & minta izin runtime Android (Audio Mic & Bluetooth)
+        checkAndRequestPermissions();
 
         // 4. Tombol pengaturan server
         btnServerSettings.setOnClickListener(v -> showServerConfigDialog());
@@ -155,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         // Optimasi sentuhan & rendering
@@ -171,7 +210,37 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                runOnUiThread(() -> {
+                    boolean audioNeeded = false;
+                    for (String res : request.getResources()) {
+                        if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(res)) {
+                            audioNeeded = true;
+                            break;
+                        }
+                    }
+
+                    if (audioNeeded && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                        pendingPermissionRequest = request;
+                        ActivityCompat.requestPermissions(
+                            MainActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO},
+                            REQUEST_CODE_PERMISSIONS
+                        );
+                    } else {
+                        request.grant(request.getResources());
+                    }
+                });
+            }
+
+            @Override
+            public void onPermissionRequestCanceled(PermissionRequest request) {
+                super.onPermissionRequestCanceled(request);
+                pendingPermissionRequest = null;
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
@@ -258,6 +327,43 @@ public class MainActivity extends AppCompatActivity {
             .setNegativeButton("Keluar", (d, w) -> finish())
             .setNeutralButton("Tetap Pakai", null)
             .show();
+    }
+
+    private void checkAndRequestPermissions() {
+        List<String> needed = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            needed.add(Manifest.permission.RECORD_AUDIO);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.BLUETOOTH_CONNECT);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.BLUETOOTH_SCAN);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.BLUETOOTH_ADVERTISE);
+            }
+        }
+        if (!needed.isEmpty()) {
+            ActivityCompat.requestPermissions(this, needed.toArray(new String[0]), REQUEST_CODE_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            boolean audioGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+            if (pendingPermissionRequest != null) {
+                if (audioGranted) {
+                    pendingPermissionRequest.grant(pendingPermissionRequest.getResources());
+                } else {
+                    pendingPermissionRequest.deny();
+                }
+                pendingPermissionRequest = null;
+            }
+        }
     }
 
     @Override

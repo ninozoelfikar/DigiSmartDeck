@@ -941,4 +941,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 54. CATATAN CHECKPOINT (v0.9.50 - Perbaikan Izin Runtime Android APK untuk Mikrofon & Bluetooth)
+- **Akar Masalah Izin pada Versi APK:**
+  - Pada `AndroidManifest.xml` sebelumnya, deklarasi izin `android.permission.RECORD_AUDIO` dan `android.permission.MODIFY_AUDIO_SETTINGS` belum terdaftar. Akibatnya, sistem operasi Android langsung memblokir akses perekaman suara / speech recognition.
+  - Pada `MainActivity.java`, implementasi `WebChromeClient` sebelumnya menggunakan implementasi default yang secara otomatis menolak (`request.deny()`) permintaan izin `PermissionRequest` dari WebView untuk audio capture.
+  - Belum ada alur permintaan izin runtime (`ActivityCompat.requestPermissions`) saat aplikasi pertama kali dijalankan.
+- **Solusi Komprehensif:**
+  - Menambahkan deklarasi izin lengkap di `AndroidManifest.xml`:
+    - `android.permission.RECORD_AUDIO`
+    - `android.permission.MODIFY_AUDIO_SETTINGS`
+    - `android.permission.BLUETOOTH_ADVERTISE`
+    - Fitur hardware opsional `android.hardware.microphone`.
+  - Mengimplementasikan `onPermissionRequest(PermissionRequest request)` di `WebChromeClient` pada `MainActivity.java` untuk secara otomatis memberikan izin audio capture kepada WebView.
+  - Menambahkan fungsi `checkAndRequestPermissions()` di `onCreate()` untuk memunculkan dialog persetujuan izin runtime mikrofon dan Bluetooth saat aplikasi pertama kali dibuka.
+  - Menambahkan jembatan JavaScript (`DigiAndroidBridge.hasAudioPermission()` dan `DigiAndroidBridge.requestAudioPermission()`) yang memicu dialog izin sistem jika pengguna menekan tombol mic di AI Workstation saat izin belum diberikan.
+  - Kompilasi ulang APK mandiri (`DigiSmartDeck.apk`, 5.5 MB) di `dist/` dan `static/` yang dapat langsung diunduh dan dipasang di perangkat HP/tablet.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 

@@ -13660,12 +13660,15 @@ function startAiSpeechSession() {
         aiSpeechWanted = false;
         isAiRecording = false;
         isAiStarting = false;
+        if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.requestAudioPermission === 'function') {
+          window.DigiAndroidBridge.requestAudioPermission();
+        }
         if (aiMicTransitionTimer) {
           clearTimeout(aiMicTransitionTimer);
           aiMicTransitionTimer = null;
         }
         if (statusEl) {
-          statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di browser.' : 'Microphone permission denied.';
+          statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di sistem.' : 'Microphone permission denied.';
           statusEl.style.color = '#f85149';
         }
         return;
@@ -13696,6 +13699,12 @@ function startAiSpeechSession() {
 // ─── TOGGLE MIC UTAMA (GOOGLE WEB SPEECH API) ───
 function toggleAiSpeech() {
   playClickSound();
+
+  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.hasAudioPermission === 'function') {
+    if (!window.DigiAndroidBridge.hasAudioPermission()) {
+      window.DigiAndroidBridge.requestAudioPermission();
+    }
+  }
 
   if (aiSpeechWanted) {
     stopAiSpeechRecognition();
