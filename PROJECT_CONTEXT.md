@@ -1146,3 +1146,17 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 65. CATATAN CHECKPOINT (v0.9.61 - Eliminasi Tombol Kustomisasi di Soft Keyboard Tablet & Kunci Desain)
+- **Eliminasi Tombol Kustomisasi pada Keyboard Lembut Tablet:**
+  - Menghapus tombol duplikat edit prompt (`#ai-tk-btn-edit-prompt`) dari baris ke-4 soft QWERTY keyboard tablet.
+  - Mengoptimalkan proporsi tuts spasi (`.ai-tk-key.ai-tk-space`) menjadi `flex: 3.5`, sehingga tata letak tuts baris bawah (mode angka, koma, spasi, titik, dan empat panah navigasi arah) menjadi rapi, simetris, dan proporsional.
+  - Akses modal kustomisasi prompt kini terpusat secara konsisten dan eksklusif pada tombol "Kustom" (`#ai-btn-custom-prompt`) di kolom kiri.
+- **Status Penguncian Desain:**
+  - Desain tampilan UI untuk mode AI Workstation (baik tampilan HP maupun Tablet), mode Game Controller, dan mode Keyboard PC Standar telah dikonfirmasi matang dan resmi dikunci.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+

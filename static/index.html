@@ -4048,7 +4048,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 }
 
 .ai-tk-key.ai-tk-space {
-  flex: 2.8;
+  flex: 3.5;
   font-size: 13px;
   color: var(--text-dim);
   font-weight: 600;
@@ -4068,19 +4068,6 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   background: rgba(88, 166, 255, 0.28);
   border-color: var(--accent);
   color: var(--accent);
-}
-
-.ai-tk-key.ai-tk-edit-prompt {
-  flex: 1.3;
-  background: rgba(88, 166, 255, 0.12);
-  border-color: rgba(88, 166, 255, 0.35);
-  color: var(--accent);
-}
-
-.ai-tk-key.ai-tk-edit-prompt:active {
-  background: rgba(88, 166, 255, 0.28);
-  border-color: var(--accent);
-  transform: translateY(1px);
 }
 
 .ai-text-cursor {
@@ -7032,9 +7019,6 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
             </button>
             <button type="button" class="ai-tk-key ai-tk-fn ai-tk-arrow" id="ai-tk-btn-right" title="Kursor Kanan">
               <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-            <button type="button" class="ai-tk-key ai-tk-fn ai-tk-edit-prompt" id="ai-tk-btn-edit-prompt" title="Kustomisasi Shortcut Prompt AI">
-              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </button>
           </div>
         </div>
@@ -15111,13 +15095,6 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
   if (btnDown) {
     bindAiRepeatKey(btnDown, () => {
       moveAiCursorDown();
-    });
-  }
-
-  const btnEditPrompt = $('ai-tk-btn-edit-prompt');
-  if (btnEditPrompt) {
-    bindAiKey(btnEditPrompt, () => {
-      openAiPromptEditModal();
     });
   }
 })();
