@@ -40,7 +40,7 @@ PROMPT_URL = f"http://127.0.0.1:{SERVER_PORT}/api/prompt?wait=true"
 DISMISS_URL = f"http://127.0.0.1:{SERVER_PORT}/api/prompt/dismiss"
 
 ANSI_RE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\))')
-IDLE_SECONDS = 0.35          # output harus diam selama ini sebelum dianggap menunggu input
+IDLE_SECONDS = 0.22          # output harus diam selama ini sebelum dianggap menunggu input
 PROMPT_TIMEOUT = 120         # detik kartu tetap tampil di HP
 
 
@@ -48,8 +48,10 @@ def strip_ansi(text):
     return ANSI_RE.sub('', text).replace('\r', '')
 
 
-def _opt(label, send, primary=False, danger=False):
-    o = {'label': label, 'value': send, 'send': send}
+def _opt(label, value, send, key=None, primary=False, danger=False):
+    o = {'label': label, 'value': value, 'send': send}
+    if key:
+        o['key'] = key
     if primary:
         o['primary'] = True
     if danger:
@@ -57,108 +59,162 @@ def _opt(label, send, primary=False, danger=False):
     return o
 
 
+def clean_terminal_text(buffer_text):
+    clean = ANSI_RE.sub('', buffer_text)
+    raw_lines = clean.split('\n')
+    lines = []
+    for l in raw_lines:
+        parts = l.split('\r')
+        effective = parts[-1].rstrip()
+        if effective:
+            lines.append(effective)
+    return lines
+
+
+AI_PERMISSION_KW = re.compile(
+    r'(?i)\b('
+    r'ask(?:ing)? for permission|'
+    r'run(?:ning)? (?:this|the following)?\s*command|'
+    r'execute(?:ing)? (?:this|the following)?\s*command|'
+    r'allow|approve|permit|authori[sz]e|permission|'
+    r'izinkan|setujui|berikan izin|'
+    r'do you want to (?:run|execute|proceed|continue|install|apply|delete|remove|overwrite)|'
+    r'would you like to (?:run|execute|proceed|continue|install|apply)|'
+    r'are you sure you want to|apakah anda yakin|'
+    r'confirm execution|action required|approval required'
+    r')\b'
+)
+
+
+def extract_prompt_details(lines, context, inspect_line):
+    # Cari baris yang secara spesifik menanyakan izin atau eksekusi perintah
+    title = None
+    question_line = ""
+
+    for l in reversed(lines[-6:]):
+        s = l.strip()
+        if not s or re.match(r'^[❯>#\$%:\?\[\]\(\)]+$', s):
+            continue
+        if AI_PERMISSION_KW.search(s) or '?' in s:
+            question_line = s
+            break
+
+    if question_line:
+        q_lower = question_line.lower()
+        if "run" in q_lower and ("command" in q_lower or "this" in q_lower or "following" in q_lower):
+            title = "Run This Command?"
+        elif "execute" in q_lower and ("command" in q_lower or "this" in q_lower or "following" in q_lower):
+            title = "Execute This Command?"
+        elif "ask" in q_lower and "permission" in q_lower:
+            title = "Ask for Permission"
+        elif "allow" in q_lower or "approve" in q_lower or "permit" in q_lower or "authori" in q_lower:
+            title = "Allow This Action?"
+        elif "are you sure" in q_lower:
+            title = "Are You Sure?"
+        elif len(question_line) <= 45 and ('?' in question_line or ':' in question_line):
+            title = question_line.rstrip(':?').strip() + '?'
+
+    if not title:
+        c_lower = context.lower()
+        if "run" in c_lower and "command" in c_lower:
+            title = "Run This Command?"
+        elif "permission" in c_lower:
+            title = "Ask for Permission"
+        elif "allow" in c_lower or "approve" in c_lower:
+            title = "Allow Action?"
+        else:
+            title = "Izin Tindakan CLI"
+
+    # Context message: ambil baris relevan tanpa kursor kosong
+    msg_lines = []
+    for l in lines[-8:]:
+        s = l.strip()
+        if s and not re.match(r'^[❯>#\$%:\?]\s*$', s):
+            msg_lines.append(s)
+
+    message = '\n'.join(msg_lines) if msg_lines else context
+    return title, message
+
+
 def detect_prompt(buffer_text):
     """Kembalikan payload prompt jika teks buffer terlihat seperti pertanyaan interaktif."""
-    clean = strip_ansi(buffer_text)
-    lines = [l.rstrip() for l in clean.split('\n')]
-    while lines and not lines[-1].strip():
-        lines.pop()
+    lines = clean_terminal_text(buffer_text)
     if not lines:
         return None
     last = lines[-1].strip()
     if not last or len(last) > 400:
         return None
 
-    # Shell prompt biasa (user@host:~$ ) tanpa tanda tanya atau opsi bukan pertanyaan
-    if re.search(r'[\$#%>]\s*$', last) and not re.search(r'[\?:\[\(]', last):
+    # Jika baris terakhir hanya prompt kursor (misal: "> ", ": ", "? ", "$ "),
+    # gunakan baris sebelumnya sebagai target inspeksi utama
+    inspect_line = last
+    if re.match(r'^[❯>#\$%:\?]\s*$', last) and len(lines) >= 2:
+        inspect_line = lines[-2].strip()
+
+    # Abaikan shell prompt biasa tanpa konteks pertanyaan
+    if re.search(r'[\$#%>]\s*$', inspect_line) and not re.search(r'[\?:\[\(]', inspect_line):
         return None
 
     context = '\n'.join(l for l in lines[-8:] if l.strip())
 
-    # 1. Konfirmasi biner / tri-state: [y/n], [y/n/a], (y/n/always), (y)es/(n)o
-    scan_text = last
-    if len(lines) >= 2 and len(last) < 25:
-        scan_text = lines[-2].strip() + ' ' + last
-
-    m = re.search(r'[\[\(]\s*(y(?:es)?)\s*/\s*(n(?:o)?)(?:\s*/\s*([a-zA-Z]+))?\s*[\]\)]', scan_text, re.IGNORECASE)
-    if not m:
-        m = re.search(r'\((y)\)es[,\s/]+(?:\((n)\)o)?[,\s/]*(?:\(([a-zA-Z]+)\)(?:lways)?)?', scan_text, re.IGNORECASE)
-
-    if m:
-        y_tok = m.group(1) or 'y'
-        n_tok = m.group(2) or 'n'
-        third_tok = m.group(3) if len(m.groups()) >= 3 else None
-
-        long_form = len(y_tok) > 1
-        default_yes = y_tok[0].isupper()
-        default_no = n_tok[0].isupper()
-        yes_send = ('yes' if long_form else 'y') + '\n'
-        no_send = ('no' if long_form else 'n') + '\n'
-
-        opts = [
-            _opt('Ya', yes_send, primary=not default_no),
-        ]
-        if third_tok:
-            t_lower = third_tok.lower()
-            if 'a' in t_lower:
-                opts.append(_opt('Selalu Izinkan', 'a\n', primary=False))
-            else:
-                opts.append(_opt(third_tok.capitalize(), f'{third_tok}\n'))
-        opts.append(_opt('Tidak', no_send, danger=True, primary=default_no and not default_yes))
-
-        return {
-            'app': 'Terminal',
-            'title': 'Konfirmasi Terminal',
-            'message': context,
-            'options': opts,
-        }
-
-    # 2. Menu bernomor: scan lines[-15:]
-    items = []
-    for l in lines[-15:]:
-        mm = re.match(r'^\s*[❯>]?\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,70})$', l)
-        if mm:
-            items.append((mm.group(1), mm.group(2).strip()))
-    if 2 <= len(items) <= 9:
-        return {
-            'app': 'Terminal',
-            'title': 'Pilih Opsi',
-            'message': context,
-            'options': [_opt(f"{n}. {txt}", f"{n}\n", primary=(i == 0)) for i, (n, txt) in enumerate(items)],
-        }
-
-    # 3. Izin tindakan AI agent / tool call (allow, approve, permit, run this command)
-    if re.search(r'(?i)\b(allow|approve|permit|authori[sz]e|izinkan|setujui|permission|run this command|execute this)\b', context):
-        if re.search(r'[\?:]\s*$', last) or '?' in context:
-            return {
-                'app': 'Terminal',
-                'title': 'Izin Tindakan AI',
-                'message': context,
-                'options': [
-                    _opt('Izinkan', 'y\n', primary=True),
-                    _opt('Tolak', 'n\n', danger=True),
-                ],
-            }
-
-    # 4. Lanjutkan? / Are you sure?
-    if re.search(r'(?i)\b(continue|proceed|lanjutkan|are you sure|apakah anda yakin)\b', context) and ('?' in context or re.search(r'[:?]\s*$', last)):
-        return {
-            'app': 'Terminal',
-            'title': 'Konfirmasi Terminal',
-            'message': context,
-            'options': [
-                _opt('Ya', 'y\n', primary=True),
-                _opt('Tidak', 'n\n', danger=True),
-            ],
-        }
-
-    # 5. Press Enter / any key
+    # 1. Menunggu Enter murni (Press Enter to continue, dll.)
     if re.search(r'(?i)(press|tekan)\s+(\[?enter\]?|return|any key|sembarang)', context):
         return {
             'app': 'Terminal',
             'title': 'Menunggu Enter',
             'message': context,
-            'options': [_opt('Lanjut (Enter)', '\n', primary=True)],
+            'options': [_opt('Lanjut (Enter)', 'enter', '\n', key='Enter', primary=True)],
+        }
+
+    # 2. Deteksi pertanyaan CLI / AI Agent (kata kunci izin, biner [y/n], atau tanda tanya)
+    is_permission = bool(AI_PERMISSION_KW.search(context))
+    is_yn = bool(re.search(r'[\[\(]\s*y(?:es)?[/\s,]+n(?:o)?', context, re.IGNORECASE))
+    is_question = inspect_line.endswith('?') or '?' in inspect_line
+
+    if is_permission or is_yn or is_question:
+        title, message = extract_prompt_details(lines, context, inspect_line)
+
+        # Cek jika CLI menyediakan menu bernomor (misal: 1. Yes, 2. Always, 3. No)
+        items = []
+        for l in lines[-10:]:
+            mm = re.match(r'^\s*[❯>]?\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,70})$', l)
+            if mm:
+                items.append((mm.group(1), mm.group(2).strip().lower()))
+
+        yes_send = 'y\n'
+        allow_send = 'y\n'
+        always_send = 'a\n'
+        no_send = 'n\n'
+
+        yes_key = 'y'
+        allow_key = 'y'
+        always_key = 'a'
+        no_key = 'n'
+
+        if items:
+            for num, text in items:
+                if any(k in text for k in ['always', 'selalu', "don't ask"]):
+                    always_send = f'{num}\n'
+                    always_key = num
+                elif any(k in text for k in ['yes', 'ya', 'allow', 'izinkan', 'proceed', 'continue']):
+                    yes_send = f'{num}\n'
+                    yes_key = num
+                    allow_send = f'{num}\n'
+                    allow_key = num
+                elif any(k in text for k in ['no', 'tidak', 'deny', 'tolak', 'cancel', 'batal', 'abort']):
+                    no_send = f'{num}\n'
+                    no_key = num
+
+        return {
+            'app': 'Terminal',
+            'title': title,
+            'message': message,
+            'options': [
+                _opt('Yes', 'yes', yes_send, key=yes_key, primary=True),
+                _opt('Allow', 'allow', allow_send, key=allow_key, primary=False),
+                _opt('Always Allow', 'always', always_send, key=always_key, primary=False),
+                _opt('No', 'no', no_send, key=no_key, danger=True)
+            ]
         }
 
     return None
@@ -208,7 +264,7 @@ class DigiTermSupervisor:
     # ── Watcher ──
     def watcher(self):
         while self.running:
-            time.sleep(0.1)
+            time.sleep(0.08)
             with self.buf_lock:
                 text = self.buf
                 idle = time.time() - self.last_output
@@ -216,13 +272,17 @@ class DigiTermSupervisor:
                 continue
             with self.active_lock:
                 if self.active_id:
-                    continue
+                    if time.time() - getattr(self, 'active_time', 0) > 40:
+                        self.active_id = None
+                    else:
+                        continue
             payload = detect_prompt(text)
             if not payload:
                 continue
             prompt_id = f"term_{os.getpid()}_{int(time.time() * 1000)}"
             with self.active_lock:
                 self.active_id = prompt_id
+                self.active_time = time.time()
             # Prompt ini sudah diproses; jangan dikirim ulang dari buffer yang sama
             self.clear_buffer()
             threading.Thread(target=self.dispatch, args=(prompt_id, payload), daemon=True).start()
@@ -299,8 +359,11 @@ class DigiTermSupervisor:
                         break
                     os.write(sys.stdout.fileno(), data)
                     with self.buf_lock:
-                        self.buf = (self.buf + data.decode('utf-8', errors='ignore'))[-2048:]
-                        self.last_output = time.time()
+                        decoded = data.decode('utf-8', errors='ignore')
+                        self.buf = (self.buf + decoded)[-2048:]
+                        stripped = strip_ansi(decoded).strip()
+                        if stripped:
+                            self.last_output = time.time()
         finally:
             self.running = False
             self.dismiss_active()

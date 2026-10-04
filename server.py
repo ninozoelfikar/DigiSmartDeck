@@ -1411,6 +1411,15 @@ async def websocket_handler(request):
             'suggested_mode': CURRENT_APP_CONTEXT['suggested_mode'],
             'class_name': CURRENT_APP_CONTEXT['class_name']
         }))
+
+        # Kirim prompt yang sedang aktif jika ada (misal client baru bangun dari sleep atau reconnect)
+        for p_info in list(PENDING_PROMPTS.values()):
+            p_payload = p_info.get('payload')
+            if p_payload:
+                try:
+                    await ws.send_str(json.dumps(p_payload))
+                except Exception:
+                    pass
     except Exception:
         pass
 

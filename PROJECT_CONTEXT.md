@@ -1357,3 +1357,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 77. CATATAN CHECKPOINT (v0.9.73 - Standarisasi Pop-up Terminal CLI & 4 Tombol Izin: Yes, Allow, Always Allow, No)
+- **Akar Masalah Pop-up Terminal Kadang Aktif Kadang Tidak:**
+  1. *Interferensi Animasi Spinner & Blink Cursor ANSI*: Output escape sequence terminal yang terus-menerus terkirim pada jeda waktu ~100ms membuat pewaktu `last_output` terus tereset, sehingga deteksi idle tidak pernah mencapai ambang batas pemicuan.
+  2. *Buffer Baris Terakhir Kursor Murni*: Pada CLI interaktif, baris terakhir sering kali hanya berisi karakter prompt tunggal (`> `, `: `, `? `, `$ `), sehingga regex lama menganggapnya sebagai prompt shell biasa dan mengabaikan pertanyaan pada baris sebelumnya.
+  3. *Putusnya Sesi WebSocket Saat Ponsel Istirahat/Sleep*: Klien seluler yang tersambung kembali setelah layar mati melewatkan prompt aktif yang tersimpan di server.
+  4. *Prompt ID Menggantung (Stale Active ID)*: Ketika pengguna memilih untuk merespons langsung dari keyboard PC atau membatalkan operasi, `active_id` supervisor PTY tidak tereset, menghalangi deteksi prompt berikutnya.
+- **Solusi yang Diterapkan:**
+  1. *Penyaringan ANSI pada Pewaktu Idle*: Hanya karakter teks non-ANSI yang memperbarui `last_output`, dengan batas jeda responsif 0.22 detik.
+  2. *Inspeksi Mundur Baris Pertanyaan & Judul Deskriptif (`extract_prompt_details`)*:
+     - Mendeteksi kata kunci izin aksi (`ask for permission`, `run this command`, `execute this command`, `allow`, `approve`, `confirm execution`).
+     - Menampilkan judul spesifik pada dialog kartu (`Run This Command?`, `Ask for Permission`, `Allow This Action?`, `Execute This Command?`).
+     - Menampilkan isi pesan terminal/perintah yang hendak dijalankan dengan format font monospace dan container scrollable (`max-height: 200px`) agar pengguna mengetahui secara transparan apa yang sedang terjadi di PC.
+  3. *Standarisasi 4 Kunci Jawaban CLI*:
+     - Seluruh prompt izin eksekusi CLI distandarisasi menjadi 4 tombol presisi: `Yes` (kirim `y\n`), `Allow` (kirim `y\n`), `Always Allow` (kirim `a\n`), dan `No` (kirim `n\n`).
+     - Jika CLI berupa menu bernomor (`1. Yes`, `2. Always`, `3. No`), pemetaan nomor otomatis disesuaikan secara cerdas ke input hardware yang tepat.
+  4. *Re-broadcast Prompt Aktif pada Reconnect WebSocket (`server.py`)*: Setiap klien seluler yang menyambung kembali langsung menerima siaran instan daftar prompt tertunda (`PENDING_PROMPTS`).
+  5. *Pembaruan Versi Cache PWA*: Versi cache di `static/sw.js` diperbarui ke `digismartdeck-cache-v12`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
