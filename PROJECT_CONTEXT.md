@@ -1318,10 +1318,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
 
-
-
-
-
-
-
+## 75. CATATAN CHECKPOINT (v0.9.71 - Perbaikan Bug Kombinasi Tombol Dialog GUI & Ekspansi Deteksi Prompt Terminal AI Agent)
+- **Perbaikan Eksekusi Kombinasi Tombol Dialog GUI (`server.py`):**
+  - Mengatasi bug fatal `NameError: name 'simulate_key' is not defined` pada penanganan `prompt_response` dengan mengimplementasikan fungsi `simulate_combo(keys)`.
+  - Fungsi `simulate_combo` menekan modifier dan tombol utama secara berurutan menggunakan `simulate_press`, menunggu jeda 40ms, lalu melepasnya dalam urutan terbalik menggunakan `simulate_release`.
+  - Membungkus seluruh blok penanganan simulasi input `prompt_response` dengan `try...except` guna mencegah putusnya koneksi WebSocket akibat kesalahan simulasi.
+  - Dialog "Save Changes" pada Note/Catatan kini mengeksekusi `Alt+D` secara hardware-level melalui uinput, sehingga tombol "Jangan Simpan" (Discard) langsung aktif tanpa salah mencentang kotak checklist.
+- **Ekspansi Cerdas Deteksi Prompt CLI & Agen AI (`digi-term`):**
+  - Memperbarui fungsi `detect_prompt` pada supervisor PTY pseudoterminal:
+    - Mendukung format prompt tri-state dan biner agen AI: `[y/n/a]`, `(y/n/always)`, `(y)es, (n)o, (a)lways`, `[Y/n]`. Jika opsi `a` (always) terdeteksi, opsi "Selalu Izinkan" otomatis disertakan pada kartu di tablet/ponsel.
+    - Mendukung menu bernomor multi-baris yang berakhir pada opsi terakhir tanpa memerlukan baris "Choice:" terpisah.
+    - Mendukung antarmuka TUI selector berbasis kursor/panah (`❯ 1. Yes`, `> 1. Yes`).
+    - Mendukung analisis konteks kalimat izin AI agen (`allow`, `approve`, `permission`, `run this command`, `execute this`) dalam 8 baris terakhir.
+- **Validasi dan Pengujian:**
+  - 11 variasi pengujian prompt (biner, tri-state, menu bernomor, pertanyaan izin agen, dan TUI) lulus uji 100%.
+  - Layanan `digikeyboard.service` telah direstart dan aktif melayani koneksi klien seluler.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
