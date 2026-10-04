@@ -505,31 +505,6 @@ class DigiSmartDeckGUI(QMainWindow):
 
         guide_layout.addLayout(guide_cols)
         layout.addWidget(card_guide)
-
-        # Card C: Smart Terminal Companion Launcher (Vibe Coding)
-        card_term = QFrame()
-        card_term.setProperty("class", "card-panel")
-        term_layout = QHBoxLayout(card_term)
-        term_layout.setContentsMargins(14, 12, 14, 12)
-        term_layout.setSpacing(12)
-
-        term_info = QVBoxLayout()
-        term_info.setSpacing(3)
-        term_title = QLabel("TERMINAL PINTAR (VIBE CODING & DEVELOPER COMPANION)")
-        term_title.setProperty("class", "card-header-title")
-        term_desc = QLabel("Jalankan terminal di PC yang setiap pertanyaan konfirmasinya (Yes/No, Allow AI, pilihan menu) otomatis muncul di HP Anda.")
-        term_desc.setStyleSheet("font-size: 11px; color: #8b949e;")
-        term_desc.setWordWrap(True)
-        term_info.addWidget(term_title)
-        term_info.addWidget(term_desc)
-        term_layout.addLayout(term_info, 1)
-
-        btn_launch_term = QPushButton("Buka Terminal Pintar")
-        btn_launch_term.setProperty("class", "btn-primary")
-        btn_launch_term.clicked.connect(self.launch_smart_terminal_gui)
-        term_layout.addWidget(btn_launch_term)
-
-        layout.addWidget(card_term)
         layout.addStretch()
 
         return page
@@ -734,6 +709,21 @@ class DigiSmartDeckGUI(QMainWindow):
         l_s.addWidget(self.lbl_svc_status)
         diag_grid.addWidget(b_svc)
 
+        # Box 3: Smart Terminal Integration
+        b_term = QFrame()
+        b_term.setObjectName("boxTerm")
+        b_term.setStyleSheet("QFrame#boxTerm { background-color: #12141a; border: 1px solid #30363d; border-radius: 8px; }")
+        l_t = QVBoxLayout(b_term)
+        l_t.setContentsMargins(14, 14, 14, 14)
+        l_t.setSpacing(6)
+        t_t = QLabel("Integrasi Smart Terminal Otomatis")
+        t_t.setStyleSheet("color: #8b949e; font-size: 11px; font-weight: 600; background: transparent; border: none;")
+        self.lbl_smart_term_status = QLabel("MEMERIKSA...")
+        self.lbl_smart_term_status.setStyleSheet("font-weight: 800; font-size: 13px; color: #3fb950; background: transparent; border: none;")
+        l_t.addWidget(t_t)
+        l_t.addWidget(self.lbl_smart_term_status)
+        diag_grid.addWidget(b_term)
+
         diag_layout.addLayout(diag_grid)
 
         # Action Buttons
@@ -746,8 +736,13 @@ class DigiSmartDeckGUI(QMainWindow):
         btn_fix_uinput.setProperty("class", "btn-secondary")
         btn_fix_uinput.clicked.connect(self.check_uinput_details)
 
+        self.btn_toggle_term = QPushButton("Alihkan Smart Terminal")
+        self.btn_toggle_term.setProperty("class", "btn-secondary")
+        self.btn_toggle_term.clicked.connect(self.toggle_smart_terminal)
+
         btn_action_row.addWidget(btn_restart)
         btn_action_row.addWidget(btn_fix_uinput)
+        btn_action_row.addWidget(self.btn_toggle_term)
         btn_action_row.addStretch()
         diag_layout.addLayout(btn_action_row)
 
@@ -838,6 +833,16 @@ class DigiSmartDeckGUI(QMainWindow):
         else:
             self.lbl_uinput_status.setText("TERBATAS (Perlu Udev Rule)")
             self.lbl_uinput_status.setStyleSheet("font-weight: 800; font-size: 13px; color: #e3b341;")
+
+        # 4b. Smart Terminal integration check
+        if self.is_smart_terminal_enabled():
+            self.lbl_smart_term_status.setText("AKTIF (Otomatis)")
+            self.lbl_smart_term_status.setStyleSheet("font-weight: 800; font-size: 13px; color: #3fb950;")
+            self.btn_toggle_term.setText("Nonaktifkan Smart Terminal")
+        else:
+            self.lbl_smart_term_status.setText("NONAKTIF")
+            self.lbl_smart_term_status.setStyleSheet("font-weight: 800; font-size: 13px; color: #8b949e;")
+            self.btn_toggle_term.setText("Aktifkan Smart Terminal")
 
         # 5. Update Paired Devices Table
         devs = pairing_manager.get_paired_list()
@@ -976,40 +981,51 @@ class DigiSmartDeckGUI(QMainWindow):
         except Exception as e:
             self.log_viewer.setPlainText(f"Gagal membaca log: {e}")
 
-    def launch_smart_terminal_gui(self):
-        term_bin = os.path.expanduser('~/.local/bin/digi-term')
-        if not os.path.exists(term_bin):
-            term_bin = os.path.join(APP_DIR, 'digi-term')
-        if not os.path.exists(term_bin):
-            QMessageBox.warning(self, "Terminal Pintar", "Berkas digi-term tidak ditemukan.")
-            return
+    def is_smart_terminal_enabled(self):
+        flag_file = os.path.expanduser('~/.config/digismartdeck/smart_terminal_enabled')
+        return os.path.exists(flag_file)
 
-        candidates = [
-            ('gnome-terminal', ['--']),
-            ('kgx', ['--']),
-            ('konsole', ['-e']),
-            ('xfce4-terminal', ['-x']),
-            ('tilix', ['-e']),
-            ('kitty', []),
-            ('alacritty', ['-e']),
-            ('x-terminal-emulator', ['-e']),
-            ('xterm', ['-e']),
-        ]
-        import shutil
-        inner = [sys.executable, term_bin, '--banner']
-        launched = False
-        for term, flag in candidates:
-            path = shutil.which(term)
-            if not path:
-                continue
+    def toggle_smart_terminal(self):
+        flag_file = os.path.expanduser('~/.config/digismartdeck/smart_terminal_enabled')
+        os.makedirs(os.path.dirname(flag_file), exist_ok=True)
+        if os.path.exists(flag_file):
             try:
-                subprocess.Popen([path] + flag + inner, start_new_session=True)
-                launched = True
-                break
+                os.remove(flag_file)
             except Exception:
-                continue
-        if not launched:
-            QMessageBox.warning(self, "Terminal Pintar", "Tidak ditemukan aplikasi terminal yang kompatibel di sistem.")
+                pass
+        else:
+            try:
+                with open(flag_file, 'w', encoding='utf-8') as f:
+                    f.write('1\n')
+            except Exception:
+                pass
+            self.ensure_bashrc_hook()
+        self.refresh_all_status()
+
+    def ensure_bashrc_hook(self):
+        bashrc = os.path.expanduser('~/.bashrc')
+        hook_marker = 'DIGI_TERM_SUPERVISED'
+        hook_code = '\n# DigiSmartDeck Smart Terminal Integration\nif [[ $- == *i* && -t 0 && -t 1 && -z "$DIGI_TERM_SUPERVISED" && -z "$DIGI_TERM_DISABLE" && -f "$HOME/.config/digismartdeck/smart_terminal_enabled" && -x "$HOME/.local/bin/digi-term" ]]; then exec "$HOME/.local/bin/digi-term"; fi\n'
+        if os.path.exists(bashrc):
+            try:
+                with open(bashrc, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if hook_marker not in content:
+                    with open(bashrc, 'a', encoding='utf-8') as f:
+                        f.write(hook_code)
+            except Exception:
+                pass
+        # Pasang juga ke .zshrc jika ada
+        zshrc = os.path.expanduser('~/.zshrc')
+        if os.path.exists(zshrc):
+            try:
+                with open(zshrc, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if hook_marker not in content:
+                    with open(zshrc, 'a', encoding='utf-8') as f:
+                        f.write(hook_code)
+            except Exception:
+                pass
 
 
 def acquire_single_instance_lock():

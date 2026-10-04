@@ -1603,27 +1603,6 @@ async def websocket_handler(request):
                         }))
                         continue
 
-                # ── Smart Terminal: status, persetujuan, dan peluncuran ──
-                if msg_type in ('smart_terminal_status', 'smart_terminal_consent', 'launch_smart_terminal'):
-                    if msg_type == 'smart_terminal_consent':
-                        save_terminal_consent(bool(data.get('granted')), device_label)
-                    consent = load_terminal_consent()
-                    reply = {
-                        'type': 'smart_terminal_status',
-                        'supported': smart_terminal_supported(),
-                        'platform': sys.platform,
-                        'consent': bool(consent.get('granted'))
-                    }
-                    if msg_type == 'launch_smart_terminal' or (msg_type == 'smart_terminal_consent' and data.get('granted') and data.get('launch')):
-                        if not reply['consent']:
-                            reply.update({'launched': False, 'message': 'Izin Smart Terminal belum diberikan.'})
-                        else:
-                            ok, info_msg = await asyncio.to_thread(launch_smart_terminal)
-                            reply.update({'launched': ok, 'message': info_msg})
-                            print(f"[TERM] {info_msg} (diminta oleh {device_label})")
-                    await ws.send_str(json.dumps(reply))
-                    continue
-
                 if msg_type == 'keypress':
                     key_name = data.get('key')
                     char = data.get('char')
@@ -2074,80 +2053,6 @@ async def api_dismiss_prompt_handler(request):
             await broadcast_prompt_dismiss(pid)
         PENDING_PROMPTS.clear()
         return web.json_response({'status': 'dismissed_all'}, headers={'Access-Control-Allow-Origin': '*'})
-
-
-# ── Smart Terminal (digi-term) Launcher & Consent ──
-TERMINAL_CONSENT_FILE = os.path.join(BASE_DIR, 'data', 'terminal_consent.json')
-DIGI_TERM_PATH = os.path.join(BASE_DIR, 'digi-term')
-
-
-def smart_terminal_supported():
-    return sys.platform.startswith('linux') or sys.platform == 'darwin'
-
-
-def load_terminal_consent():
-    try:
-        with open(TERMINAL_CONSENT_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
-        return {'granted': False}
-
-
-def save_terminal_consent(granted, device=''):
-    data = {
-        'granted': bool(granted),
-        'updated_at': time.strftime('%Y-%m-%d %H:%M:%S'),
-        'device': device
-    }
-    os.makedirs(os.path.dirname(TERMINAL_CONSENT_FILE), exist_ok=True)
-    with open(TERMINAL_CONSENT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2)
-    return data
-
-
-def launch_smart_terminal():
-    """Buka jendela terminal baru di PC yang menjalankan shell di bawah digi-term."""
-    if not smart_terminal_supported():
-        return False, 'Smart Terminal belum tersedia untuk Windows.'
-    if not os.path.exists(DIGI_TERM_PATH):
-        return False, 'Berkas digi-term tidak ditemukan.'
-    inner = [sys.executable, DIGI_TERM_PATH, '--banner']
-
-    if sys.platform == 'darwin':
-        cmd_str = ' '.join(f"'{p}'" for p in inner)
-        script = f'tell application "Terminal"\n activate\n do script "{cmd_str}"\nend tell'
-        try:
-            subprocess.Popen(['osascript', '-e', script])
-            return True, 'Smart Terminal dibuka di Terminal macOS.'
-        except Exception as e:
-            return False, f'Gagal membuka Terminal: {e}'
-
-    env = dict(get_x11_env())
-    uid = os.getuid()
-    env.setdefault('XDG_RUNTIME_DIR', f'/run/user/{uid}')
-    env.setdefault('DBUS_SESSION_BUS_ADDRESS', f'unix:path=/run/user/{uid}/bus')
-    candidates = [
-        ('gnome-terminal', ['--']),
-        ('kgx', ['--']),
-        ('konsole', ['-e']),
-        ('xfce4-terminal', ['-x']),
-        ('tilix', ['-e']),
-        ('kitty', []),
-        ('alacritty', ['-e']),
-        ('x-terminal-emulator', ['-e']),
-        ('xterm', ['-e']),
-    ]
-    for term, flag in candidates:
-        path = shutil.which(term)
-        if not path:
-            continue
-        try:
-            subprocess.Popen([path] + flag + inner, env=env, start_new_session=True,
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return True, f'Smart Terminal dibuka ({term}).'
-        except Exception:
-            continue
-    return False, 'Tidak ditemukan aplikasi terminal di PC.'
 
 
 async def api_test_reconnect_handler(request):

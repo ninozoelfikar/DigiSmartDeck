@@ -93,8 +93,49 @@ ln -sf "$SCRIPT_DIR/digikeyboard_gui.py" ~/.local/bin/digikeyboard 2>/dev/null |
 update-desktop-database ~/.local/share/applications/ 2>/dev/null || true
 echo -e "    ${GREEN}[OK] Pintasan desktop dan menu aplikasi terpasang.${NC}"
 
-# ── 5. Jalankan Aplikasi GUI Host Manager atau Server Background ──
-echo -e "${CYAN}[5/5]${NC} Menjalankan DigiSmartDeck..."
+# ── 5. Integrasi Smart Terminal Otomatis ──
+echo -e "${CYAN}[5/6]${NC} Menyiapkan integrasi Smart Terminal..."
+mkdir -p ~/.config/digismartdeck ~/.local/bin
+ln -sf "$SCRIPT_DIR/digi-term" ~/.local/bin/digi-term
+chmod +x "$SCRIPT_DIR/digi-term" ~/.local/bin/digi-term
+
+HOOK_LINE='if [[ $- == *i* && -t 0 && -t 1 && -z "$DIGI_TERM_SUPERVISED" && -z "$DIGI_TERM_DISABLE" && -f "$HOME/.config/digismartdeck/smart_terminal_enabled" && -x "$HOME/.local/bin/digi-term" ]]; then exec "$HOME/.local/bin/digi-term"; fi'
+
+if [ -f "$HOME/.bashrc" ] && ! grep -q "DIGI_TERM_SUPERVISED" "$HOME/.bashrc"; then
+    echo "" >> "$HOME/.bashrc"
+    echo "# DigiSmartDeck Smart Terminal Integration" >> "$HOME/.bashrc"
+    echo "$HOOK_LINE" >> "$HOME/.bashrc"
+fi
+
+if [ -f "$HOME/.zshrc" ] && ! grep -q "DIGI_TERM_SUPERVISED" "$HOME/.zshrc"; then
+    echo "" >> "$HOME/.zshrc"
+    echo "# DigiSmartDeck Smart Terminal Integration" >> "$HOME/.zshrc"
+    echo "$HOOK_LINE" >> "$HOME/.zshrc"
+fi
+
+ENABLE_TERM="y"
+if [ -t 0 ]; then
+    echo ""
+    echo -e "${YELLOW}Integrasi Smart Terminal:${NC}"
+    echo "  Apakah Anda ingin mengaktifkan Smart Terminal otomatis?"
+    echo "  Seluruh terminal yang dibuka di PC ini otomatis terhubung ke ponsel"
+    echo "  sehingga pertanyaan konfirmasi (Yes/No, Allow AI, dsb) muncul di HP."
+    read -p "  Aktifkan Smart Terminal otomatis? [Y/n]: " user_choice
+    if [[ "$user_choice" =~ ^[Nn] ]]; then
+        ENABLE_TERM="n"
+    fi
+fi
+
+if [ "$ENABLE_TERM" = "y" ]; then
+    touch "$HOME/.config/digismartdeck/smart_terminal_enabled"
+    echo -e "    ${GREEN}[OK] Smart Terminal otomatis diaktifkan.${NC}"
+else
+    rm -f "$HOME/.config/digismartdeck/smart_terminal_enabled"
+    echo -e "    ${YELLOW}[INFO] Smart Terminal dinonaktifkan (dapat diaktifkan nanti di Host Manager).${NC}"
+fi
+
+# ── 6. Jalankan Aplikasi GUI Host Manager atau Server Background ──
+echo -e "${CYAN}[6/6]${NC} Menjalankan DigiSmartDeck..."
 if [ -n "$DISPLAY" ]; then
     echo -e "    ${GREEN}[OK] Menjalankan antarmuka GUI Host Manager di desktop...${NC}"
     cd "$SCRIPT_DIR"

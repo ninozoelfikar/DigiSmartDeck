@@ -1267,6 +1267,24 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Pembaruan Service Worker:**
   - Versi cache PWA pada `static/sw.js` diperbarui ke `digismartdeck-cache-v5`.
 - **Kepatuhan Aturan Mutlak:**
+
+---
+
+## 73. CATATAN CHECKPOINT (v0.9.69 - Eliminasi Tombol Manual Smart Terminal & Integrasi Shell Hook Otomatis Saat Instalasi)
+- **Eliminasi Tombol Manual Smart Terminal (Zero Clutter):**
+  - Menghapus tombol chip `#btn-smart-terminal` dari Menu Deck utilitas dan modal persetujuan `#modal-smart-term` di antarmuka web/mobile (`static/index.html`). Ponsel murni berfungsi sebagai penerima kartu pilihan interaktif tanpa tombol peluncur yang canggung.
+  - Menghapus kartu peluncur manual terminal di desktop GUI manager (`digikeyboard_gui.py`).
+- **Integrasi Izin Akses Saat Penginstalasian Awal (`install-linux.sh`):**
+  - Skrip instalasi host Linux (`install-linux.sh`) kini menyertakan langkah persiapan integrasi Smart Terminal.
+  - Mengonfirmasi izin akses pengguna di awal ("Aktifkan Smart Terminal otomatis? [Y/n]").
+  - Memasang hook shell di `~/.bashrc` (dan `~/.zshrc`):
+    `if [[ $- == *i* && -t 0 && -t 1 && -z "$DIGI_TERM_SUPERVISED" && -z "$DIGI_TERM_DISABLE" && -f "$HOME/.config/digismartdeck/smart_terminal_enabled" && -x "$HOME/.local/bin/digi-term" ]]; then exec "$HOME/.local/bin/digi-term"; fi`
+  - Proteksi penuh: skrip non-interaktif, cron job, subshell, dan perintah otomatis tidak terpengaruh sama sekali.
+- **Manajemen Status di Host Manager (`digikeyboard_gui.py`):**
+  - Pada Tab Setup Wizard & Layanan, ditambahkan indikator "Integrasi Smart Terminal Otomatis: AKTIF / NONAKTIF" serta tombol alih kontrol izin sistem.
+- **Pembaruan Service Worker:**
+  - Cache Service Worker di `static/sw.js` diperbarui ke `digismartdeck-cache-v6`.
+- **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
