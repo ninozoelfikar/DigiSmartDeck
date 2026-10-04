@@ -3720,9 +3720,11 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 38px 2px 10px;
+  flex: 1;
+  min-height: 0;
+  padding: 0 2px;
   gap: 6px;
-  flex-shrink: 0;
+  margin: auto 0;
 }
 .ai-btn-mic {
   width: 86px;
@@ -3908,8 +3910,12 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     gap: 3px;
   }
   .ai-mic-section {
-    padding: 6px 2px 3px !important;
-    gap: 3px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    padding: 0 2px !important;
+    gap: 4px !important;
+    justify-content: center !important;
+    margin: auto 0 !important;
   }
   .ai-btn-mic {
     width: 52px !important;
@@ -4313,8 +4319,12 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     display: none;
   }
   .ai-mic-section {
-    padding: 8px 2px 4px;
+    flex: 1;
+    min-height: 0;
+    padding: 0 2px;
     gap: 4px;
+    justify-content: center;
+    margin: auto 0;
   }
   .ai-btn-mic {
     width: 64px;

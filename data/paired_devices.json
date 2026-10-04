@@ -1,7 +1,7 @@
 {
   "pairing_enabled": true,
-  "current_pin": "706033",
-  "pin_created_at": 1791108940.8252518,
+  "current_pin": "556744",
+  "pin_created_at": 1791109842.8221164,
   "paired_devices": {
     "454fc6ba96c00de537953910dac2056b7cf2a17a450e6c34": {
       "device_id": "dev_bdb85ef4",

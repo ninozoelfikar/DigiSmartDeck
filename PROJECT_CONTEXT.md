@@ -1098,6 +1098,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 62. CATATAN CHECKPOINT (v0.9.58 - Penyelarasan Posisi Mic AI Tengah & Rename Folder Proyek DigiSmartDeck)
+- **Penyelarasan Vertikal Presisi Mic AI Workstation:**
+  - Memperbaiki tata letak `.ai-mic-section` agar berada di tengah persis (geometris dan visual) di antara bar atas (`.top-bar`) dan kotak transkrip (`.ai-transcript-header` & `.ai-transcript-box`).
+  - Mengeliminasi padding asimetris lama (`padding: 38px 2px 10px` pada desktop/tablet dan `padding: 6px 2px 3px !important` pada mobile).
+  - Mengubah `.ai-mic-section` menjadi `flex: 1; min-height: 0; padding: 0 2px; gap: 5px; margin: auto 0; justify-content: center;` di seluruh ukuran layar (base, mobile landscape `@media (max-height: 439px)`, dan compact `@media (max-height: 420px)`).
+  - Tombol mic dan label status kini menempati posisi tengah seimbang tanpa lagi mepet ke atas atau timpang dengan kotak teks transkrip.
+- **Penyelarasan Nama Folder Proyek (`DigiSmartDeck`):**
+  - Mengubah direktori proyek utama menjadi `DigiSmartDeck` (`/home/nino/ALI/project/DigiSmartDeck` dan `/home/nino/DigiSmartDeck`).
+  - Mempertahankan symlink kompatibilitas penuh (`/home/nino/digikeyboard -> /home/nino/ALI/project/DigiSmartDeck`, `/home/nino/digismartdeck`, dan `/home/nino/ALI/project/digikeyboard`) agar service systemd Linux (`digikeyboard.service`), IDE workspace, dan skrip terminal tetap berjalan normal tanpa kendala.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
