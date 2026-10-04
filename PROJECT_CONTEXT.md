@@ -1222,6 +1222,21 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 70. CATATAN CHECKPOINT (v0.9.66 - Finalisasi Jalur PATH CLI digi-prompt, Optimasi Guard Modal Prompt, & Pembaruan Cache PWA v3)
+- **Ketersediaan Perintah CLI Global:**
+  - Utilitas `digi-prompt` telah di-symlink ke `~/.local/bin/digi-prompt`, sehingga dapat dieksekusi langsung dari terminal shell mana pun tanpa memerlukan path absolut.
+- **Optimasi Guard Tampilan Modal Konfirmasi Interaktif:**
+  - Menambahkan pengaman timestamp `lastModalOpenTime = Date.now()` pada `showRemotePrompt` untuk mencegah dismiss instan oleh listener universal sentuhan/backdrop seluler.
+  - Memastikan elemen splash screen ditutup/dibersihkan secara tuntas saat menerima payload prompt jarak jauh, memastikan dialog selalu tampil di lapisan paling depan.
+- **Pembaruan Service Worker & Invalidation Cache:**
+  - Memperbarui `CACHE_NAME` pada `static/sw.js` menjadi `digismartdeck-cache-v3` guna menjamin pembaruan aset web dan logika dialog segera termuat di browser klien seluler/desktop tanpa terhambat cache lama.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
