@@ -1057,9 +1057,24 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Pengguna HP kini dapat mengkustomisasi 5 tombol prompt perintah (label nama dan teks prompt) dengan 1 sentuhan tanpa harus mencari tombol di dalam keyboard tablet.
   - Modal dialog kustomisasi prompt terhubung responsif dengan dukungan audio klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`).
   - Kamus terjemahan bilingual (`en` & `id`) diperbarui dengan key `ai_custom_prompts`, `ai_custom_prompts_title`, `ai_kb_hide`, `ai_kb_toggle_title`, `ai_kb_open`, `ai_kb_show_title`.
+
+---
+
+## 60. CATATAN CHECKPOINT (v0.9.56 - Relokasi Tombol Kustomisasi AI & Keandalan Deteksi Jendela PC Real-Time)
+- **Penataan Ulang Tata Letak Ponsel (Mobile AI Workstation):**
+  - Mengembalikan soft keyboard menjadi eksklusif untuk tablet (`@media (min-height: 440px)`). Pada ponsel (layar landscape), keyboard dinonaktifkan sehingga area transkripsi suara menjadi lega dan proporsional.
+  - Menghapus tombol kustomisasi dari samping badge `AI WORKSTATION` pada kolom kiri. Badge dipulihkan penuh 100% lebar kolom sehingga tampilan kembali bersih dan eksklusif.
+  - Memindahkan tombol kustomisasi prompt ke sisi kanan baris header transkripsi (`.ai-transcript-header`), berhadapan simetris dengan switcher bahasa dikte `[ ID | EN ]` menggunakan tombol pill minimalis `[ ✎ Kustom Prompt ]` (`#btn-ai-custom-prompt-header`).
+  - Terhubung mulus dengan audio klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe()`).
+- **Keandalan Deteksi Jendela Aktif PC (Smart Context Anti-Miss):**
+  - Menambahkan algoritma fallback X11 Stacking List (`_NET_CLIENT_LIST_STACKING`): Ketika fokus jendela mengembalikan `0x0` atau berada di jendela sistem internal (seperti desktop icons atau Host Manager), server secara cerdas mengambil jendela aplikasi pengguna teratas yang sedang aktif (misalnya Terminal).
+  - Mengambil data jendela segar saat handshake WebSocket terhubung sehingga client yang baru tersambung/reconnect tidak pernah lagi menerima nilai basi `'Desktop'`.
+  - Menambahkan handler WebSocket `get_active_window` (bebas hambatan pairing) yang otomatis dipanggil oleh frontend pada saat `ws.onopen` dan `visibilitychange`.
+  - Mempercepat siklus pelacak konteks aplikasi dari 800ms menjadi 350ms untuk responsivitas instan.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
 
 
 

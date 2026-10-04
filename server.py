@@ -846,70 +846,88 @@ def classify_app_context(wm_classes, title):
 
     return 'standard', friendly
 
+def _inspect_x11_window(win_id, env):
+    """Membaca metadata jendela X11 (class, title, mode). Return None jika gagal, 'skip' jika window internal."""
+    try:
+        res = subprocess.run(
+            ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME'],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=0.4
+        )
+        if res.returncode != 0:
+            return None
+        out = res.stdout
+        wm_classes = re.findall(r'"([^"]*)"', out.split('WM_CLASS(STRING) =')[-1].split('\n')[0]) if 'WM_CLASS' in out else []
+        title_match = re.search(r'(?:_NET_WM_NAME\(UTF8_STRING\) = "([^"]*)"|WM_NAME\(STRING\) = "([^"]*)")', out)
+        title = ''
+        if title_match:
+            title = title_match.group(1) or title_match.group(2) or ''
+
+        wm_str = ' '.join(wm_classes).lower()
+        if 'digikeyboard_gui' in wm_str or 'digismartdeck' in wm_str or ('digikeyboard' in wm_str and 'host' in wm_str) or 'host manager' in title.lower():
+            return 'skip'
+        if 'desktop icons' in title.lower() or 'gjs' in wm_str:
+            return 'skip'
+
+        suggested_mode, friendly_name = classify_app_context(wm_classes, title)
+        return {
+            'app': friendly_name,
+            'title': title,
+            'suggested_mode': suggested_mode,
+            'class_name': wm_classes[0] if wm_classes else '',
+            'win_id': win_id
+        }
+    except Exception:
+        return None
+
 def get_active_window_info():
-    """Mendeteksi jendela aktif di PC host (Linux X11 dan fallback Windows)."""
+    """Mendeteksi jendela aktif di PC host secara andal dengan fallback urutan stacking X11."""
     global CACHED_X11_ENV
     if sys.platform.startswith('linux'):
         try:
             env = get_x11_env()
+
+            # 1. Coba deteksi jendela aktif langsung dari _NET_ACTIVE_WINDOW
             res = subprocess.run(
                 ['xprop', '-root', '_NET_ACTIVE_WINDOW'],
                 env=env,
                 capture_output=True,
                 text=True,
-                timeout=0.6
+                timeout=0.5
             )
-            if res.returncode != 0:
-                CACHED_X11_ENV = None
-                return None
+            if res.returncode == 0 and res.stdout:
+                m = re.search(r'#\s*(0x[0-9a-fA-F]+)', res.stdout)
+                if m and m.group(1) != '0x0':
+                    info = _inspect_x11_window(m.group(1), env)
+                    if info and info != 'skip':
+                        return info
 
-            m = re.search(r'#\s*(0x[0-9a-fA-F]+)', res.stdout)
-            if not m or m.group(1) == '0x0':
-                return {
-                    'app': 'Desktop',
-                    'title': '',
-                    'suggested_mode': 'standard',
-                    'class_name': '',
-                    'win_id': '0x0'
-                }
-
-            win_id = m.group(1)
-            res_info = subprocess.run(
-                ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME'],
+            # 2. Fallback: Telusuri urutan jendela aktif teratas dari _NET_CLIENT_LIST_STACKING
+            res_stack = subprocess.run(
+                ['xprop', '-root', '_NET_CLIENT_LIST_STACKING'],
                 env=env,
                 capture_output=True,
                 text=True,
-                timeout=0.6
+                timeout=0.5
             )
-            if res_info.returncode != 0:
-                return {
-                    'app': 'Desktop',
-                    'title': '',
-                    'suggested_mode': 'standard',
-                    'class_name': '',
-                    'win_id': win_id
-                }
+            if res_stack.returncode == 0 and res_stack.stdout:
+                win_ids = re.findall(r'0x[0-9a-fA-F]+', res_stack.stdout)
+                for wid in reversed(win_ids):
+                    info = _inspect_x11_window(wid, env)
+                    if info and info != 'skip':
+                        return info
 
-            out = res_info.stdout
-            wm_classes = re.findall(r'"([^"]*)"', out.split('WM_CLASS(STRING) =')[-1].split('\n')[0]) if 'WM_CLASS' in out else []
-            title_match = re.search(r'(?:_NET_WM_NAME\(UTF8_STRING\) = "([^"]*)"|WM_NAME\(STRING\) = "([^"]*)")', out)
-            title = ''
-            if title_match:
-                title = title_match.group(1) or title_match.group(2) or ''
-
-            wm_str = ' '.join(wm_classes).lower()
-            if 'digikeyboard_gui' in wm_str or 'digismartdeck' in wm_str or ('digikeyboard' in wm_str and 'host' in wm_str) or 'host manager' in title.lower():
-                return None
-
-            suggested_mode, friendly_name = classify_app_context(wm_classes, title)
             return {
-                'app': friendly_name,
-                'title': title,
-                'suggested_mode': suggested_mode,
-                'class_name': wm_classes[0] if wm_classes else '',
-                'win_id': win_id
+                'app': 'Desktop',
+                'title': '',
+                'suggested_mode': 'standard',
+                'class_name': '',
+                'win_id': '0x0'
             }
         except Exception:
+            CACHED_X11_ENV = None
             return None
     elif sys.platform == 'win32':
         try:
@@ -1201,7 +1219,7 @@ async def smart_context_tracker_loop():
             break
         except Exception:
             pass
-        await asyncio.sleep(0.8)
+        await asyncio.sleep(0.35)
 
 
 # --- WebSocket Handler ---
@@ -1246,6 +1264,7 @@ def release_all_client_keys(keys_set):
     keys_set.clear()
 
 async def websocket_handler(request):
+    global CURRENT_APP_CONTEXT
     ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0)
     await ws.prepare(request)
     CONNECTED_CLIENTS.add(ws)
@@ -1283,6 +1302,15 @@ async def websocket_handler(request):
                 'role': 'pairing_required',
                 'message': 'Perangkat membutuhkan pairing dengan PIN PC.'
             }))
+
+        # Ambil jendela aktif segar saat client terhubung agar tidak miss atau stuck di Desktop
+        try:
+            fresh_info = await asyncio.to_thread(get_active_window_info)
+            if fresh_info:
+                CURRENT_APP_CONTEXT = fresh_info
+        except Exception:
+            pass
+
         await ws.send_str(json.dumps({
             'type': 'app_context',
             'app': CURRENT_APP_CONTEXT['app'],
@@ -1413,6 +1441,22 @@ async def websocket_handler(request):
                                 await c.send_str(bcast)
                             except Exception:
                                 pass
+                    continue
+
+                elif msg_type == 'get_active_window':
+                    fresh_info = await asyncio.to_thread(get_active_window_info)
+                    if fresh_info:
+                        CURRENT_APP_CONTEXT = fresh_info
+                        try:
+                            await ws.send_str(json.dumps({
+                                'type': 'app_context',
+                                'app': fresh_info['app'],
+                                'title': fresh_info['title'],
+                                'suggested_mode': fresh_info['suggested_mode'],
+                                'class_name': fresh_info['class_name']
+                            }))
+                        except Exception:
+                            pass
                     continue
 
                 # ── Proteksi Pairing: Blokir input kontrol jika perangkat belum ter-pairing ──
@@ -1823,6 +1867,14 @@ if __name__ == '__main__':
             site = web.TCPSite(runner, '0.0.0.0', p)
             await site.start()
         print(f"[OK] Server aktif di port {', '.join(str(p) for p in ports)}.")
+
+        # Inisialisasi jendela aktif pertama kali saat startup
+        try:
+            init_info = await asyncio.to_thread(get_active_window_info)
+            if init_info:
+                CURRENT_APP_CONTEXT = init_info
+        except Exception:
+            pass
 
         context_task = asyncio.create_task(smart_context_tracker_loop())
 

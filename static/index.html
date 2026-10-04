@@ -3515,52 +3515,19 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 4px;
+  justify-content: center;
   padding: 2px 0 0;
   box-sizing: border-box;
   flex-shrink: 0;
 }
 .ai-col-left-footer .ai-badge {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
   box-sizing: border-box;
   justify-content: center;
   border-radius: 4px;
   height: 22px;
-  font-size: 8.5px;
-  padding: 2px 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ai-btn-edit-prompts {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  background: rgba(88, 166, 255, 0.12);
-  border: 1px solid rgba(88, 166, 255, 0.35);
-  border-radius: 4px;
-  color: var(--accent);
-  font-size: 9px;
-  font-weight: 700;
-  padding: 0 6px;
-  height: 22px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-  user-select: none;
-  touch-action: manipulation;
-  flex-shrink: 0;
-}
-.ai-btn-edit-prompts:hover {
-  background: rgba(88, 166, 255, 0.22);
-  border-color: var(--accent);
-  color: #fff;
-}
-.ai-btn-edit-prompts:active {
-  transform: translateY(1px);
+  font-size: 9.5px;
+  padding: 2px 6px;
 }
 .ai-btn-sh {
   display: flex;
@@ -3786,24 +3753,20 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   filter: brightness(1.2);
 }
 
-/* ─── Android-style Soft QWERTY Keyboard (Tablet & Mobile AI Workstation) ─── */
+/* ─── Android-style Soft QWERTY Keyboard (Tablet Exclusive) ─── */
 .ai-tablet-keyboard {
-  display: flex;
+  display: none;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
   background: rgba(22, 27, 34, 0.7);
   border: 1px solid var(--key-border);
   border-radius: 8px;
-  padding: 4px;
+  padding: 6px;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
   flex-shrink: 0;
-  margin-top: 3px;
-  transition: all 0.2s ease;
-}
-.ai-tablet-keyboard.collapsed {
-  display: none !important;
+  margin-top: 6px;
 }
 
 @media (min-height: 440px) {
@@ -3812,9 +3775,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     gap: 6px;
   }
   .ai-tablet-keyboard {
-    gap: 5px;
-    padding: 6px;
-    margin-top: 6px;
+    display: flex;
   }
   .ai-tk-key {
     height: 40px !important;
@@ -3834,60 +3795,69 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 @media (max-height: 439px) {
   .ai-col-center {
     padding: 0;
-    gap: 2px;
+    gap: 3px;
   }
   .ai-mic-section {
-    padding: 4px 2px 2px !important;
-    gap: 2px !important;
+    padding: 6px 2px 3px !important;
+    gap: 3px !important;
   }
   .ai-btn-mic {
-    width: 46px !important;
-    height: 46px !important;
+    width: 52px !important;
+    height: 52px !important;
   }
   .ai-btn-mic svg {
-    width: 22px !important;
-    height: 22px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   .ai-mic-status-label {
-    font-size: 9px !important;
-    min-height: 12px !important;
-    line-height: 12px !important;
+    font-size: 10px !important;
+    min-height: 14px !important;
+    line-height: 14px !important;
   }
   .ai-transcript-box {
     flex: 1;
-    min-height: 44px !important;
-    max-height: 72px !important;
-    padding: 4px 6px !important;
-    gap: 3px !important;
+    min-height: 80px !important;
+    max-height: none !important;
+    padding: 6px 8px !important;
+    gap: 4px !important;
   }
   .ai-transcript-text {
-    font-size: 11px !important;
-    line-height: 1.35 !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
   }
   .ai-btn-tr-act {
-    font-size: 10px !important;
-    padding: 2px 6px !important;
+    font-size: 10.5px !important;
+    padding: 3px 8px !important;
   }
-  .ai-tablet-keyboard {
-    padding: 3px !important;
-    gap: 2px !important;
-    margin-top: 2px !important;
-  }
-  .ai-tk-key {
-    height: 26px !important;
-    font-size: 11.5px !important;
-    border-radius: 4px !important;
-  }
-  .ai-tk-key.ai-tk-fn {
-    font-size: 10px !important;
-  }
-  .ai-tk-key.ai-tk-space {
-    font-size: 10px !important;
-  }
-  .ai-tk-control-bar {
-    padding: 0 2px 2px !important;
-    margin-bottom: 2px !important;
-  }
+}
+
+.ai-btn-custom-prompt-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  border-radius: 4px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  height: 22px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+.ai-btn-custom-prompt-header:hover {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: var(--accent);
+  color: #fff;
+}
+.ai-btn-custom-prompt-header:active {
+  transform: translateY(1px);
+  filter: brightness(1.2);
 }
 
 .ai-tk-row {
@@ -6803,13 +6773,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         </div>
         <div class="ai-col-left-footer">
           <span class="ai-badge" id="ai-main-badge">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
             <span id="ai-badge-text">AI WORKSTATION</span>
           </span>
-          <button type="button" class="ai-btn-edit-prompts" id="btn-ai-edit-prompts-footer" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Tombol Prompt AI">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            <span data-i18n="ai_custom_prompts">Kustom</span>
-          </button>
+          <span class="ai-title-sub" id="ai-title-sub" style="display:none;"></span>
         </div>
       </div>
 
@@ -6826,14 +6793,14 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <input type="hidden" id="ai-voice-input">
 
         <!-- Audio Dictation Language Bar -->
-        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:3px;">
+        <div class="ai-transcript-header" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
           <div class="ai-lang-toggle" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
             <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
             <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
           </div>
-          <button type="button" class="ai-btn-open-kb" id="btn-ai-open-kb" data-i18n-title="ai_kb_show_title" title="Tampilkan Keyboard Lembut" style="display:none;background:rgba(255,255,255,0.06);border:1px solid var(--key-border);color:var(--text);font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;cursor:pointer;align-items:center;gap:4px;">
-            <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M7 10h.01"/><path d="M12 10h.01"/><path d="M17 10h.01"/><path d="M7 14h.01"/><path d="M12 14h.01"/><path d="M17 14h.01"/></svg>
-            <span data-i18n="ai_kb_open">Keyboard</span>
+          <button type="button" class="ai-btn-custom-prompt-header" id="btn-ai-custom-prompt-header" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Shortcut Prompt AI">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span data-i18n="ai_custom_prompts">Kustom Prompt</span>
           </button>
         </div>
 
@@ -6853,7 +6820,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           </div>
         </div>
 
-        <!-- Android-Style Soft QWERTY Keyboard (Tablet & Mobile) -->
+        <!-- Android-Style Soft QWERTY Keyboard (Tablet Only) -->
         <div class="ai-tablet-keyboard" id="ai-tablet-keyboard">
           <div class="ai-tk-control-bar">
             <div class="ai-tk-target-cluster">
@@ -6862,12 +6829,6 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
                 <button type="button" class="ai-btn-target" id="btn-tk-target-pc" data-i18n="ai_target_pc">PC</button>
                 <button type="button" class="ai-btn-target active" id="btn-tk-target-device" data-i18n="ai_target_device">Device</button>
               </div>
-            </div>
-            <div style="display:inline-flex;align-items:center;gap:6px;">
-              <button type="button" class="ai-btn-tk-toggle" id="btn-ai-tk-toggle" data-i18n-title="ai_kb_toggle_title" title="Sembunyikan Keyboard Lembut" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--text-dim);font-size:9px;padding:2px 6px;border-radius:3px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-weight:600;">
-                <svg class="svg-icon" width="10" height="10" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-                <span id="txt-ai-tk-toggle" data-i18n="ai_kb_hide">Tutup</span>
-              </button>
             </div>
           </div>
           <div class="ai-tk-row" id="ai-tk-row1">
@@ -9996,6 +9957,8 @@ function connect() {
         device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client'
       });
     }
+    // Selalu minta status jendela PC host terkini saat baru tersambung / reconnect
+    send({ type: 'get_active_window' });
   };
 
   ws.onmessage = (e) => {
@@ -10179,9 +10142,10 @@ document.addEventListener('visibilitychange', () => {
       console.log('[DigiSmartDeck] App kembali aktif. Menyambung ulang...');
       scheduleReconnect(true);
     } else {
-      // Jika socket terlihat aktif, kirim ping langsung untuk memastikan tidak zombie
+      // Jika socket terlihat aktif, kirim ping dan minta status jendela aktif terkini
       pingT = performance.now();
       send({ type: 'ping', t: Date.now() });
+      send({ type: 'get_active_window' });
     }
   }
 });
@@ -14865,44 +14829,6 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
       openAiPromptEditModal();
     });
   }
-
-  const btnTkToggle = $('btn-ai-tk-toggle');
-  const btnOpenKb = $('btn-ai-open-kb');
-
-  function setAiKeyboardVisibility(visible) {
-    if (!kbEl) return;
-    if (visible) {
-      kbEl.classList.remove('collapsed');
-      if (btnOpenKb) btnOpenKb.style.display = 'none';
-      try { localStorage.setItem('digi_ai_kb_collapsed', 'false'); } catch(e) {}
-    } else {
-      kbEl.classList.add('collapsed');
-      if (btnOpenKb) btnOpenKb.style.display = 'inline-flex';
-      try { localStorage.setItem('digi_ai_kb_collapsed', 'true'); } catch(e) {}
-    }
-  }
-
-  if (btnTkToggle) {
-    bindAiKey(btnTkToggle, () => {
-      playClickSound();
-      vibe(10);
-      setAiKeyboardVisibility(false);
-    });
-  }
-
-  if (btnOpenKb) {
-    bindAiKey(btnOpenKb, () => {
-      playClickSound();
-      vibe(10);
-      setAiKeyboardVisibility(true);
-    });
-  }
-
-  try {
-    if (localStorage.getItem('digi_ai_kb_collapsed') === 'true') {
-      setAiKeyboardVisibility(false);
-    }
-  } catch(e) {}
 })();
 
 // ── Kustomisasi Shortcut Prompt AI ──
@@ -15031,9 +14957,11 @@ const btnResetAiPrompts = $('btn-reset-ai-prompts');
 if (btnResetAiPrompts) {
   btnResetAiPrompts.addEventListener('click', resetCustomAiPrompts);
 }
-const btnEditPromptFooter = $('btn-ai-edit-prompts-footer');
-if (btnEditPromptFooter) {
-  btnEditPromptFooter.addEventListener('click', openAiPromptEditModal);
+const btnCustomPromptHeader = $('btn-ai-custom-prompt-header');
+if (btnCustomPromptHeader) {
+  bindAiKey(btnCustomPromptHeader, () => {
+    openAiPromptEditModal();
+  });
 }
 
 applyAiPrompts(getCustomAiPrompts());
