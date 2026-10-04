@@ -1991,6 +1991,13 @@ body.is-fullscreen {
   letter-spacing: 0.3px;
 }
 
+.rc-dots {
+  display: inline-block;
+  min-width: 18px;
+  text-align: left;
+  letter-spacing: 1px;
+}
+
 .rc-modal-sub {
   font-size: 11.5px;
   font-weight: 600;
@@ -6141,15 +6148,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       <div class="rc-modal-pulse">
         <div class="rc-pulse-ring"></div>
         <div class="rc-modal-icon">
-          <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/>
+          <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
         </div>
       </div>
       <div class="rc-modal-content">
-        <div class="rc-modal-title" id="rc-title" data-i18n="rc_title">Connecting to Host PC...</div>
-        <div class="rc-modal-sub" id="rc-sub" data-i18n="rc_sub">Scanning available communication channels automatically</div>
-        <div class="rc-modal-hint" id="rc-hint" data-i18n="rc_hint">Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired.</div>
+        <div class="rc-modal-title" id="rc-title"><span id="rc-title-text" data-i18n="rc_title">Menghubungkan</span><span id="rc-dots" class="rc-dots">...</span></div>
+        <div class="rc-modal-sub" id="rc-sub" data-i18n="rc_sub">Memindai seluruh jalur koneksi</div>
+        <div class="rc-modal-hint" id="rc-hint" data-i18n="rc_hint">Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang.</div>
       </div>
       <div class="rc-channels-grid">
         <div class="rc-channel-card">
@@ -8212,8 +8219,8 @@ const I18N = {
     util_store_title: "Store: Skins, Plugins & Licenses",
 
     // Reconnection Overlay
-    rc_title: "Connecting to Host PC...",
-    rc_sub: "Scanning available communication channels automatically",
+    rc_title: "Connecting",
+    rc_sub: "Scanning all connection paths",
     rc_hint: "Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired.",
     rc_status_scanning: "Scanning",
     rc_channel_wifi: "Wi-Fi LAN",
@@ -8480,8 +8487,8 @@ const I18N = {
     util_store_title: "Toko: Skin, Plugin & Lisensi",
 
     // Reconnection Overlay
-    rc_title: "Menghubungkan ke Host PC...",
-    rc_sub: "Memindai seluruh jalur koneksi yang tersedia secara otomatis",
+    rc_title: "Menghubungkan",
+    rc_sub: "Memindai seluruh jalur koneksi",
     rc_hint: "Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang.",
     rc_status_scanning: "Memindai",
     rc_channel_wifi: "Wi-Fi LAN",
@@ -10197,7 +10204,7 @@ function scheduleReconnect(immediate = false) {
   if (!navigator.onLine) {
     setStatus(false, 'Wi-Fi Terputus');
   } else {
-    setStatus(false, `Menghubungkan (${retryCount})...`);
+    setStatus(false, 'Menghubungkan...');
   }
 
   // Tampilkan popup modal pemulihan jika gagal >= 2 kali
@@ -10455,26 +10462,49 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // ── Reconnection Assistant & Network Scanner UI ──
+let rcDotsTimer = null;
+
+function startRcDots() {
+  if (rcDotsTimer) clearInterval(rcDotsTimer);
+  let count = 1;
+  const dotsEl = $('rc-dots');
+  if (dotsEl) dotsEl.textContent = '.';
+  rcDotsTimer = setInterval(() => {
+    count = (count % 3) + 1; // 1 -> 2 -> 3 -> 1
+    const el = $('rc-dots');
+    if (el) el.textContent = '.'.repeat(count);
+  }, 450);
+}
+
+function stopRcDots() {
+  if (rcDotsTimer) {
+    clearInterval(rcDotsTimer);
+    rcDotsTimer = null;
+  }
+}
+
 function showReconnectBanner() {
   if (isSplashScreenActive) return;
   const banner = $('reconnect-banner');
   if (!banner) return;
-  const title = $('rc-title');
+  const titleText = $('rc-title-text');
   const sub = $('rc-sub');
   const hint = $('rc-hint');
-  if (title) {
-    if (currentUiLang === 'id') {
-      title.textContent = retryCount > 0 ? `Mencari PC (${retryCount}x)...` : 'Mencari Koneksi PC...';
-    } else {
-      title.textContent = retryCount > 0 ? `Searching Host (${retryCount}x)...` : 'Connecting to Host PC...';
-    }
+  if (titleText) {
+    titleText.textContent = t('rc_title', currentUiLang === 'id' ? 'Menghubungkan' : 'Connecting');
   }
-  if (sub) sub.textContent = t('rc_sub', currentUiLang === 'id' ? 'Memindai seluruh jalur koneksi yang tersedia secara otomatis' : 'Scanning available communication channels automatically');
-  if (hint) hint.textContent = t('rc_hint', currentUiLang === 'id' ? 'Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang' : 'Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired');
+  if (sub) {
+    sub.textContent = t('rc_sub', currentUiLang === 'id' ? 'Memindai seluruh jalur koneksi' : 'Scanning all connection paths');
+  }
+  if (hint) {
+    hint.textContent = t('rc_hint', currentUiLang === 'id' ? 'Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang' : 'Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired');
+  }
   banner.classList.remove('hidden');
+  startRcDots();
 }
 
 function hideReconnectBanner() {
+  stopRcDots();
   const banner = $('reconnect-banner');
   if (banner) banner.classList.add('hidden');
 }

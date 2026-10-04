@@ -1236,6 +1236,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 71. CATATAN CHECKPOINT (v0.9.67 - Penyempurnaan Modal Reconnecting: Ikon Kaca Pembesar, Teks Bersih, & Animasi Titik Looping)
+- **Desain & Ikonografi Modal Reconnecting (`#reconnect-banner`):**
+  - Mengganti ikon lingkaran putar dengan ikon SVG Kaca Pembesar (Search / Magnifying Glass) yang presisi di dalam cincin radar pulse (`.rc-modal-pulse`).
+- **Penyederhanaan Teks & Animasi Titik Loading:**
+  - Menghilangkan teks hitungan percobaan retry `(5x)` yang mengganggu.
+  - Judul diubah menjadi `Menghubungkan` (Bahasa Indonesia) / `Connecting` (Bahasa Inggris) disertai animasi titik loading (`.rc-dots`) yang berulang secara mulus: `.` -> `..` -> `...` -> `.` (looping dinamis hingga terhubung).
+  - Mengatur elemen `.rc-dots` dengan lebar tetap (`min-width: 18px`) dan perataan kiri agar teks tidak berguncang secara horizontal saat jumlah titik berganti.
+  - Kalimat deskripsi di bawahnya diperbarui menjadi: "Memindai seluruh jalur koneksi" (ID) / "Scanning all connection paths" (EN).
+- **Pembaruan Cache Service Worker:**
+  - Memperbarui versi cache PWA di `static/sw.js` menjadi `digismartdeck-cache-v4`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
