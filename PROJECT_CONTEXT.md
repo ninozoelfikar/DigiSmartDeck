@@ -1128,3 +1128,21 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 64. CATATAN CHECKPOINT (v0.9.60 - Relokasi Tombol Kustomisasi Prompt & Pembesaran Mic HP +30%)
+- **Relokasi Tombol Kustomisasi Prompt AI:**
+  - Menghilangkan tombol kustom prompt (`#btn-ai-custom-prompt-header`) dari header transkripsi audio.
+  - Mengganti tombol Delete pada grid pintasan kolom kiri (`.ai-shortcuts-grid`) menjadi tombol "Kustom" (`#ai-btn-custom-prompt`) untuk membuka modal edit prompt.
+  - Menata ulang dua baris teratas kontrol edit:
+    - Baris 1: `[ Kustom | Cut ]`
+    - Baris 2: `[ Copy | Paste ]`
+- **Penskalaan Tombol Mic AI di HP (+30%):**
+  - Memperbesar ukuran tombol mic (`.ai-btn-mic`) di tampilan ponsel landscape (`@media (max-height: 439px)`) sebesar ~30%, dari 52px menjadi 68px (ikon SVG diperbesar menjadi 32px).
+  - Pada layar ultra-compact (`@media (max-height: 420px)`), diperbesar dari 50px menjadi 65px (ikon SVG 31px).
+  - Menyesuaikan offset label status (`top: calc(50% + 38px) !important;`) sehingga tombol tetap rata tengah vertikal sempurna (50% Y) tanpa distorsi bentuk atau asimetri.
+  - Ukuran mic pada layar tablet dan desktop tetap terkunci presisi di 86px asli.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.

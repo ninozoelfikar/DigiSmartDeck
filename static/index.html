@@ -3937,18 +3937,18 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     position: relative !important;
   }
   .ai-btn-mic {
-    width: 52px !important;
-    height: 52px !important;
+    width: 68px !important;
+    height: 68px !important;
   }
   .ai-btn-mic svg {
-    width: 24px !important;
-    height: 24px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
   .ai-mic-status-label {
     font-size: 10px !important;
     min-height: 14px !important;
     line-height: 14px !important;
-    top: calc(50% + 30px) !important;
+    top: calc(50% + 38px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
@@ -4352,16 +4352,16 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     position: relative !important;
   }
   .ai-btn-mic {
-    width: 50px !important;
-    height: 50px !important;
+    width: 65px !important;
+    height: 65px !important;
   }
   .ai-btn-mic svg {
-    width: 24px !important;
-    height: 24px !important;
+    width: 31px !important;
+    height: 31px !important;
   }
   .ai-mic-status-label {
     font-size: 9.5px !important;
-    top: calc(50% + 29px) !important;
+    top: calc(50% + 37px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
@@ -6888,17 +6888,17 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       <!-- Kolom 1: Pintasan Prompt & Kontrol Edit -->
       <div class="ai-col-left">
         <div class="ai-shortcuts-grid">
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-custom-prompt" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Shortcut Prompt AI">
+            <span data-i18n="ai_custom_prompts">Kustom</span>
+          </button>
+          <button type="button" class="ai-btn-sh tool" id="ai-btn-cut" title="Ctrl+X">
+            <span>Cut</span>
+          </button>
           <button type="button" class="ai-btn-sh tool" id="ai-btn-copy" title="Ctrl+C">
             <span>Copy</span>
           </button>
           <button type="button" class="ai-btn-sh tool" id="ai-btn-paste" title="Ctrl+V">
             <span>Paste</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-delete" title="Delete">
-            <span>Delete</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-cut" title="Ctrl+X">
-            <span>Cut</span>
           </button>
           <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-shift-tab" title="Shift+Tab (Ubah Mode Acc/Edit/Plan)">
             <span>Shift + Tab</span>
@@ -6945,16 +6945,12 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
         <!-- Continuous Speech Transcription Stream Container (Unified Box) -->
         <div class="ai-transcript-box">
-          <!-- Audio Dictation Language Bar & Custom Prompts -->
+          <!-- Audio Dictation Language Bar -->
           <div class="ai-transcript-header">
             <div class="ai-lang-toggle" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
               <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
               <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
             </div>
-            <button type="button" class="ai-btn-custom-prompt-header" id="btn-ai-custom-prompt-header" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Shortcut Prompt AI">
-              <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              <span data-i18n="ai_custom_prompts">Kustom Prompt</span>
-            </button>
           </div>
 
           <div class="ai-transcript-text empty" id="ai-transcript-preview" data-i18n="ai_transcript_empty">Speak to dictate...</div>
@@ -15251,6 +15247,12 @@ if (btnSaveAiPrompts) {
 const btnResetAiPrompts = $('btn-reset-ai-prompts');
 if (btnResetAiPrompts) {
   btnResetAiPrompts.addEventListener('click', resetCustomAiPrompts);
+}
+const btnCustomPrompt = $('ai-btn-custom-prompt');
+if (btnCustomPrompt) {
+  bindAiKey(btnCustomPrompt, () => {
+    openAiPromptEditModal();
+  });
 }
 const btnCustomPromptHeader = $('btn-ai-custom-prompt-header');
 if (btnCustomPromptHeader) {
