@@ -15030,22 +15030,6 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
       }
     }
 
-    function doDelete5Words() {
-      if (aiKbTarget === 'pc') {
-        for (let i = 0; i < 5; i++) {
-          send({ type: 'combo', keys: ['ctrl', 'backspace'] });
-        }
-      } else {
-        deleteWordsFromAiTranscript(5);
-        if (aiAutoSend) {
-          for (let i = 0; i < 5; i++) {
-            send({ type: 'combo', keys: ['ctrl', 'backspace'] });
-          }
-          lastSentLength = aiAccumulatedText.length;
-        }
-      }
-    }
-
     function startBackspace(e) {
       if (e) {
         e.stopPropagation();
@@ -15073,16 +15057,12 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
         doDeleteChar();
         repeatIntervalMs = 60;
         repeatAction = doDeleteChar;
-      } else if (bsTapCount === 2) {
+      } else {
+        // Pencet 2x maupun 3x tetap konsisten menghapus per kata
         vibe(20);
         doDeleteWord();
         repeatIntervalMs = 140;
         repeatAction = doDeleteWord;
-      } else if (bsTapCount >= 3) {
-        vibe(30);
-        doDelete5Words();
-        repeatIntervalMs = 240;
-        repeatAction = doDelete5Words;
       }
 
       // Deteksi tahan (press and hold)
