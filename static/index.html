@@ -5877,7 +5877,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-pairing" data-i18n-title="util_pairing_title" title="Device Pairing &amp; Security">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
-            <span id="deck-pairing-lbl" data-i18n="util_pairing">Pairing</span>
+            <span id="deck-pairing-lbl">Pairing</span>
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-settings" data-i18n-title="util_settings_title" title="Appearance &amp; Preferences">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -8898,25 +8898,18 @@ const pinInputs = [
 ];
 
 function updatePairingStatusUI(isPaired) {
+  const btnPairing = $('btn-pairing');
   const deckPairLbl = $('deck-pairing-lbl');
+  if (btnPairing) {
+    btnPairing.classList.toggle('on', !!isPaired);
+  }
   if (deckPairLbl) {
-    deckPairLbl.textContent = t('util_pairing', 'Pairing');
+    deckPairLbl.textContent = isPaired ? 'Paired' : t('util_pairing', 'Pairing');
   }
+  // Di samping ikon Wi-Fi top-bar tetap bersih total tanpa teks pair
   if (badgeTxt) {
-    if (isPaired) {
-      badgeTxt.textContent = 'Paired';
-      badgeTxt.style.display = 'inline';
-      badgeTxt.style.fontSize = '11px';
-      badgeTxt.style.fontWeight = '600';
-      badgeTxt.style.color = '#3fb950';
-    } else {
-      badgeTxt.textContent = '';
-      badgeTxt.style.display = 'none';
-    }
-  }
-  const badgeEl = $('badge');
-  if (badgeEl && isPaired) {
-    badgeEl.title = 'Status: Paired';
+    badgeTxt.textContent = '';
+    badgeTxt.style.display = 'none';
   }
 }
 
@@ -9991,7 +9984,7 @@ function setStatus(ok, txt) {
 
   // Tooltip hover informatif untuk aksesibilitas
   const modeName = isBt ? 'Bluetooth' : (isUsb ? 'USB' : 'Wi-Fi');
-  badge.title = ok ? `Koneksi ${modeName} Aktif (Paired)` : (txt || `Menghubungkan ${modeName}...`);
+  badge.title = ok ? `Koneksi ${modeName} Aktif` : (txt || `Menghubungkan ${modeName}...`);
 }
 
 // ── Network Lifecycle & Screen Wake Listeners ──

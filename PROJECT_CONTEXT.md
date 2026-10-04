@@ -1003,6 +1003,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 57. CATATAN CHECKPOINT (v0.9.53 - Eliminasi Clutter Top-Bar & Pemusatan Indikator Paired di Menu Deck)
+- **Keputusan Desain & Optimalisasi Tampilan Layar:**
+  1. *Top-Bar Bebas Clutter*:
+     - Teks "Paired" di samping ikon Wi-Fi dihilangkan sepenuhnya (`display: none`).
+     - Badge status kembali ke format asli yang bersih, elegan, dan minimalis: hanya titik status (dot hijau saat aktif) + ikon koneksi + angka latensi ping (ms).
+     - Menghemat ruang horizontal pada header sehingga tidak terasa sesak di layar ponsel (mode landscape).
+  2. *Pemusatan Status Paired pada Menu Deck*:
+     - Informasi pairing dialihkan secara eksklusif ke dalam menu popup Floating Control Deck (`#btn-pairing`).
+     - Saat perangkat berhasil terpasang dan tersambung, tombol chip pairing di dalam menu menyala dengan kelas aktif (`.on`) dan menampilkan teks "Paired".
+     - Jika perangkat terputus atau membutuhkan otorisasi PIN baru, tombol kembali berlabel "Pairing" normal.
+     - Di dalam modal dialog Pairing (`#modal-pairing`), status tetap memberikan konfirmasi visual "Status: Perangkat Paired (Terhubung)".
+  3. *Kompilasi Ulang APK*:
+     - File APK (`DigiSmartDeck.apk`, 5.5 MB) di `dist/` dan `static/` dikompilasi ulang dan disinkronkan.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
