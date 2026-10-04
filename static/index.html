@@ -9816,10 +9816,12 @@ let currentPromptId = null;
 let promptCountdownTimer = null;
 
 function showRemotePrompt(data) {
-  if (isSplashScreenActive) return;
+  const splash = $('splash-screen');
+  if (splash) { splash.remove(); isSplashScreenActive = false; }
   const modal = $('modal-remote-prompt');
   if (!modal) return;
 
+  lastModalOpenTime = Date.now();
   currentPromptId = data.prompt_id || ('prompt_' + Date.now());
 
   const appBadge = $('rap-app-badge');
