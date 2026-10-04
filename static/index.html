@@ -10207,8 +10207,8 @@ function scheduleReconnect(immediate = false) {
     setStatus(false, 'Menghubungkan...');
   }
 
-  // Tampilkan popup modal pemulihan jika gagal >= 2 kali
-  if (retryCount >= 2) {
+  // Tampilkan popup modal pemulihan langsung saat terputus
+  if (retryCount >= 1) {
     showReconnectBanner();
   }
 

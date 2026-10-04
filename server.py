@@ -2055,6 +2055,21 @@ async def api_dismiss_prompt_handler(request):
         return web.json_response({'status': 'dismissed_all'}, headers={'Access-Control-Allow-Origin': '*'})
 
 
+async def api_test_reconnect_handler(request):
+    """Endpoint HTTP POST/GET /api/test/reconnect untuk menguji tampilan modal reconnecting di semua client."""
+    count = len(CONNECTED_CLIENTS)
+    for client in list(CONNECTED_CLIENTS):
+        try:
+            await client.close(code=1001, message=b'test_reconnect')
+        except Exception:
+            pass
+    return web.json_response({
+        'status': 'reconnect_triggered',
+        'clients_disconnected': count,
+        'message': 'Koneksi client ditutup sementara untuk menguji modal reconnecting.'
+    }, headers={'Access-Control-Allow-Origin': '*'})
+
+
 def create_app(ports=[8080]):
     app = web.Application()
     app['server_ports'] = ports
@@ -2075,6 +2090,9 @@ def create_app(ports=[8080]):
     app.router.add_options('/api/prompt', options_handler)
     app.router.add_post('/api/prompt/dismiss', api_dismiss_prompt_handler)
     app.router.add_options('/api/prompt/dismiss', options_handler)
+    app.router.add_post('/api/test/reconnect', api_test_reconnect_handler)
+    app.router.add_get('/api/test/reconnect', api_test_reconnect_handler)
+    app.router.add_options('/api/test/reconnect', options_handler)
     app.router.add_static('/static/', path=static_dir, name='static')
     # Juga route langsung untuk style.css, app.js, manifest.json, sw.js, dan favicon jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))
