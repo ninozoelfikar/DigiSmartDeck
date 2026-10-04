@@ -5877,7 +5877,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-pairing" data-i18n-title="util_pairing_title" title="Device Pairing &amp; Security">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
-            <span data-i18n="util_pairing">Pairing</span>
+            <span id="deck-pairing-lbl">Pairing</span>
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-settings" data-i18n-title="util_settings_title" title="Appearance &amp; Preferences">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -7721,6 +7721,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
         <span id="txt-check-update" data-i18n="about_btn_update">Periksa Pembaruan</span>
       </button>
+      <div id="about-update-status" style="display:none;margin-top:10px;font-size:12px;font-weight:600;color:#3fb950;line-height:1.4;"></div>
     </div>
   </div>
 </div>
@@ -8442,6 +8443,7 @@ function setUiLanguage(lang) {
 
   // Update dynamic modules
   updateModModeUI();
+  if (typeof updatePairingStatusUI === 'function') updatePairingStatusUI(connected);
   if (typeof updateSmartContextUI === 'function') updateSmartContextUI();
   if (typeof updateAiMicUI === 'function') updateAiMicUI(true);
   if (typeof getCustomAiPrompts === 'function' && typeof applyAiPrompts === 'function') {
@@ -8789,8 +8791,10 @@ if (btnCheckUpdate) {
     vibe(15);
     const txtEl = $('txt-check-update');
     const spinIcon = $('icon-update-spin');
+    const statusMsgEl = $('about-update-status');
     if (spinIcon) spinIcon.style.animation = 'spin-icon 0.8s linear infinite';
     if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Memeriksa...' : 'Checking...';
+    if (statusMsgEl) statusMsgEl.style.display = 'none';
     btnCheckUpdate.disabled = true;
 
     setTimeout(() => {
@@ -8799,17 +8803,33 @@ if (btnCheckUpdate) {
         .then(d => {
           if (spinIcon) spinIcon.style.animation = '';
           btnCheckUpdate.disabled = false;
-          if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Versi Terbaru' : 'Up to Date';
-          showSmartToast(currentUiLang === 'id' ? 'Aplikasi sudah versi terbaru' : 'App is up to date', 'DigiSmartDeck');
+          const verStr = (d && d.version) ? `v${d.version}` : 'v1.17.0';
+          const msgId = `Versi aplikasi Anda sudah yang terbaru (${verStr}).`;
+          const msgEn = `Your app is already up to date (${verStr}).`;
+          const userMsg = currentUiLang === 'id' ? msgId : msgEn;
+
+          if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Versi Sudah Terbaru' : 'Up to Date';
+          if (statusMsgEl) {
+            statusMsgEl.textContent = userMsg;
+            statusMsgEl.style.display = 'block';
+          }
+          showSmartToast(userMsg, 'DigiSmartDeck');
           playPairingSuccessSound();
           setTimeout(() => {
             if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
-          }, 2400);
+          }, 3500);
         })
         .catch(() => {
           if (spinIcon) spinIcon.style.animation = '';
           btnCheckUpdate.disabled = false;
           if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
+          const fallbackMsg = currentUiLang === 'id' ? 'Versi aplikasi Anda sudah yang terbaru (v1.17.0).' : 'Your app is already up to date (v1.17.0).';
+          if (statusMsgEl) {
+            statusMsgEl.textContent = fallbackMsg;
+            statusMsgEl.style.display = 'block';
+          }
+          showSmartToast(fallbackMsg, 'DigiSmartDeck');
+          playPairingSuccessSound();
         });
     }, 600);
   });
@@ -8877,12 +8897,42 @@ const pinInputs = [
   $('pin-0'), $('pin-1'), $('pin-2'), $('pin-3'), $('pin-4'), $('pin-5')
 ];
 
+function updatePairingStatusUI(isPaired) {
+  const deckPairLbl = $('deck-pairing-lbl');
+  if (deckPairLbl) {
+    deckPairLbl.textContent = isPaired ? 'Paired' : (currentUiLang === 'id' ? 'Pairing' : 'Pair');
+  }
+  if (badgeTxt) {
+    if (isPaired) {
+      badgeTxt.textContent = 'Paired';
+      badgeTxt.style.display = 'inline';
+      badgeTxt.style.fontSize = '11px';
+      badgeTxt.style.fontWeight = '600';
+      badgeTxt.style.color = '#3fb950';
+    } else {
+      badgeTxt.textContent = '';
+      badgeTxt.style.display = 'none';
+    }
+  }
+  const badgeEl = $('badge');
+  if (badgeEl && isPaired) {
+    badgeEl.title = 'Status: Paired';
+  }
+}
+
 function openPairingModal() {
   if (modalPairing) {
     modalPairing.classList.remove('hidden');
+    const isPaired = !!localStorage.getItem('digi_device_token') || connected;
     if (pairingStatusMsg) {
-      pairingStatusMsg.classList.add('hidden');
-      pairingStatusMsg.textContent = '';
+      if (isPaired) {
+        pairingStatusMsg.className = 'pairing-msg success';
+        pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Status: Perangkat Paired (Terhubung)' : 'Status: Paired (Device Connected)';
+        pairingStatusMsg.classList.remove('hidden');
+      } else {
+        pairingStatusMsg.classList.add('hidden');
+        pairingStatusMsg.textContent = '';
+      }
     }
     pinInputs.forEach(inp => { if (inp) inp.value = ''; });
     setTimeout(() => { if (pinInputs[0]) pinInputs[0].focus(); }, 150);
@@ -9831,9 +9881,11 @@ function connect() {
         if (d.license) updateLicenseDisplay(d.license);
         if (d.authorized) {
           isPairingSubmitting = false;
+          updatePairingStatusUI(true);
           closePairingModal();
           document.body.classList.remove('controller-standby');
         } else if (d.pin_required) {
+          updatePairingStatusUI(false);
           openPairingModal();
         }
       } else if (d.type === 'pairing_result') {
@@ -9841,12 +9893,14 @@ function connect() {
         if (d.success) {
           if (d.token) localStorage.setItem('digi_device_token', d.token);
           if (d.license) updateLicenseDisplay(d.license);
+          updatePairingStatusUI(true);
           closePairingModal();
           document.body.classList.remove('controller-standby');
           playPairingSuccessSound();
           vibe([30, 40]);
-          showSmartToast(currentUiLang === 'id' ? 'Perangkat Berhasil Terhubung' : 'Device Connected Successfully', 'PC Host');
+          showSmartToast(currentUiLang === 'id' ? 'Status: Paired (Perangkat Terhubung)' : 'Status: Paired (Device Connected)', 'PC Host');
         } else {
+          updatePairingStatusUI(false);
           if (pairingStatusMsg) {
             pairingStatusMsg.className = 'pairing-msg error';
             pairingStatusMsg.textContent = d.message || (currentUiLang === 'id' ? 'PIN tidak sesuai. Periksa layar PC.' : 'Invalid PIN. Check your PC.');
@@ -9933,14 +9987,11 @@ function setStatus(ok, txt) {
     }
   }
 
-  // Bersih tanpa teks "terhubung" - murni icon + dot status
-  if (badgeTxt) {
-    badgeTxt.textContent = '';
-  }
+  updatePairingStatusUI(ok);
 
   // Tooltip hover informatif untuk aksesibilitas
   const modeName = isBt ? 'Bluetooth' : (isUsb ? 'USB' : 'Wi-Fi');
-  badge.title = ok ? `Koneksi ${modeName} Aktif` : (txt || `Menghubungkan ${modeName}...`);
+  badge.title = ok ? `Koneksi ${modeName} Aktif (Paired)` : (txt || `Menghubungkan ${modeName}...`);
 }
 
 // ── Network Lifecycle & Screen Wake Listeners ──

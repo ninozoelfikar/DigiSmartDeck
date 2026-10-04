@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "DigiKeyboardPrefs";
     private static final String KEY_SERVER_URL = "server_url";
-    private static final String DEFAULT_URL = "http://192.168.8.100:8080";
+    private static final String DEFAULT_URL = "http://192.168.8.102:8080";
     private static final int REQUEST_CODE_PERMISSIONS = 2001;
 
     private WebView webView;

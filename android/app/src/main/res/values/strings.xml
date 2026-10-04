@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">DigiSmartDeck</string>
-    <string name="server_url_hint">Contoh: 192.168.8.100 atau http://192.168.8.100:8080</string>
+    <string name="server_url_hint">Contoh: 192.168.8.102 atau http://192.168.8.102:8080</string>
     <string name="connect">Hubungkan</string>
     <string name="change_server">Ganti Alamat Server PC</string>
     <string name="dialog_title">Pengaturan Server PC</string>
