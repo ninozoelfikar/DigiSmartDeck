@@ -479,6 +479,18 @@ def simulate_tap(k):
         print(f"[Simulasi Tap] {k}")
 
 
+def simulate_combo(keys):
+    """Simulasi kombinasi penekanan tombol berganda (misal: ['alt', 'd'] atau ['ctrl', 'c'])"""
+    if not keys or not isinstance(keys, list):
+        return
+    resolved_keys = [resolve_key(k) or k for k in keys]
+    for rk in resolved_keys:
+        simulate_press(rk)
+    time.sleep(0.04)
+    for rk in reversed(resolved_keys):
+        simulate_release(rk)
+
+
 def simulate_mouse_move(dx, dy):
     """Simulasi pergerakan kursor mouse/trackpad"""
     if UINPUT_AVAILABLE and uinput_device:
@@ -1550,32 +1562,29 @@ async def websocket_handler(request):
 
                     # Jalankan simulasi input ke jendela PC jika diizinkan
                     if execute_pc and action != 'dismiss':
-                        win_id = data.get('win_id')
-                        if win_id:
-                            await asyncio.to_thread(activate_and_focus_window, win_id, False)
-                            await asyncio.sleep(0.05)
+                        try:
+                            win_id = data.get('win_id')
+                            if win_id:
+                                await asyncio.to_thread(activate_and_focus_window, win_id, False)
+                                await asyncio.sleep(0.06)
 
-                        combo = data.get('combo')
-                        if combo and isinstance(combo, list):
-                            for k in combo:
-                                target_k = resolve_key(k) or k
-                                simulate_key(target_k, True)
-                            await asyncio.sleep(0.02)
-                            for k in reversed(combo):
-                                target_k = resolve_key(k) or k
-                                simulate_key(target_k, False)
-                        elif text_to_type:
-                            for ch in str(text_to_type):
-                                simulate_tap(ch)
-                                await asyncio.sleep(0.003)
-                        elif val is not None and not key:
-                            simulate_tap(str(val))
-                            await asyncio.sleep(0.02)
-                            simulate_tap('enter')
+                            combo = data.get('combo')
+                            if combo and isinstance(combo, list):
+                                await asyncio.to_thread(simulate_combo, combo)
+                            elif text_to_type:
+                                for ch in str(text_to_type):
+                                    simulate_tap(ch)
+                                    await asyncio.sleep(0.003)
+                            elif val is not None and not key:
+                                simulate_tap(str(val))
+                                await asyncio.sleep(0.02)
+                                simulate_tap('enter')
 
-                        if key and not combo:
-                            target_k = resolve_key(key) or key
-                            simulate_tap(target_k)
+                            if key and not combo:
+                                target_k = resolve_key(key) or key
+                                simulate_tap(target_k)
+                        except Exception as e_sim:
+                            print(f"[Error prompt_response input simulation]: {e_sim}")
 
                     # Selesaikan future HTTP wait jika ada
                     if p_id and p_id in PENDING_PROMPTS:

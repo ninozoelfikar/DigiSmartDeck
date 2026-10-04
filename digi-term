@@ -58,7 +58,7 @@ def _opt(label, send, primary=False, danger=False):
 
 
 def detect_prompt(buffer_text):
-    """Kembalikan payload prompt jika baris terakhir terlihat seperti pertanyaan interaktif."""
+    """Kembalikan payload prompt jika teks buffer terlihat seperti pertanyaan interaktif."""
     clean = strip_ansi(buffer_text)
     lines = [l.rstrip() for l in clean.split('\n')]
     while lines and not lines[-1].strip():
@@ -69,61 +69,79 @@ def detect_prompt(buffer_text):
     if not last or len(last) > 400:
         return None
 
-    # Shell prompt biasa (user@host:~$ ) bukan pertanyaan
-    if re.search(r'[\$#%>]\s*$', last) and not re.search(r'\?\s*[\$#%>]?\s*$', last):
-        if not re.search(r'\[[yYnN]/[yYnN]\]|\([yYnN]/[yYnN]\)', last):
-            return None
+    # Shell prompt biasa (user@host:~$ ) tanpa tanda tanya atau opsi bukan pertanyaan
+    if re.search(r'[\$#%>]\s*$', last) and not re.search(r'[\?:\[\(]', last):
+        return None
 
-    context = '\n'.join(l for l in lines[-6:] if l.strip())
+    context = '\n'.join(l for l in lines[-8:] if l.strip())
 
-    # 1. Konfirmasi biner [Y/n] / (y/N) / [yes/no]
-    m = re.search(r'[\[\(]\s*(y(?:es)?)\s*/\s*(n(?:o)?)\s*[\]\)]', last, re.IGNORECASE)
+    # 1. Konfirmasi biner / tri-state: [y/n], [y/n/a], (y/n/always), (y)es/(n)o
+    scan_text = last
+    if len(lines) >= 2 and len(last) < 25:
+        scan_text = lines[-2].strip() + ' ' + last
+
+    m = re.search(r'[\[\(]\s*(y(?:es)?)\s*/\s*(n(?:o)?)(?:\s*/\s*([a-zA-Z]+))?\s*[\]\)]', scan_text, re.IGNORECASE)
+    if not m:
+        m = re.search(r'\((y)\)es[,\s/]+(?:\((n)\)o)?[,\s/]*(?:\(([a-zA-Z]+)\)(?:lways)?)?', scan_text, re.IGNORECASE)
+
     if m:
-        y_tok, n_tok = m.group(1), m.group(2)
+        y_tok = m.group(1) or 'y'
+        n_tok = m.group(2) or 'n'
+        third_tok = m.group(3) if len(m.groups()) >= 3 else None
+
         long_form = len(y_tok) > 1
         default_yes = y_tok[0].isupper()
         default_no = n_tok[0].isupper()
         yes_send = ('yes' if long_form else 'y') + '\n'
         no_send = ('no' if long_form else 'n') + '\n'
+
+        opts = [
+            _opt('Ya', yes_send, primary=not default_no),
+        ]
+        if third_tok:
+            t_lower = third_tok.lower()
+            if 'a' in t_lower:
+                opts.append(_opt('Selalu Izinkan', 'a\n', primary=False))
+            else:
+                opts.append(_opt(third_tok.capitalize(), f'{third_tok}\n'))
+        opts.append(_opt('Tidak', no_send, danger=True, primary=default_no and not default_yes))
+
         return {
             'app': 'Terminal',
             'title': 'Konfirmasi Terminal',
             'message': context,
-            'options': [
-                _opt('Ya', yes_send, primary=not default_no),
-                _opt('Tidak', no_send, danger=True, primary=default_no and not default_yes),
-            ],
+            'options': opts,
         }
 
-    # 2. Menu bernomor: beberapa baris "1) ..." / "1. ..." / "[1] ..." diakhiri pertanyaan
-    if re.search(r'[:?]\s*$', last) or re.search(r'(?i)(choice|pilih|select|option|enter)', last):
-        items = []
-        for l in lines[-15:-1]:
-            mm = re.match(r'^\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,60})$', l)
-            if mm:
-                items.append((mm.group(1), mm.group(2).strip()))
-        if 2 <= len(items) <= 9:
-            return {
-                'app': 'Terminal',
-                'title': 'Pilih Opsi',
-                'message': last,
-                'options': [_opt(f"{n}. {txt}", f"{n}\n", primary=(i == 0)) for i, (n, txt) in enumerate(items)],
-            }
-
-    # 3. Izin tindakan (CLI AI agent, installer, dsb.)
-    if re.search(r'(?i)\b(allow|approve|permit|authori[sz]e|izinkan|setujui)\b', last) and re.search(r'[\?:]\s*$', last):
+    # 2. Menu bernomor: scan lines[-15:]
+    items = []
+    for l in lines[-15:]:
+        mm = re.match(r'^\s*[❯>]?\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,70})$', l)
+        if mm:
+            items.append((mm.group(1), mm.group(2).strip()))
+    if 2 <= len(items) <= 9:
         return {
             'app': 'Terminal',
-            'title': 'Izin Tindakan',
+            'title': 'Pilih Opsi',
             'message': context,
-            'options': [
-                _opt('Izinkan', 'y\n', primary=True),
-                _opt('Tolak', 'n\n', danger=True),
-            ],
+            'options': [_opt(f"{n}. {txt}", f"{n}\n", primary=(i == 0)) for i, (n, txt) in enumerate(items)],
         }
 
+    # 3. Izin tindakan AI agent / tool call (allow, approve, permit, run this command)
+    if re.search(r'(?i)\b(allow|approve|permit|authori[sz]e|izinkan|setujui|permission|run this command|execute this)\b', context):
+        if re.search(r'[\?:]\s*$', last) or '?' in context:
+            return {
+                'app': 'Terminal',
+                'title': 'Izin Tindakan AI',
+                'message': context,
+                'options': [
+                    _opt('Izinkan', 'y\n', primary=True),
+                    _opt('Tolak', 'n\n', danger=True),
+                ],
+            }
+
     # 4. Lanjutkan? / Are you sure?
-    if re.search(r'(?i)\b(continue|proceed|lanjutkan|are you sure|apakah anda yakin)\b', last) and re.search(r'\?\s*$', last):
+    if re.search(r'(?i)\b(continue|proceed|lanjutkan|are you sure|apakah anda yakin)\b', context) and ('?' in context or re.search(r'[:?]\s*$', last)):
         return {
             'app': 'Terminal',
             'title': 'Konfirmasi Terminal',
@@ -135,7 +153,7 @@ def detect_prompt(buffer_text):
         }
 
     # 5. Press Enter / any key
-    if re.search(r'(?i)(press|tekan)\s+(\[?enter\]?|return|any key|sembarang)', last):
+    if re.search(r'(?i)(press|tekan)\s+(\[?enter\]?|return|any key|sembarang)', context):
         return {
             'app': 'Terminal',
             'title': 'Menunggu Enter',
@@ -144,6 +162,7 @@ def detect_prompt(buffer_text):
         }
 
     return None
+
 
 
 class DigiTermSupervisor:
