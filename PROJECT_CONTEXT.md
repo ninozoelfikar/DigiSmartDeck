@@ -1288,6 +1288,37 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 74. CATATAN CHECKPOINT & STRATEGI FINALISASI MVP (v0.9.70 - Reposisi Produk, Strategi Harga & Rencana Kerja Peluncuran)
+- **Reposisi Kategori Produk & Target Market (Vibe Coding Companion):**
+  - Identitas Produk: **AI Workstation & Vibe Coding Companion**.
+  - Masalah Inti (Core Pain Point): Mengeliminasi kelelahan fisik developer dan vibe coder yang harus duduk terpaku menatap layar monitor saat agen AI (Antigravity, Claude Code, Cursor, Aider, Devin) sedang melakukan multi-step coding dan meminta konfirmasi interaktif (`[Y/n]`, approval file edit, shell command).
+  - Solusi Unik (USP): DigiSmartDeck menjadi infrastruktur fisik kendali jarak jauh (Human-in-the-Loop) tingkat sistem operasi (OS-level / Linux PTY & uinput). Pengguna dapat santai di kasur atau sofa sambil menyetujui perintah terminal atau mendikte prompt suara panjang lewat ponsel dengan latensi <1ms.
+- **Strategi Penetapan Harga (Pricing & Monetization Strategy):**
+  - *Anchor Pricing (Nilai Patokan Resmi):* Rp 450.000 (~$29.00 USD).
+  - *Harga Peluncuran Perdana (Early Bird / Launch Offer):*
+    - Pasar Domestik (Indonesia via QRIS/Mayar): Rp 249.000 (atau Rp 199.000) untuk Lisensi Seumur Hidup (Lifetime Pro).
+    - Paket Langganan: Rp 15.000 - Rp 19.000 / bulan.
+    - Pasar Global (Gumroad / LemonSqueezy): $29.00 Lifetime Pro ($2.50 / bulan).
+    - Akses Awal: Free Trial 7 Hari penuh tanpa batasan fitur untuk membentuk kebiasaan kerja (habit-forming).
+- **Daftar Pekerjaan Rumah (PR) Menuju Peluncuran Penuh (Target: Besok):**
+  - **PR 1: Desain Ulang Komprehensif Host GUI PC (`digikeyboard_gui.py`):**
+    - Masalah Saat Ini: Tampilan GUI manager di desktop PC masih terasa kaku, tata letak visual kurang menjual, dan kata-kata/diksi teknis belum profesional.
+    - Solusi: Merombak gaya antarmuka, hierarki visual, warna obsidian/accent, dan tata bahasa profesional agar selaras sempurna (matching) dengan standar kemewahan Web & Mobile Client.
+  - **PR 2: Penyempurnaan Teks & Alur Installer Linux (`install-linux.sh`):**
+    - Menyempurnakan bahasa terminal installer agar bersih, profesional, to-the-point, dan berorientasi nilai produk komersial.
+  - **PR 3: Sistem Token Aktivasi Lisensi Pro (`auth_manager.py`):**
+    - Memastikan generator kunci lisensi, validasi offline HMAC-SHA256, dan alur aktivasi pro di PC host dan ponsel berjalan mulus tanpa kendala teknis.
+  - **PR 4: Marketing Kit & Landing Page:**
+    - Menyusun materi pemasaran, rancangan landing page promosi, video demonstrasi 30 detik (vibe coding santai dari kasur sambil approve terminal di HP), dan panduan instalasi.
+  - **Transisi Fase:**
+    - Menutup tahap produksi dan pengembangan fitur MVP.
+    - Beralih penuh ke tahap finishing kemasan, aktivasi lisensi komersial, dan peluncuran pemasaran.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
 
 
 
