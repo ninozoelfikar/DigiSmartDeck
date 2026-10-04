@@ -1553,6 +1553,11 @@ body.is-fullscreen {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+@keyframes update-success-pop {
+  0% { transform: scale(0.92); opacity: 0.8; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
 .modal-body {
   padding: 16px 18px;
   overflow-y: auto;
@@ -7708,13 +7713,14 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <!-- Subtitle (Kalimat terakhir saja, fokus kegunaan) -->
     <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto;" data-i18n="about_desc">Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel.</div>
 
-    <!-- Tombol Update Paling Bawah Tengah -->
-    <div style="margin-top:20px;">
-      <button type="button" id="btn-check-update" class="btn-check-update" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 18px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:all 0.2s ease;">
-        <svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+    <!-- Tombol Update Paling Bawah Tengah (Bermutasi Menjadi Status Dinamis) -->
+    <div style="margin-top:20px;" id="about-update-container">
+      <button type="button" id="btn-check-update" class="btn-check-update" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 20px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);">
+        <span id="wrap-update-icon" style="display:inline-flex;align-items:center;">
+          <svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+        </span>
         <span id="txt-check-update" data-i18n="about_btn_update">Periksa Pembaruan</span>
       </button>
-      <div id="about-update-status" style="display:none;margin-top:10px;font-size:12px;font-weight:600;color:#3fb950;line-height:1.4;"></div>
     </div>
   </div>
 </div>
@@ -8760,10 +8766,34 @@ if (btnControlDeck) {
   });
 }
 
+let updateResetTimeout = null;
+
+function resetCheckUpdateButton() {
+  if (updateResetTimeout) {
+    clearTimeout(updateResetTimeout);
+    updateResetTimeout = null;
+  }
+  const btn = $('btn-check-update');
+  if (!btn) return;
+  btn.disabled = false;
+  btn.style.background = 'rgba(88,166,255,0.12)';
+  btn.style.borderColor = 'rgba(88,166,255,0.3)';
+  btn.style.color = 'var(--accent)';
+  btn.style.boxShadow = 'none';
+  btn.style.animation = 'none';
+  const iconWrap = $('wrap-update-icon');
+  if (iconWrap) {
+    iconWrap.innerHTML = '<svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>';
+  }
+  const txtEl = $('txt-check-update');
+  if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
+}
+
 function openAboutModal() {
   if (isSplashScreenActive) return;
   const modal = $('modal-about');
   if (!modal) return;
+  resetCheckUpdateButton();
   modal.classList.remove('hidden');
   playClickSound();
   vibe(15);
@@ -8783,46 +8813,68 @@ if (btnCheckUpdate) {
     playClickSound();
     vibe(15);
     const txtEl = $('txt-check-update');
+    const iconWrap = $('wrap-update-icon');
     const spinIcon = $('icon-update-spin');
-    const statusMsgEl = $('about-update-status');
     if (spinIcon) spinIcon.style.animation = 'spin-icon 0.8s linear infinite';
     if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Memeriksa...' : 'Checking...';
-    if (statusMsgEl) statusMsgEl.style.display = 'none';
     btnCheckUpdate.disabled = true;
 
     setTimeout(() => {
       fetch('/api/version')
         .then(r => r.json())
         .then(d => {
-          if (spinIcon) spinIcon.style.animation = '';
-          btnCheckUpdate.disabled = false;
           const verStr = (d && d.version) ? `v${d.version}` : 'v1.17.0';
-          const msgId = `Versi aplikasi Anda sudah yang terbaru (${verStr}).`;
-          const msgEn = `Your app is already up to date (${verStr}).`;
-          const userMsg = currentUiLang === 'id' ? msgId : msgEn;
+          const successMsg = currentUiLang === 'id'
+            ? `Versi Sudah Terbaru (${verStr})`
+            : `Up to Date (${verStr})`;
 
-          if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Versi Sudah Terbaru' : 'Up to Date';
-          if (statusMsgEl) {
-            statusMsgEl.textContent = userMsg;
-            statusMsgEl.style.display = 'block';
+          // Tombol bermutasi langsung menggantikan posisinya dengan status update yang hidup
+          btnCheckUpdate.disabled = false;
+          btnCheckUpdate.style.background = 'rgba(63, 185, 80, 0.16)';
+          btnCheckUpdate.style.borderColor = 'rgba(63, 185, 80, 0.45)';
+          btnCheckUpdate.style.color = '#3fb950';
+          btnCheckUpdate.style.boxShadow = '0 0 14px rgba(63, 185, 80, 0.25)';
+          btnCheckUpdate.style.animation = 'update-success-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+
+          if (iconWrap) {
+            iconWrap.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>';
           }
-          showSmartToast(userMsg, 'DigiSmartDeck');
+          if (txtEl) txtEl.textContent = successMsg;
+
+          showSmartToast(currentUiLang === 'id' ? `Versi aplikasi Anda sudah yang terbaru (${verStr}).` : `Your app is already up to date (${verStr}).`, 'DigiSmartDeck');
           playPairingSuccessSound();
-          setTimeout(() => {
-            if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
-          }, 3500);
+          vibe([25, 35]);
+
+          if (updateResetTimeout) clearTimeout(updateResetTimeout);
+          updateResetTimeout = setTimeout(() => {
+            resetCheckUpdateButton();
+          }, 4500);
         })
         .catch(() => {
-          if (spinIcon) spinIcon.style.animation = '';
+          const fallbackVer = 'v1.17.0';
+          const successMsg = currentUiLang === 'id'
+            ? `Versi Sudah Terbaru (${fallbackVer})`
+            : `Up to Date (${fallbackVer})`;
+
           btnCheckUpdate.disabled = false;
-          if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
-          const fallbackMsg = currentUiLang === 'id' ? 'Versi aplikasi Anda sudah yang terbaru (v1.17.0).' : 'Your app is already up to date (v1.17.0).';
-          if (statusMsgEl) {
-            statusMsgEl.textContent = fallbackMsg;
-            statusMsgEl.style.display = 'block';
+          btnCheckUpdate.style.background = 'rgba(63, 185, 80, 0.16)';
+          btnCheckUpdate.style.borderColor = 'rgba(63, 185, 80, 0.45)';
+          btnCheckUpdate.style.color = '#3fb950';
+          btnCheckUpdate.style.boxShadow = '0 0 14px rgba(63, 185, 80, 0.25)';
+          btnCheckUpdate.style.animation = 'update-success-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+
+          if (iconWrap) {
+            iconWrap.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>';
           }
-          showSmartToast(fallbackMsg, 'DigiSmartDeck');
+          if (txtEl) txtEl.textContent = successMsg;
+
+          showSmartToast(currentUiLang === 'id' ? `Versi aplikasi Anda sudah yang terbaru (${fallbackVer}).` : `Your app is already up to date (${fallbackVer}).`, 'DigiSmartDeck');
           playPairingSuccessSound();
+
+          if (updateResetTimeout) clearTimeout(updateResetTimeout);
+          updateResetTimeout = setTimeout(() => {
+            resetCheckUpdateButton();
+          }, 4500);
         });
     }, 600);
   });
