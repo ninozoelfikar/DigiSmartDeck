@@ -847,10 +847,10 @@ def classify_app_context(wm_classes, title):
     return 'standard', friendly
 
 def _inspect_x11_window(win_id, env):
-    """Membaca metadata jendela X11 (class, title, mode). Return None jika gagal, 'skip' jika window internal."""
+    """Membaca metadata jendela X11 (class, title, mode, is_dialog). Return None jika gagal, 'skip' jika window internal."""
     try:
         res = subprocess.run(
-            ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME'],
+            ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME', '_NET_WM_WINDOW_TYPE', 'WM_TRANSIENT_FOR'],
             env=env,
             capture_output=True,
             text=True,
@@ -871,13 +871,16 @@ def _inspect_x11_window(win_id, env):
         if 'desktop icons' in title.lower() or 'gjs' in wm_str:
             return 'skip'
 
+        is_dialog = ('_NET_WM_WINDOW_TYPE_DIALOG' in out) or ('WM_TRANSIENT_FOR(WINDOW): window id #' in out)
+
         suggested_mode, friendly_name = classify_app_context(wm_classes, title)
         return {
             'app': friendly_name,
             'title': title,
             'suggested_mode': suggested_mode,
             'class_name': wm_classes[0] if wm_classes else '',
-            'win_id': win_id
+            'win_id': win_id,
+            'is_dialog': is_dialog
         }
     except Exception:
         return None
@@ -924,21 +927,28 @@ def get_active_window_info():
                 'title': '',
                 'suggested_mode': 'standard',
                 'class_name': '',
-                'win_id': '0x0'
+                'win_id': '0x0',
+                'is_dialog': False
             }
         except Exception:
             CACHED_X11_ENV = None
             return None
     elif sys.platform == 'win32':
         try:
-            import win32gui
+            import win32gui, win32con
             hwnd = win32gui.GetForegroundWindow()
             if not hwnd:
-                return {'app': 'Desktop', 'title': '', 'suggested_mode': 'standard', 'class_name': '', 'win_id': '0'}
+                return {'app': 'Desktop', 'title': '', 'suggested_mode': 'standard', 'class_name': '', 'win_id': '0', 'is_dialog': False}
             title = win32gui.GetWindowText(hwnd) or ''
             class_name = win32gui.GetClassName(hwnd) or ''
             mode, friendly = classify_app_context([class_name], title)
-            return {'app': friendly, 'title': title, 'suggested_mode': mode, 'class_name': class_name, 'win_id': str(hwnd)}
+            try:
+                ex_style = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
+                owner = win32gui.GetWindow(hwnd, win32con.GW_OWNER)
+                is_dialog = bool(ex_style & win32con.WS_EX_DLGMODALFRAME) or bool(owner)
+            except Exception:
+                is_dialog = False
+            return {'app': friendly, 'title': title, 'suggested_mode': mode, 'class_name': class_name, 'win_id': str(hwnd), 'is_dialog': is_dialog}
         except Exception:
             return None
 
@@ -1189,9 +1199,33 @@ def close_window(win_id):
             return False
     return False
 
+ACTIVE_WINDOW_DIALOG_ID = None
+PENDING_PROMPTS = {}
+
+async def broadcast_prompt(prompt_data):
+    """Menyiarkan prompt tindakan interaktif ke semua client yang terhubung."""
+    payload = json.dumps(prompt_data)
+    for client in list(CONNECTED_CLIENTS):
+        try:
+            await client.send_str(payload)
+        except Exception:
+            pass
+
+async def broadcast_prompt_dismiss(prompt_id):
+    """Menyiarkan penutupan prompt tindakan ke semua client yang terhubung."""
+    payload = json.dumps({
+        'type': 'remote_prompt_dismiss',
+        'prompt_id': prompt_id
+    })
+    for client in list(CONNECTED_CLIENTS):
+        try:
+            await client.send_str(payload)
+        except Exception:
+            pass
+
 async def smart_context_tracker_loop():
-    """Background task memeriksa jendela aktif PC setiap 800ms dan memancarkan perubahan ke client."""
-    global CURRENT_APP_CONTEXT
+    """Background task memeriksa jendela aktif PC setiap 350ms dan memancarkan perubahan serta dialog ke client."""
+    global CURRENT_APP_CONTEXT, ACTIVE_WINDOW_DIALOG_ID
     while True:
         try:
             info = await asyncio.to_thread(get_active_window_info)
@@ -1215,6 +1249,32 @@ async def smart_context_tracker_loop():
                             await client.send_str(payload)
                         except Exception:
                             pass
+
+                # Deteksi dan siarkan prompt dialog jendela GUI PC jika ada
+                if info.get('is_dialog'):
+                    dialog_pid = f"win_dialog_{info.get('win_id')}"
+                    if dialog_pid != ACTIVE_WINDOW_DIALOG_ID:
+                        if ACTIVE_WINDOW_DIALOG_ID:
+                            await broadcast_prompt_dismiss(ACTIVE_WINDOW_DIALOG_ID)
+                        ACTIVE_WINDOW_DIALOG_ID = dialog_pid
+                        dialog_prompt = {
+                            'type': 'remote_prompt',
+                            'prompt_id': dialog_pid,
+                            'app': info['app'],
+                            'title': info['title'] or f"Dialog {info['app']}",
+                            'message': f"Aplikasi {info['app']} membutuhkan konfirmasi tindakan di PC.",
+                            'options': [
+                                {'label': 'OK (Enter)', 'key': 'enter', 'primary': True},
+                                {'label': 'Batal (Esc)', 'key': 'escape', 'danger': True}
+                            ],
+                            'is_window_dialog': True,
+                            'win_id': info.get('win_id')
+                        }
+                        await broadcast_prompt(dialog_prompt)
+                else:
+                    if ACTIVE_WINDOW_DIALOG_ID:
+                        await broadcast_prompt_dismiss(ACTIVE_WINDOW_DIALOG_ID)
+                        ACTIVE_WINDOW_DIALOG_ID = None
         except asyncio.CancelledError:
             break
         except Exception:
@@ -1457,6 +1517,45 @@ async def websocket_handler(request):
                             }))
                         except Exception:
                             pass
+                    continue
+
+                elif msg_type == 'prompt_response':
+                    p_id = data.get('prompt_id')
+                    key = data.get('key')
+                    val = data.get('value')
+                    text_to_type = data.get('text')
+                    execute_pc = data.get('execute_on_pc', True)
+                    action = data.get('action')
+
+                    # Jalankan simulasi input ke jendela PC jika diizinkan
+                    if execute_pc and action != 'dismiss':
+                        if text_to_type:
+                            for ch in str(text_to_type):
+                                simulate_tap(ch)
+                                await asyncio.sleep(0.003)
+                        elif val is not None and not key:
+                            simulate_tap(str(val))
+                            await asyncio.sleep(0.02)
+                            simulate_tap('enter')
+
+                        if key:
+                            target_k = resolve_key(key) or key
+                            simulate_tap(target_k)
+
+                    # Selesaikan future HTTP wait jika ada
+                    if p_id and p_id in PENDING_PROMPTS:
+                        fut = PENDING_PROMPTS[p_id].get('future')
+                        if fut and not fut.done():
+                            fut.set_result({
+                                'action': action or 'responded',
+                                'key': key,
+                                'value': val,
+                                'text': text_to_type
+                            })
+
+                    # Siarkan penutupan prompt ke semua client terhubung
+                    if p_id:
+                        await broadcast_prompt_dismiss(p_id)
                     continue
 
                 # ── Proteksi Pairing: Blokir input kontrol jika perangkat belum ter-pairing ──
@@ -1815,6 +1914,112 @@ async def options_handler(request):
     })
 
 
+async def api_trigger_prompt_handler(request):
+    """Endpoint HTTP POST /api/prompt untuk memicu prompt konfirmasi tindakan dari CLI/skrip."""
+    try:
+        if request.content_type == 'application/json':
+            data = await request.json()
+        else:
+            data = dict(await request.post())
+    except Exception:
+        data = {}
+
+    # Baca query parameter sebagai fallback
+    for k, v in request.query.items():
+        if k not in data:
+            data[k] = v
+
+    prompt_id = data.get('id') or f"prompt_{int(time.time() * 1000)}"
+    app_name = data.get('app', 'Terminal')
+    title = data.get('title', 'Konfirmasi Tindakan')
+    message = data.get('message', 'Apakah Anda ingin melanjutkan tindakan ini?')
+    options = data.get('options')
+    if not options or not isinstance(options, list):
+        options = [
+            {'label': 'Ya (Enter)', 'value': 'y', 'key': 'enter', 'primary': True},
+            {'label': 'Batal (Esc)', 'value': 'n', 'key': 'escape', 'danger': True}
+        ]
+
+    try:
+        timeout = float(data.get('timeout', 60))
+    except (ValueError, TypeError):
+        timeout = 60.0
+
+    wait_flag = str(data.get('wait', '')).lower() in ('1', 'true', 'yes') or 'wait' in request.query
+    execute_on_pc = str(data.get('execute_on_pc', 'true')).lower() not in ('0', 'false', 'no')
+
+    prompt_payload = {
+        'type': 'remote_prompt',
+        'prompt_id': prompt_id,
+        'app': app_name,
+        'title': title,
+        'message': message,
+        'options': options,
+        'timeout': timeout,
+        'execute_on_pc': execute_on_pc
+    }
+
+    loop = asyncio.get_running_loop()
+    future = loop.create_future() if wait_flag else None
+    PENDING_PROMPTS[prompt_id] = {
+        'future': future,
+        'payload': prompt_payload,
+        'created_at': time.time()
+    }
+
+    await broadcast_prompt(prompt_payload)
+
+    if wait_flag:
+        try:
+            result = await asyncio.wait_for(future, timeout=timeout)
+            PENDING_PROMPTS.pop(prompt_id, None)
+            return web.json_response({
+                'status': 'responded',
+                'prompt_id': prompt_id,
+                'response': result
+            }, headers={'Access-Control-Allow-Origin': '*'})
+        except asyncio.TimeoutError:
+            PENDING_PROMPTS.pop(prompt_id, None)
+            await broadcast_prompt_dismiss(prompt_id)
+            return web.json_response({
+                'status': 'timeout',
+                'prompt_id': prompt_id,
+                'message': f'Prompt kedaluwarsa setelah {timeout} detik.'
+            }, status=408, headers={'Access-Control-Allow-Origin': '*'})
+    else:
+        return web.json_response({
+            'status': 'dispatched',
+            'prompt_id': prompt_id,
+            'clients_notified': len(CONNECTED_CLIENTS)
+        }, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_dismiss_prompt_handler(request):
+    """Endpoint HTTP POST /api/prompt/dismiss untuk membatalkan/menutup prompt."""
+    try:
+        if request.content_type == 'application/json':
+            data = await request.json()
+        else:
+            data = dict(await request.post())
+    except Exception:
+        data = {}
+
+    prompt_id = data.get('prompt_id') or data.get('id') or request.query.get('prompt_id') or request.query.get('id')
+    if prompt_id:
+        if prompt_id in PENDING_PROMPTS:
+            fut = PENDING_PROMPTS[prompt_id].get('future')
+            if fut and not fut.done():
+                fut.set_result({'action': 'dismissed'})
+            PENDING_PROMPTS.pop(prompt_id, None)
+        await broadcast_prompt_dismiss(prompt_id)
+        return web.json_response({'status': 'dismissed', 'prompt_id': prompt_id}, headers={'Access-Control-Allow-Origin': '*'})
+    else:
+        for pid in list(PENDING_PROMPTS.keys()):
+            await broadcast_prompt_dismiss(pid)
+        PENDING_PROMPTS.clear()
+        return web.json_response({'status': 'dismissed_all'}, headers={'Access-Control-Allow-Origin': '*'})
+
+
 def create_app(ports=[8080]):
     app = web.Application()
     app['server_ports'] = ports
@@ -1831,6 +2036,10 @@ def create_app(ports=[8080]):
     app.router.add_options('/api/info', options_handler)
     app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
     app.router.add_get('/api/pairing/pin', lambda r: web.json_response({'pin': pairing_manager.get_or_create_pin()}, headers={'Access-Control-Allow-Origin': '*'}))
+    app.router.add_post('/api/prompt', api_trigger_prompt_handler)
+    app.router.add_options('/api/prompt', options_handler)
+    app.router.add_post('/api/prompt/dismiss', api_dismiss_prompt_handler)
+    app.router.add_options('/api/prompt/dismiss', options_handler)
     app.router.add_static('/static/', path=static_dir, name='static')
     # Juga route langsung untuk style.css, app.js, manifest.json, sw.js, dan favicon jika diminta di root
     app.router.add_get('/style.css', lambda r: web.FileResponse(os.path.join(static_dir, 'style.css')))

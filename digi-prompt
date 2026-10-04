@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+import sys
+import json
+import argparse
+import urllib.request
+import urllib.error
+
+def main():
+    parser = argparse.ArgumentParser(description="DigiSmartDeck Remote Action Prompt CLI")
+    parser.add_argument("message", nargs="?", default="Lanjutkan proses?", help="Pesan prompt konfirmasi")
+    parser.add_argument("--app", default="Terminal", help="Nama aplikasi pengirim prompt")
+    parser.add_argument("--title", default="Konfirmasi Tindakan", help="Judul modal prompt")
+    parser.add_argument("--yes", default="Ya (Enter)", help="Label tombol konfirmasi/positif")
+    parser.add_argument("--no", default="Batal (Esc)", help="Label tombol pembatalan/negatif")
+    parser.add_argument("--timeout", type=int, default=60, help="Batas waktu tunggu (detik)")
+    parser.add_argument("--port", type=int, default=8080, help="Port server DigiSmartDeck")
+    parser.add_argument("--no-pc-exec", action="store_true", help="Jangan simulasikan tombol ke PC (hanya kembalikan hasil ke CLI)")
+    args = parser.parse_args()
+
+    options = [
+        {"label": args.yes, "value": "y", "key": "enter", "primary": True},
+        {"label": args.no, "value": "n", "key": "escape", "danger": True}
+    ]
+
+    payload = {
+        "app": args.app,
+        "title": args.title,
+        "message": args.message,
+        "options": options,
+        "timeout": args.timeout,
+        "execute_on_pc": not args.no_pc_exec
+    }
+
+    url = f"http://127.0.0.1:{args.port}/api/prompt?wait=true"
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"}
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=args.timeout + 5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            res = data.get("response", {})
+            action = res.get("action", "")
+            key = res.get("key", "")
+            val = res.get("value", "")
+
+            if key in ("enter", "y", "yes") or val in ("y", "yes") or action == "responded":
+                print(f"[OK] Dikonfirmasi via DigiSmartDeck (key={key}, val={val})")
+                sys.exit(0)
+            else:
+                print(f"[BATAL] Dibatalkan via DigiSmartDeck (key={key}, val={val})")
+                sys.exit(1)
+    except urllib.error.HTTPError as e:
+        if e.code == 408:
+            print("[TIMEOUT] Prompt di DigiSmartDeck telah kedaluwarsa.")
+            sys.exit(2)
+        print(f"[ERROR] HTTP Error {e.code}: {e.read().decode('utf-8')}")
+        sys.exit(3)
+    except Exception as e:
+        print(f"[ERROR] Gagal menghubungi DigiSmartDeck: {e}")
+        sys.exit(4)
+
+if __name__ == "__main__":
+    main()

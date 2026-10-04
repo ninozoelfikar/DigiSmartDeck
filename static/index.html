@@ -1558,6 +1558,116 @@ body.is-fullscreen {
   50% { transform: scale(1.05); }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* Remote Action Prompt / Smart Confirmation Card */
+.remote-action-card {
+  width: min(440px, 92vw);
+  background: var(--header-bg);
+  border: 1px solid rgba(88, 166, 255, 0.45);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(88, 166, 255, 0.2);
+  animation: rap-card-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes rap-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.rap-app-badge {
+  background: rgba(88, 166, 255, 0.18);
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  color: var(--accent);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rap-message-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  word-break: break-word;
+}
+.rap-message-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  font-family: inherit;
+  white-space: pre-wrap;
+}
+.rap-options-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+.rap-btn {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 48px;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.rap-btn:active {
+  transform: scale(0.96);
+}
+.rap-btn-primary {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.25);
+}
+.rap-btn-primary:active {
+  background: var(--accent);
+  color: #000;
+}
+.rap-btn-danger {
+  background: rgba(248, 81, 73, 0.15);
+  border-color: rgba(248, 81, 73, 0.45);
+  color: #ff7b72;
+}
+.rap-btn-danger:active {
+  background: #f85149;
+  color: #fff;
+}
+.rap-btn-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.rap-btn-primary .rap-btn-sub {
+  color: rgba(255, 255, 255, 0.7);
+}
+.rap-btn-danger .rap-btn-sub {
+  color: rgba(255, 123, 114, 0.8);
+}
 .modal-body {
   padding: 16px 18px;
   overflow-y: auto;
@@ -7790,13 +7900,17 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <!-- Subtitle (Kalimat terakhir saja, fokus kegunaan) -->
     <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto;" data-i18n="about_desc">Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel.</div>
 
-    <!-- Tombol Update Paling Bawah Tengah (Bermutasi Menjadi Status Dinamis) -->
+    <!-- Informasi Status Versi Aplikasi (Langsung tampil jika sudah versi terbaru) -->
     <div style="margin-top:20px;" id="about-update-container">
-      <button type="button" id="btn-check-update" class="btn-check-update" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 20px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);">
+      <div id="about-update-status" class="about-update-status-badge" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:rgba(63, 185, 80, 0.12);border:1px solid rgba(63, 185, 80, 0.35);border-radius:20px;font-size:11.5px;font-weight:600;color:#3fb950;user-select:none;">
+        <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="txt-about-update-status" data-i18n="about_status_up_to_date">Aplikasi Sudah Versi Terbaru</span>
+      </div>
+      <button type="button" id="btn-check-update" class="btn-check-update" style="display:none;align-items:center;justify-content:center;gap:6px;padding:8px 20px;background:rgba(88,166,255,0.12);border:1px solid rgba(88,166,255,0.3);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);">
         <span id="wrap-update-icon" style="display:inline-flex;align-items:center;">
           <svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
         </span>
-        <span id="txt-check-update" data-i18n="about_btn_update">Periksa Pembaruan</span>
+        <span id="txt-check-update" data-i18n="about_btn_update">Pembaruan Tersedia</span>
       </button>
     </div>
   </div>
@@ -7920,6 +8034,31 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     </div>
   </div>
 </div>
+
+<!-- Modal Remote Action Prompt / Smart Confirmation Card -->
+<div class="modal-backdrop hidden" id="modal-remote-prompt" style="z-index:99999;backdrop-filter:blur(8px);background:rgba(8,10,14,0.78);">
+  <div class="modal-dialog remote-action-card" style="max-width:440px;border-color:rgba(88,166,255,0.4);box-shadow:0 12px 36px rgba(0,0,0,0.65),0 0 24px rgba(88,166,255,0.2);">
+    <div class="modal-header rap-header" style="background:rgba(88,166,255,0.08);border-bottom:1px solid rgba(88,166,255,0.18);">
+      <div class="modal-title" style="gap:8px;">
+        <span class="rap-app-badge" id="rap-app-badge">Terminal</span>
+        <span id="rap-title" style="font-weight:700;color:var(--text);" data-i18n="rap_default_title">Konfirmasi Tindakan</span>
+      </div>
+      <button class="modal-close" id="btn-close-rap" type="button" title="Tutup">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px 18px 20px;">
+      <div class="rap-message-box" id="rap-message-box">
+        <div class="rap-message-text" id="rap-message-text">Lanjutkan proses?</div>
+      </div>
+      <div class="rap-options-container" id="rap-options-container">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="rap-timer-row" id="rap-timer-row" style="display:none;margin-top:10px;font-size:11px;color:var(--text-dim);text-align:right;">
+        <span data-i18n="rap_auto_dismiss">Otomatis ditutup dalam:</span> <span id="rap-timer-countdown">30s</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="smart-context-toast" class="smart-context-toast">
   <span class="toast-icon">
     <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -8207,7 +8346,12 @@ const I18N = {
 
     // About Modal
     about_desc: "Control your computer effortlessly.",
-    about_btn_update: "Check for Updates"
+    about_status_up_to_date: "App is Up to Date",
+    about_btn_update: "Update Available",
+
+    // Remote Action Prompt
+    rap_default_title: "Action Confirmation",
+    rap_auto_dismiss: "Auto-dismiss in:"
   },
   id: {
     brand_title: "Tentang DigiSmartDeck - King Ali Studiō",
@@ -8470,7 +8614,12 @@ const I18N = {
 
     // About Modal
     about_desc: "Kendalikan komputer dengan mudah dan praktis dari genggaman tanpa repot kabel.",
-    about_btn_update: "Periksa Pembaruan"
+    about_status_up_to_date: "Aplikasi Sudah Versi Terbaru",
+    about_btn_update: "Pembaruan Tersedia",
+
+    // Remote Action Prompt
+    rap_default_title: "Konfirmasi Tindakan",
+    rap_auto_dismiss: "Otomatis ditutup dalam:"
   }
 };
 
@@ -8857,32 +9006,64 @@ if (btnControlDeck) {
 
 let updateResetTimeout = null;
 
-function resetCheckUpdateButton() {
-  if (updateResetTimeout) {
-    clearTimeout(updateResetTimeout);
-    updateResetTimeout = null;
+function syncAppUpdateDisplay(serverVer) {
+  const currentAppVer = '1.17.0';
+  const badgeVer = $('about-app-version');
+  const statusBadge = $('about-update-status');
+  const btnUpdate = $('btn-check-update');
+  const txtStatus = $('txt-about-update-status');
+  const txtUpdate = $('txt-check-update');
+
+  const vStr = serverVer ? (serverVer.startsWith('v') ? serverVer : `v${serverVer}`) : `v${currentAppVer}`;
+  if (badgeVer) badgeVer.textContent = vStr;
+
+  // Jika versi server sama atau belum ada versi lebih baru: aplikasi sudah versi terbaru
+  const isUpToDate = !serverVer || serverVer === currentAppVer || serverVer === '1.17.0';
+
+  if (isUpToDate) {
+    // Sudah update: tidak perlu ada tombol, langsung tampilkan informasi status versi terbaru aktif
+    if (statusBadge) {
+      statusBadge.style.display = 'inline-flex';
+      if (txtStatus) {
+        txtStatus.textContent = currentUiLang === 'id'
+          ? `Aplikasi Sudah Versi Terbaru (${vStr})`
+          : `App is Up to Date (${vStr})`;
+      }
+    }
+    if (btnUpdate) {
+      btnUpdate.style.display = 'none';
+    }
+  } else {
+    // Belum update: baru munculkan tombol unduh pembaruan
+    if (statusBadge) {
+      statusBadge.style.display = 'none';
+    }
+    if (btnUpdate) {
+      btnUpdate.style.display = 'inline-flex';
+      if (txtUpdate) {
+        txtUpdate.textContent = currentUiLang === 'id'
+          ? `Pembaruan Tersedia (${vStr}) - Unduh`
+          : `Update Available (${vStr}) - Download`;
+      }
+    }
   }
-  const btn = $('btn-check-update');
-  if (!btn) return;
-  btn.disabled = false;
-  btn.style.background = 'rgba(88,166,255,0.12)';
-  btn.style.borderColor = 'rgba(88,166,255,0.3)';
-  btn.style.color = 'var(--accent)';
-  btn.style.boxShadow = 'none';
-  btn.style.animation = 'none';
-  const iconWrap = $('wrap-update-icon');
-  if (iconWrap) {
-    iconWrap.innerHTML = '<svg class="svg-icon" id="icon-update-spin" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>';
-  }
-  const txtEl = $('txt-check-update');
-  if (txtEl) txtEl.textContent = t('about_btn_update', 'Periksa Pembaruan');
 }
 
 function openAboutModal() {
   if (isSplashScreenActive) return;
   const modal = $('modal-about');
   if (!modal) return;
-  resetCheckUpdateButton();
+  // Langsung sinkronkan status versi saat modal dibuka
+  syncAppUpdateDisplay();
+  fetch('/api/version')
+    .then(r => r.json())
+    .then(d => {
+      if (d && d.version) syncAppUpdateDisplay(d.version);
+    })
+    .catch(() => {
+      syncAppUpdateDisplay('1.17.0');
+    });
+
   modal.classList.remove('hidden');
   playClickSound();
   vibe(15);
@@ -8900,72 +9081,8 @@ const btnCheckUpdate = $('btn-check-update');
 if (btnCheckUpdate) {
   btnCheckUpdate.addEventListener('click', () => {
     playClickSound();
-    vibe(15);
-    const txtEl = $('txt-check-update');
-    const iconWrap = $('wrap-update-icon');
-    const spinIcon = $('icon-update-spin');
-    if (spinIcon) spinIcon.style.animation = 'spin-icon 0.8s linear infinite';
-    if (txtEl) txtEl.textContent = currentUiLang === 'id' ? 'Memeriksa...' : 'Checking...';
-    btnCheckUpdate.disabled = true;
-
-    setTimeout(() => {
-      fetch('/api/version')
-        .then(r => r.json())
-        .then(d => {
-          const verStr = (d && d.version) ? `v${d.version}` : 'v1.17.0';
-          const successMsg = currentUiLang === 'id'
-            ? `Versi Sudah Terbaru (${verStr})`
-            : `Up to Date (${verStr})`;
-
-          // Tombol bermutasi langsung menggantikan posisinya dengan status update yang hidup
-          btnCheckUpdate.disabled = false;
-          btnCheckUpdate.style.background = 'rgba(63, 185, 80, 0.16)';
-          btnCheckUpdate.style.borderColor = 'rgba(63, 185, 80, 0.45)';
-          btnCheckUpdate.style.color = '#3fb950';
-          btnCheckUpdate.style.boxShadow = '0 0 14px rgba(63, 185, 80, 0.25)';
-          btnCheckUpdate.style.animation = 'update-success-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
-
-          if (iconWrap) {
-            iconWrap.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>';
-          }
-          if (txtEl) txtEl.textContent = successMsg;
-
-          showSmartToast(currentUiLang === 'id' ? `Versi aplikasi Anda sudah yang terbaru (${verStr}).` : `Your app is already up to date (${verStr}).`, 'DigiSmartDeck');
-          playPairingSuccessSound();
-          vibe([25, 35]);
-
-          if (updateResetTimeout) clearTimeout(updateResetTimeout);
-          updateResetTimeout = setTimeout(() => {
-            resetCheckUpdateButton();
-          }, 4500);
-        })
-        .catch(() => {
-          const fallbackVer = 'v1.17.0';
-          const successMsg = currentUiLang === 'id'
-            ? `Versi Sudah Terbaru (${fallbackVer})`
-            : `Up to Date (${fallbackVer})`;
-
-          btnCheckUpdate.disabled = false;
-          btnCheckUpdate.style.background = 'rgba(63, 185, 80, 0.16)';
-          btnCheckUpdate.style.borderColor = 'rgba(63, 185, 80, 0.45)';
-          btnCheckUpdate.style.color = '#3fb950';
-          btnCheckUpdate.style.boxShadow = '0 0 14px rgba(63, 185, 80, 0.25)';
-          btnCheckUpdate.style.animation = 'update-success-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
-
-          if (iconWrap) {
-            iconWrap.innerHTML = '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>';
-          }
-          if (txtEl) txtEl.textContent = successMsg;
-
-          showSmartToast(currentUiLang === 'id' ? `Versi aplikasi Anda sudah yang terbaru (${fallbackVer}).` : `Your app is already up to date (${fallbackVer}).`, 'DigiSmartDeck');
-          playPairingSuccessSound();
-
-          if (updateResetTimeout) clearTimeout(updateResetTimeout);
-          updateResetTimeout = setTimeout(() => {
-            resetCheckUpdateButton();
-          }, 4500);
-        });
-    }, 600);
+    vibe(20);
+    window.location.href = '/download/apk';
   });
 }
 
@@ -9648,6 +9765,139 @@ function renderWindowList(windows) {
   });
 }
 
+// ── Remote Action Prompt / Smart Confirmation Card ──
+let currentPromptId = null;
+let promptCountdownTimer = null;
+
+function showRemotePrompt(data) {
+  if (isSplashScreenActive) return;
+  const modal = $('modal-remote-prompt');
+  if (!modal) return;
+
+  currentPromptId = data.prompt_id || ('prompt_' + Date.now());
+
+  const appBadge = $('rap-app-badge');
+  if (appBadge) {
+    appBadge.textContent = data.app || 'PC Host';
+  }
+
+  const titleEl = $('rap-title');
+  if (titleEl) {
+    titleEl.textContent = data.title || t('rap_default_title', 'Konfirmasi Tindakan');
+  }
+
+  const msgEl = $('rap-message-text');
+  if (msgEl) {
+    msgEl.textContent = data.message || '';
+  }
+
+  const optionsContainer = $('rap-options-container');
+  if (optionsContainer) {
+    optionsContainer.innerHTML = '';
+    const options = (data.options && data.options.length > 0) ? data.options : [
+      { label: 'Ya (Enter)', value: 'y', key: 'enter', primary: true },
+      { label: 'Batal (Esc)', value: 'n', key: 'escape', danger: true }
+    ];
+
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      let btnClass = 'rap-btn';
+      if (opt.primary) btnClass += ' rap-btn-primary';
+      else if (opt.danger) btnClass += ' rap-btn-danger';
+      btn.className = btnClass;
+
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = opt.label || 'OK';
+      btn.appendChild(labelSpan);
+
+      if (opt.key || opt.value) {
+        const subSpan = document.createElement('span');
+        subSpan.className = 'rap-btn-sub';
+        subSpan.textContent = opt.key ? opt.key.toUpperCase() : String(opt.value);
+        btn.appendChild(subSpan);
+      }
+
+      btn.addEventListener('click', () => {
+        playClickSound(true);
+        vibe(25);
+        send({
+          type: 'prompt_response',
+          prompt_id: currentPromptId,
+          key: opt.key || null,
+          value: opt.value !== undefined ? opt.value : null,
+          text: opt.text || null,
+          execute_on_pc: opt.execute_on_pc !== false,
+          action: 'responded'
+        });
+        closeRemotePrompt(currentPromptId);
+      });
+
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  // Handle countdown timer if timeout provided
+  const timerRow = $('rap-timer-row');
+  const timerCountdown = $('rap-timer-countdown');
+  if (promptCountdownTimer) {
+    clearInterval(promptCountdownTimer);
+    promptCountdownTimer = null;
+  }
+
+  if (data.timeout && data.timeout > 0) {
+    let remaining = Math.round(data.timeout);
+    if (timerRow) timerRow.style.display = 'block';
+    if (timerCountdown) timerCountdown.textContent = remaining + 's';
+
+    promptCountdownTimer = setInterval(() => {
+      remaining -= 1;
+      if (timerCountdown) timerCountdown.textContent = remaining + 's';
+      if (remaining <= 0) {
+        clearInterval(promptCountdownTimer);
+        promptCountdownTimer = null;
+        closeRemotePrompt(currentPromptId);
+      }
+    }, 1000);
+  } else {
+    if (timerRow) timerRow.style.display = 'none';
+  }
+
+  modal.classList.remove('hidden');
+  playPairingSuccessSound();
+  vibe([30, 40, 50]);
+}
+
+function closeRemotePrompt(promptId) {
+  if (promptId && currentPromptId && promptId !== currentPromptId) {
+    return;
+  }
+  if (promptCountdownTimer) {
+    clearInterval(promptCountdownTimer);
+    promptCountdownTimer = null;
+  }
+  currentPromptId = null;
+  const modal = $('modal-remote-prompt');
+  if (modal) modal.classList.add('hidden');
+}
+
+const btnCloseRap = $('btn-close-rap');
+if (btnCloseRap) {
+  btnCloseRap.addEventListener('click', () => {
+    playClickSound();
+    vibe(20);
+    if (currentPromptId) {
+      send({
+        type: 'prompt_response',
+        prompt_id: currentPromptId,
+        action: 'dismiss',
+        key: 'escape'
+      });
+    }
+    closeRemotePrompt();
+  });
+}
+
 let audioCtx = null;
 let soundEnabled = localStorage.getItem('digi_sound') !== 'false';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
@@ -10055,6 +10305,10 @@ function connect() {
         }
       } else if (d.type === 'license_update') {
         if (d.license) updateLicenseDisplay(d.license);
+      } else if (d.type === 'remote_prompt') {
+        showRemotePrompt(d);
+      } else if (d.type === 'remote_prompt_dismiss') {
+        closeRemotePrompt(d.prompt_id);
       }
     } catch(err) {}
   };
