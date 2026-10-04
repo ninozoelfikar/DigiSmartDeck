@@ -3662,6 +3662,27 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   background: rgba(88, 166, 255, 0.18);
   border-color: var(--accent);
 }
+.ai-btn-sh.ai-btn-custom-tool {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(88, 166, 255, 0.08);
+  border-color: rgba(88, 166, 255, 0.35);
+  color: var(--accent);
+}
+.ai-btn-sh.ai-btn-custom-tool svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+.ai-btn-sh.ai-btn-custom-tool:hover {
+  background: rgba(88, 166, 255, 0.16);
+  border-color: var(--accent);
+  color: #fff;
+}
 .ai-btn-sh .sh-sub {
   font-size: 8px;
   color: var(--text-dim);
@@ -6875,7 +6896,8 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       <!-- Kolom 1: Pintasan Prompt & Kontrol Edit -->
       <div class="ai-col-left">
         <div class="ai-shortcuts-grid">
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-custom-prompt" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Shortcut Prompt AI">
+          <button type="button" class="ai-btn-sh tool ai-btn-custom-tool" id="ai-btn-custom-prompt" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Shortcut Prompt AI">
+            <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             <span data-i18n="ai_custom_prompts">Kustom</span>
           </button>
           <button type="button" class="ai-btn-sh tool" id="ai-btn-cut" title="Ctrl+X">

@@ -1160,3 +1160,15 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 66. CATATAN CHECKPOINT (v0.9.62 - Ikon Konfigurasi & Pembeda Visual Tombol Kustomisasi AI)
+- **Ikon dan Aksen Visual Tombol Kustomisasi AI:**
+  - Menambahkan ikon pensil konfigurasi SVG pada tombol Kustom (`#ai-btn-custom-prompt`) di grid pintasan kolom kiri.
+  - Menerapkan styling khusus `.ai-btn-custom-tool` dengan aksen warna `--accent`, border lembut semi-transparan, dan tata letak horizontal ikon + teks.
+  - Membedakan tombol Kustom secara visual dari tuts input pintasan langsung (seperti Cut, Copy, Paste), sehingga pengguna langsung memahami bahwa fungsinya adalah untuk membuka modal konfigurasi/kustomisasi tombol-tombol prompt AI.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
