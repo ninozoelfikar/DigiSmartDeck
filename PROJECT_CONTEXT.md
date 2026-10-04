@@ -1113,13 +1113,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
 
-
-
-
-
-
-
-
-
-
+## 63. CATATAN CHECKPOINT (v0.9.59 - Rata Tengah Geometris Presisi Tombol Mic Antara Bar & Box di HP dan Tab)
+- **Rata Tengah Vertikal Murni Tombol Mic Antara Top Bar dan Transcript Box:**
+  - Memperbaiki tata letak `.ai-mic-section` dan tombol mic (`.ai-btn-mic`) di seluruh resolusi layar (HP landscape dan Tab) agar benar-benar berada di titik tengah seimbang (50% Y murni) di antara bar atas (`.top-bar`) dan kotak teks transkrip (`.ai-transcript-box`).
+  - Menyatukan bar pemilih bahasa & prompt kustom (`.ai-transcript-header`) ke dalam kartu terpadu `.ai-transcript-box`, menghilangkan celah/displacement perantara yang sebelumnya membuat mic tampak lebih dekat ke bar atas.
+  - Mengubah posisi label status `#ai-mic-status` menjadi `position: absolute; left: 50%; transform: translateX(-50%);` dengan kalkulasi offset presisi di bawah tepi tombol (`top: calc(50% + 48px)` pada tablet 86px, `top: calc(50% + 30px) !important;` pada mobile 52px, dan `top: calc(50% + 29px) !important;` pada compact 50px). Dengan demikian, label status tidak lagi mendesak tombol mic ke atas.
+  - Menghapus aturan `margin: auto 0 !important;` dan padding sisa pada media query mobile (`@media (max-height: 439px)` dan `@media (max-height: 420px)`), memastikan flexbox centering beroperasi 100% murni dan konsisten di seluruh browser dan WebView Android.
+- **Rata Tengah Horizontal Simetris:**
+  - Menyeimbangkan kolom kiri dan kanan `.ai-main-grid` (`160px 1fr 160px` pada layar normal/tablet, `144px 1fr 144px` pada <=768px, dan `125px 1fr 125px` pada <=580px) sehingga kolom tengah berada tepat di tengah horizontal layar tanpa deviasi 16px seperti sebelumnya.
+- **Optimasi Tablet Keyboard:**
+  - Menghapus `margin-top: 6px` ganda pada `.ai-tablet-keyboard` sehingga ritme spasi vertikal antar elemen di kolom tengah tablet (`gap: 6px`) seragam dan seimbang.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
