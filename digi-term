@@ -174,33 +174,34 @@ def detect_prompt(buffer_text):
     if is_permission or is_yn or is_question:
         title, message = extract_prompt_details(lines, context, inspect_line)
 
-        # Cek jika CLI menyediakan menu bernomor (misal: 1. Yes, 2. Always, 3. No)
+        # Cek jika CLI menyediakan menu bernomor (misal: 1. Yes, 2. Allow in this chat, 3. Allow in this project, 4. No)
         items = []
-        for l in lines[-10:]:
+        for l in lines[-12:]:
             mm = re.match(r'^\s*[❯>]?\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,70})$', l)
             if mm:
                 items.append((mm.group(1), mm.group(2).strip().lower()))
 
-        yes_send = 'y\n'
-        allow_send = 'y\n'
-        always_send = 'a\n'
-        no_send = 'n\n'
+        yes_send = '1\n' if any(num == '1' for num, _ in items) else 'y\n'
+        chat_send = '2\n' if any(num == '2' for num, _ in items) else 'c\n'
+        project_send = '3\n' if any(num == '3' for num, _ in items) else 'a\n'
+        no_send = '4\n' if any(num == '4' for num, _ in items) else ('3\n' if any(num == '3' and 'no' in t for num, t in items) else 'n\n')
 
-        yes_key = 'y'
-        allow_key = 'y'
-        always_key = 'a'
-        no_key = 'n'
+        yes_key = '1' if any(num == '1' for num, _ in items) else 'y'
+        chat_key = '2' if any(num == '2' for num, _ in items) else 'c'
+        project_key = '3' if any(num == '3' for num, _ in items) else 'a'
+        no_key = '4' if any(num == '4' for num, _ in items) else 'n'
 
         if items:
             for num, text in items:
-                if any(k in text for k in ['always', 'selalu', "don't ask"]):
-                    always_send = f'{num}\n'
-                    always_key = num
-                elif any(k in text for k in ['yes', 'ya', 'allow', 'izinkan', 'proceed', 'continue']):
+                if any(k in text for k in ['chat', 'session', 'conversation']):
+                    chat_send = f'{num}\n'
+                    chat_key = num
+                elif any(k in text for k in ['project', 'always', 'selalu', "don't ask"]):
+                    project_send = f'{num}\n'
+                    project_key = num
+                elif any(k in text for k in ['yes', 'ya', 'allow once', 'run this time']):
                     yes_send = f'{num}\n'
                     yes_key = num
-                    allow_send = f'{num}\n'
-                    allow_key = num
                 elif any(k in text for k in ['no', 'tidak', 'deny', 'tolak', 'cancel', 'batal', 'abort']):
                     no_send = f'{num}\n'
                     no_key = num
@@ -211,8 +212,8 @@ def detect_prompt(buffer_text):
             'message': message,
             'options': [
                 _opt('Yes', 'yes', yes_send, key=yes_key, primary=True),
-                _opt('Allow', 'allow', allow_send, key=allow_key, primary=False),
-                _opt('Always Allow', 'always', always_send, key=always_key, primary=False),
+                _opt('Allow in this chat', 'allow_chat', chat_send, key=chat_key, primary=False),
+                _opt('Allow in this project', 'allow_project', project_send, key=project_key, primary=False),
                 _opt('No', 'no', no_send, key=no_key, danger=True)
             ]
         }

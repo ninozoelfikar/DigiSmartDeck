@@ -1000,7 +1000,7 @@ class DigiSmartDeckGUI(QMainWindow):
             except Exception:
                 pass
             self.ensure_bashrc_hook()
-        self.refresh_all_status()
+        self.refresh_status()
 
     def ensure_bashrc_hook(self):
         bashrc = os.path.expanduser('~/.bashrc')

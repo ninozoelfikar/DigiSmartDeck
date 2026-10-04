@@ -1,5 +1,5 @@
 // DigiSmartDeck Service Worker for PWA (Progressive Web App)
-const CACHE_NAME = 'digismartdeck-cache-v12';
+const CACHE_NAME = 'digismartdeck-cache-v13';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
