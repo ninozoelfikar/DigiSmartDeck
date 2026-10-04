@@ -505,6 +505,31 @@ class DigiSmartDeckGUI(QMainWindow):
 
         guide_layout.addLayout(guide_cols)
         layout.addWidget(card_guide)
+
+        # Card C: Smart Terminal Companion Launcher (Vibe Coding)
+        card_term = QFrame()
+        card_term.setProperty("class", "card-panel")
+        term_layout = QHBoxLayout(card_term)
+        term_layout.setContentsMargins(14, 12, 14, 12)
+        term_layout.setSpacing(12)
+
+        term_info = QVBoxLayout()
+        term_info.setSpacing(3)
+        term_title = QLabel("TERMINAL PINTAR (VIBE CODING & DEVELOPER COMPANION)")
+        term_title.setProperty("class", "card-header-title")
+        term_desc = QLabel("Jalankan terminal di PC yang setiap pertanyaan konfirmasinya (Yes/No, Allow AI, pilihan menu) otomatis muncul di HP Anda.")
+        term_desc.setStyleSheet("font-size: 11px; color: #8b949e;")
+        term_desc.setWordWrap(True)
+        term_info.addWidget(term_title)
+        term_info.addWidget(term_desc)
+        term_layout.addLayout(term_info, 1)
+
+        btn_launch_term = QPushButton("Buka Terminal Pintar")
+        btn_launch_term.setProperty("class", "btn-primary")
+        btn_launch_term.clicked.connect(self.launch_smart_terminal_gui)
+        term_layout.addWidget(btn_launch_term)
+
+        layout.addWidget(card_term)
         layout.addStretch()
 
         return page
@@ -950,6 +975,41 @@ class DigiSmartDeckGUI(QMainWindow):
             sb.setValue(sb.maximum())
         except Exception as e:
             self.log_viewer.setPlainText(f"Gagal membaca log: {e}")
+
+    def launch_smart_terminal_gui(self):
+        term_bin = os.path.expanduser('~/.local/bin/digi-term')
+        if not os.path.exists(term_bin):
+            term_bin = os.path.join(APP_DIR, 'digi-term')
+        if not os.path.exists(term_bin):
+            QMessageBox.warning(self, "Terminal Pintar", "Berkas digi-term tidak ditemukan.")
+            return
+
+        candidates = [
+            ('gnome-terminal', ['--']),
+            ('kgx', ['--']),
+            ('konsole', ['-e']),
+            ('xfce4-terminal', ['-x']),
+            ('tilix', ['-e']),
+            ('kitty', []),
+            ('alacritty', ['-e']),
+            ('x-terminal-emulator', ['-e']),
+            ('xterm', ['-e']),
+        ]
+        import shutil
+        inner = [sys.executable, term_bin, '--banner']
+        launched = False
+        for term, flag in candidates:
+            path = shutil.which(term)
+            if not path:
+                continue
+            try:
+                subprocess.Popen([path] + flag + inner, start_new_session=True)
+                launched = True
+                break
+            except Exception:
+                continue
+        if not launched:
+            QMessageBox.warning(self, "Terminal Pintar", "Tidak ditemukan aplikasi terminal yang kompatibel di sistem.")
 
 
 def acquire_single_instance_lock():

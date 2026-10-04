@@ -6105,6 +6105,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
             <span id="smart-context-toggle-lbl" data-i18n="util_smart_switch">Smart Switch</span>
           </button>
+          <button type="button" class="tbtn deck-chip" id="btn-smart-terminal" data-i18n-title="util_smart_term_title" title="Open a terminal on the PC whose questions appear on this phone">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+            <span data-i18n="util_smart_term">Smart Terminal</span>
+          </button>
           <button type="button" class="tbtn on deck-chip" id="btn-haptic" data-i18n-title="util_haptic_title" title="Haptic Touch Feedback">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="10" height="18" x="7" y="3" rx="2"/><path d="M2 8v8"/><path d="M22 8v8"/></svg>
             <span data-i18n="util_haptic">Haptics</span>
@@ -8109,6 +8113,33 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   </div>
 </div>
 
+<div class="modal-backdrop hidden" id="modal-smart-term">
+  <div class="modal-dialog" style="max-width:440px;">
+    <div class="modal-header">
+      <div class="modal-title" style="gap:8px;">
+        <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+        <span data-i18n="st_term_title">Smart Terminal</span>
+      </div>
+      <button class="modal-close" id="btn-close-smart-term" type="button" title="Close">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px 18px 18px;font-size:12.5px;line-height:1.55;color:var(--text);">
+      <p style="margin:0 0 10px;" data-i18n="st_term_desc">Opens a terminal window on your PC. When a program in that terminal asks a question (Yes/No, Allow, pick an option), the question appears on this phone so you can answer from anywhere.</p>
+      <ul style="margin:0 0 12px;padding-left:18px;color:var(--text-dim);">
+        <li data-i18n="st_term_point1">Only reads text from the Smart Terminal window it opens.</li>
+        <li data-i18n="st_term_point2">Your answer is sent only to that terminal, never to other apps.</li>
+        <li data-i18n="st_term_point3">Typing on the PC keyboard closes the question on the phone.</li>
+        <li data-i18n="st_term_point4">You can turn this permission off again here.</li>
+      </ul>
+      <div id="smart-term-unsupported" style="display:none;margin-bottom:10px;color:#f0883e;" data-i18n="st_term_unsupported">Smart Terminal is not available on Windows yet.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn-primary" id="btn-smart-term-allow" style="flex:1;" data-i18n="st_term_allow">Allow and Open Terminal</button>
+        <button type="button" class="btn-primary" id="btn-smart-term-open" style="flex:1;display:none;" data-i18n="st_term_open">Open Terminal</button>
+        <button type="button" class="cp-btn-aux" id="btn-smart-term-revoke" style="display:none;" data-i18n="st_term_revoke">Revoke Permission</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="smart-context-toast" class="smart-context-toast">
   <span class="toast-icon">
     <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -8209,6 +8240,18 @@ const I18N = {
     util_modlock_title: "Modifier Lock: Sticky Key Mode (Shift, Ctrl, Alt)",
     util_smart_switch: "Smart Switch",
     util_smart_switch_title: "Smart App-Context Auto-Switching",
+    util_smart_term: "Smart Terminal",
+    util_smart_term_title: "Open a terminal on the PC whose questions appear on this phone",
+    st_term_title: "Smart Terminal",
+    st_term_desc: "Opens a terminal window on your PC. When a program in that terminal asks a question (Yes/No, Allow, pick an option), the question appears on this phone so you can answer from anywhere.",
+    st_term_point1: "Only reads text from the Smart Terminal window it opens.",
+    st_term_point2: "Your answer is sent only to that terminal, never to other apps.",
+    st_term_point3: "Typing on the PC keyboard closes the question on the phone.",
+    st_term_point4: "You can turn this permission off again here.",
+    st_term_unsupported: "Smart Terminal is not available on Windows yet.",
+    st_term_allow: "Allow and Open Terminal",
+    st_term_open: "Open Terminal",
+    st_term_revoke: "Revoke Permission",
     util_haptic: "Haptics",
     util_haptic_title: "Haptic Touch Feedback",
     util_sound: "Key Sound",
@@ -8477,6 +8520,18 @@ const I18N = {
     util_modlock_title: "Kunci Modifier: Mode Kunci Tuts (Shift, Ctrl, Alt)",
     util_smart_switch: "Smart Switch",
     util_smart_switch_title: "Auto-Switch Konteks Aplikasi Cerdas",
+    util_smart_term: "Terminal Pintar",
+    util_smart_term_title: "Buka terminal di PC yang pertanyaannya muncul di HP ini",
+    st_term_title: "Terminal Pintar",
+    st_term_desc: "Membuka jendela terminal di PC Anda. Saat program di terminal itu bertanya (Ya/Tidak, Izinkan, pilih opsi), pertanyaannya muncul di HP ini sehingga Anda bisa menjawab dari mana saja.",
+    st_term_point1: "Hanya membaca teks dari jendela Terminal Pintar yang dibukanya.",
+    st_term_point2: "Jawaban Anda hanya dikirim ke terminal itu, tidak ke aplikasi lain.",
+    st_term_point3: "Mengetik di keyboard PC otomatis menutup pertanyaan di HP.",
+    st_term_point4: "Izin ini bisa dicabut kembali di sini kapan saja.",
+    st_term_unsupported: "Terminal Pintar belum tersedia untuk Windows.",
+    st_term_allow: "Izinkan dan Buka Terminal",
+    st_term_open: "Buka Terminal",
+    st_term_revoke: "Cabut Izin",
     util_haptic: "Getaran",
     util_haptic_title: "Umpan Balik Getaran Sentuh",
     util_sound: "Suara Tuts",
@@ -9884,7 +9939,7 @@ function showRemotePrompt(data) {
           value: opt.value !== undefined ? opt.value : null,
           text: opt.text || null,
           win_id: data.win_id || null,
-          execute_on_pc: opt.execute_on_pc !== false,
+          execute_on_pc: (data.execute_on_pc !== false) && (opt.execute_on_pc !== false),
           action: 'responded'
         });
         closeRemotePrompt(currentPromptId);
@@ -9936,6 +9991,100 @@ function closeRemotePrompt(promptId) {
   currentPromptId = null;
   const modal = $('modal-remote-prompt');
   if (modal) modal.classList.add('hidden');
+}
+
+// ── Smart Terminal (digi-term) ──
+let smartTermState = { supported: true, consent: false };
+
+function showInfoToast(text) {
+  const toast = $('smart-context-toast');
+  const toastText = $('smart-context-toast-text');
+  if (!toast || !toastText) return;
+  toastText.textContent = text;
+  toast.classList.add('show');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2600);
+}
+
+function renderSmartTermModal() {
+  const allowBtn = $('btn-smart-term-allow');
+  const openBtn = $('btn-smart-term-open');
+  const revokeBtn = $('btn-smart-term-revoke');
+  const unsupported = $('smart-term-unsupported');
+  const ok = smartTermState.supported;
+  if (unsupported) unsupported.style.display = ok ? 'none' : 'block';
+  if (allowBtn) allowBtn.style.display = ok && !smartTermState.consent ? '' : 'none';
+  if (openBtn) openBtn.style.display = ok && smartTermState.consent ? '' : 'none';
+  if (revokeBtn) revokeBtn.style.display = smartTermState.consent ? '' : 'none';
+}
+
+function openSmartTermModal() {
+  const modal = $('modal-smart-term');
+  if (!modal) return;
+  renderSmartTermModal();
+  lastModalOpenTime = Date.now();
+  modal.classList.remove('hidden');
+  send({ type: 'smart_terminal_status' });
+}
+
+function closeSmartTermModal() {
+  const modal = $('modal-smart-term');
+  if (modal) modal.classList.add('hidden');
+}
+
+function handleSmartTermStatus(d) {
+  smartTermState.supported = d.supported !== false;
+  smartTermState.consent = !!d.consent;
+  renderSmartTermModal();
+  if (d.launched === true) {
+    vibe([20, 30, 20]);
+    showInfoToast(currentUiLang === 'id' ? 'Terminal Pintar dibuka di PC' : 'Smart Terminal opened on PC');
+    closeSmartTermModal();
+  } else if (d.launched === false) {
+    vibe([40, 60, 40]);
+    showInfoToast(d.message || 'Gagal membuka terminal');
+  }
+}
+
+const btnSmartTerminal = $('btn-smart-terminal');
+if (btnSmartTerminal) {
+  btnSmartTerminal.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    if (typeof closeControlDeck === 'function') closeControlDeck();
+    openSmartTermModal();
+  });
+}
+const btnSmartTermAllow = $('btn-smart-term-allow');
+if (btnSmartTermAllow) {
+  btnSmartTermAllow.addEventListener('click', () => {
+    playClickSound(true);
+    vibe(20);
+    send({ type: 'smart_terminal_consent', granted: true, launch: true });
+  });
+}
+const btnSmartTermOpen = $('btn-smart-term-open');
+if (btnSmartTermOpen) {
+  btnSmartTermOpen.addEventListener('click', () => {
+    playClickSound(true);
+    vibe(20);
+    send({ type: 'launch_smart_terminal' });
+  });
+}
+const btnSmartTermRevoke = $('btn-smart-term-revoke');
+if (btnSmartTermRevoke) {
+  btnSmartTermRevoke.addEventListener('click', () => {
+    playClickSound();
+    vibe(15);
+    send({ type: 'smart_terminal_consent', granted: false });
+  });
+}
+const btnCloseSmartTerm = $('btn-close-smart-term');
+if (btnCloseSmartTerm) {
+  btnCloseSmartTerm.addEventListener('click', () => {
+    playClickSound();
+    closeSmartTermModal();
+  });
 }
 
 const btnCloseRap = $('btn-close-rap');
@@ -10366,6 +10515,8 @@ function connect() {
         showRemotePrompt(d);
       } else if (d.type === 'remote_prompt_dismiss') {
         closeRemotePrompt(d.prompt_id);
+      } else if (d.type === 'smart_terminal_status') {
+        handleSmartTermStatus(d);
       }
     } catch(err) {}
   };

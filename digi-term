@@ -1,0 +1,312 @@
+#!/usr/bin/env python3
+"""
+DigiSmartDeck Smart Terminal Supervisor (digi-term)
+
+Menjalankan shell/perintah di dalam pseudoterminal (PTY) dan memantau output-nya.
+Ketika program di dalam terminal berhenti menunggu jawaban (Y/n, Allow/Deny,
+menu bernomor, "Press Enter"), pertanyaan tersebut dikirim ke HP DigiSmartDeck
+sebagai kartu pilihan. Jawaban dari HP disuntikkan langsung ke stdin terminal ini
+saja -- tidak ada tombol yang dikirim ke jendela lain.
+
+Platform: Linux dan macOS (POSIX PTY). Windows (ConPTY) belum didukung.
+
+Pemakaian:
+  digi-term                 # buka shell default di bawah pengawasan
+  digi-term npm install     # jalankan satu perintah di bawah pengawasan
+"""
+
+import os
+import sys
+
+if os.name != 'posix':
+    sys.stderr.write("digi-term saat ini hanya mendukung Linux dan macOS.\n")
+    sys.exit(1)
+
+import pty
+import tty
+import select
+import termios
+import struct
+import fcntl
+import signal
+import json
+import re
+import time
+import threading
+import urllib.request
+
+SERVER_PORT = int(os.environ.get('DIGI_PORT', '8080'))
+PROMPT_URL = f"http://127.0.0.1:{SERVER_PORT}/api/prompt?wait=true"
+DISMISS_URL = f"http://127.0.0.1:{SERVER_PORT}/api/prompt/dismiss"
+
+ANSI_RE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\))')
+IDLE_SECONDS = 0.35          # output harus diam selama ini sebelum dianggap menunggu input
+PROMPT_TIMEOUT = 120         # detik kartu tetap tampil di HP
+
+
+def strip_ansi(text):
+    return ANSI_RE.sub('', text).replace('\r', '')
+
+
+def _opt(label, send, primary=False, danger=False):
+    o = {'label': label, 'value': send, 'send': send}
+    if primary:
+        o['primary'] = True
+    if danger:
+        o['danger'] = True
+    return o
+
+
+def detect_prompt(buffer_text):
+    """Kembalikan payload prompt jika baris terakhir terlihat seperti pertanyaan interaktif."""
+    clean = strip_ansi(buffer_text)
+    lines = [l.rstrip() for l in clean.split('\n')]
+    while lines and not lines[-1].strip():
+        lines.pop()
+    if not lines:
+        return None
+    last = lines[-1].strip()
+    if not last or len(last) > 400:
+        return None
+
+    # Shell prompt biasa (user@host:~$ ) bukan pertanyaan
+    if re.search(r'[\$#%>]\s*$', last) and not re.search(r'\?\s*[\$#%>]?\s*$', last):
+        if not re.search(r'\[[yYnN]/[yYnN]\]|\([yYnN]/[yYnN]\)', last):
+            return None
+
+    context = '\n'.join(l for l in lines[-6:] if l.strip())
+
+    # 1. Konfirmasi biner [Y/n] / (y/N) / [yes/no]
+    m = re.search(r'[\[\(]\s*(y(?:es)?)\s*/\s*(n(?:o)?)\s*[\]\)]', last, re.IGNORECASE)
+    if m:
+        y_tok, n_tok = m.group(1), m.group(2)
+        long_form = len(y_tok) > 1
+        default_yes = y_tok[0].isupper()
+        default_no = n_tok[0].isupper()
+        yes_send = ('yes' if long_form else 'y') + '\n'
+        no_send = ('no' if long_form else 'n') + '\n'
+        return {
+            'app': 'Terminal',
+            'title': 'Konfirmasi Terminal',
+            'message': context,
+            'options': [
+                _opt('Ya', yes_send, primary=not default_no),
+                _opt('Tidak', no_send, danger=True, primary=default_no and not default_yes),
+            ],
+        }
+
+    # 2. Menu bernomor: beberapa baris "1) ..." / "1. ..." / "[1] ..." diakhiri pertanyaan
+    if re.search(r'[:?]\s*$', last) or re.search(r'(?i)(choice|pilih|select|option|enter)', last):
+        items = []
+        for l in lines[-15:-1]:
+            mm = re.match(r'^\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,60})$', l)
+            if mm:
+                items.append((mm.group(1), mm.group(2).strip()))
+        if 2 <= len(items) <= 9:
+            return {
+                'app': 'Terminal',
+                'title': 'Pilih Opsi',
+                'message': last,
+                'options': [_opt(f"{n}. {txt}", f"{n}\n", primary=(i == 0)) for i, (n, txt) in enumerate(items)],
+            }
+
+    # 3. Izin tindakan (CLI AI agent, installer, dsb.)
+    if re.search(r'(?i)\b(allow|approve|permit|authori[sz]e|izinkan|setujui)\b', last) and re.search(r'[\?:]\s*$', last):
+        return {
+            'app': 'Terminal',
+            'title': 'Izin Tindakan',
+            'message': context,
+            'options': [
+                _opt('Izinkan', 'y\n', primary=True),
+                _opt('Tolak', 'n\n', danger=True),
+            ],
+        }
+
+    # 4. Lanjutkan? / Are you sure?
+    if re.search(r'(?i)\b(continue|proceed|lanjutkan|are you sure|apakah anda yakin)\b', last) and re.search(r'\?\s*$', last):
+        return {
+            'app': 'Terminal',
+            'title': 'Konfirmasi Terminal',
+            'message': context,
+            'options': [
+                _opt('Ya', 'y\n', primary=True),
+                _opt('Tidak', 'n\n', danger=True),
+            ],
+        }
+
+    # 5. Press Enter / any key
+    if re.search(r'(?i)(press|tekan)\s+(\[?enter\]?|return|any key|sembarang)', last):
+        return {
+            'app': 'Terminal',
+            'title': 'Menunggu Enter',
+            'message': context,
+            'options': [_opt('Lanjut (Enter)', '\n', primary=True)],
+        }
+
+    return None
+
+
+class DigiTermSupervisor:
+    def __init__(self, command=None):
+        self.command = command or [os.environ.get('SHELL', '/bin/bash')]
+        self.master_fd = None
+        self.pid = None
+        self.running = True
+        self.buf = ""
+        self.buf_lock = threading.Lock()
+        self.last_output = time.time()
+        self.active_id = None
+        self.active_lock = threading.Lock()
+
+    # ── Helpers ──
+    def sync_winsize(self, *_):
+        if self.master_fd is None:
+            return
+        try:
+            ws = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0))
+            fcntl.ioctl(self.master_fd, termios.TIOCSWINSZ, ws)
+            if self.pid:
+                os.kill(self.pid, signal.SIGWINCH)
+        except Exception:
+            pass
+
+    def clear_buffer(self):
+        with self.buf_lock:
+            self.buf = ""
+
+    def dismiss_active(self):
+        with self.active_lock:
+            pid, self.active_id = self.active_id, None
+        if not pid:
+            return
+        try:
+            req = urllib.request.Request(DISMISS_URL, data=json.dumps({'prompt_id': pid}).encode(),
+                                         headers={'Content-Type': 'application/json'})
+            urllib.request.urlopen(req, timeout=1.5).close()
+        except Exception:
+            pass
+
+    # ── Watcher ──
+    def watcher(self):
+        while self.running:
+            time.sleep(0.1)
+            with self.buf_lock:
+                text = self.buf
+                idle = time.time() - self.last_output
+            if not text or idle < IDLE_SECONDS:
+                continue
+            with self.active_lock:
+                if self.active_id:
+                    continue
+            payload = detect_prompt(text)
+            if not payload:
+                continue
+            prompt_id = f"term_{os.getpid()}_{int(time.time() * 1000)}"
+            with self.active_lock:
+                self.active_id = prompt_id
+            # Prompt ini sudah diproses; jangan dikirim ulang dari buffer yang sama
+            self.clear_buffer()
+            threading.Thread(target=self.dispatch, args=(prompt_id, payload), daemon=True).start()
+
+    def dispatch(self, prompt_id, payload):
+        send_map = {str(o['value']): o['send'] for o in payload['options']}
+        body = dict(payload)
+        body['options'] = [{k: v for k, v in o.items() if k != 'send'} for o in payload['options']]
+        body.update({'id': prompt_id, 'timeout': PROMPT_TIMEOUT, 'execute_on_pc': False})
+        try:
+            req = urllib.request.Request(PROMPT_URL, data=json.dumps(body).encode(),
+                                         headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=PROMPT_TIMEOUT + 5) as resp:
+                res = json.loads(resp.read().decode()).get('response', {})
+        except Exception:
+            res = {}
+        with self.active_lock:
+            if self.active_id != prompt_id:
+                return  # dibatalkan karena pengguna mengetik langsung di PC
+            self.active_id = None
+        if res.get('action') != 'responded' or self.master_fd is None:
+            return
+        to_send = send_map.get(str(res.get('value')))
+        if to_send is None:
+            return
+        try:
+            os.write(self.master_fd, to_send.encode())
+        except OSError:
+            pass
+
+    # ── Main loop ──
+    def run(self):
+        self.pid, self.master_fd = pty.fork()
+        if self.pid == 0:
+            os.environ['DIGI_TERM_SUPERVISED'] = '1'
+            os.environ.setdefault('TERM', 'xterm-256color')
+            try:
+                os.execvp(self.command[0], self.command)
+            except Exception as e:
+                sys.stderr.write(f"digi-term: gagal menjalankan {self.command[0]}: {e}\n")
+                os._exit(127)
+
+        self.sync_winsize()
+        signal.signal(signal.SIGWINCH, self.sync_winsize)
+
+        stdin_fd = sys.stdin.fileno()
+        old_attr = None
+        if os.isatty(stdin_fd):
+            old_attr = termios.tcgetattr(stdin_fd)
+            tty.setraw(stdin_fd)
+
+        threading.Thread(target=self.watcher, daemon=True).start()
+        exit_code = 0
+        try:
+            while True:
+                try:
+                    r, _, _ = select.select([stdin_fd, self.master_fd], [], [])
+                except InterruptedError:
+                    continue
+                if stdin_fd in r:
+                    data = os.read(stdin_fd, 1024)
+                    if not data:
+                        break
+                    # Pengguna menjawab langsung dari keyboard PC: tutup kartu di HP
+                    self.dismiss_active()
+                    self.clear_buffer()
+                    os.write(self.master_fd, data)
+                if self.master_fd in r:
+                    try:
+                        data = os.read(self.master_fd, 4096)
+                    except OSError:
+                        break
+                    if not data:
+                        break
+                    os.write(sys.stdout.fileno(), data)
+                    with self.buf_lock:
+                        self.buf = (self.buf + data.decode('utf-8', errors='ignore'))[-2048:]
+                        self.last_output = time.time()
+        finally:
+            self.running = False
+            self.dismiss_active()
+            if old_attr:
+                termios.tcsetattr(stdin_fd, termios.TCSADRAIN, old_attr)
+            try:
+                _, status = os.waitpid(self.pid, 0)
+                exit_code = os.WEXITSTATUS(status) if os.WIFEXITED(status) else 1
+            except ChildProcessError:
+                pass
+        sys.exit(exit_code)
+
+
+def main():
+    if os.environ.get('DIGI_TERM_SUPERVISED') == '1':
+        # Sudah di dalam digi-term: jalankan langsung tanpa membungkus dua kali
+        if len(sys.argv) > 1:
+            os.execvp(sys.argv[1], sys.argv[1:])
+        sys.exit(0)
+    if '--banner' in sys.argv:
+        sys.argv.remove('--banner')
+        print("\033[1;36mDigiSmartDeck Smart Terminal aktif.\033[0m "
+              "Pertanyaan konfirmasi di terminal ini akan muncul di HP Anda.\n")
+    DigiTermSupervisor(sys.argv[1:] or None).run()
+
+
+if __name__ == '__main__':
+    main()
