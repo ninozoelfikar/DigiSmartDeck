@@ -42,6 +42,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
+import android.net.Uri;
+import android.provider.Settings;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_SERVER_URL = "server_url";
     private static final String DEFAULT_URL = "http://192.168.8.102:8080";
     private static final int REQUEST_CODE_PERMISSIONS = 2001;
+    private static final int REQUEST_CODE_INSTALL_PERMISSION = 3001;
 
     private WebView webView;
     private SharedPreferences prefs;
@@ -69,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
     private int speechQuickFailStreak = 0;
     private long speechSessionStartMs = 0L;
     private String currentSpeechLang = "id-ID";
+
+    private File pendingApkToInstall = null;
+    private final ExecutorService downloadExecutor = Executors.newSingleThreadExecutor();
 
     public class WebAppInterface {
         @android.webkit.JavascriptInterface
@@ -203,6 +218,40 @@ public class MainActivity extends AppCompatActivity {
             if (bluetoothHidHelper != null) {
                 bluetoothHidHelper.sendMouseMove(dx, dy, button);
             }
+        }
+
+        @android.webkit.JavascriptInterface
+        public boolean isNativeApp() {
+            return true;
+        }
+
+        @android.webkit.JavascriptInterface
+        public String getInstalledVersionName() {
+            try {
+                return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (Exception e) {
+                return "1.0.0";
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public int getInstalledVersionCode() {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    return (int) getPackageManager().getPackageInfo(getPackageName(), 0).getLongVersionCode();
+                } else {
+                    return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                }
+            } catch (Exception e) {
+                return 10000;
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void downloadAndInstallUpdate(String downloadUrl, String targetVersion) {
+            final String rawUrl = (downloadUrl != null && !downloadUrl.trim().isEmpty()) ? downloadUrl.trim() : "/download/apk";
+            final String finalUrl = resolveFullUrl(rawUrl);
+            downloadExecutor.execute(() -> startApkDownload(finalUrl, targetVersion));
         }
     }
 
@@ -796,6 +845,172 @@ public class MainActivity extends AppCompatActivity {
         restoreBeepStreams();
     }
 
+    private String resolveFullUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            url = "/download/apk";
+        }
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return url;
+        }
+        String serverUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_URL);
+        if (serverUrl.endsWith("/")) {
+            serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+        }
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        return serverUrl + url;
+    }
+
+    private void startApkDownload(String downloadUrl, String targetVersion) {
+        HttpURLConnection connection = null;
+        InputStream input = null;
+        FileOutputStream output = null;
+        try {
+            runOnUiThread(() -> {
+                if (webView != null) {
+                    webView.evaluateJavascript("if (window.onUpdateDownloadStart) window.onUpdateDownloadStart();", null);
+                }
+            });
+
+            URL url = new URL(downloadUrl);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(45000);
+            connection.setInstanceFollowRedirects(true);
+            connection.connect();
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new Exception("HTTP status " + responseCode);
+            }
+
+            long fileLength = -1;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                fileLength = connection.getContentLengthLong();
+            }
+            if (fileLength <= 0) {
+                fileLength = connection.getContentLength();
+            }
+
+            File cacheDir = getExternalCacheDir();
+            if (cacheDir == null) {
+                cacheDir = getCacheDir();
+            }
+            File apkFile = new File(cacheDir, "DigiSmartDeck-update.apk");
+            if (apkFile.exists()) {
+                apkFile.delete();
+            }
+
+            input = connection.getInputStream();
+            output = new FileOutputStream(apkFile);
+
+            byte[] buffer = new byte[8192];
+            long total = 0;
+            int count;
+            long lastReportTime = 0;
+
+            while ((count = input.read(buffer)) != -1) {
+                total += count;
+                output.write(buffer, 0, count);
+
+                long now = System.currentTimeMillis();
+                if (now - lastReportTime > 250 || (fileLength > 0 && total == fileLength)) {
+                    lastReportTime = now;
+                    int progress = (fileLength > 0) ? (int) ((total * 100) / fileLength) : -1;
+                    final int fProg = progress;
+                    final long fTotal = total;
+                    final long fLen = fileLength;
+                    runOnUiThread(() -> {
+                        if (webView != null) {
+                            webView.evaluateJavascript("if (window.onUpdateDownloadProgress) window.onUpdateDownloadProgress(" + fProg + ", " + fTotal + ", " + fLen + ");", null);
+                        }
+                    });
+                }
+            }
+            output.flush();
+
+            final File finalApkFile = apkFile;
+            runOnUiThread(() -> {
+                if (webView != null) {
+                    webView.evaluateJavascript("if (window.onUpdateDownloadComplete) window.onUpdateDownloadComplete();", null);
+                }
+                promptInstallApk(finalApkFile);
+            });
+
+        } catch (Exception e) {
+            final String errorMsg = (e.getMessage() != null) ? e.getMessage().replace("'", "\\'") : "Download error";
+            runOnUiThread(() -> {
+                if (webView != null) {
+                    webView.evaluateJavascript("if (window.onUpdateDownloadError) window.onUpdateDownloadError('" + errorMsg + "');", null);
+                }
+                Toast.makeText(MainActivity.this, "Gagal mengunduh pembaruan: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            });
+        } finally {
+            try {
+                if (output != null) output.close();
+                if (input != null) input.close();
+                if (connection != null) connection.disconnect();
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private void promptInstallApk(File apkFile) {
+        if (apkFile == null || !apkFile.exists()) {
+            Toast.makeText(this, "File paket instalasi tidak ditemukan.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        pendingApkToInstall = apkFile;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!getPackageManager().canRequestPackageInstalls()) {
+                Toast.makeText(this, "Izinkan instalasi pembaruan aplikasi untuk DigiSmartDeck", Toast.LENGTH_LONG).show();
+                try {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, REQUEST_CODE_INSTALL_PERMISSION);
+                } catch (Exception e) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                    startActivityForResult(intent, REQUEST_CODE_INSTALL_PERMISSION);
+                }
+                return;
+            }
+        }
+
+        try {
+            Uri apkUri = FileProvider.getUriForFile(
+                MainActivity.this,
+                getPackageName() + ".fileprovider",
+                apkFile
+            );
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e("DigiSmartDeck", "Gagal membuka installer APK", e);
+            Toast.makeText(MainActivity.this, "Gagal membuka installer APK: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_INSTALL_PERMISSION) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (getPackageManager().canRequestPackageInstalls()) {
+                    if (pendingApkToInstall != null && pendingApkToInstall.exists()) {
+                        promptInstallApk(pendingApkToInstall);
+                    }
+                } else {
+                    Toast.makeText(this, "Izin instalasi pembaruan belum diberikan.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -804,6 +1019,9 @@ public class MainActivity extends AppCompatActivity {
             speechHandler.removeCallbacksAndMessages(null);
         }
         restoreBeepStreams();
+        if (downloadExecutor != null) {
+            downloadExecutor.shutdownNow();
+        }
         if (bluetoothHidHelper != null) {
             bluetoothHidHelper.unregister();
         }

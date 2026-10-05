@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.0] - 2026-10-05
+- Sistem auto-update in-app OTA dan integrasi FileProvider installer APK
+
 ### [1.19.0] - 2026-10-05
 - Penambahan Mode Power untuk kontrol daya dan sesi PC multi-OS
 
@@ -255,6 +258,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.0] - 2026-10-05
+- Release v1.20.0 updates
 
 ### [1.19.0] - 2026-10-05
 - Release v1.19.0 updates

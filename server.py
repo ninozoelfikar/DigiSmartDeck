@@ -2314,6 +2314,99 @@ async def options_handler(request):
     })
 
 
+def get_latest_apk_info():
+    """Mendeteksi file APK rilis terbaru di direktori static/ atau dist/."""
+    current_ver = load_version()
+    parts = [int(p) for p in re.findall(r'\d+', current_ver)]
+    while len(parts) < 3:
+        parts.append(0)
+    server_code = parts[0] * 10000 + parts[1] * 100 + parts[2]
+
+    static_dir = os.path.join(BASE_DIR, 'static')
+    dist_dir = os.path.join(BASE_DIR, 'dist')
+
+    versioned_name = f'DigiSmartDeck-v{current_ver}.apk'
+    candidates = [
+        os.path.join(static_dir, versioned_name),
+        os.path.join(dist_dir, versioned_name),
+        os.path.join(static_dir, 'DigiSmartDeck.apk'),
+        os.path.join(dist_dir, 'DigiSmartDeck.apk'),
+    ]
+
+    target_path = None
+    target_name = versioned_name
+    for c in candidates:
+        if os.path.exists(c):
+            target_path = c
+            target_name = os.path.basename(c)
+            break
+
+    file_size = os.path.getsize(target_path) if target_path and os.path.exists(target_path) else 0
+
+    return {
+        'version': current_ver,
+        'version_code': server_code,
+        'filename': target_name,
+        'filepath': target_path,
+        'size_bytes': file_size,
+        'size_mb': round(file_size / (1024 * 1024), 2) if file_size > 0 else 0
+    }
+
+
+async def api_updater_check_handler(request):
+    """Endpoint HTTP GET /api/updater/check untuk memeriksa ketersediaan pembaruan OTA APK."""
+    apk_info = await asyncio.to_thread(get_latest_apk_info)
+    client_ver = request.query.get('client_version', '').strip()
+    client_code_raw = request.query.get('version_code', '').strip()
+
+    update_available = False
+    server_code = apk_info['version_code']
+
+    if client_code_raw:
+        try:
+            client_code = int(client_code_raw)
+            if server_code > client_code:
+                update_available = True
+        except ValueError:
+            pass
+
+    if not update_available and client_ver:
+        clean_client = client_ver.lstrip('v')
+        clean_server = apk_info['version'].lstrip('v')
+        if clean_server != clean_client:
+            update_available = True
+
+    response_data = {
+        'status': 'ok',
+        'update_available': update_available,
+        'current_server_version': apk_info['version'],
+        'server_version_code': server_code,
+        'download_url': '/download/apk',
+        'apk_filename': apk_info['filename'],
+        'apk_size_bytes': apk_info['size_bytes'],
+        'apk_size_mb': apk_info['size_mb'],
+        'changelog': 'Sistem pembaruan in-app OTA mandiri via FileProvider installer APK.'
+    }
+    return web.json_response(response_data, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def download_apk_handler(request):
+    """Endpoint HTTP GET /download/apk untuk mengunduh rilis APK Android terbaru secara dinamis."""
+    apk_info = await asyncio.to_thread(get_latest_apk_info)
+    target_path = apk_info['filepath']
+    if not target_path or not os.path.exists(target_path):
+        return web.Response(text='File APK belum tersedia di server. Jalankan ./build-apk.sh terlebih dahulu.', status=404)
+
+    return web.FileResponse(
+        target_path,
+        headers={
+            'Content-Disposition': f'attachment; filename="{apk_info["filename"]}"',
+            'Content-Type': 'application/vnd.android.package-archive',
+            'Cache-Control': 'no-cache'
+        }
+    )
+
+
 async def api_pairing_pin_handler(request):
     """Endpoint HTTP GET /api/pairing/pin untuk membaca PIN pairing saat ini (Hanya Localhost)."""
     if not is_localhost(request):
@@ -2475,6 +2568,8 @@ def create_app(ports=[8080]):
     app.router.add_post('/api/power', api_power_handler)
     app.router.add_options('/api/power', options_handler)
     app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
+    app.router.add_get('/api/updater/check', api_updater_check_handler)
+    app.router.add_options('/api/updater/check', options_handler)
     app.router.add_get('/api/pairing/pin', api_pairing_pin_handler)
     app.router.add_options('/api/pairing/pin', options_handler)
     app.router.add_post('/api/prompt', api_trigger_prompt_handler)
@@ -2491,24 +2586,10 @@ def create_app(ports=[8080]):
     app.router.add_get('/manifest.json', lambda r: web.FileResponse(os.path.join(static_dir, 'manifest.json'), headers={'Content-Type': 'application/manifest+json'}))
     app.router.add_get('/sw.js', lambda r: web.FileResponse(os.path.join(static_dir, 'sw.js'), headers={'Content-Type': 'application/javascript'}))
     app.router.add_get('/favicon.ico', lambda r: web.FileResponse(os.path.join(static_dir, 'icon-192.png')))
-    # Route unduh langsung Android APK (dengan nomor versi)
-    version_str = '1.18.4'
-    version_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'VERSION')
-    if os.path.exists(version_path):
-        try:
-            with open(version_path, 'r', encoding='utf-8') as vf:
-                version_str = vf.read().strip()
-        except Exception:
-            pass
-    versioned_apk_name = f'DigiSmartDeck-v{version_str}.apk'
-    apk_file = os.path.join(static_dir, 'DigiSmartDeck.apk')
-    versioned_file = os.path.join(static_dir, versioned_apk_name)
-    target_apk = versioned_file if os.path.exists(versioned_file) else apk_file
-
-    if os.path.exists(target_apk):
-        app.router.add_get('/download/apk', lambda r: web.FileResponse(target_apk, headers={'Content-Disposition': f'attachment; filename="{versioned_apk_name}"'}))
-        app.router.add_get('/DigiSmartDeck.apk', lambda r: web.FileResponse(target_apk, headers={'Content-Disposition': f'attachment; filename="{versioned_apk_name}"'}))
-        app.router.add_get(f'/{versioned_apk_name}', lambda r: web.FileResponse(target_apk, headers={'Content-Disposition': f'attachment; filename="{versioned_apk_name}"'}))
+    
+    # Route unduh langsung Android APK secara dinamis
+    app.router.add_get('/download/apk', download_apk_handler)
+    app.router.add_get('/DigiSmartDeck.apk', download_apk_handler)
     return app
 
 

@@ -8179,7 +8179,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.19.0</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.0</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8482,8 +8482,9 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:0.4px;margin-bottom:6px;margin-top:6px;">DigiSmartDeck</div>
 
     <!-- Line 2: Badge Versi Aplikasi -->
-    <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.19.0</span>
+    <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.0</span>
+      <span id="about-app-platform-badge" style="display:none;padding:2px 8px;background:rgba(255,255,255,0.08);border-radius:20px;font-size:10px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;">APK Native</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -8493,7 +8494,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto;" data-i18n="about_desc">AI Workstation & Vibe Coding Companion.</div>
 
     <!-- Informasi Status Versi Aplikasi (Langsung tampil jika sudah versi terbaru) -->
-    <div style="margin-top:20px;" id="about-update-container">
+    <div style="margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px;" id="about-update-container">
       <div id="about-update-status" class="about-update-status-badge" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:rgba(63, 185, 80, 0.12);border:1px solid rgba(63, 185, 80, 0.35);border-radius:20px;font-size:11.5px;font-weight:600;color:#3fb950;user-select:none;">
         <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="txt-about-update-status" data-i18n="about_status_up_to_date">Aplikasi Sudah Versi Terbaru</span>
@@ -8504,6 +8505,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         </span>
         <span id="txt-check-update" data-i18n="about_btn_update">Pembaruan Tersedia</span>
       </button>
+      <div id="about-update-progress-container" style="display:none;width:100%;max-width:260px;flex-direction:column;align-items:center;gap:6px;">
+        <div style="display:flex;justify-content:space-between;width:100%;font-size:11px;color:var(--text-dim);">
+          <span id="about-update-progress-text">Mengunduh pembaruan...</span>
+          <span id="about-update-progress-percent">0%</span>
+        </div>
+        <div style="width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div id="about-update-progress-bar" style="width:0%;height:100%;background:var(--accent);border-radius:3px;transition:width 0.15s ease;"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -9642,23 +9652,66 @@ if (btnControlDeck) {
 }
 
 let updateResetTimeout = null;
+let currentUpdateData = null;
 
-function syncAppUpdateDisplay(serverVer) {
-  const currentAppVer = '1.17.0';
+function getClientAppInfo() {
+  let isNative = false;
+  let verName = '1.19.0';
+  let verCode = 11900;
+  if (window.DigiAndroidBridge) {
+    if (typeof window.DigiAndroidBridge.isNativeApp === 'function' && window.DigiAndroidBridge.isNativeApp()) {
+      isNative = true;
+    }
+    if (typeof window.DigiAndroidBridge.getInstalledVersionName === 'function') {
+      try {
+        verName = window.DigiAndroidBridge.getInstalledVersionName() || verName;
+      } catch (e) {}
+    }
+    if (typeof window.DigiAndroidBridge.getInstalledVersionCode === 'function') {
+      try {
+        verCode = window.DigiAndroidBridge.getInstalledVersionCode() || verCode;
+      } catch (e) {}
+    }
+  }
+  return { isNative, verName, verCode };
+}
+
+function syncAppUpdateDisplay(updateData) {
+  const clientInfo = getClientAppInfo();
   const badgeVer = $('about-app-version');
+  const badgePlatform = $('about-app-platform-badge');
   const statusBadge = $('about-update-status');
   const btnUpdate = $('btn-check-update');
   const txtStatus = $('txt-about-update-status');
   const txtUpdate = $('txt-check-update');
+  const prgContainer = $('about-update-progress-container');
 
-  const vStr = serverVer ? (serverVer.startsWith('v') ? serverVer : `v${serverVer}`) : `v${currentAppVer}`;
-  if (badgeVer) badgeVer.textContent = vStr;
+  if (prgContainer) prgContainer.style.display = 'none';
 
-  // Jika versi server sama atau belum ada versi lebih baru: aplikasi sudah versi terbaru
-  const isUpToDate = !serverVer || serverVer === currentAppVer || serverVer === '1.17.0';
+  if (badgePlatform) {
+    badgePlatform.style.display = clientInfo.isNative ? 'inline-block' : 'none';
+  }
+
+  currentUpdateData = updateData;
+
+  const clientVerStr = clientInfo.verName.startsWith('v') ? clientInfo.verName : `v${clientInfo.verName}`;
+  if (badgeVer) badgeVer.textContent = clientVerStr;
+
+  let isUpToDate = true;
+  if (updateData && typeof updateData === 'object') {
+    isUpToDate = !updateData.update_available;
+    if (updateData.current_server_version && badgeVer) {
+      if (updateData.update_available) {
+        badgeVer.textContent = `${clientVerStr} -> v${updateData.current_server_version.replace(/^v/, '')}`;
+      } else {
+        badgeVer.textContent = `v${updateData.current_server_version.replace(/^v/, '')}`;
+      }
+    }
+  } else if (typeof updateData === 'string') {
+    isUpToDate = (updateData === clientInfo.verName || updateData === `v${clientInfo.verName}`);
+  }
 
   if (isUpToDate) {
-    // Sudah update: tidak perlu ada tombol, langsung tampilkan informasi status versi terbaru aktif
     if (statusBadge) {
       statusBadge.style.display = 'inline-flex';
       if (txtStatus) {
@@ -9671,34 +9724,94 @@ function syncAppUpdateDisplay(serverVer) {
       btnUpdate.style.display = 'none';
     }
   } else {
-    // Belum update: baru munculkan tombol unduh pembaruan
     if (statusBadge) {
       statusBadge.style.display = 'none';
     }
     if (btnUpdate) {
       btnUpdate.style.display = 'inline-flex';
       if (txtUpdate) {
-        txtUpdate.textContent = currentUiLang === 'id'
-          ? 'Pembaruan Tersedia - Unduh'
-          : 'Update Available - Download';
+        const sizeMb = (updateData && updateData.apk_size_mb) ? ` (${updateData.apk_size_mb} MB)` : '';
+        if (clientInfo.isNative) {
+          txtUpdate.textContent = currentUiLang === 'id'
+            ? `Pasang Pembaruan Sekarang${sizeMb}`
+            : `Install Update Now${sizeMb}`;
+        } else {
+          txtUpdate.textContent = currentUiLang === 'id'
+            ? `Unduh APK Pembaruan${sizeMb}`
+            : `Download APK Update${sizeMb}`;
+        }
       }
     }
   }
 }
 
+// Global hooks dipanggil dari DigiAndroidBridge Native Java
+window.onUpdateDownloadStart = function() {
+  const prgContainer = $('about-update-progress-container');
+  const prgText = $('about-update-progress-text');
+  const prgBar = $('about-update-progress-bar');
+  const prgPercent = $('about-update-progress-percent');
+  const btnUpdate = $('btn-check-update');
+  if (btnUpdate) btnUpdate.style.display = 'none';
+  if (prgContainer) prgContainer.style.display = 'flex';
+  if (prgText) prgText.textContent = (currentUiLang === 'id') ? 'Mengunduh paket instalasi...' : 'Downloading package...';
+  if (prgBar) prgBar.style.width = '0%';
+  if (prgPercent) prgPercent.textContent = '0%';
+};
+
+window.onUpdateDownloadProgress = function(percent, totalBytes, fileLength) {
+  const prgContainer = $('about-update-progress-container');
+  const prgBar = $('about-update-progress-bar');
+  const prgPercent = $('about-update-progress-percent');
+  const prgText = $('about-update-progress-text');
+  if (prgContainer) prgContainer.style.display = 'flex';
+  if (percent >= 0) {
+    if (prgBar) prgBar.style.width = percent + '%';
+    if (prgPercent) prgPercent.textContent = percent + '%';
+  } else {
+    if (prgBar) prgBar.style.width = '100%';
+    if (prgPercent) prgPercent.textContent = (totalBytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+};
+
+window.onUpdateDownloadComplete = function() {
+  const prgText = $('about-update-progress-text');
+  const prgBar = $('about-update-progress-bar');
+  const prgPercent = $('about-update-progress-percent');
+  if (prgText) prgText.textContent = (currentUiLang === 'id') ? 'Membuka installer paket...' : 'Opening installer...';
+  if (prgBar) prgBar.style.width = '100%';
+  if (prgPercent) prgPercent.textContent = '100%';
+  vibe(40);
+};
+
+window.onUpdateDownloadError = function(errMsg) {
+  const prgText = $('about-update-progress-text');
+  const btnUpdate = $('btn-check-update');
+  if (prgText) prgText.textContent = (currentUiLang === 'id') ? ('Gagal mengunduh: ' + errMsg) : ('Download failed: ' + errMsg);
+  if (btnUpdate) btnUpdate.style.display = 'inline-flex';
+  vibe([40, 40, 40]);
+};
+
 function openAboutModal() {
   if (isSplashScreenActive) return;
   const modal = $('modal-about');
   if (!modal) return;
-  // Langsung sinkronkan status versi saat modal dibuka
+  const clientInfo = getClientAppInfo();
   syncAppUpdateDisplay();
-  fetch('/api/version')
+
+  const queryUrl = `/api/updater/check?client_version=${encodeURIComponent(clientInfo.verName)}&version_code=${clientInfo.verCode}`;
+  fetch(queryUrl)
     .then(r => r.json())
-    .then(d => {
-      if (d && d.version) syncAppUpdateDisplay(d.version);
+    .then(data => {
+      syncAppUpdateDisplay(data);
     })
     .catch(() => {
-      syncAppUpdateDisplay('1.17.0');
+      fetch('/api/version')
+        .then(r => r.json())
+        .then(d => {
+          if (d && d.version) syncAppUpdateDisplay(d.version);
+        })
+        .catch(() => {});
     });
 
   modal.classList.remove('hidden');
@@ -9719,7 +9832,16 @@ if (btnCheckUpdate) {
   btnCheckUpdate.addEventListener('click', () => {
     playClickSound();
     vibe(20);
-    window.location.href = '/download/apk';
+    const clientInfo = getClientAppInfo();
+    const downloadUrl = (currentUpdateData && currentUpdateData.download_url) ? currentUpdateData.download_url : '/download/apk';
+    const targetVer = (currentUpdateData && currentUpdateData.current_server_version) ? currentUpdateData.current_server_version : '';
+
+    if (clientInfo.isNative && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.downloadAndInstallUpdate === 'function') {
+      window.onUpdateDownloadStart();
+      window.DigiAndroidBridge.downloadAndInstallUpdate(downloadUrl, targetVer);
+    } else {
+      window.location.href = downloadUrl;
+    }
   });
 }
 

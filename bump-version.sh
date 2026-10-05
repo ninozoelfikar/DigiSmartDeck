@@ -132,7 +132,7 @@ fi
 
 # 5. Git Commit & Git Tag
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    git add "$VERSION_FILE" "$CHANGELOG_FILE" "android/app/build.gradle" "static/index.html" "static/landing.html" "landing/index.html" dist/*.apk static/*.apk 2>/dev/null || git add "$VERSION_FILE"
+    git add "$VERSION_FILE" "$CHANGELOG_FILE" "android/app/build.gradle" "android/app/src/main" "server.py" "static/index.html" "static/landing.html" "landing/index.html" dist/*.apk static/*.apk 2>/dev/null || git add "$VERSION_FILE"
     COMMIT_MSG="chore(release): bump version to v${NEW_VERSION}"
     if [ -n "$CUSTOM_DESC" ]; then
         COMMIT_MSG="chore(release): v${NEW_VERSION} - ${CUSTOM_DESC}"

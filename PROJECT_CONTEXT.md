@@ -1677,8 +1677,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Layanan `digikeyboard.service` di-refresh.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
-  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik aktif di semua tombol power, kembali, dan modal.
-
-
-
-
+## 93. CATATAN CHECKPOINT (v1.20.0 - Sistem Auto-Update In-App OTA & Integrasi FileProvider Installer APK)
+- **Arsitektur Auto-Update OTA In-App Mandiri (Self-Updating APK):**
+  - Mengeliminasi kebutuhan unduh manual via browser dan pencarian file APK di folder download HP.
+  - Mempersiapkan transisi pemadaman versi web seluler menuju APK Android mandiri yang memperbarui dirinya sendiri dalam 1 ketukan.
+- **Konfigurasi Izin & FileProvider Android:**
+  - Menambahkan izin `android.permission.REQUEST_INSTALL_PACKAGES` pada `AndroidManifest.xml`.
+  - Mengonfigurasi `androidx.core.content.FileProvider` dengan otoritas `${applicationId}.fileprovider` yang merujuk pada `file_paths.xml`.
+  - Mendukung direktori cache dan file aplikasi eksternal maupun internal secara aman untuk pertukaran intent installer ke sistem operasi Android.
+- **Integrasi Native Java Bridge (`MainActivity.java`):**
+  - Menambahkan method bridge `@JavascriptInterface`: `isNativeApp()`, `getInstalledVersionName()`, `getInstalledVersionCode()`, dan `downloadAndInstallUpdate(downloadUrl, targetVersion)`.
+  - Mengimplementasikan background download stream berbasis `ExecutorService` dan `HttpURLConnection` yang mengirim event progres berkala ke UI WebView (`window.onUpdateDownloadProgress`).
+  - Menangani izin instalasi sumber tidak dikenal (`ACTION_MANAGE_UNKNOWN_APP_SOURCES`) pada Android 8.0+ dan meluncurkan dialog instalasi sistem (`Intent.ACTION_VIEW` dengan MIME `application/vnd.android.package-archive` dan `FLAG_GRANT_READ_URI_PERMISSION`).
+- **Endpoint Backend Server (`server.py`):**
+  - Menambahkan endpoint REST API `/api/updater/check` yang membaca versi server terkini, `version_code`, ukuran file APK, URL unduhan, dan status `update_available` berdasarkan versi klien yang memanggil.
+  - Endpoint `/download/apk` dan `/DigiSmartDeck.apk` kini melayani file rilis APK Android terbaru secara dinamis dari `static/` atau `dist/`.
+- **Antarmuka Pengguna & Indikator Progres (`static/index.html`):**
+  - Modal About menampilkan badge platform `APK Native` saat dijalankan dari aplikasi Android resmi.
+  - Tombol pembaruan otomatis menyesuaikan teks dan ukuran file (`Pasang Pembaruan Sekarang (6.3 MB)`).
+  - Menampilkan progress bar dan persentase unduhan real-time saat proses pengunduhan paket APK berlangsung.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap terjaga.
+  - Ukuran file APK tetap sangat ringan (~6.3 MB, jauh di bawah batas 20 MB).
