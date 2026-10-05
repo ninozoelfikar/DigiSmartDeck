@@ -2407,6 +2407,36 @@ async def download_apk_handler(request):
     )
 
 
+async def api_pair_handler(request):
+    """Endpoint HTTP POST/GET /api/pair untuk melakukan pairing perangkat secara fleksibel (PIN 6-digit atau Kode Dev)."""
+    try:
+        if request.content_type == 'application/json':
+            data = await request.json()
+        else:
+            data = dict(await request.post())
+    except Exception:
+        data = {}
+
+    pin = data.get('pin') or request.query.get('pin', '')
+    dev_name = data.get('device_name') or request.query.get('device_name', 'Client Device')
+    client_ip = getattr(request, 'remote', '') or '127.0.0.1'
+    ua = request.headers.get('User-Agent', '')
+
+    token, msg = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua)
+    if token:
+        return web.json_response({
+            'success': True,
+            'token': token,
+            'device_name': dev_name,
+            'message': msg,
+            'license': license_manager.get_info()
+        }, headers={'Access-Control-Allow-Origin': '*'})
+    return web.json_response({
+        'success': False,
+        'message': msg
+    }, status=400, headers={'Access-Control-Allow-Origin': '*'})
+
+
 async def api_pairing_pin_handler(request):
     """Endpoint HTTP GET /api/pairing/pin untuk membaca PIN pairing saat ini (Hanya Localhost)."""
     if not is_localhost(request):
@@ -2570,6 +2600,9 @@ def create_app(ports=[8080]):
     app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
     app.router.add_get('/api/updater/check', api_updater_check_handler)
     app.router.add_options('/api/updater/check', options_handler)
+    app.router.add_post('/api/pair', api_pair_handler)
+    app.router.add_get('/api/pair', api_pair_handler)
+    app.router.add_options('/api/pair', options_handler)
     app.router.add_get('/api/pairing/pin', api_pairing_pin_handler)
     app.router.add_options('/api/pairing/pin', options_handler)
     app.router.add_post('/api/prompt', api_trigger_prompt_handler)

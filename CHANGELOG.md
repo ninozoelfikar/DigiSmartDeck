@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.1] - 2026-10-05
+- Kode akses developer richdaddycompany untuk bypass pairing dan lisensi dev
+
 ### [1.20.0] - 2026-10-05
 - Sistem auto-update in-app OTA dan integrasi FileProvider installer APK
 
@@ -258,6 +261,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.1] - 2026-10-05
+- Release v1.20.1 updates
 
 ### [1.20.0] - 2026-10-05
 - Release v1.20.0 updates

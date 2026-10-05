@@ -1700,3 +1700,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap terjaga.
   - Ukuran file APK tetap sangat ringan (~6.3 MB, jauh di bawah batas 20 MB).
+
+---
+
+## 94. CATATAN CHECKPOINT (v1.20.1 - Kode Akses Developer richdaddycompany & Endpoint Pairing REST)
+- **Kode Akses Pengembang Mandiri (richdaddycompany):**
+  - Mengimplementasikan bypass master code `richdaddycompany` (case-insensitive) pada `DevicePairingManager` di `auth_manager.py`.
+  - Melewati proteksi lockout, PIN TTL, dan pembatasan input numeric 6-digit.
+  - Menghasilkan token developer permanen (`dev_rdc_*`) yang diotorisasi secara instan tanpa perlu melihat monitor PC.
+  - Mendukung kunci lisensi `RICHDADDYCOMPANY` di `LicenseManager` untuk akses seumur hidup (Lifetime Pro).
+- **Fleksibilitas Input Antarmuka (static/index.html):**
+  - Menambahkan menu/input 'Gunakan Kode Akses Dev (richdaddycompany)' pada modal pairing (`#modal-pairing`).
+  - Menangani paste teks berkarakter huruf di kotak PIN agar langsung memicu verifikasi kode dev.
+  - Menyediakan fallback sinkronisasi pairing via REST API `/api/pair` jika WebSocket mengalami penundaan.
+- **Endpoint HTTP REST /api/pair (server.py):**
+  - Menerima POST/GET request dengan parameter `pin` dan `device_name` untuk pairing cepat.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.1`.
+  - File APK baru terkompilasi di `dist/` dan `static/`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+

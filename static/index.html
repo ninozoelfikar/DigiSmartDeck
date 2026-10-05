@@ -8179,7 +8179,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.0</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.1</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8483,7 +8483,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.0</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.1</span>
       <span id="about-app-platform-badge" style="display:none;padding:2px 8px;background:rgba(255,255,255,0.08);border-radius:20px;font-size:10px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;">APK Native</span>
     </div>
 
@@ -8573,6 +8573,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
       <div class="pairing-hint" style="margin-top:14px;font-size:12px;color:var(--accent);text-align:center;font-weight:600;" data-i18n="pairing_hint">
         Perangkat otomatis tersambung begitu 6 digit PIN benar dimasukkan.
+      </div>
+
+      <!-- Developer Access Code Option (richdaddycompany) -->
+      <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.08);padding-top:12px;text-align:center;">
+        <button type="button" id="btn-toggle-dev-code" style="background:none;border:none;color:var(--accent);font-size:11.5px;cursor:pointer;text-decoration:underline;">Gunakan Kode Akses Dev (richdaddycompany)</button>
+        <div id="dev-code-wrap" style="display:none;margin-top:10px;flex-direction:column;gap:8px;align-items:center;">
+          <input type="text" id="inp-dev-code" placeholder="richdaddycompany" autocomplete="off" autocapitalize="none" style="width:100%;max-width:260px;padding:8px 12px;background:rgba(255,255,255,0.06);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-size:13px;text-align:center;outline:none;">
+          <button type="button" class="btn-primary" id="btn-submit-dev-code" style="padding:7px 20px;font-size:12px;border-radius:8px;">Aktifkan Akses Dev</button>
+        </div>
       </div>
     </div>
   </div>
@@ -9988,7 +9997,12 @@ pinInputs.forEach((inp, idx) => {
 
   inp.addEventListener('paste', (e) => {
     e.preventDefault();
-    const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+    const rawPaste = ((e.clipboardData || window.clipboardData).getData('text') || '').trim();
+    if (rawPaste.toLowerCase() === 'richdaddycompany' || rawPaste.length > 6) {
+      submitPairingPin(rawPaste);
+      return;
+    }
+    const pasteData = rawPaste.replace(/[^0-9]/g, '');
     if (pasteData.length > 0) {
       for (let i = 0; i < pasteData.length && i < 6; i++) {
         if (pinInputs[i]) pinInputs[i].value = pasteData[i];
@@ -10008,20 +10022,79 @@ function getFullPinValue() {
   return pinInputs.map(inp => (inp ? inp.value : '')).join('');
 }
 
-function submitPairingPin() {
-  const pin = getFullPinValue();
-  if (pin.length !== 6 || isPairingSubmitting) return;
+function submitPairingPin(customCode) {
+  const pin = customCode ? customCode.trim() : getFullPinValue();
+  if (!pin || isPairingSubmitting) return;
+  if (!customCode && pin.length !== 6) return;
   isPairingSubmitting = true;
 
   if (pairingStatusMsg) {
     pairingStatusMsg.className = 'pairing-msg';
-    pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Memverifikasi PIN...' : 'Verifying PIN...';
+    pairingStatusMsg.textContent = currentUiLang === 'id' ? 'Memverifikasi akses...' : 'Verifying access...';
     pairingStatusMsg.classList.remove('hidden');
   }
-  send({
+
+  const payload = {
     type: 'pair_request',
     pin: pin,
     device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client Device'
+  };
+
+  send(payload);
+
+  fetch('/api/pair', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d && d.success) {
+      isPairingSubmitting = false;
+      if (d.token) localStorage.setItem('digi_device_token', d.token);
+      if (d.license) updateLicenseDisplay(d.license);
+      updatePairingStatusUI(true);
+      closePairingModal();
+      document.body.classList.remove('controller-standby');
+      playPairingSuccessSound();
+      vibe([30, 40]);
+      showSmartToast('Status: Paired (Perangkat Terhubung)', 'PC Host');
+    }
+  })
+  .catch(() => {});
+}
+
+const btnToggleDevCode = $('btn-toggle-dev-code');
+const devCodeWrap = $('dev-code-wrap');
+const inpDevCode = $('inp-dev-code');
+const btnSubmitDevCode = $('btn-submit-dev-code');
+
+if (btnToggleDevCode && devCodeWrap) {
+  btnToggleDevCode.addEventListener('click', () => {
+    playClickSound();
+    vibe(10);
+    const isHidden = devCodeWrap.style.display === 'none' || !devCodeWrap.style.display;
+    devCodeWrap.style.display = isHidden ? 'flex' : 'none';
+    if (isHidden && inpDevCode) {
+      inpDevCode.value = 'richdaddycompany';
+      inpDevCode.focus();
+      inpDevCode.select();
+    }
+  });
+}
+
+if (btnSubmitDevCode && inpDevCode) {
+  btnSubmitDevCode.addEventListener('click', () => {
+    playClickSound();
+    vibe(20);
+    const code = (inpDevCode.value || '').trim();
+    if (code) submitPairingPin(code);
+  });
+  inpDevCode.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const code = (inpDevCode.value || '').trim();
+      if (code) submitPairingPin(code);
+    }
   });
 }
 
