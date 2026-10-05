@@ -1449,6 +1449,24 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 81. CATATAN CHECKPOINT (v0.9.77 - Sanitasi Repositori Git Pre-Deployment & Pencegahan Kebocoran Data)
+- **Eliminasi Kebocoran Data Perangkat & Lisensi Lokal dari Git:**
+  - Menghapus pelacakan berkas runtime `data/paired_devices.json` dan `data/license.json` dari repositori Git (`git rm --cached`). Berkas ini sebelumnya memuat IP lokal pengguna (`192.168.8.100`), fingerprint perangkat keras ponsel (`HONORHEY3-W09`), dan token autentikasi rahasia.
+  - Menambahkan aturan `data/*` dan `!data/.gitkeep` ke `.gitignore` serta membuat `data/.gitkeep` agar folder basis data tetap terbentuk otomatis saat clone baru tanpa membocorkan data pribadi.
+- **Portabilitas Skrip & Sanitasi Hardcoded Path Pengembang:**
+  - *`build-apk.sh`*: Mengganti path hardcoded `/home/nino/...` dengan `$HOME` (`$HOME/.local/share/jdk` dan `$HOME/Android/sdk`).
+  - *`install-linux.sh`*: Mengganti path `/home/nino/digikeyboard/...` pada file `.desktop` menjadi `$SCRIPT_DIR` yang dinamis di folder instalasi mana pun.
+  - *`digikeyboard_gui.py`*: Mengubah perintah restart server agar menggunakan path skrip dinamis `os.path.abspath(__file__)` dan `pkill -f "server.py"`.
+- **Sanitasi Klien Android & Komentar UI:**
+  - *`MainActivity.java`*: Mengganti default IP statis pengembang `http://192.168.8.102:8080` menjadi IP generik `http://192.168.1.100:8080`.
+  - *`static/index.html`*: Membersihkan komentar informal di template mode kustom menjadi komentar formal profesional `<!-- Mode Kustom View Template -->`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 

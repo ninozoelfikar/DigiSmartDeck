@@ -925,7 +925,9 @@ class DigiSmartDeckGUI(QMainWindow):
         subprocess.Popen(["xdg-open", url])
 
     def restart_service(self):
-        subprocess.run(["pkill", "-f", "/home/nino/digikeyboard/server.py"])
+        srv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "server.py")
+        subprocess.run(["pkill", "-f", srv_file])
+        subprocess.run(["pkill", "-f", "server.py"])
         QTimer.singleShot(1500, self.refresh_status)
         QMessageBox.information(self, "Restart Layanan", "Perintah restart server telah dikirim ke systemd.")
 

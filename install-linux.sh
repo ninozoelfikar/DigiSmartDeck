@@ -67,16 +67,16 @@ fi
 echo -e "${CYAN}[4/5]${NC} Memasang pintasan desktop dan menu aplikasi..."
 mkdir -p ~/.local/share/applications ~/Desktop ~/.local/bin
 
-cat > ~/.local/share/applications/digismartdeck.desktop << 'EOF'
+cat > ~/.local/share/applications/digismartdeck.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=DigiSmartDeck
 GenericName=AI Workstation & Vibe Coding Companion
 Comment=DigiSmartDeck - AI Workstation & Vibe Coding Companion
-Exec=/usr/bin/python3 /home/nino/digikeyboard/digikeyboard_gui.py
-Path=/home/nino/digikeyboard
-Icon=/home/nino/digikeyboard/assets/icon.png
+Exec=/usr/bin/python3 $SCRIPT_DIR/digikeyboard_gui.py
+Path=$SCRIPT_DIR
+Icon=$SCRIPT_DIR/assets/icon.png
 Terminal=false
 Categories=Utility;HardwareSettings;
 StartupNotify=true

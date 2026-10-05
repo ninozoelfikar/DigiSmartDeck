@@ -22,17 +22,17 @@ echo ""
 
 # Konfigurasi environment Android SDK & Java jika belum ada di PATH
 if [ -z "$JAVA_HOME" ]; then
-    if [ -d "/home/nino/.local/share/jdk" ]; then
-        export JAVA_HOME="/home/nino/.local/share/jdk"
+    if [ -d "$HOME/.local/share/jdk" ]; then
+        export JAVA_HOME="$HOME/.local/share/jdk"
         export PATH="$JAVA_HOME/bin:$PATH"
-    elif [ -d "/home/nino/.antigravity/extensions/redhat.java-1.54.0-linux-x64/jre/21.0.10-linux-x86_64" ]; then
-        export JAVA_HOME="/home/nino/.antigravity/extensions/redhat.java-1.54.0-linux-x64/jre/21.0.10-linux-x86_64"
+    elif [ -d "$HOME/.antigravity/extensions/redhat.java-1.54.0-linux-x64/jre/21.0.10-linux-x86_64" ]; then
+        export JAVA_HOME="$HOME/.antigravity/extensions/redhat.java-1.54.0-linux-x64/jre/21.0.10-linux-x86_64"
         export PATH="$JAVA_HOME/bin:$PATH"
     fi
 fi
 
-if [ -z "$ANDROID_HOME" ] && [ -d "/home/nino/Android/sdk" ]; then
-    export ANDROID_HOME="/home/nino/Android/sdk"
+if [ -z "$ANDROID_HOME" ] && [ -d "$HOME/Android/sdk" ]; then
+    export ANDROID_HOME="$HOME/Android/sdk"
 fi
 
 echo -e "${GREEN}[OK] Memulai proses kompilasi APK via Gradle Wrapper...${NC}"

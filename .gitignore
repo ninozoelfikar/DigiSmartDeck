@@ -17,3 +17,5 @@ android/.gradle/
 android/local.properties
 android/app/build/
 android/build/
+data/*
+!data/.gitkeep
