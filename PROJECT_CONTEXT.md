@@ -1581,7 +1581,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
 
-
-
-
+## 88. CATATAN CHECKPOINT (v1.18.3 - Perbaikan Transkripsi Berulang & Stabilisasi Audio Mikrofon)
+- **Eliminasi Bug Kata/Frasa Ditelan (Swallowed Repeated Speech):**
+  - Menghapus aturan agresif `if (existCleanStr.includes(incCleanStr)) return existing;` dan dedup kata majemuk dari fungsi `mergeTranscripts()`.
+  - Sebelumnya, jika pengguna mengulang kata atau kalimat uji coba seperti "cek satu dua dicoba", sistem salah mendeteksinya sebagai duplikat dan menolak menampilkannya ke layar.
+  - Sekarang, kata atau kalimat berulang tersambung dengan aman dan utuh tanpa ada kata yang hilang.
+- **Penyederhanaan Rangkaian Penggabungan Sesi (Clean Session Concatenation):**
+  - `renderLiveTranscript()` dan `commitCurrentSession()` kini menggabungkan teks terakumulasi (`aiAccumulatedText`) dan teks sesi aktif secara langsung dengan spasi pemisah alami.
+  - Hasil final Web Speech API di browser browser (`recognition.onresult`) langsung digabungkan dari array hasil resmi (`finalPieces.join(' ')`) dan interim (`interimPieces.join(' ')`) tanpa distorsi potongan silang.
+- **Penstabilan Audio Stream Android APK:**
+  - Menghapus pembungkaman audio stream native (`AudioManager.STREAM_NOTIFICATION`, `STREAM_SYSTEM`, `STREAM_MUSIC`) di `MainActivity.java` yang berpotensi mematikan suara klik mekanikal (`playClickSound()`) atau memicu `SecurityException: Not allowed by NotificationManager` pada Android 13+.
+  - Menyesuaikan batas waktu pengenalan suara native Android (`EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS`: 1500ms, `COMPLETE_SILENCE`: 3500ms, `POSSIBLY_COMPLETE`: 2500ms) agar responsif dan tidak membekukan finalisasi kalimat pendek.
+- **Kompilasi & Rilis APK:**
+  - APK Android berhasil dikompilasi ulang dengan ukuran tetap ringan (5.4 MB) di `dist/DigiSmartDeck.apk` dan `static/DigiSmartDeck.apk`.
+  - Versi aplikasi dan badge UI tersinkronisasi penuh ke `v1.18.3`.
