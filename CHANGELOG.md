@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.4] - 2026-10-06
+- Pemulihan tombol Wi-Fi dan mode scan koneksi subnet
+
 ### [1.20.3] - 2026-10-06
 - PIN Dev 888888 dan pemulihan tombol mode Control Deck
 
@@ -267,6 +270,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.4] - 2026-10-06
+- Release v1.20.4 updates
 
 ### [1.20.3] - 2026-10-06
 - Release v1.20.3 updates

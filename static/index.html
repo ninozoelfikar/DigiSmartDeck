@@ -6615,6 +6615,16 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
       </div>
+      <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button type="button" class="btn-primary" id="btn-rc-scan" style="font-size:12px;padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span data-i18n="rc_btn_scan">Pindai Jaringan (Scan IP)</span>
+        </button>
+        <button type="button" class="tbtn" id="btn-rc-retry" style="font-size:12px;padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span data-i18n="rc_btn_retry">Coba Lagi</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -8208,7 +8218,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.3</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.4</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8512,7 +8522,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.3</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.4</span>
       <span id="about-app-platform-badge" style="display:none;padding:2px 8px;background:rgba(255,255,255,0.08);border-radius:20px;font-size:10px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;">APK Native</span>
     </div>
 
@@ -11044,11 +11054,7 @@ function scheduleReconnect(immediate = false) {
   const delay = Math.round(baseDelay + Math.random() * 250);
 
   setStatus(false, 'Menghubungkan...');
-
-  // Tampilkan popup modal pemulihan langsung saat terputus
-  if (retryCount >= 1) {
-    showReconnectBanner();
-  }
+  showReconnectBanner();
 
   reconnectTimer = setTimeout(() => {
     reconnectTimer = null;
@@ -11276,15 +11282,15 @@ function setStatus(ok, txt) {
 
 // ── Network Lifecycle & Screen Wake Listeners ──
 window.addEventListener('online', () => {
-  if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
-    scheduleReconnect(true);
-  }
+  console.log('[DigiSmartDeck] Wi-Fi online terdeteksi.');
+  setStatus(false, 'Wi-Fi terhubung, menyambung...');
+  scheduleReconnect(true);
 });
 
 window.addEventListener('offline', () => {
-  if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
-    handleDisconnect('Terputus');
-  }
+  console.log('[DigiSmartDeck] Wi-Fi offline terdeteksi.');
+  handleDisconnect('Wi-Fi Terputus');
+  showReconnectBanner();
 });
 
 document.addEventListener('visibilitychange', () => {
@@ -11355,7 +11361,11 @@ function openReconnectModal() {
   const modal = $('modal-reconnect');
   if (!modal) return;
   const hostEl = $('lbl-current-host');
-  if (hostEl) hostEl.textContent = window.location.host;
+  if (hostEl) {
+    const statusStr = connected ? ' (Terhubung)' : ' (Terputus)';
+    hostEl.textContent = (window.location.host || '--') + statusStr;
+    hostEl.style.color = connected ? '#3fb950' : 'var(--accent)';
+  }
 
   // Isi default subnet scanner berdasarkan hostname saat ini
   const scanSubnetInput = $('input-scan-subnet');
@@ -11372,17 +11382,19 @@ function closeReconnectModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// Klik badge status untuk bantuan koneksi
+// Klik/sentuh badge status Wi-Fi untuk membuka modal scanner koneksi & host discovery
 if (badge) {
-  badge.onclick = () => {
-    if (!connected) {
-      openReconnectModal();
-    } else {
-      // Jika sudah terhubung, sentuh badge menampilkan info singkat
-      setStatus(true, 'Terhubung OK');
-      setTimeout(() => { if (connected) setStatus(true, 'Terhubung'); }, 1500);
+  const onBadgeTrigger = (e) => {
+    if (e) {
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.type === 'touchend') e.preventDefault();
     }
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(15);
+    openReconnectModal();
   };
+  badge.addEventListener('touchend', onBadgeTrigger, { passive: false });
+  badge.addEventListener('click', onBadgeTrigger);
 }
 
 // Banner Action Buttons

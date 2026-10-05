@@ -1759,5 +1759,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 97. CATATAN CHECKPOINT (v1.20.4 - Pemulihan Tombol Wi-Fi & Mode Scan Koneksi Subnet)
+- **Pemulihan Interaksi Tombol Badge Wi-Fi:**
+  - Menghapus blokir `if (!connected)` pada event badge status Wi-Fi `#badge`.
+  - Tapping atau clicking badge Wi-Fi di layar ponsel kini selalu membuka modal Host Discovery & Subnet Scanner (`#modal-reconnect`) secara instan baik dalam kondisi terhubung maupun terputus.
+  - Menambahkan event listener `touchend` dengan `e.preventDefault()` untuk menjamin responsivitas sentuhan di Android WebView.
+  - Modal Reconnect kini menampilkan status host terkini secara real-time (`[Terhubung]` atau `[Terputus]`).
+- **Aktivasi Tombol Pindai Jaringan pada Reconnect Banner:**
+  - Menambahkan tombol aksi 'Pindai Jaringan (Scan IP)' (`#btn-rc-scan`) dan 'Coba Lagi' (`#btn-rc-retry`) secara visual di dalam antarmuka `#reconnect-banner`.
+  - Saat koneksi Wi-Fi terputus, banner modal otomatis tampil dan pengguna dapat langsung menekan tombol 'Pindai Jaringan' untuk mendeteksi IP baru host PC server di subnet lokal.
+  - Memperbaiki event listener `offline` dan `online` agar seketika mendeteksi pemutusan jaringan dan meluncurkan proses pemulihan serta mode pemindaian.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.4`.
+  - File APK baru terkompilasi di `dist/` dan `static/`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+
 
 
