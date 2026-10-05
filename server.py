@@ -1227,6 +1227,184 @@ def close_window(win_id):
             return False
     return False
 
+
+def execute_power_action(action: str, host_os: str = None) -> dict:
+    """Mengeksekusi perintah daya dan kontrol sesi sesuai sistem operasi host."""
+    if not host_os:
+        host_os = get_host_os()
+
+    action = str(action).lower().strip()
+    result = {'success': False, 'action': action, 'os': host_os, 'message': ''}
+
+    # 1. LINUX / UBUNTU
+    if host_os == 'ubuntu' or sys.platform.startswith('linux'):
+        env = get_x11_env()
+        try:
+            if action in ('shutdown', 'poweroff'):
+                subprocess.Popen(['systemctl', 'poweroff'])
+                result['success'] = True
+                result['message'] = 'Mematikan PC Linux...'
+            elif action in ('restart', 'reboot'):
+                subprocess.Popen(['systemctl', 'reboot'])
+                result['success'] = True
+                result['message'] = 'Me-restart PC Linux...'
+            elif action in ('sleep', 'suspend'):
+                subprocess.Popen(['systemctl', 'suspend'])
+                result['success'] = True
+                result['message'] = 'Menangguhkan PC Linux (Suspend)...'
+            elif action == 'hibernate':
+                subprocess.Popen(['systemctl', 'hibernate'])
+                result['success'] = True
+                result['message'] = 'Menghibernasi PC Linux...'
+            elif action == 'lock':
+                locked = False
+                try:
+                    p = subprocess.run(['loginctl', 'lock-session'], capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        locked = True
+                except Exception:
+                    pass
+                if not locked:
+                    try:
+                        subprocess.Popen(['xdg-screensaver', 'lock'], env=env)
+                        locked = True
+                    except Exception:
+                        pass
+                if not locked:
+                    try:
+                        subprocess.Popen(['gdbus', 'call', '--session', '--dest', 'org.gnome.ScreenSaver',
+                                          '--object-path', '/org/gnome/ScreenSaver',
+                                          '--method', 'org.gnome.ScreenSaver.Lock'], env=env)
+                        locked = True
+                    except Exception:
+                        pass
+                if not locked:
+                    simulate_press(resolve_key('cmd'))
+                    simulate_tap(resolve_key('l'))
+                    simulate_release(resolve_key('cmd'))
+                result['success'] = True
+                result['message'] = 'Layar PC Linux terkunci.'
+            elif action == 'switch_user':
+                switched = False
+                try:
+                    p = subprocess.run(['dm-tool', 'switch-to-greeter'], env=env, capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        switched = True
+                except Exception:
+                    pass
+                if not switched:
+                    try:
+                        subprocess.Popen(['gdbus', 'call', '--session', '--dest', 'org.gnome.ScreenSaver',
+                                          '--object-path', '/org/gnome/ScreenSaver',
+                                          '--method', 'org.gnome.ScreenSaver.Lock'], env=env)
+                        switched = True
+                    except Exception:
+                        pass
+                if not switched:
+                    subprocess.Popen(['loginctl', 'lock-session'])
+                result['success'] = True
+                result['message'] = 'Beralih ke layar login pengguna.'
+            elif action == 'logout':
+                try:
+                    subprocess.Popen(['gnome-session-quit', '--logout', '--no-prompt'], env=env)
+                    result['success'] = True
+                    result['message'] = 'Keluar dari sesi Linux.'
+                except Exception:
+                    subprocess.Popen(['loginctl', 'terminate-user', os.environ.get('USER', 'nino')])
+                    result['success'] = True
+                    result['message'] = 'Mengakhiri sesi Linux.'
+            elif action == 'screen_off':
+                subprocess.Popen(['xset', 'dpms', 'force', 'off'], env=env)
+                result['success'] = True
+                result['message'] = 'Mematikan layar monitor.'
+            else:
+                result['message'] = f'Aksi {action} tidak dikenali untuk Linux.'
+        except Exception as e:
+            result['message'] = f'Gagal mengeksekusi aksi power Linux: {e}'
+
+    # 2. WINDOWS
+    elif host_os == 'win' or sys.platform == 'win32':
+        try:
+            if action in ('shutdown', 'poweroff'):
+                subprocess.Popen(['shutdown', '/s', '/t', '0'])
+                result['success'] = True
+                result['message'] = 'Mematikan PC Windows...'
+            elif action in ('restart', 'reboot'):
+                subprocess.Popen(['shutdown', '/r', '/t', '0'])
+                result['success'] = True
+                result['message'] = 'Me-restart PC Windows...'
+            elif action in ('sleep', 'suspend'):
+                subprocess.Popen(['rundll32.exe', 'powrprof.dll,SetSuspendState', '0,1,0'])
+                result['success'] = True
+                result['message'] = 'Menidurkan PC Windows (Sleep)...'
+            elif action == 'hibernate':
+                subprocess.Popen(['shutdown', '/h'])
+                result['success'] = True
+                result['message'] = 'Menghibernasi PC Windows...'
+            elif action == 'lock':
+                subprocess.Popen(['rundll32.exe', 'user32.dll,LockWorkStation'])
+                result['success'] = True
+                result['message'] = 'PC Windows terkunci.'
+            elif action == 'switch_user':
+                try:
+                    subprocess.Popen(['tsdiscon.exe'])
+                except Exception:
+                    subprocess.Popen(['rundll32.exe', 'user32.dll,LockWorkStation'])
+                result['success'] = True
+                result['message'] = 'Beralih pengguna Windows.'
+            elif action == 'logout':
+                subprocess.Popen(['shutdown', '/l'])
+                result['success'] = True
+                result['message'] = 'Keluar dari akun Windows.'
+            elif action == 'screen_off':
+                ps_cmd = '(Add-Type \'[DllImport("user32.dll")]public static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);\' -Name a -Passthru)::SendMessage(-1, 0x0112, 0xF170, 2)'
+                subprocess.Popen(['powershell', '-NoProfile', '-Command', ps_cmd])
+                result['success'] = True
+                result['message'] = 'Mematikan layar monitor Windows.'
+            else:
+                result['message'] = f'Aksi {action} tidak dikenali untuk Windows.'
+        except Exception as e:
+            result['message'] = f'Gagal mengeksekusi aksi power Windows: {e}'
+
+    # 3. MACOS
+    elif host_os == 'mac' or sys.platform == 'darwin':
+        try:
+            if action in ('shutdown', 'poweroff'):
+                subprocess.Popen(['osascript', '-e', 'tell app "System Events" to shut down'])
+                result['success'] = True
+                result['message'] = 'Mematikan Mac...'
+            elif action in ('restart', 'reboot'):
+                subprocess.Popen(['osascript', '-e', 'tell app "System Events" to restart'])
+                result['success'] = True
+                result['message'] = 'Me-restart Mac...'
+            elif action in ('sleep', 'suspend'):
+                subprocess.Popen(['pmset', 'sleepnow'])
+                result['success'] = True
+                result['message'] = 'Menidurkan Mac (Sleep)...'
+            elif action == 'lock':
+                subprocess.Popen(['pmset', 'displaysleepnow'])
+                result['success'] = True
+                result['message'] = 'Layar Mac terkunci.'
+            elif action == 'switch_user':
+                subprocess.Popen(['/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/CGSession', '-suspend'])
+                result['success'] = True
+                result['message'] = 'Beralih pengguna Mac.'
+            elif action == 'logout':
+                subprocess.Popen(['osascript', '-e', 'tell app "System Events" to log out'])
+                result['success'] = True
+                result['message'] = 'Keluar dari sesi Mac.'
+            elif action == 'screen_off':
+                subprocess.Popen(['pmset', 'displaysleepnow'])
+                result['success'] = True
+                result['message'] = 'Mematikan layar Mac.'
+            else:
+                result['message'] = f'Aksi {action} tidak dikenali untuk Mac.'
+        except Exception as e:
+            result['message'] = f'Gagal mengeksekusi aksi power Mac: {e}'
+
+    return result
+
+
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
 ENABLE_REMOTE_PROMPTS = os.environ.get('DIGI_ENABLE_PROMPTS', '0') == '1'
@@ -1941,6 +2119,21 @@ async def websocket_handler(request):
                                 except Exception:
                                     pass
 
+                elif msg_type == 'power_action':
+                    action = data.get('action')
+                    if action:
+                        res = await asyncio.to_thread(execute_power_action, action)
+                        try:
+                            await ws.send_str(json.dumps({
+                                'type': 'power_result',
+                                'action': action,
+                                'success': res.get('success', False),
+                                'message': res.get('message', ''),
+                                'os': res.get('os', '')
+                            }))
+                        except Exception:
+                            pass
+
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")
 
@@ -2095,6 +2288,22 @@ async def api_info_handler(request):
         'platform': sys.platform,
         'uinput_active': UINPUT_AVAILABLE
     }, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_power_handler(request):
+    """Endpoint HTTP /api/power untuk mengeksekusi aksi daya PC host."""
+    try:
+        if request.content_type == 'application/json':
+            data = await request.json()
+        else:
+            data = dict(await request.post())
+    except Exception:
+        data = {}
+    action = data.get('action') or request.query.get('action')
+    if not action:
+        return web.json_response({'error': 'Parameter action diperlukan.'}, status=400, headers={'Access-Control-Allow-Origin': '*'})
+    res = await asyncio.to_thread(execute_power_action, action)
+    return web.json_response(res, headers={'Access-Control-Allow-Origin': '*'})
 
 
 async def options_handler(request):
@@ -2262,6 +2471,9 @@ def create_app(ports=[8080]):
     app.router.add_options('/api/version', options_handler)
     app.router.add_get('/api/info', api_info_handler)
     app.router.add_options('/api/info', options_handler)
+    app.router.add_get('/api/power', api_power_handler)
+    app.router.add_post('/api/power', api_power_handler)
+    app.router.add_options('/api/power', options_handler)
     app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
     app.router.add_get('/api/pairing/pin', api_pairing_pin_handler)
     app.router.add_options('/api/pairing/pin', options_handler)

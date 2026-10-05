@@ -5705,6 +5705,291 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
   opacity: 0;
 }
 
+/* ─── POWER VIEW (REMOTE SYSTEM & POWER DECK) ─── */
+.power-view {
+  order: 5;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  padding: 8px 14px 12px;
+  background: var(--bg);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overflow-y: auto;
+  box-sizing: border-box;
+  gap: 10px;
+}
+.power-view.hidden {
+  display: none !important;
+}
+
+.power-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.power-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.power-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.power-title-icon {
+  stroke: var(--accent);
+}
+
+.power-os-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--key-border);
+}
+
+.power-os-tag {
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(88, 166, 255, 0.15);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.power-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.power-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.power-back-btn:hover, .power-back-btn:active {
+  background: rgba(88, 166, 255, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.power-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+}
+
+@media (max-width: 680px) {
+  .power-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.power-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 14px 10px;
+  background: var(--panel-bg);
+  border: 1.5px solid var(--key-border);
+  border-radius: 14px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.power-card:hover {
+  transform: translateY(-2px);
+}
+.power-card:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.power-card-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: all 0.18s ease;
+}
+
+.power-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.power-card-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  letter-spacing: 0.2px;
+}
+
+.power-card-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.25;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Card Themes */
+.card-shutdown {
+  border-color: rgba(248, 81, 73, 0.35);
+}
+.card-shutdown .power-card-icon-wrap {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+  border: 1px solid rgba(248, 81, 73, 0.3);
+}
+.card-shutdown:hover, .card-shutdown:active {
+  border-color: #f85149;
+  box-shadow: 0 0 16px rgba(248, 81, 73, 0.25);
+}
+
+.card-restart {
+  border-color: rgba(210, 153, 34, 0.35);
+}
+.card-restart .power-card-icon-wrap {
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
+  border: 1px solid rgba(210, 153, 34, 0.3);
+}
+.card-restart:hover, .card-restart:active {
+  border-color: #d29922;
+  box-shadow: 0 0 16px rgba(210, 153, 34, 0.25);
+}
+
+.card-sleep {
+  border-color: rgba(88, 166, 255, 0.35);
+}
+.card-sleep .power-card-icon-wrap {
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+}
+.card-sleep:hover, .card-sleep:active {
+  border-color: #58a6ff;
+  box-shadow: 0 0 16px rgba(88, 166, 255, 0.25);
+}
+
+.card-lock {
+  border-color: rgba(188, 140, 255, 0.35);
+}
+.card-lock .power-card-icon-wrap {
+  background: rgba(188, 140, 255, 0.15);
+  color: #bc8cff;
+  border: 1px solid rgba(188, 140, 255, 0.3);
+}
+.card-lock:hover, .card-lock:active {
+  border-color: #bc8cff;
+  box-shadow: 0 0 16px rgba(188, 140, 255, 0.25);
+}
+
+.card-switch-user {
+  border-color: rgba(57, 197, 207, 0.35);
+}
+.card-switch-user .power-card-icon-wrap {
+  background: rgba(57, 197, 207, 0.15);
+  color: #39c5cf;
+  border: 1px solid rgba(57, 197, 207, 0.3);
+}
+.card-switch-user:hover, .card-switch-user:active {
+  border-color: #39c5cf;
+  box-shadow: 0 0 16px rgba(57, 197, 207, 0.25);
+}
+
+.card-logout {
+  border-color: rgba(139, 148, 158, 0.35);
+}
+.card-logout .power-card-icon-wrap {
+  background: rgba(139, 148, 158, 0.15);
+  color: #8b949e;
+  border: 1px solid rgba(139, 148, 158, 0.3);
+}
+.card-logout:hover, .card-logout:active {
+  border-color: #8b949e;
+  box-shadow: 0 0 16px rgba(139, 148, 158, 0.25);
+}
+
+.card-screen-off {
+  border-color: rgba(63, 185, 80, 0.35);
+}
+.card-screen-off .power-card-icon-wrap {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.3);
+}
+.card-screen-off:hover, .card-screen-off:active {
+  border-color: #3fb950;
+  box-shadow: 0 0 16px rgba(63, 185, 80, 0.25);
+}
+
+.card-hibernate {
+  border-color: rgba(227, 179, 65, 0.35);
+}
+.card-hibernate .power-card-icon-wrap {
+  background: rgba(227, 179, 65, 0.15);
+  color: #e3b341;
+  border: 1px solid rgba(227, 179, 65, 0.3);
+}
+.card-hibernate:hover, .card-hibernate:active {
+  border-color: #e3b341;
+  box-shadow: 0 0 16px rgba(227, 179, 65, 0.25);
+}
+
 @media (max-width: 600px) {
   .media-main-deck {
     grid-template-columns: 1fr;
@@ -6155,6 +6440,9 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         <button type="button" class="header-mode-btn" id="quick-mode-ai" data-i18n-title="quick_ai" title="AI Workstation">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
         </button>
+        <button type="button" class="header-mode-btn" id="quick-mode-power" data-i18n-title="quick_power" title="Power &amp; Session Control">
+          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+        </button>
         <button type="button" class="header-mode-btn" id="quick-mode-media" data-i18n-title="quick_media" title="Media Controller" style="display:none;">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/><line x1="19" x2="19" y1="5" y2="19"/></svg>
         </button>
@@ -6230,6 +6518,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <button type="button" class="tbtn deck-chip" id="btn-license" data-i18n-title="util_license_title" title="DigiSmartDeck SaaS License">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
             <span id="deck-license-badge">License</span>
+          </button>
+          <button type="button" class="tbtn deck-chip" id="btn-power-mode" data-i18n-title="deck_power_title" title="Power &amp; Session Control">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+            <span data-i18n="deck_power">Power</span>
           </button>
           <button type="button" class="tbtn deck-chip" id="btn-pairing" data-i18n-title="util_pairing_title" title="Device Pairing &amp; Security">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
@@ -7421,6 +7713,135 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
     </div>
   </section>
 
+  <!-- POWER & SESSION CONTROLLER VIEW -->
+  <section id="power-view" class="power-view hidden">
+    <!-- Header: Title, OS Info, Hostname, and Back Button -->
+    <div class="power-header">
+      <div class="power-header-left">
+        <div class="power-title-wrap">
+          <svg class="svg-icon power-title-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+          <span class="power-title" data-i18n="power_title">Menu Daya &amp; Sesi PC</span>
+        </div>
+        <div class="power-os-badge" id="power-os-badge">
+          <span id="power-host-name">PC Host</span>
+          <span class="power-os-tag" id="power-os-tag">Linux</span>
+        </div>
+      </div>
+      <div class="power-header-right">
+        <button type="button" class="power-back-btn" id="btn-power-back" title="Kembali ke Keyboard">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          <span data-i18n="power_back_keyboard">Keyboard</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Power Grid of Action Tiles -->
+    <div class="power-grid" id="power-grid">
+      <!-- 1. Shutdown Tile -->
+      <button type="button" class="power-card card-shutdown" data-action="shutdown" id="power-btn-shutdown">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_shutdown">Shutdown</div>
+          <div class="power-card-sub" data-i18n="power_shutdown_sub">Matikan daya PC</div>
+        </div>
+      </button>
+
+      <!-- 2. Restart Tile -->
+      <button type="button" class="power-card card-restart" data-action="restart" id="power-btn-restart">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_restart">Restart</div>
+          <div class="power-card-sub" data-i18n="power_restart_sub">Mulai ulang sistem</div>
+        </div>
+      </button>
+
+      <!-- 3. Sleep / Suspend Tile (Label & action varies by OS) -->
+      <button type="button" class="power-card card-sleep" data-action="sleep" id="power-btn-sleep">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" id="lbl-power-sleep" data-i18n="power_sleep">Sleep / Suspend</div>
+          <div class="power-card-sub" id="lbl-power-sleep-sub" data-i18n="power_sleep_sub">Mode hemat daya</div>
+        </div>
+      </button>
+
+      <!-- 4. Lock Screen Tile (Label & action varies by OS) -->
+      <button type="button" class="power-card card-lock" data-action="lock" id="power-btn-lock">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" id="lbl-power-lock" data-i18n="power_lock">Lock Screen</div>
+          <div class="power-card-sub" id="lbl-power-lock-sub" data-i18n="power_lock_sub">Kunci sesi aktif</div>
+        </div>
+      </button>
+
+      <!-- 5. Switch User Tile (Label & action varies by OS) -->
+      <button type="button" class="power-card card-switch-user" data-action="switch_user" id="power-btn-switch-user">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" id="lbl-power-switch-user" data-i18n="power_switch_user">Switch User</div>
+          <div class="power-card-sub" id="lbl-power-switch-user-sub" data-i18n="power_switch_user_sub">Ganti profil akun</div>
+        </div>
+      </button>
+
+      <!-- 6. Log Out / Sign Out Tile -->
+      <button type="button" class="power-card card-logout" data-action="logout" id="power-btn-logout">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_logout">Sign Out</div>
+          <div class="power-card-sub" data-i18n="power_logout_sub">Keluar dari sesi aktif</div>
+        </div>
+      </button>
+
+      <!-- 7. Turn Off Display Tile -->
+      <button type="button" class="power-card card-screen-off" data-action="screen_off" id="power-btn-screen-off">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_screen_off">Screen Off</div>
+          <div class="power-card-sub" data-i18n="power_screen_off_sub">Matikan layar monitor</div>
+        </div>
+      </button>
+
+      <!-- 8. Hibernate Tile -->
+      <button type="button" class="power-card card-hibernate" data-action="hibernate" id="power-btn-hibernate">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_hibernate">Hibernate</div>
+          <div class="power-card-sub" data-i18n="power_hibernate_sub">Simpan status ke disk</div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- POWER ACTION CONFIRMATION MODAL -->
+  <div class="modal-backdrop hidden" id="modal-power-confirm">
+    <div class="modal-dialog power-confirm-dialog" style="max-width:380px;text-align:center;padding:26px 20px;border-radius:16px;">
+      <div class="power-confirm-icon-wrap" id="power-confirm-icon-wrap" style="width:52px;height:52px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+        <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+      </div>
+      <div class="power-confirm-title" id="power-confirm-title" style="font-size:18px;font-weight:700;margin-top:14px;color:var(--text);">Konfirmasi Tindakan</div>
+      <div class="power-confirm-desc" id="power-confirm-desc" style="font-size:13px;color:var(--text-dim);margin:8px 0 22px;line-height:1.45;">Apakah Anda yakin ingin melanjutkan tindakan ini?</div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button type="button" class="tbtn" id="btn-power-confirm-cancel" style="flex:1;padding:10px;border-radius:8px;font-weight:600;background:var(--key-bg);border:1px solid var(--key-border);color:var(--text);">Batal</button>
+        <button type="button" class="tbtn" id="btn-power-confirm-proceed" style="flex:1;padding:10px;border-radius:8px;font-weight:600;background:var(--accent);color:#fff;border:none;">Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
   <!-- AI PROMPT SHORTCUT EDIT MODAL -->
   <div class="modal-backdrop hidden" id="ai-prompt-edit-modal">
     <div class="modal-dialog" style="max-width: 480px;">
@@ -7758,7 +8179,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.6</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.19.0</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8062,7 +8483,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.6</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.19.0</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -8263,8 +8684,30 @@ const I18N = {
     quick_gamepad: "Game Controller",
     quick_presenter: "Presentation Remote",
     quick_ai: "AI Workstation",
+    quick_power: "Power Controls",
     quick_media: "Media Controller",
     quick_canvas: "Drawing Canvas",
+    deck_power_title: "Power & Session Controls",
+    deck_power: "Power",
+    power_title: "Power & Session Control",
+    power_back_keyboard: "Keyboard",
+    power_shutdown: "Shutdown",
+    power_shutdown_sub: "Power off PC",
+    power_restart: "Restart",
+    power_restart_sub: "Reboot system",
+    power_sleep: "Sleep / Suspend",
+    power_sleep_sub: "Low-power standby state",
+    power_lock: "Lock Screen",
+    power_lock_sub: "Lock active session",
+    power_switch_user: "Switch User",
+    power_switch_user_sub: "Switch user account",
+    power_logout: "Sign Out",
+    power_logout_sub: "Close apps & sign out",
+    power_screen_off: "Screen Off",
+    power_screen_off_sub: "Turn off displays",
+    power_hibernate: "Hibernate",
+    power_hibernate_sub: "Save to disk & off",
+    smart_mode_power: "Power Controls",
     toggle_fullscreen: "Toggle Fullscreen",
     reload_app: "Reload Application",
     menu_button: "Menu",
@@ -8534,8 +8977,30 @@ const I18N = {
     quick_gamepad: "Gamepad Konsol",
     quick_presenter: "Remote Presentasi",
     quick_ai: "AI Workstation",
+    quick_power: "Menu Daya PC",
     quick_media: "Remote Multimedia",
     quick_canvas: "Kanvas Gambar",
+    deck_power_title: "Kontrol Daya & Sesi PC",
+    deck_power: "Power",
+    power_title: "Menu Daya & Sesi PC",
+    power_back_keyboard: "Keyboard",
+    power_shutdown: "Shutdown",
+    power_shutdown_sub: "Matikan daya PC",
+    power_restart: "Restart",
+    power_restart_sub: "Mulai ulang sistem",
+    power_sleep: "Sleep / Suspend",
+    power_sleep_sub: "Mode hemat daya",
+    power_lock: "Kunci Layar",
+    power_lock_sub: "Kunci sesi aktif",
+    power_switch_user: "Ganti Pengguna",
+    power_switch_user_sub: "Beralih akun",
+    power_logout: "Keluar Sesi",
+    power_logout_sub: "Tutup aplikasi & keluar",
+    power_screen_off: "Matikan Layar",
+    power_screen_off_sub: "Matikan monitor",
+    power_hibernate: "Hibernasi",
+    power_hibernate_sub: "Simpan status ke disk",
+    smart_mode_power: "Menu Daya PC",
     toggle_fullscreen: "Layar Penuh",
     reload_app: "Muat Ulang Halaman",
     menu_button: "Menu",
@@ -9567,6 +10032,7 @@ function switchAppMode(targetMode) {
   isAiModeActive = (targetMode === 'ai');
   isMediaModeActive = (targetMode === 'media');
   isCanvasModeActive = (targetMode === 'canvas');
+  isPowerModeActive = (targetMode === 'power');
   isCustomModeActive = false; // Mode kustom di-mute sementara
 
   const kbWrap = document.querySelector('.kb-wrap');
@@ -9577,10 +10043,12 @@ function switchAppMode(targetMode) {
   const aiView = $('ai-workstation-view');
   const mediaView = $('media-view');
   const canvasView = $('canvas-view');
+  const powerView = $('power-view');
 
   const btnGameMode = $('btn-game-mode');
   const btnPresentMode = $('btn-present-mode');
   const btnAiMode = $('btn-ai-mode');
+  const btnPowerMode = $('btn-power-mode');
 
   // Toggle view visibility secara tegas
   if (gamepadView) gamepadView.classList.toggle('hidden', !isGameModeActive);
@@ -9588,11 +10056,13 @@ function switchAppMode(targetMode) {
   if (aiView) aiView.classList.toggle('hidden', !isAiModeActive);
   if (mediaView) mediaView.classList.toggle('hidden', !isMediaModeActive);
   if (canvasView) canvasView.classList.toggle('hidden', !isCanvasModeActive);
+  if (powerView) powerView.classList.toggle('hidden', !isPowerModeActive);
 
   // Status visual tombol di Menu Deck
   if (btnGameMode) btnGameMode.classList.toggle('on', isGameModeActive);
   if (btnPresentMode) btnPresentMode.classList.toggle('on', isPresentModeActive);
   if (btnAiMode) btnAiMode.classList.toggle('on', isAiModeActive);
+  if (btnPowerMode) btnPowerMode.classList.toggle('on', isPowerModeActive);
 
   if (targetMode === 'standard') {
     // Mode Standard (Keyboard PC Utama)
@@ -9605,7 +10075,7 @@ function switchAppMode(targetMode) {
     }
     vibe(15);
   } else {
-    // Mode Khusus (Game / Presentasi / AI Workstation / Media / Canvas)
+    // Mode Khusus (Game / Presentasi / AI Workstation / Media / Canvas / Power)
     if (kbWrap) kbWrap.style.display = 'none';
     if (laptopDeck) laptopDeck.classList.add('hidden');
     if (scBar) scBar.classList.add('hidden');
@@ -9626,6 +10096,9 @@ function switchAppMode(targetMode) {
       if (typeof resizeDrawingCanvas === 'function') {
         setTimeout(resizeDrawingCanvas, 60);
       }
+    } else if (targetMode === 'power') {
+      if (typeof updatePowerViewLabels === 'function') updatePowerViewLabels(currentOS);
+      vibe(25);
     }
   }
 
@@ -9640,28 +10113,32 @@ function isProUser() {
 }
 
 function updateDeckModesUI() {
-  const isStd = !isGameModeActive && !isPresentModeActive && !isAiModeActive && !isMediaModeActive && !isCanvasModeActive;
+  const isStd = !isGameModeActive && !isPresentModeActive && !isAiModeActive && !isMediaModeActive && !isCanvasModeActive && !isPowerModeActive;
   if (btnModeStandard) {
     btnModeStandard.classList.toggle('active', isStd);
   }
   const btnGm = $('btn-game-mode');
   const btnPr = $('btn-present-mode');
   const btnAi = $('btn-ai-mode');
+  const btnPwr = $('btn-power-mode');
   if (btnGm) btnGm.classList.toggle('active', isGameModeActive);
   if (btnPr) btnPr.classList.toggle('active', isPresentModeActive);
   if (btnAi) btnAi.classList.toggle('active', isAiModeActive);
+  if (btnPwr) btnPwr.classList.toggle('active', isPowerModeActive);
 
   // Perbarui tombol mode di header
   const qkStd = $('quick-mode-standard');
   const qkGm  = $('quick-mode-game');
   const qkPr  = $('quick-mode-present');
   const qkAi  = $('quick-mode-ai');
+  const qkPwr = $('quick-mode-power');
   const qkMd  = $('quick-mode-media');
   const qkCv  = $('quick-mode-canvas');
   if (qkStd) qkStd.classList.toggle('active', isStd);
   if (qkGm)  qkGm.classList.toggle('active', isGameModeActive);
   if (qkPr)  qkPr.classList.toggle('active', isPresentModeActive);
   if (qkAi)  qkAi.classList.toggle('active', isAiModeActive);
+  if (qkPwr) qkPwr.classList.toggle('active', isPowerModeActive);
   if (qkMd)  qkMd.classList.toggle('active', isMediaModeActive);
   if (qkCv)  qkCv.classList.toggle('active', isCanvasModeActive);
 
@@ -10411,6 +10888,10 @@ function connect() {
         if (d.host_os && !localStorage.getItem('digi_os_manual')) {
           applyOS(d.host_os);
         }
+        if (d.host_name) {
+          const pHost = $('power-host-name');
+          if (pHost) pHost.textContent = d.host_name;
+        }
         if (d.version) {
           const vBadge = $('app-version-badge');
           if (vBadge) vBadge.textContent = 'DigiSmartDeck v' + d.version;
@@ -10431,6 +10912,10 @@ function connect() {
         handleAppContextUpdate(d);
       } else if (d.type === 'window_list') {
         renderWindowList(d.windows);
+      } else if (d.type === 'power_result') {
+        if (typeof showSmartToast === 'function') {
+          showSmartToast(d.message || (d.success ? 'Perintah daya berhasil dikirim.' : 'Gagal mengeksekusi perintah daya.'));
+        }
       } else if (d.type === 'auth_status') {
         if (d.license) updateLicenseDisplay(d.license);
         if (d.authorized) {
@@ -11697,6 +12182,10 @@ function applyOS(os) {
   const activeTheme = localStorage.getItem('digi_theme') || 'os-native';
   if (activeTheme === 'os-native') {
     applyTheme('os-native');
+  }
+
+  if (typeof updatePowerViewLabels === 'function') {
+    updatePowerViewLabels(currentOS);
   }
 }
 
@@ -16048,6 +16537,212 @@ if (btnExitCanvas) {
   });
 }
 
+// ─── POWER & SESSION CONTROL DECK (MODE POWER) ───
+let pendingPowerAction = null;
+
+function updatePowerViewLabels(os) {
+  const currentOs = os || currentOS || 'win';
+  const tagEl = $('power-os-tag');
+
+  if (tagEl) {
+    if (currentOs === 'ubuntu') {
+      tagEl.textContent = 'Linux Ubuntu';
+    } else if (currentOs === 'mac') {
+      tagEl.textContent = 'macOS';
+    } else {
+      tagEl.textContent = 'Windows';
+    }
+  }
+
+  // Sleep / Suspend label
+  const lblSleep = $('lbl-power-sleep');
+  const lblSleepSub = $('lbl-power-sleep-sub');
+  if (lblSleep) {
+    if (currentOs === 'ubuntu') {
+      lblSleep.textContent = currentUiLang === 'id' ? 'Suspend' : 'Suspend';
+      if (lblSleepSub) lblSleepSub.textContent = currentUiLang === 'id' ? 'Tangguhkan ke RAM' : 'Suspend system to RAM';
+    } else {
+      lblSleep.textContent = currentUiLang === 'id' ? 'Sleep' : 'Sleep';
+      if (lblSleepSub) lblSleepSub.textContent = currentUiLang === 'id' ? 'Mode hemat daya' : 'Low-power standby state';
+    }
+  }
+
+  // Lock Screen label
+  const lblLock = $('lbl-power-lock');
+  const lblLockSub = $('lbl-power-lock-sub');
+  if (lblLock) {
+    if (currentOs === 'win') {
+      lblLock.textContent = currentUiLang === 'id' ? 'Kunci Layar (Win+L)' : 'Lock Workstation';
+      if (lblLockSub) lblLockSub.textContent = currentUiLang === 'id' ? 'Kunci PC Windows' : 'Lock PC session';
+    } else if (currentOs === 'ubuntu') {
+      lblLock.textContent = currentUiLang === 'id' ? 'Kunci Sesi' : 'Lock Session';
+      if (lblLockSub) lblLockSub.textContent = currentUiLang === 'id' ? 'Kunci layar Linux' : 'Lock Linux desktop';
+    } else {
+      lblLock.textContent = currentUiLang === 'id' ? 'Kunci Layar' : 'Lock Screen';
+      if (lblLockSub) lblLockSub.textContent = currentUiLang === 'id' ? 'Kunci tampilan Mac' : 'Lock macOS screen';
+    }
+  }
+
+  // Switch User label
+  const lblSwitch = $('lbl-power-switch-user');
+  const lblSwitchSub = $('lbl-power-switch-user-sub');
+  if (lblSwitch) {
+    if (currentOs === 'win') {
+      lblSwitch.textContent = currentUiLang === 'id' ? 'Ganti Pengguna' : 'Switch User';
+      if (lblSwitchSub) lblSwitchSub.textContent = currentUiLang === 'id' ? 'Beralih akun pengguna' : 'Switch Windows account';
+    } else if (currentOs === 'ubuntu') {
+      lblSwitch.textContent = currentUiLang === 'id' ? 'Ganti Akun' : 'Switch User';
+      if (lblSwitchSub) lblSwitchSub.textContent = currentUiLang === 'id' ? 'Buka layar Login Greeter' : 'Open Login Greeter screen';
+    } else {
+      lblSwitch.textContent = currentUiLang === 'id' ? 'Ganti Pengguna' : 'Fast User Switch';
+      if (lblSwitchSub) lblSwitchSub.textContent = currentUiLang === 'id' ? 'Beralih akun Mac' : 'Fast User Switching';
+    }
+  }
+}
+
+function triggerPowerAction(action) {
+  if (typeof playClickSound === 'function') playClickSound();
+  vibe(20);
+
+  const requiresConfirm = (action === 'shutdown' || action === 'restart' || action === 'logout');
+  if (requiresConfirm) {
+    pendingPowerAction = action;
+    openPowerConfirmModal(action);
+    return;
+  }
+
+  executePowerActionNow(action);
+}
+
+function executePowerActionNow(action) {
+  send({
+    type: 'power_action',
+    action: action
+  });
+
+  let label = action;
+  if (action === 'shutdown') label = currentUiLang === 'id' ? 'Mematikan PC...' : 'Shutting down PC...';
+  else if (action === 'restart') label = currentUiLang === 'id' ? 'Me-restart PC...' : 'Restarting PC...';
+  else if (action === 'sleep') label = currentUiLang === 'id' ? 'Menidurkan PC...' : 'Putting PC to sleep...';
+  else if (action === 'lock') label = currentUiLang === 'id' ? 'Mengunci layar PC...' : 'Locking PC screen...';
+  else if (action === 'switch_user') label = currentUiLang === 'id' ? 'Beralih pengguna...' : 'Switching user...';
+  else if (action === 'logout') label = currentUiLang === 'id' ? 'Keluar dari sesi...' : 'Signing out...';
+  else if (action === 'screen_off') label = currentUiLang === 'id' ? 'Mematikan layar monitor...' : 'Turning screen off...';
+  else if (action === 'hibernate') label = currentUiLang === 'id' ? 'Menghibernasi PC...' : 'Hibernating PC...';
+
+  if (typeof showSmartToast === 'function') {
+    showSmartToast(label);
+  }
+}
+
+function openPowerConfirmModal(action) {
+  const modal = $('modal-power-confirm');
+  const titleEl = $('power-confirm-title');
+  const descEl = $('power-confirm-desc');
+  const iconWrap = $('power-confirm-icon-wrap');
+  const proceedBtn = $('btn-power-confirm-proceed');
+  if (!modal) return;
+
+  if (action === 'shutdown') {
+    if (titleEl) titleEl.textContent = currentUiLang === 'id' ? 'Matikan PC' : 'Shutdown Computer';
+    if (descEl) descEl.textContent = currentUiLang === 'id' ? 'Apakah Anda yakin ingin mematikan daya komputer PC host sekarang?' : 'Are you sure you want to completely power off the host PC?';
+    if (proceedBtn) {
+      proceedBtn.textContent = currentUiLang === 'id' ? 'Matikan Sekarang' : 'Shutdown Now';
+      proceedBtn.style.background = '#f85149';
+    }
+    if (iconWrap) {
+      iconWrap.style.background = 'rgba(248, 81, 73, 0.15)';
+      iconWrap.innerHTML = '<svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" style="stroke:#f85149;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>';
+    }
+  } else if (action === 'restart') {
+    if (titleEl) titleEl.textContent = currentUiLang === 'id' ? 'Mulai Ulang PC' : 'Restart Computer';
+    if (descEl) descEl.textContent = currentUiLang === 'id' ? 'Apakah Anda yakin ingin me-restart sistem komputer PC host?' : 'Are you sure you want to reboot the host operating system?';
+    if (proceedBtn) {
+      proceedBtn.textContent = currentUiLang === 'id' ? 'Restart Sekarang' : 'Restart Now';
+      proceedBtn.style.background = '#d29922';
+    }
+    if (iconWrap) {
+      iconWrap.style.background = 'rgba(210, 153, 34, 0.15)';
+      iconWrap.innerHTML = '<svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" style="stroke:#d29922;"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>';
+    }
+  } else if (action === 'logout') {
+    if (titleEl) titleEl.textContent = currentUiLang === 'id' ? 'Keluar Sesi Akun' : 'Sign Out Session';
+    if (descEl) descEl.textContent = currentUiLang === 'id' ? 'Apakah Anda yakin ingin menutup semua aplikasi dan keluar dari akun aktif?' : 'Are you sure you want to close running applications and sign out?';
+    if (proceedBtn) {
+      proceedBtn.textContent = currentUiLang === 'id' ? 'Keluar Sekarang' : 'Sign Out Now';
+      proceedBtn.style.background = '#8b949e';
+    }
+    if (iconWrap) {
+      iconWrap.style.background = 'rgba(139, 148, 158, 0.15)';
+      iconWrap.innerHTML = '<svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" style="stroke:#8b949e;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>';
+    }
+  }
+
+  modal.classList.remove('hidden');
+}
+
+function closePowerConfirmModal() {
+  const modal = $('modal-power-confirm');
+  if (modal) modal.classList.add('hidden');
+  pendingPowerAction = null;
+}
+
+function initPowerControls() {
+  const actions = [
+    { id: 'power-btn-shutdown', action: 'shutdown' },
+    { id: 'power-btn-restart', action: 'restart' },
+    { id: 'power-btn-sleep', action: 'sleep' },
+    { id: 'power-btn-lock', action: 'lock' },
+    { id: 'power-btn-switch-user', action: 'switch_user' },
+    { id: 'power-btn-logout', action: 'logout' },
+    { id: 'power-btn-screen-off', action: 'screen_off' },
+    { id: 'power-btn-hibernate', action: 'hibernate' }
+  ];
+
+  actions.forEach(item => {
+    const el = $(item.id);
+    if (el) {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        triggerPowerAction(item.action);
+      });
+    }
+  });
+
+  const btnCancel = $('btn-power-confirm-cancel');
+  if (btnCancel) {
+    btnCancel.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      closePowerConfirmModal();
+    });
+  }
+
+  const btnProceed = $('btn-power-confirm-proceed');
+  if (btnProceed) {
+    btnProceed.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(25);
+      const actionToRun = pendingPowerAction;
+      closePowerConfirmModal();
+      if (actionToRun) {
+        executePowerActionNow(actionToRun);
+      }
+    });
+  }
+
+  const btnBack = $('btn-power-back');
+  if (btnBack) {
+    btnBack.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      switchAppMode('standard');
+    });
+  }
+
+  updatePowerViewLabels(currentOS);
+}
+
 // ── Inisialisasi Sentral Mode Kerja (Semua Dependensi & Modul Sudah Siap) ──
 const btnModeStandardDeck = $('btn-mode-standard');
 const btnGameModeDeck     = $('btn-game-mode');
@@ -16080,12 +16775,15 @@ bindModeBtn(btnModeStandardDeck, () => switchAppMode('standard'));
 bindModeBtn(btnGameModeDeck,     () => switchAppMode('game'));
 bindModeBtn(btnPresentModeDeck,  () => switchAppMode('present'));
 bindModeBtn(btnAiModeDeck,       () => switchAppMode('ai'));
+const btnPowerModeDeck = $('btn-power-mode');
+bindModeBtn(btnPowerModeDeck,    () => switchAppMode('power'));
 
 // Header Quick Mode Buttons (Di samping logo)
 const quickModeStandard = $('quick-mode-standard');
 const quickModeGame     = $('quick-mode-game');
 const quickModePresent  = $('quick-mode-present');
 const quickModeAi       = $('quick-mode-ai');
+const quickModePower    = $('quick-mode-power');
 const quickModeMedia    = $('quick-mode-media');
 const quickModeCanvas   = $('quick-mode-canvas');
 
@@ -16093,17 +16791,19 @@ bindModeBtn(quickModeStandard, () => switchAppMode('standard'));
 bindModeBtn(quickModeGame,     () => switchAppMode('game'));
 bindModeBtn(quickModePresent,  () => switchAppMode('present'));
 bindModeBtn(quickModeAi,       () => switchAppMode('ai'));
+bindModeBtn(quickModePower,    () => switchAppMode('power'));
 bindModeBtn(quickModeMedia,    () => switchAppMode('media'));
 bindModeBtn(quickModeCanvas,   () => switchAppMode('canvas'));
 
-
+// Inisialisasi Event Kontrol Menu Daya & Sesi PC
+initPowerControls();
 
 bindModeBtn(btnDeckUpgradePro, () => {
   closeControlDeck();
   openStore('all');
 });
 
-// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=standard / ?mode=ai / ?mode=media / ?mode=canvas)
+// Inisialisasi Mode Kerja Otomatis via URL (?mode=game / ?mode=present / ?mode=standard / ?mode=ai / ?mode=power / ?mode=media / ?mode=canvas)
 try {
   const urlParams = new URLSearchParams(window.location.search);
   const initMode = urlParams.get('mode');
@@ -16113,6 +16813,8 @@ try {
     switchAppMode('present');
   } else if (initMode === 'ai' || initMode === 'workstation') {
     switchAppMode('ai');
+  } else if (initMode === 'power') {
+    switchAppMode('power');
   } else if (initMode === 'media' || initMode === 'player') {
     switchAppMode('media');
   } else if (initMode === 'canvas' || initMode === 'draw') {

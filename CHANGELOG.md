@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.19.0] - 2026-10-05
+- Penambahan Mode Power untuk kontrol daya dan sesi PC multi-OS
+
 ### [1.18.6] - 2026-10-05
 - Eliminasi tombol dev bar atas dan modernisasi icon refresh windows PC
 
@@ -252,6 +255,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.19.0] - 2026-10-05
+- Release v1.19.0 updates
 
 ### [1.18.6] - 2026-10-05
 - Release v1.18.6 updates

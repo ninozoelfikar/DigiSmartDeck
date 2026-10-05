@@ -1646,5 +1646,39 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan haptik tetap aktif sempurna di semua tombol interaktif.
 
+---
+
+## 92. CATATAN CHECKPOINT (v1.19.0 - Penambahan Mode Power & Kontrol Sesi Multi-OS)
+- **Penambahan Mode Power (Mode ke-4 Utama):**
+  - Menjadikan DigiSmartDeck memiliki 4 mode sentral: Keyboard PC, Game Controller, AI Workstation, dan Power Control.
+  - Menambahkan tombol quick mode `#quick-mode-power` di header atas sejajar dengan mode lainnya.
+  - Menambahkan chip `#btn-power-mode` di menu Control Deck.
+  - Menghadirkan antarmuka `#power-view` yang elegan, imersif, dan touch-friendly di orientasi landscape.
+- **Dukungan Perintah Daya & Sesi Adaptif Multi-OS:**
+  - Menyesuaikan label dan mekanisme perintah kernel sesuai sistem operasi host (`ubuntu`, `win`, `mac`).
+  - **Shutdown:** `systemctl poweroff` (Linux), `shutdown /s /t 0` (Windows), `osascript shut down` (macOS).
+  - **Restart:** `systemctl reboot` (Linux), `shutdown /r /t 0` (Windows), `osascript restart` (macOS).
+  - **Sleep / Suspend:** Menampilkan "Suspend" di Linux (`systemctl suspend`), "Sleep" di Windows (`rundll32 powrprof.dll`), "Sleep" di macOS (`pmset sleepnow`).
+  - **Lock Screen:** "Lock Session" di Linux (`loginctl lock-session` / screensaver), "Lock Workstation" di Windows (`user32.dll LockWorkStation`), "Lock Screen" di macOS (`pmset displaysleepnow`).
+  - **Switch User:** "Switch User (Greeter)" di Linux (`dm-tool switch-to-greeter` / gdbus), "Switch User (tsdiscon)" di Windows, "Fast User Switching" di macOS (`CGSession`).
+  - **Sign Out / Logout:** Keluar sesi aktif di Linux (`gnome-session-quit`), Windows (`shutdown /l`), dan macOS (`osascript log out`).
+  - **Turn Off Screen:** Mematikan layar display tanpa menidurkan PC (`xset dpms force off` di Linux, PowerShell SendMessage di Windows).
+  - **Hibernate:** Simpan memori RAM ke disk dan matikan PC.
+- **Proteksi Konfirmasi Keselamatan (Safety Confirmation):**
+  - Modal konfirmasi `#modal-power-confirm` melindungi aksi berbahaya (Shutdown, Restart, Sign Out) dari sentuhan tidak sengaja di layar ponsel.
+  - Aksi instan (Kunci Layar, Matikan Monitor, Sleep, Switch User) dieksekusi seketika demi kenyamanan pengguna.
+- **Integrasi Backend Server & API:**
+  - WebSocket mendukung pesan `type: 'power_action'` dengan feedback instan `type: 'power_result'`.
+  - Endpoint REST API `/api/power` (GET & POST) ditambahkan untuk fleksibilitas kontrol eksternal.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi resmi aplikasi dinaikkan ke `v1.19.0` (minor bump fitur baru).
+  - File instalasi APK baru terkompilasi: `DigiSmartDeck-v1.19.0.apk` (5.4 MB) di `dist/` dan `static/`.
+  - Endpoint `/download/apk` menyajikan `DigiSmartDeck-v1.19.0.apk`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik aktif di semua tombol power, kembali, dan modal.
+
+
 
 
