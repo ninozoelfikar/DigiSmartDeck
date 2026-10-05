@@ -6163,14 +6163,6 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
         </button>
       </div>
 
-      <!-- Dev Controls (Fullscreen & Reload) di Bar Atas -->
-      <button type="button" class="header-mode-btn" id="btn-ai-fs" data-i18n-title="toggle_fullscreen" title="Toggle Fullscreen">
-        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-      </button>
-      <button type="button" class="header-mode-btn" id="btn-ai-reload" data-i18n-title="reload_app" title="Reload Application">
-        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-      </button>
-
       <button type="button" class="deck-trigger-btn" id="btn-control-deck" data-i18n-title="menu_button" title="Menu" aria-label="Menu">
         <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
       </button>
@@ -7766,7 +7758,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.5</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.6</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8070,7 +8062,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.5</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.6</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -8105,7 +8097,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
         <button class="modal-close" id="btn-refresh-win-switcher" type="button" data-i18n-title="win_switcher_refresh" title="Segarkan" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;">
-          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
         </button>
         <button class="modal-close" id="btn-close-win-switcher" type="button" title="Tutup">✕</button>
       </div>
@@ -9114,23 +9106,6 @@ if (_btnFs) {
   });
 }
 
-const _btnAiFs = $('btn-ai-fs');
-if (_btnAiFs) {
-  _btnAiFs.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleFullscreen();
-  });
-}
-
-const _btnAiReload = $('btn-ai-reload');
-if (_btnAiReload) {
-  _btnAiReload.addEventListener('click', (e) => {
-    e.stopPropagation();
-    playClickSound();
-    vibe(15);
-    location.reload();
-  });
-}
 
 const _btnLockLs = $('btn-lock-landscape-fs');
 if (_btnLockLs) {

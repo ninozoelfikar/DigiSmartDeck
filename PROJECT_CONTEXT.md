@@ -1629,4 +1629,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - File instalasi berpenamaan versi baru telah dibuat: `DigiSmartDeck-v1.18.5.apk` (5.4 MB) di `dist/` dan `static/`.
   - Endpoint `/download/apk` menyajikan file `DigiSmartDeck-v1.18.5.apk` dengan status HTTP 200 OK.
 
+---
+
+## 91. CATATAN CHECKPOINT (v1.18.6 - Eliminasi Tombol Dev Header & Modernisasi Icon Refresh Windows PC)
+- **Eliminasi Tombol Dev Bar Atas:**
+  - Menghapus tombol fullscreen (`#btn-ai-fs`) dan tombol reload browser (`#btn-ai-reload`) dari header atas di `static/index.html`.
+  - Menghapus event listener `_btnAiFs` dan `_btnAiReload` sehingga antarmuka header atas menjadi lebih bersih, rapi, dan terbebas dari tombol perkakas developer.
+- **Modernisasi Icon Refresh Pembacaan Windows PC:**
+  - Mengadopsi SVG modern panah reload melingkar (dari tombol reload sebelumnya) untuk menggantikan icon lama pada tombol refresh window switcher (`#btn-refresh-win-switcher`).
+  - Fungsi tetap konsisten 100%: memindai dan menyegarkan daftar jendela aktif aplikasi/terminal di PC host (`openWindowSwitcherModal()`).
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi resmi dinaikkan ke `v1.18.6`.
+  - File APK baru terkompilasi: `DigiSmartDeck-v1.18.6.apk` (5.4 MB) di `dist/DigiSmartDeck-v1.18.6.apk` dan `static/DigiSmartDeck-v1.18.6.apk`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan haptik tetap aktif sempurna di semua tombol interaktif.
+
+
 
