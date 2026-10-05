@@ -17,6 +17,9 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.util.Log;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "DigiKeyboardPrefs";
     private static final String KEY_SERVER_URL = "server_url";
-    private static final String DEFAULT_URL = "http://192.168.1.100:8080";
+    private static final String DEFAULT_URL = "http://192.168.8.102:8080";
     private static final int REQUEST_CODE_PERMISSIONS = 2001;
 
     private WebView webView;
@@ -306,8 +309,12 @@ public class MainActivity extends AppCompatActivity {
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
 
-        // Optimasi sentuhan & rendering
+        // Hardware acceleration & rendering
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setHapticFeedbackEnabled(true);
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         webView.setBackgroundColor(Color.parseColor("#0d1117"));
@@ -322,6 +329,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Log.d("DigiSmartDeck", consoleMessage.message() + " [" + consoleMessage.sourceId() + ":" + consoleMessage.lineNumber() + "]");
+                return true;
+            }
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("DigiSmartDeck")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> result.confirm())
+                    .setCancelable(false)
+                    .show();
+                return true;
+            }
+
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
                 runOnUiThread(() -> {
@@ -352,21 +376,30 @@ public class MainActivity extends AppCompatActivity {
                 pendingPermissionRequest = null;
             }
         });
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (btnServerSettings != null) {
-                    btnServerSettings.setVisibility(View.GONE);
+                if (url != null && !url.contains("localhost:8080") && !url.startsWith("data:")) {
+                    if (btnServerSettings != null) {
+                        btnServerSettings.setVisibility(View.GONE);
+                    }
                 }
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                if (request.isForMainFrame()) {
+                if (request != null && request.isForMainFrame()) {
                     showConnectionErrorPage();
                 }
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                showConnectionErrorPage();
             }
         });
     }
@@ -406,7 +439,13 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> {
+            dialog.dismiss();
+            String saved = prefs.getString(KEY_SERVER_URL, null);
+            if (saved == null || saved.trim().isEmpty()) {
+                showConnectionErrorPage();
+            }
+        });
 
         btnConnect.setOnClickListener(v -> {
             String inputUrl = etServerUrl.getText().toString();
@@ -426,18 +465,24 @@ public class MainActivity extends AppCompatActivity {
         if (btnServerSettings != null) {
             btnServerSettings.setVisibility(View.VISIBLE);
         }
-        String currentUrl = prefs.getString(KEY_SERVER_URL, "");
+        String currentUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_URL);
         String errorHtml = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-            + "<style>body{background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;}"
-            + "h2{color:#f85149;margin-bottom:8px;}p{color:#8b949e;font-size:14px;line-height:1.5;max-width:400px;}"
-            + "button{background:#0969da;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:16px;font-weight:600;}"
+            + "<style>body{background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:24px;box-sizing:border-box;}"
+            + "h2{color:#f85149;margin-bottom:8px;}p{color:#8b949e;font-size:14px;line-height:1.5;max-width:440px;margin-bottom:20px;}"
+            + ".btn-wrap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}"
+            + "button{border:none;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600;}"
+            + ".btn-pri{background:#0969da;color:#fff;}"
+            + ".btn-sec{background:#21262d;color:#c9d1d9;border:1px solid #30363d;}"
             + "</style></head><body>"
             + "<h2>Gagal Terhubung ke PC</h2>"
             + "<p>Tidak dapat tersambung ke <b>" + currentUrl + "</b>.<br>"
             + "Pastikan PC dan HP Anda terhubung ke <b>Wi-Fi yang sama</b> dan aplikasi server di PC sedang aktif.</p>"
-            + "<button onclick='location.reload()'>Coba Lagi</button>"
+            + "<div class='btn-wrap'>"
+            + "<button class='btn-sec' onclick='if(window.DigiAndroidBridge)DigiAndroidBridge.openServerSettings();'>Ganti Server IP</button>"
+            + "<button class='btn-pri' onclick='location.reload()'>Coba Lagi</button>"
+            + "</div>"
             + "</body></html>";
-        webView.loadDataWithBaseURL(null, errorHtml, "text/html", "UTF-8", null);
+        webView.loadDataWithBaseURL("http://localhost:8080/", errorHtml, "text/html", "UTF-8", null);
     }
 
     @Override

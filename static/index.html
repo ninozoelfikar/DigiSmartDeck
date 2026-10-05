@@ -339,17 +339,22 @@ html, body {
   align-items: center;
   background: var(--header-bg);
   border-bottom: none;
-  padding: 5px max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
+  padding: 5px 12px;
+  padding-left: max(12px, env(safe-area-inset-left, 12px));
+  padding-right: max(16px, env(safe-area-inset-right, 16px));
   height: 44px;
   flex-shrink: 0;
-  z-index: 10;
+  z-index: 100;
   gap: 8px;
   position: relative;
+  box-sizing: border-box;
 }
 @media (max-height: 480px) {
   .top-bar {
-    height: 34px;
-    padding: 2px max(8px, env(safe-area-inset-right)) 2px max(8px, env(safe-area-inset-left));
+    height: 36px;
+    padding: 2px 10px;
+    padding-left: max(10px, env(safe-area-inset-left, 10px));
+    padding-right: max(16px, env(safe-area-inset-right, 16px));
   }
 }
 .logo {
@@ -470,14 +475,15 @@ html, body {
   background: var(--key-bg);
   border: 1.5px solid var(--key-border);
   color: var(--text);
-  width: 32px;
-  height: 28px;
-  padding: 0;
+  min-width: 36px;
+  height: 32px;
+  padding: 0 6px;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s ease;
   user-select: none;
+  touch-action: manipulation;
 }
 .deck-trigger-btn:hover, .deck-trigger-btn.active {
   background: rgba(88, 166, 255, 0.18);
@@ -2276,6 +2282,10 @@ body.is-fullscreen {
   opacity: 0.8;
 }
 /* Startup Splash / Flash Screen */
+@keyframes splash-fade-auto {
+  0%, 75% { opacity: 1; pointer-events: auto; }
+  100% { opacity: 0; pointer-events: none; visibility: hidden; }
+}
 .splash-screen {
   position: fixed;
   inset: 0;
@@ -2287,6 +2297,7 @@ body.is-fullscreen {
   opacity: 1;
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
   pointer-events: auto;
+  animation: splash-fade-auto 1.2s ease forwards;
 }
 .splash-screen.fade-out {
   opacity: 0;
@@ -6098,6 +6109,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       <div class="splash-sub">by King Ali Studiō</div>
     </div>
   </div>
+  <script>
+    setTimeout(function() {
+      var s = document.getElementById('splash-screen');
+      if (s) {
+        s.classList.add('fade-out');
+        setTimeout(function() { if (s && s.parentNode) s.parentNode.removeChild(s); }, 300);
+      }
+    }, 1100);
+  </script>
 
   <!-- TOP BAR (MINIMALIS) -->
   <header class="top-bar">
@@ -6244,6 +6264,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <button type="button" class="tbtn deck-chip" id="btn-bt" style="display:none;" title="Mode Bluetooth HID Hardware">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
             <span>BT</span>
+          </button>
+          <button type="button" class="tbtn deck-chip" id="btn-server-config" style="display:none;" title="Ganti Alamat Server PC">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Server IP</span>
           </button>
         </div>
       </div>
@@ -14254,7 +14278,7 @@ window.onNativeSpeechEnd = function() {
 
 window.onNativeSpeechError = function(code) {
   console.warn('[Native Speech Error Code]:', code);
-  if (aiSpeechAlwaysOn && aiSpeechWanted && (code === 6 || code === 7 || code === 8)) {
+  if (aiSpeechAlwaysOn && aiSpeechWanted && (code === 1 || code === 5 || code === 6 || code === 7 || code === 8)) {
     isAiRecording = true;
     updateAiMicUI();
     return;
@@ -16074,15 +16098,31 @@ if (btnExitCanvas) {
   });
 }
 
-// ── Inisialisasi Tombol Bluetooth HID (jika berjalan di Android App) ──
+// ── Inisialisasi Tombol Bridge Android App (Bluetooth HID & Server IP) ──
 try {
-  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.isBluetoothAvailable === 'function' && window.DigiAndroidBridge.isBluetoothAvailable()) {
-    const btnBt = document.getElementById('btn-bt');
-    if (btnBt) {
-      btnBt.style.display = 'inline-block';
-      btnBt.addEventListener('click', () => {
-        window.DigiAndroidBridge.enableBluetoothHid();
-      });
+  if (window.DigiAndroidBridge) {
+    if (typeof window.DigiAndroidBridge.isBluetoothAvailable === 'function' && window.DigiAndroidBridge.isBluetoothAvailable()) {
+      const btnBt = document.getElementById('btn-bt');
+      if (btnBt) {
+        btnBt.style.display = 'inline-flex';
+        btnBt.addEventListener('click', () => {
+          playClickSound();
+          vibe(15);
+          window.DigiAndroidBridge.enableBluetoothHid();
+        });
+      }
+    }
+    if (typeof window.DigiAndroidBridge.openServerSettings === 'function') {
+      const btnServerCfg = document.getElementById('btn-server-config');
+      if (btnServerCfg) {
+        btnServerCfg.style.display = 'inline-flex';
+        btnServerCfg.addEventListener('click', () => {
+          playClickSound();
+          vibe(15);
+          closeControlDeck();
+          window.DigiAndroidBridge.openServerSettings();
+        });
+      }
     }
   }
 } catch(e) {}
