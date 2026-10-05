@@ -339,7 +339,7 @@ html, body {
   align-items: center;
   background: var(--header-bg);
   border-bottom: none;
-  padding: 5px 10px;
+  padding: 5px max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
   height: 44px;
   flex-shrink: 0;
   z-index: 10;
@@ -349,7 +349,7 @@ html, body {
 @media (max-height: 480px) {
   .top-bar {
     height: 34px;
-    padding: 2px 8px;
+    padding: 2px max(8px, env(safe-area-inset-right)) 2px max(8px, env(safe-area-inset-left));
   }
 }
 .logo {
@@ -9176,8 +9176,20 @@ function toggleControlDeck() {
 }
 
 if (btnControlDeck) {
+  let lastTouchDeck = 0;
+  btnControlDeck.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+    lastTouchDeck = Date.now();
+    playClickSound();
+    vibe(15);
+    toggleControlDeck();
+  }, { passive: false });
   btnControlDeck.addEventListener('click', (e) => {
     e.stopPropagation();
+    if (Date.now() - lastTouchDeck < 450) return;
+    playClickSound();
+    vibe(15);
     toggleControlDeck();
   });
 }
@@ -11151,8 +11163,8 @@ function releaseKey(el) {
 const touches = new Map();
 
 document.getElementById('app').addEventListener('touchstart', (e) => {
-  // Allow toolbar buttons, shortcuts, laptop trackpad deck, modal dialogs, gamepad, present-view, ai-workstation-view, media-view, and canvas-view to handle their own events
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view')) return;
+  // Allow toolbar buttons, shortcuts, laptop trackpad deck, modal dialogs, gamepad, present-view, ai-workstation-view, media-view, canvas-view, and control-deck to handle their own events
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .control-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -11161,7 +11173,7 @@ document.getElementById('app').addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 document.getElementById('app').addEventListener('touchend', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .control-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     releaseKey(touches.get(t.identifier));
@@ -11182,7 +11194,7 @@ window.addEventListener('blur', clearAllRepeats);
 // ── Mouse Fallback (Desktop Testing) ──
 let mouseEl = null;
 document.getElementById('app').addEventListener('mousedown', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .control-deck')) return;
   mouseEl = e.target;
   pressKey(e.target);
 });

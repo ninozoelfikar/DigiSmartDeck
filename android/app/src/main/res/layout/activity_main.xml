@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:background="@color/background_dark" />
 
-    <!-- Subtle Floating Settings Button (Transparan di pojok kanan atas) -->
+    <!-- Settings Button (Hanya dimunculkan saat halaman error koneksi, agar tidak menutupi tombol Menu) -->
     <ImageButton
         android:id="@+id/btnServerSettings"
         android:layout_width="38dp"
@@ -20,7 +20,8 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Settings"
         android:src="@android:drawable/ic_menu_preferences"
-        android:alpha="0.25"
+        android:visibility="gone"
+        android:alpha="0.8"
         android:tint="@color/text_muted" />
 
 </FrameLayout>
