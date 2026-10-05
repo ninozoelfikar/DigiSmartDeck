@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         public void stopNativeSpeech() {
             runOnUiThread(() -> {
                 isListeningActive = false;
+                muteBeepStreams();
                 if (speechHandler != null) {
                     speechHandler.removeCallbacksAndMessages(null);
                 }
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 muteHandler.removeCallbacksAndMessages(null);
-                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 700);
+                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 1200);
             });
         }
 
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         public void cancelNativeSpeech() {
             runOnUiThread(() -> {
                 isListeningActive = false;
+                muteBeepStreams();
                 if (speechHandler != null) {
                     speechHandler.removeCallbacksAndMessages(null);
                 }
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 muteHandler.removeCallbacksAndMessages(null);
-                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 500);
+                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 1000);
             });
         }
 
@@ -667,9 +669,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onEndOfSpeech() {
-                if (isListeningActive && isAlwaysOnSpeech) {
-                    muteBeepStreams();
-                }
+                muteBeepStreams();
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechEnd) window.onNativeSpeechEnd();", null);
@@ -718,7 +718,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 isListeningActive = false;
-                restoreBeepStreams();
+                muteBeepStreams();
+                muteHandler.removeCallbacksAndMessages(null);
+                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 1000);
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechError) window.onNativeSpeechError(" + error + ");", null);
@@ -747,8 +749,9 @@ public class MainActivity extends AppCompatActivity {
                     scheduleSpeechRestart(40, false);
                 } else {
                     isListeningActive = false;
+                    muteBeepStreams();
                     muteHandler.removeCallbacksAndMessages(null);
-                    muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 500);
+                    muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 1200);
                 }
             }
 
