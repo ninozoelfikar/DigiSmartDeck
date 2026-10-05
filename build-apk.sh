@@ -22,8 +22,9 @@ echo ""
 
 # Konfigurasi environment Android SDK & Java jika belum ada di PATH
 if [ -z "$JAVA_HOME" ]; then
-    if [ -d "$HOME/.local/share/jdk" ]; then
-        export JAVA_HOME="$HOME/.local/share/jdk"
+    JDK_FOUND=$(find "$HOME/.local/share" -maxdepth 1 -type d -name "jdk*" 2>/dev/null | head -n 1)
+    if [ -n "$JDK_FOUND" ]; then
+        export JAVA_HOME="$JDK_FOUND"
         export PATH="$JAVA_HOME/bin:$PATH"
     elif [ -d "$HOME/.antigravity/extensions/redhat.java-1.54.0-linux-x64/jre/21.0.10-linux-x86_64" ]; then
         export JAVA_HOME="$HOME/.antigravity/extensions/redhat.java-1.54.0-linux-x64/jre/21.0.10-linux-x86_64"
