@@ -7775,7 +7775,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.2</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.3</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8079,7 +8079,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.2</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.3</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -14023,7 +14023,6 @@ function mergeTranscripts(existing, incoming) {
 
   if (existCleanStr === incCleanStr || existCleanStr.endsWith(incCleanStr)) return existing;
   if (incCleanStr.startsWith(existCleanStr)) return incoming;
-  if (existCleanStr.includes(incCleanStr)) return existing;
 
   // 4. Deteksi tumpang tindih kata (suffix-to-prefix overlap cerdas, termasuk 1 kata)
   const maxOverlap = Math.min(existWords.length, incWords.length);
@@ -14037,8 +14036,7 @@ function mergeTranscripts(existing, incoming) {
     const threshold = len === 1 ? 1 : Math.ceil(len * 0.8);
     if (matchCount >= threshold) {
       const nonOverlapping = incWords.slice(len).join(' ');
-      const merged = nonOverlapping ? (existing + ' ' + nonOverlapping) : existing;
-      return deduplicateRepeatedPhrases(merged);
+      return nonOverlapping ? (existing + ' ' + nonOverlapping) : existing;
     }
   }
 
@@ -14055,8 +14053,7 @@ function mergeTranscripts(existing, incoming) {
     return incoming.length >= existing.length ? incoming : existing;
   }
 
-  const merged = existing + ' ' + incoming;
-  return deduplicateRepeatedPhrases(merged);
+  return existing + ' ' + incoming;
 }
 
 let aiMicTransitionTimer = null;
@@ -14131,8 +14128,9 @@ function updateAiMicUI(forceReset = false) {
 }
 
 function commitCurrentSession() {
-  if (currentSessionFinal) {
-    aiAccumulatedText = mergeTranscripts(aiAccumulatedText, currentSessionFinal).trim();
+  if (currentSessionFinal && currentSessionFinal.trim()) {
+    const toCommit = currentSessionFinal.trim();
+    aiAccumulatedText = aiAccumulatedText ? (aiAccumulatedText + ' ' + toCommit) : toCommit;
     currentSessionFinal = '';
   }
   currentSessionInterim = ''; // Interim tidak pernah di-commit agar tidak menumpuk tebakan salah
@@ -14215,11 +14213,17 @@ function renderTranscriptPreview(fullText) {
 
 // ─── GOOGLE WEB SPEECH & NATIVE ANDROID SPEECH ENGINE ───
 function renderLiveTranscript() {
-  const currentSessionText = mergeTranscripts(currentSessionFinal, currentSessionInterim);
-  const liveText = mergeTranscripts(aiAccumulatedText, currentSessionText);
+  const currentSessionText = currentSessionInterim 
+    ? (currentSessionFinal ? (currentSessionFinal + ' ' + currentSessionInterim) : currentSessionInterim) 
+    : currentSessionFinal;
+  const liveText = currentSessionText 
+    ? (aiAccumulatedText ? (aiAccumulatedText + ' ' + currentSessionText) : currentSessionText) 
+    : aiAccumulatedText;
 
   if (aiAutoSend) {
-    const confirmedSoFar = mergeTranscripts(aiAccumulatedText, currentSessionFinal);
+    const confirmedSoFar = currentSessionFinal 
+      ? (aiAccumulatedText ? (aiAccumulatedText + ' ' + currentSessionFinal) : currentSessionFinal) 
+      : aiAccumulatedText;
     if (lastSentLength > confirmedSoFar.length) {
       lastSentLength = confirmedSoFar.length;
     }
@@ -14239,8 +14243,9 @@ function renderLiveTranscript() {
 // Simpan kata-kata interim yang belum sempat difinalkan saat engine berhenti/restart,
 // meniru perilaku Google Voice Typing yang tidak membuang ucapan terakhir.
 function promoteInterimToFinal() {
-  if (currentSessionInterim) {
-    currentSessionFinal = mergeTranscripts(currentSessionFinal, currentSessionInterim);
+  if (currentSessionInterim && currentSessionInterim.trim()) {
+    const interim = currentSessionInterim.trim();
+    currentSessionFinal = currentSessionFinal ? (currentSessionFinal + ' ' + interim) : interim;
     currentSessionInterim = '';
     renderLiveTranscript();
   }
@@ -14260,8 +14265,9 @@ window.onNativeSpeechPartial = function(text) {
 };
 
 window.onNativeSpeechResult = function(text) {
-  if (!text) return;
-  currentSessionFinal = mergeTranscripts(currentSessionFinal, text.trim());
+  if (!text || !text.trim()) return;
+  const cleaned = text.trim();
+  currentSessionFinal = currentSessionFinal ? (currentSessionFinal + ' ' + cleaned) : cleaned;
   currentSessionInterim = '';
   renderLiveTranscript();
   commitCurrentSession();
@@ -14428,17 +14434,8 @@ function startAiSpeechSession() {
         }
       }
 
-      let mergedFinal = '';
-      for (const piece of finalPieces) {
-        mergedFinal = mergeTranscripts(mergedFinal, piece);
-      }
-      currentSessionFinal = mergedFinal;
-
-      let mergedInterim = '';
-      for (const piece of interimPieces) {
-        mergedInterim = mergeTranscripts(mergedInterim, piece);
-      }
-      currentSessionInterim = mergedInterim;
+      currentSessionFinal = finalPieces.join(' ');
+      currentSessionInterim = interimPieces.join(' ');
 
       renderLiveTranscript();
     };
@@ -14485,14 +14482,10 @@ function startAiSpeechSession() {
         isAiRecording = true;
         updateAiMicUI();
         setTimeout(() => {
-          if (!aiSpeechWanted || aiSpeechRecognition !== recognition) return;
+          if (!aiSpeechWanted) return;
           aiWebSessionStartTs = 0;
-          try {
-            recognition.start();
-          } catch(e) {
-            isAiStarting = false;
-            startAiSpeechSession();
-          }
+          isAiStarting = false;
+          startAiSpeechSession();
         }, delay);
         return;
       }

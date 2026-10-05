@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.18.3] - 2026-10-05
+- Perbaikan transkripsi berulang dan stabilitas mikrofon
+
 ### [1.18.2] - 2026-10-05
 - Otomatisasi Always-On Google Voice continuous listening secara default dan eliminasi toggle manual
 
@@ -240,6 +243,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.18.3] - 2026-10-05
+- Release v1.18.3 updates
 
 ### [1.18.2] - 2026-10-05
 - Release v1.18.2 updates
