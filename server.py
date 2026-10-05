@@ -2279,11 +2279,24 @@ def create_app(ports=[8080]):
     app.router.add_get('/manifest.json', lambda r: web.FileResponse(os.path.join(static_dir, 'manifest.json'), headers={'Content-Type': 'application/manifest+json'}))
     app.router.add_get('/sw.js', lambda r: web.FileResponse(os.path.join(static_dir, 'sw.js'), headers={'Content-Type': 'application/javascript'}))
     app.router.add_get('/favicon.ico', lambda r: web.FileResponse(os.path.join(static_dir, 'icon-192.png')))
-    # Route unduh langsung Android APK
+    # Route unduh langsung Android APK (dengan nomor versi)
+    version_str = '1.18.4'
+    version_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'VERSION')
+    if os.path.exists(version_path):
+        try:
+            with open(version_path, 'r', encoding='utf-8') as vf:
+                version_str = vf.read().strip()
+        except Exception:
+            pass
+    versioned_apk_name = f'DigiSmartDeck-v{version_str}.apk'
     apk_file = os.path.join(static_dir, 'DigiSmartDeck.apk')
-    if os.path.exists(apk_file):
-        app.router.add_get('/download/apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiSmartDeck.apk"'}))
-        app.router.add_get('/DigiSmartDeck.apk', lambda r: web.FileResponse(apk_file, headers={'Content-Disposition': 'attachment; filename="DigiSmartDeck.apk"'}))
+    versioned_file = os.path.join(static_dir, versioned_apk_name)
+    target_apk = versioned_file if os.path.exists(versioned_file) else apk_file
+
+    if os.path.exists(target_apk):
+        app.router.add_get('/download/apk', lambda r: web.FileResponse(target_apk, headers={'Content-Disposition': f'attachment; filename="{versioned_apk_name}"'}))
+        app.router.add_get('/DigiSmartDeck.apk', lambda r: web.FileResponse(target_apk, headers={'Content-Disposition': f'attachment; filename="{versioned_apk_name}"'}))
+        app.router.add_get(f'/{versioned_apk_name}', lambda r: web.FileResponse(target_apk, headers={'Content-Disposition': f'attachment; filename="{versioned_apk_name}"'}))
     return app
 
 
