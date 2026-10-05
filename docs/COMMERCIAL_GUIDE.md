@@ -41,6 +41,7 @@ Tidak ada produk remote PC komersial terkemuka yang menyajikan **kanvas fisik ke
 1. **Daya Tarik Estetika Keyboard Mekanikal:** Komunitas pecinta custom mechanical keyboard sangat besar. Menjual tema visual (Retro Beige, Cyberpunk RGB, GMK minimalis) dan suara switch audio taktil (Clicky/Thoccy) memiliki konversi penjualan impulsif yang tinggi.
 2. **Kebutuhan Pengguna Tablet (10-12"):** Mengubah iPad/Tablet bekas menjadi pengganti keyboard fisik meja yang fungsional tanpa membeli hardware seharga Rp 1–3 juta.
 3. **Penyelamat Programmer & Sysadmin:** Mengendalikan terminal, Vim, SSH, atau script kompilasi dari jarak jauh tanpa frustrasi mencari karakter simbol khusus (`|`, `~`, `Esc`, `Ctrl+C`).
+4. **Keamanan & Privasi Mutlak (Zero-Telemetry & Air-Gapped Ready):** Solusi atas kekhawatiran terbesar developer dan profesional IT terhadap keylogger dan kebocoran data. DigiSmartDeck beroperasi 100% on-premise di jaringan lokal tanpa server cloud perantara, tanpa pelacak analitik, tanpa perekaman ketikan (zero keystroke logging), serta dilindungi pairing PIN 6-digit fisik dengan mitigasi brute-force bertingkat. Nilai jual ini menarik pasar enterprise, programmer, dan kreator yang memprioritaskan keamanan kredensial dan kerahasiaan kode.
 
 ---
 

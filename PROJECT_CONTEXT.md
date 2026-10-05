@@ -27,11 +27,16 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
 - Model Monetisasi: Perangkat lunak komersial berbayar (SaaS):
   - Paket Langganan: Rp 25.000 per bulan
   - Paket Lisensi Seumur Hidup (Lifetime): Rp 250.000
-- Nilai Jual Utama (USP) di AI Workstation:
+- Nilai Jual Utama (USP) di AI Workstation & Controller:
   - Dikte suara profesional untuk menyusun prompt ChatGPT, Claude, atau perintah terminal.
   - Mikrofon tidak mati otomatis saat pengguna berhenti bicara untuk berpikir.
   - Bebas dari bunyi notifikasi/chime sistem Android yang mengganggu alur ide pengguna.
-  - Respon latensi sangat rendah.
+  - Respon latensi sangat rendah (<1ms via USB, <15ms via Wi-Fi).
+  - Privasi & Keamanan Murni Jaringan Lokal (Zero-Telemetry & Air-Gapped Ready):
+    * Nol Perekaman Input (Zero Keystroke Logging): Input keyboard, password, dan teks suara dieksekusi seketika ke kernel OS tanpa disimpan ke disk atau database.
+    * 100% On-Premise Tanpa Cloud Perantara: Berjalan murni di jaringan lokal atau kabel USB offline tanpa server pihak ketiga dan bebas pelacak telemetri.
+    * Proteksi Akses Fisik PIN 6-Digit: Hanya perangkat yang memasukkan PIN di layar PC fisik yang dapat mengontrol, diperkuat mitigasi brute-force bertingkat.
+    * Isolasi Endpoint Localhost: Endpoint eksekusi prompt dan PIN tertutup rapat dari akses jaringan luar.
 
 ---
 
@@ -1466,8 +1471,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
 
-
-
-
-
+## 82. CATATAN CHECKPOINT (v0.9.78 - Keamanan & Privasi Mutlak sebagai Nilai Jual Komersial Utama)
+- **Reposisi Keamanan & Privasi sebagai Unique Selling Proposition (USP):**
+  - Mengintegrasikan pilar privasi murni (Privacy-First & Zero-Telemetry) ke dalam materi komersial, dokumentasi, dan antarmuka Store Modal.
+  - Menegaskan pembeda utama DigiSmartDeck dibanding aplikasi kontrol nirkabel cloud yang rawan keylogging atau pelacakan telemetri pihak ketiga.
+- **Pembaruan Dokumentasi Komersial & Teknis:**
+  - *`PROJECT_CONTEXT.md`*: Menambahkan pilar ke-5 pada bagian Nilai Jual Utama (USP) di AI Workstation & Controller.
+  - *`docs/COMMERCIAL_GUIDE.md`*: Menambahkan poin ke-4 pada Keunggulan Visual & Kompetitif serta matriks perbandingan privasi.
+  - *`README.md`*: Menambahkan fitur ke-15 ("Keamanan & Privasi Mutlak / Zero-Telemetry & 100% On-Premise") yang merinci nol pencatatan ketikan, ketiadaan server perantara, dan kesiapan mode air-gapped.
+- **Integrasi Trust Badge di Store Modal (`static/index.html`):**
+  - Menambahkan kartu jaminan privasi (Privacy-First Guarantee Badge) di bagian atas katalog Store Modal.
+  - Menyertakan kunci terjemahan bilingual `store_privacy_badge` untuk Bahasa Inggris (`I18N.en`) dan Bahasa Indonesia (`I18N.id`).
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.

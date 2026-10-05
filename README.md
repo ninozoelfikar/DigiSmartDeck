@@ -87,6 +87,10 @@ Mayoritas aplikasi remote keyboard menampilkan kotak teks yang memunculkan keybo
 14. **🎮 Mode Game Console (Virtual Gamepad):**
     - Gamepad virtual layar penuh dengan D-Pad kinetik 8-arah atau Virtual Thumbstick, tombol aksi berlian `A/B/X/Y`, tombol bahu `L1/R1`, dan analog triggers `L2/R2`.
     - Preset siap pakai: RetroArch/SNES, GBA, PlayStation (PSX/PCSX2), dan Modern PC WASD dengan modal remap kustom mandiri.
+15. **Keamanan & Privasi Mutlak (Zero-Telemetry & 100% On-Premise):**
+    - **Nol Perekaman Ketikan (Zero Keystroke Logging):** Input pengetikan, password, dan suara dieksekusi seketika ke kernel OS dan tidak pernah disimpan ke file log, disk, maupun cloud.
+    - **100% On-Premise (Air-Gapped Ready):** Beroperasi murni di jaringan lokal (Wi-Fi atau kabel USB offline) tanpa pelacak analitik pihak ketiga.
+    - **Proteksi PIN Fisik 6-Digit & Anti Brute-Force:** Hanya perangkat dengan PIN fisik dari layar PC yang dapat mengendalikan, diperkuat mitigasi brute-force bertingkat dan isolasi localhost pada endpoint kontrol sensitif.
 
 ---
 
