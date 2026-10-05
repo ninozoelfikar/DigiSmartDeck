@@ -1487,3 +1487,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 83. CATATAN CHECKPOINT (v0.9.79 - Presisi Waktu Pop-up Terminal: Eliminasi Pop-up Prematur & Pop-up Usang)
+- **Akar Masalah Pop-up Izin Muncul di Waktu yang Salah:**
+  1. *Muncul Terlalu Awal (Prematur)*: Bypass `is_priority` sebelumnya mengabaikan jeda tunggu diam (`idle < IDLE_SECONDS`). Begitu terminal mencetak log yang memuat kata kunci seperti `run`, `command`, atau `permission` saat proses baru mulai streaming, pop-up langsung ditembakkan seketika sebelum proses berhenti menunggu input pengguna.
+  2. *Muncul Terlalu Lambat (Usang/Stale)*: Buffer historis terminal menyimpan 3.072 karakter lama. Ketika perintah selesai dan shell kembali ke prompt biasa (`(venv) user@host:~$`), detektor membaca 15 baris ke belakang dan mendeteksi kembali pertanyaan yang sudah selesai. Selain itu, saat pengguna menjawab langsung di PC atau proses bergerak maju, kartu aktif di HP tidak di-dismiss.
+  3. *Akumulasi di Server*: Cache `PENDING_PROMPTS` di `server.py` menyimpan prompt tanpa TTL pembersihan otomatis, sehingga saat HP reconnect, prompt lama dikirim ulang.
+- **Solusi yang Diterapkan:**
+  1. *Wajib Menunggu Terminal Diam (Enforce Idle Settling Time di `digi-term`)*: Menghapus total bypass `is_priority`. Terminal wajib stabil dan diam (`idle >= 0.28s`) sebelum buffer diproses.
+  2. *Pemeriksaan Kursor Aktif Terbawah (Anchor to Active Bottom Prompt)*:
+     - Mendeteksi prompt shell biasa (bash, zsh, fish, venv, PowerShell) via `is_shell_prompt()`. Jika baris terakhir adalah shell prompt, segera tolak/abaikan.
+     - Pertanyaan izin atau pilihan hanya valid jika berada tepat di baris aktif paling bawah (`tail`) terminal.
+  3. *Auto-Dismiss saat Output Baru Mengalir*: Begitu child process mencetak teks baru yang signifikan pada `master_fd`, supervisor langsung memanggil `dismiss_active()` dan membersihkan buffer, menutup kartu di HP secara instan.
+  4. *Pembersihan TTL di Server (`cleanup_pending_prompts` di `server.py`)*: Membersihkan entri yang berusia lebih dari batas timeout (maks 60s) secara periodik dan sebelum dikirimkan ulang ke client WebSocket yang baru terhubung.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+

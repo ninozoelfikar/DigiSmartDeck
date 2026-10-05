@@ -1230,6 +1230,18 @@ def close_window(win_id):
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
 
+def cleanup_pending_prompts():
+    """Membersihkan prompt kedaluwarsa atau yang sudah melewati batas waktu timeout."""
+    now = time.time()
+    for pid, info in list(PENDING_PROMPTS.items()):
+        created = info.get('created_at', 0)
+        timeout = float(info.get('payload', {}).get('timeout', 60))
+        if now - created > min(timeout, 60.0):
+            fut = info.get('future')
+            if fut and not fut.done():
+                fut.set_result({'action': 'timeout'})
+            PENDING_PROMPTS.pop(pid, None)
+
 def is_localhost(request):
     """Memeriksa apakah request HTTP berasal dari localhost (PC host lokal)."""
     remote = getattr(request, 'remote', '') or ''
@@ -1264,6 +1276,7 @@ async def smart_context_tracker_loop():
     global CURRENT_APP_CONTEXT, ACTIVE_WINDOW_DIALOG_ID
     while True:
         try:
+            cleanup_pending_prompts()
             info = await asyncio.to_thread(get_active_window_info)
             if info:
                 changed = (
@@ -1439,6 +1452,7 @@ async def websocket_handler(request):
 
         # Kirim prompt yang sedang aktif HANYA jika client terotorisasi
         if is_client_authorized:
+            cleanup_pending_prompts()
             for p_info in list(PENDING_PROMPTS.values()):
                 p_payload = p_info.get('payload')
                 if p_payload:
@@ -1493,6 +1507,7 @@ async def websocket_handler(request):
                             'message': 'Perangkat terhubung sebagai Pengendali PC.'
                         }))
                         # Kirim prompt yang sedang aktif ke client yang baru terotorisasi
+                        cleanup_pending_prompts()
                         for p_info in list(PENDING_PROMPTS.values()):
                             p_payload = p_info.get('payload')
                             if p_payload:
@@ -1536,6 +1551,7 @@ async def websocket_handler(request):
                         }))
                         print(f"[PAIR] Perangkat ter-pairing: {dev_name} ({client_ip})")
                         # Kirim prompt yang sedang aktif ke client yang baru terotorisasi
+                        cleanup_pending_prompts()
                         for p_info in list(PENDING_PROMPTS.values()):
                             p_payload = p_info.get('payload')
                             if p_payload:
