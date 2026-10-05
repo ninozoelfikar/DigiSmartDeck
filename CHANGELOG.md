@@ -7,7 +7,10 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ---
 
-## 🇮🇩 Bahasa Indonesia
+## Bahasa Indonesia
+
+### [1.18.0] - 2026-10-05
+- Peluncuran MVP Landing Page dan standarisasi tampilan APK identik dengan Chrome mobile
 
 ### [1.17.0] - 2026-09-28
 #### ✨ Fitur Baru (Added)
@@ -230,7 +233,10 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ---
 
-## 🇬🇧 English
+## English
+
+### [1.18.0] - 2026-10-05
+- Release v1.18.0 updates
 
 ### [1.17.0] - 2026-09-28
 #### ✨ Added

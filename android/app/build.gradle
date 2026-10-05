@@ -2,6 +2,22 @@ plugins {
     id 'com.android.application'
 }
 
+def getVersionDetails = { ->
+    def versionFile = file('../../VERSION')
+    def versionStr = "1.0.0"
+    if (versionFile.exists()) {
+        versionStr = versionFile.text.trim()
+    }
+    def cleanVer = versionStr.replaceAll(/[^0-9.]/, '')
+    def parts = cleanVer.tokenize('.')
+    int major = parts.size() > 0 ? parts[0].toInteger() : 1
+    int minor = parts.size() > 1 ? parts[1].toInteger() : 0
+    int patch = parts.size() > 2 ? parts[2].toInteger() : 0
+    int code = major * 10000 + minor * 100 + patch
+    return [code: code, name: versionStr]
+}
+def appVersion = getVersionDetails()
+
 android {
     namespace 'com.digikeyboard.remote'
     compileSdk 34
@@ -10,8 +26,8 @@ android {
         applicationId "com.digikeyboard.remote"
         minSdk 21
         targetSdk 34
-        versionCode 1
-        versionName "1.16.0"
+        versionCode appVersion.code
+        versionName appVersion.name
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
