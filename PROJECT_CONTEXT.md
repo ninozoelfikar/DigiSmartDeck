@@ -1609,7 +1609,9 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Mengaktifkan kembali mekanisme redaman stream audio sistem (`AudioManager.STREAM_NOTIFICATION`, `STREAM_SYSTEM`, dan redaman sementara `STREAM_MUSIC`) di `MainActivity.java`.
   - Saat mic mulai mendengarkan, saat restart berkala, serta saat rekaman dihentikan atau diputus, nada ding/chime sistem Google diredam secara senyap (silent) tanpa mengganggu alur dikte pengguna.
   - Sesi perekaman tetap berlangsung terus-menerus secara otomatis (Always-On Default).
-- **Kompilasi & Rilis APK:**
-  - File APK berhasil dikompilasi ulang dengan ukuran 5.4 MB di `dist/DigiSmartDeck.apk` dan `static/DigiSmartDeck.apk`.
+- **Kompilasi & Rilis APK Berpenamaan Versi (Versioned APK):**
+  - File APK kini otomatis diberi nama sesuai versi SemVer rilis: `DigiSmartDeck-v1.18.4.apk` (5.4 MB).
+  - Tersedia di `dist/DigiSmartDeck-v1.18.4.apk` dan `static/DigiSmartDeck-v1.18.4.apk` (serta `DigiSmartDeck.apk` untuk backward-compatibility).
+  - Endpoint `/download/apk` di server otomatis menyajikan file dengan header download `attachment; filename="DigiSmartDeck-v1.18.4.apk"`.
   - Versi aplikasi tersinkronisasi ke `v1.18.4`.
 
