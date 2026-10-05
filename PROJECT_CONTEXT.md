@@ -1804,3 +1804,24 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+---
+
+## 99. CATATAN CHECKPOINT (v1.20.6 - Pemulihan Deklarasi isPowerModeActive & Responsivitas Ikon Top Bar)
+- **Akar Masalah Malfungsi Ikon Top Bar (Root Cause):**
+  - Pada penambahan Power Mode sebelumnya, variabel global `isPowerModeActive` lupa dideklarasikan di level scope atas IIFE JavaScript.
+  - Akibat mode strict (`'use strict'`), pemanggilan `switchAppMode('standard')` pada saat startup memicu exception fatal: `ReferenceError: isPowerModeActive is not defined`.
+  - Exception ini menghentikan eksekusi script JavaScript tepat sebelum baris binding listener ikon-ikon mode header (`quick-mode-*`), chip context switcher (`smart-context-chip`), dan sinkronisasi inisialisasi lainnya.
+  - Tombol menu `#btn-control-deck` tetap berfungsi karena listener-nya terpasang sebelum titik exception tersebut.
+- **Perbaikan & Optimalisasi Sentral:**
+  - Mendeklarasikan `let isPowerModeActive = false;` pada Work Mode Global States di `static/index.html`.
+  - Mengimplementasikan `dismissSplashScreenNow()` agar interaksi pengguna pada tombol top bar seketika menutup splash screen dan langsung membuka modal yang dituju tanpa terblokir status transisi.
+  - Menambahkan listener sentuh instan `touchend` dengan debounce pada `#btn-brand-toggle` (About) dan `#smart-context-chip` (Window Switcher) agar sangat responsif terhadap sentuhan jari di layar sentuh mobile.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.6`.
+  - File APK baru terkompilasi di `dist/` dan `static/`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+

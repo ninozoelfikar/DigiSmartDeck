@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.6] - 2026-10-06
+- Pemulihan deklarasi isPowerModeActive dan listener ikon top bar
+
 ### [1.20.5] - 2026-10-06
 - Aktivasi mandiri & otomatis sistem auto-updater OTA pada startup dan koneksi
 
@@ -276,6 +279,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.6] - 2026-10-06
+- Release v1.20.6 updates
 
 ### [1.20.5] - 2026-10-06
 - Release v1.20.5 updates

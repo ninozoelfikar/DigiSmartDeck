@@ -8373,7 +8373,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.5</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.6</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8888,6 +8888,11 @@ let retryCount = 0;
 let reconnectTimer = null;
 let isScanning = false;
 let isSplashScreenActive = true;
+function dismissSplashScreenNow() {
+  isSplashScreenActive = false;
+  const splash = $('splash-screen');
+  if (splash && splash.parentNode) splash.remove();
+}
 let modLockMode = localStorage.getItem('digi_mod_mode') || 'lock'; // 'lock' (Aktif Terus / Default), 'oneshot' (1x), 'hold' (manual)
 let autoSwitchContextEnabled = localStorage.getItem('digi_smart_context_auto') !== 'false';
 let lastAppContext = null;
@@ -9629,6 +9634,7 @@ let isPresentModeActive = false;
 let isAiModeActive = false;
 let isMediaModeActive = false;
 let isCanvasModeActive = false;
+let isPowerModeActive = false;
 let isCustomModeActive = false;
 
 // ── DOM ──
@@ -9869,8 +9875,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.5';
-const APP_CLIENT_VERSION_CODE = 12005;
+const APP_CLIENT_VERSION = '1.20.6';
+const APP_CLIENT_VERSION_CODE = 12006;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10172,7 +10178,7 @@ window.onUpdateDownloadError = function(errMsg) {
 };
 
 function openAboutModal() {
-  if (isSplashScreenActive) return;
+  dismissSplashScreenNow();
   const modal = $('modal-about');
   if (!modal) return;
   syncAppUpdateDisplay(currentUpdateData);
@@ -10184,10 +10190,20 @@ function openAboutModal() {
 }
 
 if (btnBrandToggle) {
-  btnBrandToggle.addEventListener('click', (e) => {
-    if (e.target.closest('#badge')) return;
+  let lastBrandTap = 0;
+  const onBrandTrigger = (e) => {
+    if (e && e.target && e.target.closest('#badge')) return;
+    if (e) {
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.type === 'touchend') e.preventDefault();
+    }
+    const now = Date.now();
+    if (now - lastBrandTap < 350) return;
+    lastBrandTap = now;
     openAboutModal();
-  });
+  };
+  btnBrandToggle.addEventListener('touchend', onBrandTrigger, { passive: false });
+  btnBrandToggle.addEventListener('click', onBrandTrigger);
 }
 
 const btnCheckUpdate = $('btn-check-update');
@@ -10872,7 +10888,7 @@ function getModeIconSvg(mode) {
 }
 
 function openWindowSwitcherModal() {
-  if (isSplashScreenActive) return;
+  dismissSplashScreenNow();
   const modal = $('modal-window-switcher');
   if (!modal) return;
   modal.classList.remove('hidden');
@@ -11723,7 +11739,7 @@ function hideReconnectBanner() {
 }
 
 function openReconnectModal() {
-  if (isSplashScreenActive) return;
+  dismissSplashScreenNow();
   const modal = $('modal-reconnect');
   if (!modal) return;
   const hostEl = $('lbl-current-host');
@@ -17503,11 +17519,21 @@ if (btnToggleCtx) {
 
 const chipCtx = $('smart-context-chip');
 if (chipCtx) {
-  chipCtx.addEventListener('click', () => {
+  let lastChipTap = 0;
+  const onChipTrigger = (e) => {
+    if (e) {
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.type === 'touchend') e.preventDefault();
+    }
+    const now = Date.now();
+    if (now - lastChipTap < 350) return;
+    lastChipTap = now;
     playClickSound();
     vibe(15);
     openWindowSwitcherModal();
-  });
+  };
+  chipCtx.addEventListener('touchend', onChipTrigger, { passive: false });
+  chipCtx.addEventListener('click', onChipTrigger);
 }
 
 const btnCloseWinSw = $('btn-close-win-switcher');
