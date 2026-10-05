@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.2] - 2026-10-05
+- Eliminasi pemblokiran navigator.onLine dan stabilitas koneksi Wi-Fi LAN
+
 ### [1.20.1] - 2026-10-05
 - Kode akses developer richdaddycompany untuk bypass pairing dan lisensi dev
 
@@ -261,6 +264,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.2] - 2026-10-05
+- Release v1.20.2 updates
 
 ### [1.20.1] - 2026-10-05
 - Release v1.20.1 updates

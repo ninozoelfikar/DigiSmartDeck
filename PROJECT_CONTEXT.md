@@ -1723,3 +1723,19 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 95. CATATAN CHECKPOINT (v1.20.2 - Eliminasi Pemblokiran navigator.onLine & Stabilitas Koneksi Wi-Fi LAN)
+- **Eliminasi Pemblokiran Jaringan Lokal (navigator.onLine):**
+  - Menghapus pengecekan `navigator.onLine` pada `connect()`, `handleDisconnect()`, dan `scheduleReconnect()` di `static/index.html`.
+  - Pada jaringan lokal offline, air-gapped, maupun Wi-Fi internal tanpa akses internet WAN, browser Android WebView kerap menetapkan `navigator.onLine = false` sehingga koneksi WebSocket ke host PC sebelumnya sempat terblokir dan menampilkan label keliru 'Wi-Fi Terputus'.
+  - Memperbaiki event listener `offline` dan `online` agar tidak mematikan paksa WebSocket lokal yang masih aktif terhubung.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.2`.
+  - File APK baru terkompilasi di `dist/` dan `static/`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+

@@ -8179,7 +8179,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.1</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.2</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8483,7 +8483,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.1</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.2</span>
       <span id="about-app-platform-badge" style="display:none;padding:2px 8px;background:rgba(255,255,255,0.08);border-radius:20px;font-size:10px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;">APK Native</span>
     </div>
 
@@ -10966,11 +10966,7 @@ function destroySocket() {
 function handleDisconnect(reason = 'Terputus') {
   destroySocket();
   pingEl.textContent = '-- ms';
-  if (!navigator.onLine) {
-    setStatus(false, 'Wi-Fi Terputus');
-  } else {
-    setStatus(false, reason);
-  }
+  setStatus(false, reason);
   scheduleReconnect();
 }
 
@@ -10991,11 +10987,7 @@ function scheduleReconnect(immediate = false) {
   const baseDelay = Math.min(600 * Math.pow(1.3, Math.min(retryCount, 8)), 4500);
   const delay = Math.round(baseDelay + Math.random() * 250);
 
-  if (!navigator.onLine) {
-    setStatus(false, 'Wi-Fi Terputus');
-  } else {
-    setStatus(false, 'Menghubungkan...');
-  }
+  setStatus(false, 'Menghubungkan...');
 
   // Tampilkan popup modal pemulihan langsung saat terputus
   if (retryCount >= 1) {
@@ -11023,12 +11015,6 @@ function connect() {
   const loc = window.location;
   const proto = loc.protocol === 'https:' ? 'wss:' : 'ws:';
   const url = proto + '//' + loc.host + '/ws';
-
-  if (!navigator.onLine) {
-    setStatus(false, 'Wi-Fi Terputus');
-    scheduleReconnect();
-    return;
-  }
 
   setStatus(false, retryCount > 0 ? `Menghubungkan (${retryCount})...` : 'Menghubungkan...');
 
@@ -11234,14 +11220,15 @@ function setStatus(ok, txt) {
 
 // ── Network Lifecycle & Screen Wake Listeners ──
 window.addEventListener('online', () => {
-  console.log('[DigiSmartDeck] Wi-Fi online terdeteksi. Menyambung segera...');
-  setStatus(false, 'Wi-Fi terhubung, menyambung...');
-  scheduleReconnect(true);
+  if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
+    scheduleReconnect(true);
+  }
 });
 
 window.addEventListener('offline', () => {
-  console.log('[DigiSmartDeck] Wi-Fi offline terdeteksi.');
-  handleDisconnect('Wi-Fi Terputus');
+  if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
+    handleDisconnect('Terputus');
+  }
 });
 
 document.addEventListener('visibilitychange', () => {
