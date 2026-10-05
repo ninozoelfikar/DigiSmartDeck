@@ -1825,3 +1825,33 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 100. CATATAN CHECKPOINT (v1.20.7 - Pengaturan Kecerahan Layar, Volume Suara, Wake Up, Anti-Sleep pada Power Mode & Eliminasi Section Mode Utama)
+- **Eliminasi Menu Mode Kerja Utama pada Control Deck (static/index.html):**
+  - Menghapus Section 0 (`MODE KERJA UTAMA`) dari slide-out `#control-deck`.
+  - Perpindahan mode kerja kini terpusat dan efisien langsung melalui deretan tombol header di top bar (`#header-modes`).
+- **Restrukturisasi Header Power Mode (#power-view):**
+  - Menghapus tombol pintasan keyboard `#btn-power-back` sesuai instruksi pengguna.
+  - Memindahkan badge nama sistem operasi dan hostname host (`#power-os-badge`) ke pojok kanan atas header (`.power-header-right`).
+  - Menempatkan judul menu secara elegan di sisi kiri header (`.power-header-left`).
+- **Integrasi Panel Kontrol Sistem Modern (static/index.html & server.py):**
+  - **Pengaturan Kecerahan Layar (Display Brightness):**
+    - Tombol penyesuaian bertahap -10% dan +10%, slider rentang halus 10% - 100%, serta preset cepat (30%, 50%, 75%, 100%).
+    - Backend terintegrasi multi-layer: `xrandr` untuk monitor eksternal X11, `brightnessctl` untuk panel laptop, WMI PowerShell untuk Windows, dan osascript untuk macOS.
+  - **Pengaturan Volume Suara (Audio Volume):**
+    - Tombol Mute toggle instan, tombol -5% dan +5%, slider rentang 0% - 100%, serta preset cepat (0%, 30%, 60%, 80%, 100%).
+    - Backend terhubung langsung ke PipeWire/PulseAudio (`pactl set-sink-volume`), `set_system_volume()`, dan fallback pynput/uinput key events.
+  - **Fitur Bangunkan Layar / PC (Wake Up):**
+    - Tombol aksi 1-ketukan untuk membangunkan layar dari kondisi redup/blanking (`xset dpms force on; xdg-screensaver reset`, simulasi pergerakan kursor mouse/shift key).
+  - **Fitur Tetap Terjaga / Anti-Sleep (Supaya PC Tidak Sleep):**
+    - Sakelar toggle ("Tetap Terjaga") yang mengaktifkan mode caffeine.
+    - Menonaktifkan DPMS monitor timeout (`xset -dpms; xset s off; xset s noblank`), mengaktifkan `systemd-inhibit` background idle/sleep lock, serta watchdog heartbeat berkala tiap 30 detik.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.7`.
+  - File APK baru terkompilasi di `dist/` dan `static/` (5.4 MB).
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
