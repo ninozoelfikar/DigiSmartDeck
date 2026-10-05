@@ -76,8 +76,8 @@ AI_PERMISSION_KW = re.compile(
     r'ask(?:ing)? for permission|'
     r'run(?:ning)? (?:this|the following)?\s*command|'
     r'execute(?:ing)? (?:this|the following)?\s*command|'
-    r'allow|approve|permit|authori[sz]e|permission|'
-    r'izinkan|setujui|berikan izin|'
+    r'allow (?:tool|action|command|execution|access)|'
+    r'approve (?:tool|action|command|execution)|'
     r'do you want to (?:run|execute|proceed|continue|install|apply|delete|remove|overwrite)|'
     r'would you like to (?:run|execute|proceed|continue|install|apply)|'
     r'are you sure you want to|apakah anda yakin|'
@@ -90,56 +90,62 @@ AI_PERMISSION_KW = re.compile(
 
 
 def extract_prompt_details(lines, context, inspect_line):
-    # Cari baris yang secara spesifik menanyakan izin atau eksekusi perintah di 15 baris terakhir
-    title = None
-    question_line = ""
+    # 1. Cari perintah yang dieksekusi jika ada (CommandLine, Command, run_command)
+    cmd = ''
+    cmd_match = re.search(r'(?i)(?:commandline|command|perintah)\s*:\s*["\'`]?\s*(.*?)(?:["\'`]?\s*$|\n)', context, re.MULTILINE)
+    if cmd_match:
+        cmd = cmd_match.group(1).strip()
+    else:
+        m2 = re.search(r'(?i)run_command\s*\(\s*["\'`]?([^\)"\'`]+)', context)
+        if m2:
+            cmd = m2.group(1).strip()
 
-    for l in reversed(lines[-15:]):
-        s = l.strip()
-        if not s or re.match(r'^[❯>#\$%:\?\[\]\(\)]+$', s):
-            continue
-        if AI_PERMISSION_KW.search(s) or '?' in s:
-            question_line = s
-            break
+    # 2. Tentukan judul yang jelas
+    c_lower = context.lower()
+    if 'run' in c_lower or 'command' in c_lower or cmd:
+        title = "Run This Command?"
+    elif 'tool' in c_lower:
+        title = "Allow Tool Call?"
+    elif 'permission' in c_lower or 'izin' in c_lower:
+        title = "Ask for Permission"
+    elif 'proceed' in c_lower or 'continue' in c_lower:
+        title = "Do You Want to Proceed?"
+    elif 'delete' in c_lower or 'remove' in c_lower:
+        title = "Confirm Deletion?"
+    else:
+        title = "Izin Tindakan CLI"
 
-    if question_line:
-        q_lower = question_line.lower()
-        if "run" in q_lower and ("command" in q_lower or "this" in q_lower or "following" in q_lower):
-            title = "Run This Command?"
-        elif "execute" in q_lower and ("command" in q_lower or "this" in q_lower or "following" in q_lower):
-            title = "Execute This Command?"
-        elif "tool call" in q_lower or "calling this tool" in q_lower:
-            title = "Allow Tool Call?"
-        elif "ask" in q_lower and "permission" in q_lower:
-            title = "Ask for Permission"
-        elif "allow" in q_lower or "approve" in q_lower or "permit" in q_lower or "authori" in q_lower:
-            title = "Allow This Action?"
-        elif "are you sure" in q_lower:
-            title = "Are You Sure?"
-        elif len(question_line) <= 45 and ('?' in question_line or ':' in question_line):
-            title = question_line.rstrip(':?').strip() + '?'
-
-    if not title:
-        c_lower = context.lower()
-        if "tool call" in c_lower or "tool confirmation" in c_lower:
-            title = "Allow Tool Call?"
-        elif "run" in c_lower and "command" in c_lower:
-            title = "Run This Command?"
-        elif "permission" in c_lower:
-            title = "Ask for Permission"
-        elif "allow" in c_lower or "approve" in c_lower:
-            title = "Allow Action?"
-        else:
-            title = "Izin Tindakan CLI"
-
-    # Context message: ambil baris relevan tanpa kursor kosong
-    msg_lines = []
+    # 3. Bentuk pesan bersih (hilangkan duplikasi 'Run command' berulang dan abaikan opsi tombol)
+    clean_lines = []
+    seen = set()
     for l in lines[-12:]:
         s = l.strip()
-        if s and not re.match(r'^[❯>#\$%:\?]\s*$', s):
-            msg_lines.append(s)
+        if not s:
+            continue
+        # Abaikan opsi menu/tombol karena sudah ada tombol interaktifnya di kartu
+        if re.match(r'^\s*[❯>]?\s*(?:[\[\(]?\d{1,2}[\]\).:]|[\[\(][ xX●•*]?[\]\)])\s+\w+', s):
+            continue
+        # Abaikan kursor kosong
+        if re.match(r'^[❯>#\$%:\?]\s*$', s):
+            continue
+        # Abaikan baris duplikat atau frasa tunggal 'run command' / 'tool confirmation' berulang
+        s_low = s.lower()
+        if s_low in ('run command', 'run comment', 'tool confirmation', 'proposed command:', 'proposed command'):
+            continue
+        if s_low not in seen:
+            seen.add(s_low)
+            clean_lines.append(s)
 
-    message = '\n'.join(msg_lines) if msg_lines else context
+    if cmd:
+        message = f"Perintah yang akan dijalankan:\n> {cmd}"
+        other_lines = [l for l in clean_lines if cmd not in l and not l.lower().startswith('commandline:')]
+        if other_lines:
+            message += '\n\n' + '\n'.join(other_lines[-4:])
+    elif clean_lines:
+        message = '\n'.join(clean_lines)
+    else:
+        message = inspect_line
+
     return title, message
 
 
@@ -152,6 +158,8 @@ def is_shell_prompt(s):
     if re.match(r'^(?:\([^)]+\)\s*)?[~/\w\.\-]+\s*[\$#%>]\s*$', s):
         return True
     if re.match(r'^[\w\.\-~/$]+[#\$%>]\s*$', s):
+        return True
+    if re.search(r'^(?:PS\s+)?[a-zA-Z]:\\.*[#\$%>]\s*$', s):
         return True
     return False
 
@@ -183,7 +191,8 @@ def detect_prompt(buffer_text):
     # Verifikasi apakah posisi ujung terminal (tail) memang benar-benar menunggu konfirmasi aktif
     is_enter_prompt = bool(re.search(r'(?i)(press|tekan)\s+(\[?enter\]?|return|any key|sembarang)', inspect_line))
     is_yn = bool(re.search(r'[\[\(]\s*y(?:es)?[/\s,]+n(?:o)?', inspect_line, re.IGNORECASE) or re.search(r'[\[\(]\s*y/n\s*[\]\)]', inspect_line, re.IGNORECASE))
-    is_kw_permission = bool('?' in inspect_line or AI_PERMISSION_KW.search(inspect_line))
+    is_statement = (inspect_line.endswith('.') or bool(re.search(r'(?i)\b(denied|passed|failed|completed|success|error)\b', inspect_line)))
+    is_kw_permission = bool(('?' in inspect_line or AI_PERMISSION_KW.search(inspect_line)) and not is_statement)
     is_menu_opt = bool(is_option_line(inspect_line))
 
     if not (is_enter_prompt or is_yn or is_kw_permission or is_menu_opt):
@@ -197,56 +206,47 @@ def detect_prompt(buffer_text):
             'app': 'Terminal',
             'title': 'Menunggu Enter',
             'message': context,
-            'options': [_opt('Lanjut', 'enter', '\n', key='Enter', primary=True)],
+            'options': [_opt('Lanjut', 'enter', '\r', key='Enter', primary=True)],
         }
 
     # 2. Deteksi pertanyaan CLI / AI Agent (kata kunci izin, biner [y/n], atau opsi menu)
     title, message = extract_prompt_details(lines, context, inspect_line)
 
-    # Cek jika CLI menyediakan menu bernomor atau Bubbletea list
-    items = []
-    for l in lines[-16:]:
-        mm = re.match(r'^\s*[❯>]?\s*(?:[\[\(]?(\d{1,2})[\]\).:]\s+|[\[\(][ xX●•*]?[\]\)]\s+)?(.{1,70})$', l)
-        if mm:
-            text = mm.group(2).strip().lower()
-            if '?' not in text and not text.endswith(':') and any(k in text for k in ['yes', 'ya', 'allow', 'izinkan', 'chat', 'session', 'project', 'always', 'selalu', 'no', 'tidak', 'deny', 'tolak', 'cancel', 'batal', 'proceed', 'continue']):
-                num = mm.group(1) or str(len(items) + 1)
-                items.append((num, text))
+    # Deteksi apakah menggunakan Bubbletea cursor menu (❯) atau menu biasa
+    is_bubbletea = ('❯' in context or any('❯' in l for l in lines[-8:]))
 
-    yes_send = '1\n' if any(num == '1' for num, _ in items) else 'y\n'
-    chat_send = '2\n' if any(num == '2' for num, _ in items) else 'c\n'
-    project_send = '3\n' if any(num == '3' for num, _ in items) else 'a\n'
-    no_send = '4\n' if any(num == '4' for num, _ in items) else ('3\n' if any(num == '3' and 'no' in t for num, t in items) else 'n\n')
-
-    yes_key = '1' if any(num == '1' for num, _ in items) else 'y'
-    chat_key = '2' if any(num == '2' for num, _ in items) else 'c'
-    project_key = '3' if any(num == '3' for num, _ in items) else 'a'
-    no_key = '4' if any(num == '4' for num, _ in items) else 'n'
-
-    if items:
-        for num, text in items:
-            if any(k in text for k in ['chat', 'session', 'conversation']):
-                chat_send = f'{num}\n'
-                chat_key = num
-            elif any(k in text for k in ['project', 'always', 'selalu', "don't ask"]):
-                project_send = f'{num}\n'
-                project_key = num
-            elif any(k in text for k in ['yes', 'ya', 'allow once', 'run this time']):
-                yes_send = f'{num}\n'
-                yes_key = num
-            elif any(k in text for k in ['no', 'tidak', 'deny', 'tolak', 'cancel', 'batal', 'abort']):
-                no_send = f'{num}\n'
-                no_key = num
+    if is_bubbletea:
+        # Pada Bubbletea TUI (seperti agy/charm):
+        # Kursor sudah berada di item 1 (Yes). Tekan Enter (\r) untuk memilih.
+        # Item 2 (Allow in this chat): Panah Bawah (\x1b[B) + Enter (\r).
+        # Item 3 (Allow in this project): Panah Bawah 2x (\x1b[B\x1b[B) + Enter (\r).
+        # Item 4 (No / Deny): Escape (\x1b) untuk membatalkan / menolak.
+        yes_send = '\r'
+        chat_send = '\x1b[B\r'
+        project_send = '\x1b[B\x1b[B\r'
+        no_send = '\x1b'
+    elif is_yn:
+        # Prompt CLI biasa [y/N]
+        yes_send = 'y\r'
+        chat_send = 'y\r'
+        project_send = 'y\r'
+        no_send = 'n\r'
+    else:
+        # Menu pilihan berbasis angka
+        yes_send = '1\r'
+        chat_send = '2\r'
+        project_send = '3\r'
+        no_send = '4\r'
 
     return {
         'app': 'Terminal',
         'title': title,
         'message': message,
         'options': [
-            _opt('Yes', 'yes', yes_send, key=yes_key, primary=True),
-            _opt('Allow in this chat', 'allow_chat', chat_send, key=chat_key, primary=False),
-            _opt('Allow in this project', 'allow_project', project_send, key=project_key, primary=False),
-            _opt('No', 'no', no_send, key=no_key, danger=True)
+            _opt('Yes', 'yes', yes_send, key='y', primary=True),
+            _opt('Allow in this chat', 'allow_chat', chat_send, key='c', primary=False),
+            _opt('Allow in this project', 'allow_project', project_send, key='a', primary=False),
+            _opt('No', 'no', no_send, key='n', danger=True)
         ]
     }
 
