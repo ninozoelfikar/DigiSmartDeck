@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DigiSmartDeck - AI Workstation &amp; Hardware Controller PC</title>
+  <meta name="description" content="Ubah ponsel dan tablet Anda menjadi keyboard fisik, trackpad presisi, gamepad, dan deck AI Workstation untuk PC dengan latensi di bawah 1ms.">
+  <link rel="icon" type="image/png" href="/static/icon-192.png">
+  <style>
+    :root {
+      --bg: #090d13;
+      --bg-card: #121820;
+      --bg-card-hover: #16202c;
+      --bg-input: #0d131a;
+      --border: #232e3c;
+      --border-accent: rgba(88, 166, 255, 0.4);
+      --text: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --accent-glow: rgba(88, 166, 255, 0.25);
+      --success: #238636;
+      --success-hover: #2ea043;
+      --gold: #d29922;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 13, 19, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 70px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d1117;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #ffffff;
+      border-color: rgba(240, 246, 252, 0.1);
+    }
+
+    .btn-success:hover {
+      background: var(--success-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: #3b4b5e;
+    }
+
+    .btn-lg {
+      padding: 14px 26px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 90px 0 60px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(88, 166, 255, 0.12) 0%, rgba(9, 13, 19, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(35, 134, 54, 0.15);
+      border: 1px solid rgba(46, 160, 67, 0.35);
+      color: #3fb950;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: 52px;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      margin-bottom: 22px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #58a6ff 0%, #a5d6ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 44px;
+    }
+
+    .hero-trust-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(35, 46, 60, 0.6);
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .trust-item svg {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Product Showcase Mockup */
+    .showcase {
+      padding: 40px 0 80px;
+    }
+
+    .mockup-container {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    .mockup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #30363d;
+    }
+
+    .mockup-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .mockup-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mockup-tab-btn.active, .mockup-tab-btn:hover {
+      background: var(--bg-card);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .mockup-tab-btn.active {
+      color: var(--accent);
+      border-color: var(--accent-glow);
+    }
+
+    .mockup-screen {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 24px;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .preview-card {
+      display: none;
+      animation: fadeIn 0.25s ease forwards;
+    }
+
+    .preview-card.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid Mockup Layouts */
+    .deck-grid-ai {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .ai-col-box {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .ai-box-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .prompt-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .prompt-pill {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    .prompt-pill.accent {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .voice-meter-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .voice-indicator {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #238636;
+      box-shadow: 0 0 10px #2ea043;
+    }
+
+    .voice-text {
+      font-size: 13px;
+      font-family: var(--font-mono);
+      color: #7ee787;
+    }
+
+    /* Value Pillars Section */
+    .features-section {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 56px;
+    }
+
+    .section-badge {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .feature-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-card-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* How It Works */
+    .steps-section {
+      padding: 80px 0;
+      background: #0d1218;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .step-card {
+      position: relative;
+    }
+
+    .step-number {
+      font-size: 36px;
+      font-weight: 900;
+      color: rgba(88, 166, 255, 0.35);
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+    }
+
+    .step-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .step-code {
+      background: #090d13;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Comparison Table */
+    .matrix-section {
+      padding: 80px 0;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .matrix-table th, .matrix-table td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .matrix-table th {
+      background: #0d131a;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .matrix-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .matrix-table .col-free {
+      color: var(--text-muted);
+      width: 220px;
+    }
+
+    .matrix-table .col-pro {
+      color: var(--accent);
+      font-weight: 600;
+      width: 240px;
+    }
+
+    /* Pricing Section */
+    .pricing-section {
+      padding: 80px 0;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px rgba(88, 166, 255, 0.15);
+      background: #141c26;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #0d1117;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    .pricing-plan-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .pricing-plan-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      min-height: 40px;
+    }
+
+    .pricing-price {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .pricing-period {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin: 28px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-grow: 1;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .pricing-features li svg {
+      color: #3fb950;
+      flex-shrink: 0;
+    }
+
+    .pricing-features li.disabled {
+      color: #484f58;
+    }
+
+    .pricing-features li.disabled svg {
+      color: #30363d;
+    }
+
+    .guarantee-note {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+    }
+
+    .faq-question {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .faq-answer {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* Footer */
+    .footer {
+      background: #080c10;
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid rgba(35, 46, 60, 0.6);
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .footer-bottom {
+      padding-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #484f58;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-title { font-size: 38px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .deck-grid-ai { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+        DigiSmartDeck
+        <span class="brand-badge">PRO V1.17</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#features">Fitur Utama</a></li>
+        <li><a href="#modes">Mode Kerja</a></li>
+        <li><a href="#cara-kerja">Cara Kerja</a></li>
+        <li><a href="#pricing">Harga Lisensi</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="/download/apk" class="btn btn-secondary" title="Unduh Aplikasi Android Resmi (~5.5 MB)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          APK Android
+        </a>
+        <a href="#pricing" class="btn btn-primary">
+          Beli Lisensi Pro
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-glow"></div>
+    <div class="container hero-content">
+      <div class="hero-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Software Komersial Berbayar &bull; Akses Trial 7 Hari
+      </div>
+
+      <h1 class="hero-title">
+        Ubah Ponsel Jadi <span>Keyboard Fisik, Touchpad &amp; Deck AI</span> untuk PC Anda
+      </h1>
+
+      <p class="hero-desc">
+        Kendalikan workstation atau PC Anda dari kasur dan sofa dengan latensi di bawah 1ms. Dikte suara AI real-time tanpa henti, kontrol kernel Linux uinput, dan privasi murni di jaringan lokal.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/download/apk" class="btn btn-primary btn-lg" id="btn-hero-apk">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Unduh APK Android (5.5 MB)
+        </a>
+        <a href="#cara-kerja" class="btn btn-secondary btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+          Pasang Server di PC
+        </a>
+      </div>
+
+      <div class="hero-trust-bar">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Nol Telemetri &bull; 100% Offline Lokal
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Latensi Instan &lt;1ms (USB) / &lt;15ms (Wi-Fi)
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Proteksi Akses Fisik PIN 6-Digit
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+          Mendukung Linux, Windows, macOS
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Product Showcase -->
+  <section class="showcase" id="modes">
+    <div class="container">
+      <div class="mockup-container">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+          </div>
+
+          <div class="mockup-tabs">
+            <button type="button" class="mockup-tab-btn active" data-tab="tab-ai">AI Workstation Deck</button>
+            <button type="button" class="mockup-tab-btn" data-tab="tab-kb">Keyboard PC Fisik</button>
+            <button type="button" class="mockup-tab-btn" data-tab="tab-game">Gamepad Controller</button>
+            <button type="button" class="mockup-tab-btn" data-tab="tab-media">Presenter &amp; Media</button>
+          </div>
+
+          <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">
+            PORT: 8080 | USB / Wi-Fi
+          </div>
+        </div>
+
+        <div class="mockup-screen">
+          <!-- Tab 1: AI Workstation -->
+          <div class="preview-card active" id="tab-ai">
+            <div class="deck-grid-ai">
+              <div class="ai-col-box">
+                <div class="ai-box-title">Pintasan Prompt &amp; Editing Seketika</div>
+                <div class="prompt-pills">
+                  <span class="prompt-pill accent">Lanjutkan</span>
+                  <span class="prompt-pill accent">Proceed</span>
+                  <span class="prompt-pill">Perbaiki Bug</span>
+                  <span class="prompt-pill">Buat Dokumen</span>
+                  <span class="prompt-pill">Jadikan Checkpoint</span>
+                  <span class="prompt-pill">Copy</span>
+                  <span class="prompt-pill">Paste</span>
+                  <span class="prompt-pill">Esc</span>
+                </div>
+                <div class="voice-meter-box">
+                  <div class="voice-indicator"></div>
+                  <div class="voice-text">Dikte Suara AI: "Tolong perbaiki fungsi autentikasi..."</div>
+                </div>
+              </div>
+
+              <div class="ai-col-box" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                  <div class="ai-box-title">Navigasi Riwayat &amp; Tombol Enter Dominan</div>
+                  <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+                    Tombol Enter berukuran besar (~40% tinggi layar) untuk submit prompt secepat kilat tanpa salah tekan.
+                  </p>
+                </div>
+                <div style="background:#21262d; border-radius:6px; height:120px; border:1px dashed #30363d; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:12px;">
+                  Area Touchpad Presisi &amp; Tap-To-Click
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Keyboard PC -->
+          <div class="preview-card" id="tab-kb">
+            <div style="text-align:center; padding:30px 10px;">
+              <h3 style="font-size:20px; font-weight:700; margin-bottom:10px;">Tata Letak Keyboard Fisik PC 100% Lengkap</h3>
+              <p style="font-size:14px; color:var(--text-muted); max-width:600px; margin:0 auto 20px;">
+                Mencakup baris tombol fungsi F1 hingga F12, tombol panah navigasi, numpad angka akuntansi, tombol Ctrl, Alt, Win, Tab, Esc, dan Caps Lock status hardware.
+              </p>
+              <div style="display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <span class="prompt-pill">F1 - F12 Function Row</span>
+                <span class="prompt-pill">Numpad Angka Dedikasi</span>
+                <span class="prompt-pill">Nav Cluster (Home, End, PgUp, PgDn)</span>
+                <span class="prompt-pill">Kombinasi Ctrl+C, Ctrl+V, Alt+Tab</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Gamepad -->
+          <div class="preview-card" id="tab-game">
+            <div style="text-align:center; padding:30px 10px;">
+              <h3 style="font-size:20px; font-weight:700; margin-bottom:10px;">Konsol Gamepad &bull; Respons Latensi Rendah</h3>
+              <p style="font-size:14px; color:var(--text-muted); max-width:600px; margin:0 auto 20px;">
+                D-Pad arah 8-way, tombol aksi ABXY, bumper L1/R1, trigger analog L2/R2, dan mode tembak cepat Turbo untuk emulator retro dan game PC.
+              </p>
+              <div style="display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <span class="prompt-pill">D-Pad 8 Arah</span>
+                <span class="prompt-pill">Tombol ABXY Responsif</span>
+                <span class="prompt-pill">Shoulder Trigger L1/L2/R1/R2</span>
+                <span class="prompt-pill">Mode Turbo Otomatis</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: Presenter -->
+          <div class="preview-card" id="tab-media">
+            <div style="text-align:center; padding:30px 10px;">
+              <h3 style="font-size:20px; font-weight:700; margin-bottom:10px;">Pointer Presentasi Gyro &amp; Pengendali Media PC</h3>
+              <p style="font-size:14px; color:var(--text-muted); max-width:600px; margin:0 auto 20px;">
+                Arahkan kursor mouse PC di udara cukup dengan menggerakkan HP (sensor giroskop). Kontrol slide PowerPoint/Keynote dan volume audio YouTube/Spotify.
+              </p>
+              <div style="display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <span class="prompt-pill">Air Mouse Giroskop</span>
+                <span class="prompt-pill">Navigasi Slide &bull; Layar Hitam (B)</span>
+                <span class="prompt-pill">Volume, Mute, Play/Pause Media</span>
+                <span class="prompt-pill">Canvas Drawing &bull; Anotasi Coretan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features / Value Pillars -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Nilai Keunggulan Teknis</span>
+        <h2 class="section-title">Dibangun Khusus untuk Efisiensi &amp; Ketahanan Kerja</h2>
+        <p class="section-desc">Bukan sekadar simulasi web biasa, DigiSmartDeck terhubung langsung ke subsistem input kernel sistem operasi host.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg>
+          </div>
+          <h3 class="feature-card-title">Dikte Suara AI Tanpa Batas</h3>
+          <p class="feature-card-desc">
+            Bebas dari timeout hening 3 detik dan bebas dari bunyi bel/chime Android yang mengganggu alur ide saat Anda sedang berpikir menyusun prompt panjang.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
+          </div>
+          <h3 class="feature-card-title">Level Kernel Linux uinput</h3>
+          <p class="feature-card-desc">
+            Simulasi perangkat keras murni. Dapat digunakan di layar login display manager (GDM, LightDM), layar terkunci (Lock Screen), sesi Wayland, dan X11.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="feature-card-title">Zero Keystroke Logging</h3>
+          <p class="feature-card-desc">
+            Keamanan tingkat tinggi tanpa telemetri atau cloud pihak ketiga. Password dan teks dikte Anda langsung dieksekusi seketika ke memori kernel tanpa disimpan ke disk.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3 class="feature-card-title">Latensi Ultra-Rendah</h3>
+          <p class="feature-card-desc">
+            Didukung koneksi kabel USB via ADB reverse port forwarding dengan respons instan &lt;1ms serta jaringan Wi-Fi LAN lokal &lt;15ms.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+          </div>
+          <h3 class="feature-card-title">APK Android Mandiri Ringan</h3>
+          <p class="feature-card-desc">
+            Ukuran aplikasi Android sangat ringan (~5.5 MB) dengan mode Immersive Fullscreen murni tanpa gangguan popup atau notifikasi "Swipe to exit" browser.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg>
+          </div>
+          <h3 class="feature-card-title">Suara Mekanikal Asli</h3>
+          <p class="feature-card-desc">
+            Sintesis audio Web Audio API menghasilkan sensasi umpan balik klik sakelar switch keyboard mekanikal dan getaran haptik presisi di setiap ketukan tombol.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="steps-section" id="cara-kerja">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Kemudahan Instalasi</span>
+        <h2 class="section-title">Mulai Hanya Dalam 3 Langkah Singkat</h2>
+        <p class="section-desc">Tidak memerlukan konfigurasi router yang rumit, port forwarding publik, maupun pembuatan akun cloud.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h3 class="step-title">Jalankan Server di PC</h3>
+          <p class="step-desc">Cukup jalankan satu baris perintah instalasi otomatis di terminal PC Linux atau jalankan server.py di Windows.</p>
+          <div class="step-code">
+            <span>curl -sSL https://raw.githubusercontent.com/ninozoelfikar/DigiSmartDeck/main/install-linux.sh | bash</span>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h3 class="step-title">Buka di Ponsel / Tablet</h3>
+          <p class="step-desc">Pasang file APK resmi (~5.5 MB) di HP Anda, atau langsung buka alamat IP server PC Anda (misal http://192.168.1.100:8080) di browser apa pun.</p>
+          <div class="step-code">
+            <span>Unduh: DigiSmartDeck.apk</span>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h3 class="step-title">Masukkan PIN Pairing</h3>
+          <p class="step-desc">Ketik 6-digit kode PIN pairing yang tertera di terminal atau GUI PC Anda untuk mengotorisasi perangkat secara aman.</p>
+          <div class="step-code">
+            <span>PIN: [ 8 2 5 0 4 0 ]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Free vs Pro Comparison Matrix -->
+  <section class="matrix-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Perbandingan Paket</span>
+        <h2 class="section-title">Transparansi Fitur Free Community vs Pro</h2>
+        <p class="section-desc">Mulai dengan Free Trial 7 hari penuh, atau miliki Lisensi Seumur Hidup tanpa biaya langganan berulang.</p>
+      </div>
+
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Fitur &bull; Kemampuan Kerja</th>
+            <th class="col-free">Community Free</th>
+            <th class="col-pro">Lifetime Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Keyboard PC Fisik Penuh (QWERTY, Fn F1-F12, Numpad, Navigasi)</td>
+            <td class="col-free">Tersedia</td>
+            <td class="col-pro">Tersedia</td>
+          </tr>
+          <tr>
+            <td>Touchpad Laptop Multi-Touch &bull; Tap-to-Click</td>
+            <td class="col-free">Tersedia</td>
+            <td class="col-pro">Tersedia</td>
+          </tr>
+          <tr>
+            <td>Koneksi Ganda Wi-Fi LAN &amp; Kabel Data USB (&lt;1ms)</td>
+            <td class="col-free">Tersedia</td>
+            <td class="col-pro">Tersedia</td>
+          </tr>
+          <tr>
+            <td>Gamepad Retro Console &bull; D-Pad, ABXY, Triggers</td>
+            <td class="col-free">Tersedia</td>
+            <td class="col-pro">Tersedia</td>
+          </tr>
+          <tr>
+            <td>Air Mouse Pointer Giroskop &amp; Pengendali Media</td>
+            <td class="col-free">Tersedia</td>
+            <td class="col-pro">Tersedia</td>
+          </tr>
+          <tr>
+            <td>AI Workstation Deck &amp; Dikte Suara Tanpa Batas</td>
+            <td class="col-free">Free Trial 7 Hari</td>
+            <td class="col-pro">Akses Penuh Selamanya</td>
+          </tr>
+          <tr>
+            <td>Koleksi Tema Lengkap (Obsidian, OLED Dark, Cyber, Retro)</td>
+            <td class="col-free">Tema Standar</td>
+            <td class="col-pro">Semua Skin &amp; Tema Eksklusif</td>
+          </tr>
+          <tr>
+            <td>Update Pembaruan Perangkat Lunak</td>
+            <td class="col-free">Pembaruan Komunitas</td>
+            <td class="col-pro">Pembaruan Seumur Hidup &bull; Support Prioritas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Pricing Plans -->
+  <section class="pricing-section" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Investasi Terjangkau</span>
+        <h2 class="section-title">Pilih Paket Lisensi Sesuai Kebutuhan</h2>
+        <p class="section-desc">Tingkatkan produktivitas kerja Anda sekarang dengan harga perkenalan resmi.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Community Tier -->
+        <div class="pricing-card">
+          <div class="pricing-plan-name">Community Free</div>
+          <div class="pricing-plan-desc">Cocok untuk kebutuhan darurat saat keyboard laptop rusak atau navigasi kursor santai.</div>
+          <div class="pricing-price">
+            Rp 0
+            <span class="pricing-period">/ selamanya</span>
+          </div>
+
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Keyboard PC Lengkap
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Laptop Trackpad Presisi
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Mode Gamepad &amp; Media
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Free Trial 7 Hari Fitur Pro
+            </li>
+            <li class="disabled">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+              Dikte Suara AI Tak Terbatas
+            </li>
+          </ul>
+
+          <a href="/download/apk" class="btn btn-secondary" style="width:100%;">Gunakan Gratis</a>
+        </div>
+
+        <!-- Lifetime Pro Tier (Featured) -->
+        <div class="pricing-card featured">
+          <div class="featured-badge">Paling Populer &bull; Sekali Bayar</div>
+          <div class="pricing-plan-name">Lifetime Pro</div>
+          <div class="pricing-plan-desc">Solusi definitif para developer, programmer, dan prompt engineer untuk efisiensi harian.</div>
+          <div class="pricing-price">
+            Rp 250.000
+            <span class="pricing-period">sekali bayar</span>
+          </div>
+
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Semua Fitur Keyboard &amp; Touchpad
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Dikte Suara AI Tak Terbatas
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Pintasan Prompt AI Workstation
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Semua Koleksi Skin &amp; Tema OLED
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Lisensi Permanen Seumur Hidup
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Pembaruan Fitur Selamanya
+            </li>
+          </ul>
+
+          <a href="https://mayar.link" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%;">Beli Lisensi Seumur Hidup</a>
+        </div>
+
+        <!-- Monthly Pro Tier -->
+        <div class="pricing-card">
+          <div class="pricing-plan-name">Langganan Bulanan</div>
+          <div class="pricing-plan-desc">Fleksibel untuk proyek jangka pendek atau mencoba alur kerja AI Workstation secara penuh.</div>
+          <div class="pricing-price">
+            Rp 25.000
+            <span class="pricing-period">/ bulan</span>
+          </div>
+
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Semua Fitur Keyboard &amp; Touchpad
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Dikte Suara AI Tak Terbatas
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Pintasan Prompt AI Workstation
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Akses Skin &amp; Tema Premium
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Batalkan Kapan Saja
+            </li>
+          </ul>
+
+          <a href="https://mayar.link" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;">Langganan Bulanan</a>
+        </div>
+      </div>
+
+      <div class="guarantee-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        Jaminan 14 Hari Uang Kembali Tanpa Syarat jika aplikasi tidak berjalan optimal di perangkat Anda.
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Pertanyaan Umum</span>
+        <h2 class="section-title">Klarifikasi &amp; Pertanyaan Populer</h2>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4 class="faq-question">Apakah saya wajib menginstal aplikasi di ponsel?</h4>
+          <p class="faq-answer">
+            Tidak. Anda dapat langsung membuka alamat IP server di Google Chrome, Safari, atau Firefox di ponsel tanpa instalasi apa pun. Namun, kami menyarankan menginstal APK DigiSmartDeck resmi (~5.5 MB) untuk menikmati mode Fullscreen Imersif murni bebas dari segala popup peringatan browser.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4 class="faq-question">Apakah aman untuk mengetikkan password atau data sensitif?</h4>
+          <p class="faq-answer">
+            Sangat aman. DigiSmartDeck menganut prinsip Zero-Telemetry dan Air-Gapped Ready. Seluruh komunikasi berlangsung 100% lokal antara HP dan PC melalui port 8080 dengan proteksi PIN pairing 6-digit. Teks ketukan langsung dikirim ke kernel OS dan tidak pernah direkam ke disk atau internet.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4 class="faq-question">Bagaimana jika jaringan Wi-Fi di tempat saya tidak stabil?</h4>
+          <p class="faq-answer">
+            Anda dapat menyambungkan HP ke PC menggunakan kabel data USB biasa. Sistem kami mendukung ADB Reverse Port Forwarding otomatis yang memberikan respons input latensi instan di bawah 1 milidetik tanpa bergantung pada sinyal Wi-Fi.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4 class="faq-question">Bagaimana cara mengaktifkan lisensi Pro setelah pembelian?</h4>
+          <p class="faq-answer">
+            Setelah pembayaran selesai, Anda akan menerima 16-karakter Kunci Lisensi (misal DSDP-ABCD-1234-EFGH). Buka Menu di aplikasi DigiSmartDeck di ponsel Anda, pilih menu License, masukkan kunci lisensi dan email Anda, dan semua fitur Pro otomatis terbuka seketika.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="brand" style="margin-bottom:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+            DigiSmartDeck
+          </div>
+          <p class="footer-copy">Developed by King Ali Studiō &bull; Professional AI Workstation &amp; Controller</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="/download/apk">Unduh APK</a>
+          <a href="#cara-kerja">Panduan PC</a>
+          <a href="#pricing">Lisensi Pro</a>
+          <a href="https://github.com/ninozoelfikar/DigiSmartDeck" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2026 King Ali Studiō &bull; DigiSmartDeck All Rights Reserved &bull; Zero-Telemetry Guaranteed
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Tabs Script -->
+  <script>
+    document.querySelectorAll('.mockup-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mockup-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.preview-card').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const target = document.getElementById(btn.dataset.tab);
+        if (target) target.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1971,6 +1971,20 @@ async def index_handler(request):
         }
     )
 
+async def landing_handler(request):
+    static_dir = os.path.join(BASE_DIR, 'static')
+    landing_file = os.path.join(static_dir, 'landing.html')
+    if os.path.exists(landing_file):
+        return web.FileResponse(
+            landing_file,
+            headers={
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        )
+    return web.HTTPFound('/')
+
 
 def print_banner(ports, ips):
     if isinstance(ports, int):
@@ -2240,6 +2254,9 @@ def create_app(ports=[8080]):
     static_dir = os.path.join(BASE_DIR, 'static')
 
     app.router.add_get('/', index_handler)
+    app.router.add_get('/landing', landing_handler)
+    app.router.add_get('/landing.html', landing_handler)
+    app.router.add_get('/about', landing_handler)
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/api/version', api_version_handler)
     app.router.add_options('/api/version', options_handler)
