@@ -1618,3 +1618,15 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Endpoint `/download/apk` di server otomatis menyajikan file dengan header download `attachment; filename="DigiSmartDeck-v1.18.4.apk"`.
   - Versi aplikasi tersinkronisasi ke `v1.18.4`.
 
+---
+
+## 90. CATATAN CHECKPOINT (v1.18.5 - Rilis Khusus Eliminasi Total Beep Penutup & Sinkronisasi Versi APK)
+- **Eliminasi Total Beep Penutup saat Mic Berhenti:**
+  - `stopNativeSpeech()`, `cancelNativeSpeech()`, dan `onEndOfSpeech()` di `MainActivity.java` langsung membisukan stream audio seketika sebelum Google SpeechRecognizer memicu sinyal stop.
+  - Penundaan pemulihan volume (`restoreBeepStreams`) disetel ke 1200ms untuk menjamin proses penghentian rekaman berjalan 100% senyap tanpa ada nada ding/bloop penutup yang lolos.
+- **Sinkronisasi Versi Otomatis (SemVer 2.0.0):**
+  - Versi aplikasi resmi dinaikkan ke `v1.18.5`.
+  - File instalasi berpenamaan versi baru telah dibuat: `DigiSmartDeck-v1.18.5.apk` (5.4 MB) di `dist/` dan `static/`.
+  - Endpoint `/download/apk` menyajikan file `DigiSmartDeck-v1.18.5.apk` dengan status HTTP 200 OK.
+
+
