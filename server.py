@@ -1656,6 +1656,13 @@ async def websocket_handler(request):
                     execute_pc = data.get('execute_on_pc', True)
                     action = data.get('action')
 
+                    # Perlindungan: Jika prompt terdaftar dengan execute_on_pc=False (seperti digi-term),
+                    # jangan simulasikan keyboard di PC agar tidak mengetik karakter liar ke jendela aktif.
+                    if p_id and p_id in PENDING_PROMPTS:
+                        stored_payload = PENDING_PROMPTS[p_id].get('payload', {})
+                        if stored_payload.get('execute_on_pc') is False:
+                            execute_pc = False
+
                     # Jalankan simulasi input ke jendela PC jika diizinkan
                     if execute_pc and action != 'dismiss':
                         try:
