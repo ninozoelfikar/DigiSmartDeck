@@ -96,33 +96,41 @@ open('$CHANGELOG_FILE', 'w', encoding='utf-8').write(content)
 fi
 
 # 3. Sinkronkan placeholder statis di UI
-python3 -c "
-import re
+python3 -c '
+import sys, re
+new_ver = sys.argv[1]
+major = sys.argv[2]
+minor = sys.argv[3]
 
 # Update static/index.html fallback version badge
 try:
-    with open('static/index.html', 'r', encoding='utf-8') as f:
+    with open("static/index.html", "r", encoding="utf-8") as f:
         html = f.read()
-    html = re.sub(r'DigiSmartDeck v[0-9.]+', 'DigiSmartDeck v$NEW_VERSION', html)
-    html = re.sub(r'<span id=\"about-app-version\"([^>]*)>v[0-9.]+<', r'<span id=\"about-app-version\"\1>v$NEW_VERSION<', html)
-    with open('static/index.html', 'w', encoding='utf-8') as f:
+    html = re.sub(r"DigiSmartDeck v[0-9.]+", "DigiSmartDeck v" + new_ver, html)
+    html = re.sub(r"<span id=\"about-app-version\"([^>]*)>v[0-9.]+<", r"<span id=\"about-app-version\"\1>v" + new_ver + "<", html)
+    parts = [int(p) for p in re.findall(r"\d+", new_ver)]
+    while len(parts) < 3: parts.append(0)
+    new_code = parts[0] * 10000 + parts[1] * 100 + parts[2]
+    html = re.sub(r"const APP_CLIENT_VERSION = '\''[0-9.]+'\'';", f"const APP_CLIENT_VERSION = '\''{new_ver}'\'';", html)
+    html = re.sub(r"const APP_CLIENT_VERSION_CODE = [0-9]+;", f"const APP_CLIENT_VERSION_CODE = {new_code};", html)
+    with open("static/index.html", "w", encoding="utf-8") as f:
         f.write(html)
-    print('[OK] static/index.html tersinkronisasi ke v$NEW_VERSION')
+    print(f"[OK] static/index.html tersinkronisasi ke v{new_ver}")
 except Exception as e:
-    print('[WARN] Gagal menyinkronkan static/index.html:', e)
+    print("[WARN] Gagal menyinkronkan static/index.html:", e)
 
 # Update landing page badge
-for landing_path in ['static/landing.html', 'landing/index.html']:
+for landing_path in ["static/landing.html", "landing/index.html"]:
     try:
-        with open(landing_path, 'r', encoding='utf-8') as f:
+        with open(landing_path, "r", encoding="utf-8") as f:
             l_html = f.read()
-        l_html = re.sub(r'PRO V[0-9.]+', 'PRO V${MAJOR}.${MINOR}', l_html)
-        with open(landing_path, 'w', encoding='utf-8') as f:
+        l_html = re.sub(r"PRO V[0-9.]+", f"PRO V{major}.{minor}", l_html)
+        with open(landing_path, "w", encoding="utf-8") as f:
             f.write(l_html)
-        print(f'[OK] {landing_path} tersinkronisasi ke PRO V${MAJOR}.${MINOR}')
+        print(f"[OK] {landing_path} tersinkronisasi ke PRO V{major}.{minor}")
     except Exception as e:
         pass
-"
+' "$NEW_VERSION" "$MAJOR" "$MINOR"
 
 # 4. Kompilasi ulang APK Android jika environment Android tersedia
 if [ -f "./build-apk.sh" ]; then
