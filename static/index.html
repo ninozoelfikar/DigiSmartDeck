@@ -7101,16 +7101,10 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
           <div class="ai-transcript-text empty" id="ai-transcript-preview" data-i18n="ai_transcript_empty">Speak to dictate...</div>
           <div class="ai-transcript-actions">
-            <div class="ai-options-cluster" style="display:inline-flex; align-items:center; gap:8px;">
-              <label class="ai-autosend-label" id="ai-alwayson-label" data-i18n-title="ai_always_on_title" title="Continuous dictation without timeouts or start/stop sounds">
-                <input type="checkbox" id="ai-alwayson-chk">
-                <span data-i18n="ai_always_on">Always-On</span>
-              </label>
-              <label class="ai-autosend-label" id="ai-autosend-label" data-i18n-title="ai_auto_send_title" title="Automatically transmit text to host upon silence detection">
-                <input type="checkbox" id="ai-autosend-chk">
-                <span data-i18n="ai_auto_send">Auto-Send</span>
-              </label>
-            </div>
+            <label class="ai-autosend-label" id="ai-autosend-label" data-i18n-title="ai_auto_send_title" title="Automatically transmit text to host upon silence detection">
+              <input type="checkbox" id="ai-autosend-chk">
+              <span data-i18n="ai_auto_send">Auto-Send</span>
+            </label>
             <div class="ai-tr-btns">
               <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-undo" data-i18n="ai_undo" title="Kembalikan teks yang terakhir dikirim atau dibersihkan">Undo</button>
               <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear" data-i18n="ai_clear">Clear</button>
@@ -7781,7 +7775,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.1</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.2</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8085,7 +8079,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.1</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.2</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -13879,6 +13873,7 @@ let aiSpeechRecognition = null;
 let isAiRecording = false;
 let isAiStarting = false;
 let aiSpeechWanted = false; // Status apakah mic harus mendengarkan
+const aiSpeechAlwaysOn = true; // Google Voice Typing: Always-On continuous listening otomatis aktif permanen
 let aiWebSessionStartTs = 0;
 let aiWebQuickFails = 0;
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
@@ -14684,55 +14679,6 @@ const btnLangEn = $('btn-ai-lang-en');
 if (btnLangId && btnLangEn) {
   btnLangId.classList.toggle('active', aiSpeechLang === 'id-ID');
   btnLangEn.classList.toggle('active', aiSpeechLang === 'en-US');
-}
-
-// Checkbox Always-On
-let aiSpeechAlwaysOn = localStorage.getItem('digi_ai_always_on') !== 'false';
-const chkAlwaysOn = $('ai-alwayson-chk');
-const lblAlwaysOn = $('ai-alwayson-label');
-
-function toggleAlwaysOn(forceVal) {
-  playClickSound();
-  if (typeof forceVal === 'boolean') {
-    aiSpeechAlwaysOn = forceVal;
-  } else {
-    aiSpeechAlwaysOn = !aiSpeechAlwaysOn;
-  }
-  if (chkAlwaysOn) chkAlwaysOn.checked = aiSpeechAlwaysOn;
-  localStorage.setItem('digi_ai_always_on', aiSpeechAlwaysOn ? 'true' : 'false');
-  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.setAlwaysOnSpeech === 'function') {
-    try {
-      window.DigiAndroidBridge.setAlwaysOnSpeech(aiSpeechAlwaysOn);
-    } catch(e) {}
-  }
-  vibe(10);
-}
-
-if (chkAlwaysOn) {
-  chkAlwaysOn.checked = aiSpeechAlwaysOn;
-  chkAlwaysOn.addEventListener('change', (e) => {
-    e.stopPropagation();
-    toggleAlwaysOn(chkAlwaysOn.checked);
-  });
-}
-
-if (lblAlwaysOn) {
-  let lastTouchAlwaysOn = 0;
-  lblAlwaysOn.addEventListener('touchend', (e) => {
-    e.stopPropagation();
-    if (e.target !== chkAlwaysOn) {
-      if (e.cancelable) e.preventDefault();
-      lastTouchAlwaysOn = Date.now();
-      toggleAlwaysOn();
-    }
-  });
-  lblAlwaysOn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (Date.now() - lastTouchAlwaysOn < 450) return;
-    if (e.target !== chkAlwaysOn) {
-      toggleAlwaysOn();
-    }
-  });
 }
 
 // Checkbox Auto-Kirim
