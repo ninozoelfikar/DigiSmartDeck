@@ -1385,4 +1385,71 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 78. CATATAN CHECKPOINT (v0.9.74 - Tata Letak Pop-up Izin Satu Baris Simetris & Mode Fullscreen HP)
+- **Tata Letak Tombol Pop-up Izin Satu Baris Simetris (`.rap-options-container`):**
+  - Mengubah wadah tombol opsi pop-up izin menjadi satu baris horizontal murni (`display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px;`).
+  - Seluruh tombol aksi (baik 2 tombol maupun 4 tombol resmi AI: Yes, Allow in this chat, Allow in this project, No) tersusun berdampingan dalam satu baris datar yang 100% simetris dengan lebar merata seimbang.
+  - Pada layar tablet / desktop (`min-height: 481px`), pop-up berwujud kartu mengambang elegan berlebar luas (`width: min(640px, 94vw); max-width: 640px;`).
+- **Mode Fullscreen Nyaman pada Layar Ponsel HP Landscape (`@media (max-height: 480px)`):**
+  - Memanfaatkan layar penuh ponsel (`width: 100vw; height: 100vh; border-radius: 0; border: none;`) sehingga tampilan tidak berdesakan dan nyaman dioperasikan dengan dua tangan.
+  - Header kartu menempati sisi atas dengan badge pengirim aplikasi (`.rap-app-badge`), judul konfirmasi, dan tombol tutup '✕'.
+  - Kotak pesan/perintah (`.rap-message-box`) mengisi area tengah yang fleksibel dengan pembatas tinggi dan scrollbar vertikal halus (`overflow-y: auto; -webkit-overflow-scrolling: touch;`). Teks panjang tidak dipaksakan tampil sekaligus melainkan dapat digulir (scrolling) untuk meninjau perintah atau data yang dimintakan izin.
+  - Tombol aksi tetap tersusun satu baris simetris di bagian paling bawah kartu dengan target sentuhan jari yang ergonomis.
+- **Pembaruan Service Worker:**
+  - Versi cache PWA pada `static/sw.js` diperbarui ke `digismartdeck-cache-v14`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 79. CATATAN CHECKPOINT (v0.9.75 - Tombol Pop-up Izin Bersih Tanpa Huruf & Penguatan Keamanan Endpoint Server)
+- **Tombol Izin Bersih Murni Kata Kunci (Zero Letter Badges):**
+  - Tampilan tombol pada dialog izin (`showRemotePrompt`) di `static/index.html` kini hanya memuat kata kunci utama (misal: `Yes`, `Allow in this chat`, `Allow in this project`, `No`, `Ya`, `Batal`, `Lanjut`).
+  - Pembersihan otomatis regex pada label untuk membuang seluruh imbuhan shortcut dalam kurung seperti `(Enter)`, `(Esc)`, `(1)`, `(2)`, `(y/n)`.
+  - Penghapusan elemen `rap-btn-sub` sehingga tidak ada lagi badge huruf atau hotkey sekunder yang membingungkan pengguna di layar sentuh ponsel.
+  - Penyelarasan orientasi baris horizontal (`flex-direction: row`) pada `.rap-btn` untuk keterbacaan teks yang lebih rapi dan seimbang.
+- **Penguatan Keamanan Endpoint & WebSocket (`server.py`):**
+  - *Restriksi Localhost pada Endpoint Sensitif*:
+    - `GET /api/pairing/pin`: Wajib localhost (`127.0.0.1`, `::1`). Mengembalikan `403 Forbidden` jika diakses dari jaringan LAN eksternal, mencegah pihak asing mencuri PIN pairing tanpa melihat layar fisik PC.
+    - `POST /api/prompt` & `POST /api/prompt/dismiss`: Wajib localhost. Menolak permintaan eksternal sehingga perintah CLI atau injeksi tindakan hanya sah berasal dari aplikasi lokal PC host (`digi-term`, shell skrip lokal).
+    - `POST/GET /api/test/reconnect`: Wajib localhost, mencegah gangguan pemutusan koneksi massal dari jaringan luar.
+  - *Perlindungan Akses WebSocket*:
+    - `prompt_response`: Memverifikasi status pairing perangkat sebelum mengeksekusi simulasi input tombol atau kombo ke PC host.
+    - `get_pairing_info` & `unpair_device`: Menolak akses jika belum diautentikasi dan menyembunyikan PIN rahasia jika permintaan bukan dari localhost.
+    - `broadcast_prompt`: Menapis siaran pesan prompt aktif sehingga hanya terkirim ke klien yang telah berstatus terotorisasi (`ws['authorized'] = True`).
+- **Pembaruan Service Worker:**
+  - Versi cache PWA pada `static/sw.js` diperbarui ke `digismartdeck-cache-v15`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+---
+
+## 80. CATATAN CHECKPOINT (v0.9.76 - Audit & Pengerasan Keamanan Menyeluruh / Comprehensive Security Hardening)
+- **Mitigasi Serangan Brute-Force PIN & Timing Attack (`auth_manager.py`):**
+  - Menerapkan penalti lockout bertingkat berbasis IP per-klien pada `verify_and_register`:
+    - 5 kali percobaan gagal berturut-turut memicu penguncian sementara selama 30 detik.
+    - 10 kali percobaan gagal memicu penguncian selama 300 detik (5 menit).
+  - Mengganti pencocokan string PIN biasa dengan `hmac.compare_digest(clean_pin, self.pin)` untuk memusnahkan kerentanan timing attack.
+  - Menambahkan pembatasan laju aktivasi lisensi (`failed_license_attempts`) untuk mencegah brute-force serial key.
+- **Pengamanan Izin Berkas Sensitif di Disk (File Permissions):**
+  - File basis data lokal `data/paired_devices.json` dan `data/license.json` kini secara otomatis disetel dengan izin ketat `0o600` (`rw-------`). Hanya akun pengguna Linux yang menjalankan proses server yang memiliki akses baca/tulis terhadap secret token perangkat dan lisensi.
+- **Sanitasi Ketat Window ID & Mitigasi Command/Flag Injection (`server.py`):**
+  - Menambahkan validator `is_valid_window_id(win_id)` dengan regex `^(0x[0-9a-fA-F]+|\d+)$`.
+  - Fungsi `activate_and_focus_window`, `minimize_window`, `maximize_window`, dan `close_window` menolak secara mutlak argumen ilegal sebelum diteruskan ke utilitas `wmctrl` atau pustaka ctypes X11.
+- **Validasi Batasan Input WebSocket & Proteksi DoS:**
+  - Menyetel `max_msg_size=131072` (128 KB) pada `WebSocketResponse` guna mencegah serangan eksploitasi memori buffer via paket berukuran raksasa.
+  - Sanitasi panjang teks pada `type_text` dibatasi maksimal 5.000 karakter per pesan untuk mencegah penguncian loop simulasi input.
+  - Menambahkan pengecekan `math.isfinite` dan clamping koordinat pada pesan `mousemove` (-2000 s/d 2000 px), `mouseabs` (0.0 s/d 1.0), `mousescroll` (-500 s/d 500), serta `volume_set` (0 s/d 100).
+  - Membatasi jumlah tombol dalam perintah `combo` maksimal 10 tombol.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
+
+
 

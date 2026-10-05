@@ -81,17 +81,20 @@ AI_PERMISSION_KW = re.compile(
     r'do you want to (?:run|execute|proceed|continue|install|apply|delete|remove|overwrite)|'
     r'would you like to (?:run|execute|proceed|continue|install|apply)|'
     r'are you sure you want to|apakah anda yakin|'
-    r'confirm execution|action required|approval required'
+    r'confirm execution|action required|approval required|'
+    r'tool confirmation|surfacing tool confirmation|'
+    r'allow tool call|deny tool call|allow calling this tool|'
+    r'allow access to|proposed command|allow execution'
     r')\b'
 )
 
 
 def extract_prompt_details(lines, context, inspect_line):
-    # Cari baris yang secara spesifik menanyakan izin atau eksekusi perintah
+    # Cari baris yang secara spesifik menanyakan izin atau eksekusi perintah di 15 baris terakhir
     title = None
     question_line = ""
 
-    for l in reversed(lines[-6:]):
+    for l in reversed(lines[-15:]):
         s = l.strip()
         if not s or re.match(r'^[❯>#\$%:\?\[\]\(\)]+$', s):
             continue
@@ -105,6 +108,8 @@ def extract_prompt_details(lines, context, inspect_line):
             title = "Run This Command?"
         elif "execute" in q_lower and ("command" in q_lower or "this" in q_lower or "following" in q_lower):
             title = "Execute This Command?"
+        elif "tool call" in q_lower or "calling this tool" in q_lower:
+            title = "Allow Tool Call?"
         elif "ask" in q_lower and "permission" in q_lower:
             title = "Ask for Permission"
         elif "allow" in q_lower or "approve" in q_lower or "permit" in q_lower or "authori" in q_lower:
@@ -116,7 +121,9 @@ def extract_prompt_details(lines, context, inspect_line):
 
     if not title:
         c_lower = context.lower()
-        if "run" in c_lower and "command" in c_lower:
+        if "tool call" in c_lower or "tool confirmation" in c_lower:
+            title = "Allow Tool Call?"
+        elif "run" in c_lower and "command" in c_lower:
             title = "Run This Command?"
         elif "permission" in c_lower:
             title = "Ask for Permission"
@@ -127,7 +134,7 @@ def extract_prompt_details(lines, context, inspect_line):
 
     # Context message: ambil baris relevan tanpa kursor kosong
     msg_lines = []
-    for l in lines[-8:]:
+    for l in lines[-12:]:
         s = l.strip()
         if s and not re.match(r'^[❯>#\$%:\?]\s*$', s):
             msg_lines.append(s)
@@ -145,17 +152,16 @@ def detect_prompt(buffer_text):
     if not last or len(last) > 400:
         return None
 
-    # Jika baris terakhir hanya prompt kursor (misal: "> ", ": ", "? ", "$ "),
-    # gunakan baris sebelumnya sebagai target inspeksi utama
+    # Jika baris terakhir hanya prompt kursor atau petunjuk navigasi
     inspect_line = last
-    if re.match(r'^[❯>#\$%:\?]\s*$', last) and len(lines) >= 2:
+    if (re.match(r'^[❯>#\$%:\?]\s*$', last) or 'to navigate' in last.lower() or 'running' in last.lower()) and len(lines) >= 2:
         inspect_line = lines[-2].strip()
 
     # Abaikan shell prompt biasa tanpa konteks pertanyaan
     if re.search(r'[\$#%>]\s*$', inspect_line) and not re.search(r'[\?:\[\(]', inspect_line):
         return None
 
-    context = '\n'.join(l for l in lines[-8:] if l.strip())
+    context = '\n'.join(l for l in lines[-16:] if l.strip())
 
     # 1. Menunggu Enter murni (Press Enter to continue, dll.)
     if re.search(r'(?i)(press|tekan)\s+(\[?enter\]?|return|any key|sembarang)', context):
@@ -163,23 +169,26 @@ def detect_prompt(buffer_text):
             'app': 'Terminal',
             'title': 'Menunggu Enter',
             'message': context,
-            'options': [_opt('Lanjut (Enter)', 'enter', '\n', key='Enter', primary=True)],
+            'options': [_opt('Lanjut', 'enter', '\n', key='Enter', primary=True)],
         }
 
     # 2. Deteksi pertanyaan CLI / AI Agent (kata kunci izin, biner [y/n], atau tanda tanya)
-    is_permission = bool(AI_PERMISSION_KW.search(context))
+    has_question = any(('?' in l.strip() or AI_PERMISSION_KW.search(l)) for l in lines[-15:])
     is_yn = bool(re.search(r'[\[\(]\s*y(?:es)?[/\s,]+n(?:o)?', context, re.IGNORECASE))
-    is_question = inspect_line.endswith('?') or '?' in inspect_line
+    is_permission = bool(AI_PERMISSION_KW.search(context))
 
-    if is_permission or is_yn or is_question:
+    if has_question or is_permission or is_yn:
         title, message = extract_prompt_details(lines, context, inspect_line)
 
-        # Cek jika CLI menyediakan menu bernomor (misal: 1. Yes, 2. Allow in this chat, 3. Allow in this project, 4. No)
+        # Cek jika CLI menyediakan menu bernomor atau Bubbletea list
         items = []
-        for l in lines[-12:]:
-            mm = re.match(r'^\s*[❯>]?\s*[\[\(]?(\d{1,2})[\]\).:]\s+(.{1,70})$', l)
+        for l in lines[-16:]:
+            mm = re.match(r'^\s*[❯>]?\s*(?:[\[\(]?(\d{1,2})[\]\).:]\s+|[\[\(][ xX●•*]?[\]\)]\s+)?(.{1,70})$', l)
             if mm:
-                items.append((mm.group(1), mm.group(2).strip().lower()))
+                text = mm.group(2).strip().lower()
+                if '?' not in text and not text.endswith(':') and any(k in text for k in ['yes', 'ya', 'allow', 'izinkan', 'chat', 'session', 'project', 'always', 'selalu', 'no', 'tidak', 'deny', 'tolak', 'cancel', 'batal', 'proceed', 'continue']):
+                    num = mm.group(1) or str(len(items) + 1)
+                    items.append((num, text))
 
         yes_send = '1\n' if any(num == '1' for num, _ in items) else 'y\n'
         chat_send = '2\n' if any(num == '2' for num, _ in items) else 'c\n'
@@ -269,17 +278,23 @@ class DigiTermSupervisor:
             with self.buf_lock:
                 text = self.buf
                 idle = time.time() - self.last_output
-            if not text or idle < IDLE_SECONDS:
+            if not text:
                 continue
             with self.active_lock:
                 if self.active_id:
-                    if time.time() - getattr(self, 'active_time', 0) > 40:
+                    if time.time() - getattr(self, 'active_time', 0) > 30:
                         self.active_id = None
                     else:
                         continue
             payload = detect_prompt(text)
             if not payload:
                 continue
+
+            # Jika prompt penting (izin aksi/perintah AI), langsung kirim tanpa menunggu idle timer
+            is_priority = any(k in payload.get('title', '').lower() for k in ['allow', 'run', 'permission', 'izin', 'eksekusi', 'konfirmasi', 'sure'])
+            if not is_priority and idle < IDLE_SECONDS:
+                continue
+
             prompt_id = f"term_{os.getpid()}_{int(time.time() * 1000)}"
             with self.active_lock:
                 self.active_id = prompt_id
@@ -347,9 +362,11 @@ class DigiTermSupervisor:
                     data = os.read(stdin_fd, 1024)
                     if not data:
                         break
-                    # Pengguna menjawab langsung dari keyboard PC: tutup kartu di HP
-                    self.dismiss_active()
-                    self.clear_buffer()
+                    # Abaikan tombol panah navigasi ANSI (Up/Down/Left/Right) agar pengguna dapat melihat menu di PC tanpa menutup kartu di HP
+                    is_nav_key = data in (b'\x1b[A', b'\x1b[B', b'\x1b[C', b'\x1b[D', b'\x1bOA', b'\x1bOB', b'\x1bOC', b'\x1bOD')
+                    if not is_nav_key:
+                        self.dismiss_active()
+                        self.clear_buffer()
                     os.write(self.master_fd, data)
                 if self.master_fd in r:
                     try:
@@ -361,9 +378,11 @@ class DigiTermSupervisor:
                     os.write(sys.stdout.fileno(), data)
                     with self.buf_lock:
                         decoded = data.decode('utf-8', errors='ignore')
-                        self.buf = (self.buf + decoded)[-2048:]
+                        self.buf = (self.buf + decoded)[-3072:]
                         stripped = strip_ansi(decoded).strip()
-                        if stripped:
+                        # Abaikan karakter spinner animasi (braille unicode dan simbol spinner) agar tidak mereset idle timer
+                        clean_stripped = "".join(c for c in stripped if c not in r"⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏-\|/◐◓◑◒" and not (0x2800 <= ord(c) <= 0x28FF)).strip()
+                        if clean_stripped:
                             self.last_output = time.time()
         finally:
             self.running = False

@@ -13,6 +13,7 @@ import time
 import glob
 import shutil
 import re
+import math
 import subprocess
 from aiohttp import web
 
@@ -1060,11 +1061,20 @@ def get_open_windows_list():
     return windows
 
 
+def is_valid_window_id(win_id):
+    """Memvalidasi format Window ID (hexadesimal 0x... atau digit angka murni) untuk mencegah command injection/malformed args."""
+    if not win_id:
+        return False
+    s = str(win_id).strip()
+    return bool(re.match(r'^(0x[0-9a-fA-F]+|\d+)$', s))
+
+
 def activate_and_focus_window(win_id, maximize=True):
     """Mengangkat jendela PC ke depan dan memaksimalkan ukurannya."""
     global CACHED_X11_ENV
-    if not win_id:
+    if not is_valid_window_id(win_id):
         return False
+    win_id = str(win_id).strip()
     if sys.platform.startswith('linux'):
         try:
             env = get_x11_env()
@@ -1103,11 +1113,13 @@ def activate_and_focus_window(win_id, maximize=True):
             return False
     return False
 
+
 def minimize_window(win_id):
     """Meminimalkan (minimize) jendela PC host."""
     global CACHED_X11_ENV
-    if not win_id:
+    if not is_valid_window_id(win_id):
         return False
+    win_id = str(win_id).strip()
     if sys.platform.startswith('linux'):
         try:
             env = get_x11_env()
@@ -1148,11 +1160,13 @@ def minimize_window(win_id):
             return False
     return False
 
+
 def maximize_window(win_id):
     """Memaksimalkan (maximize) atau memulihkan (restore) ukuran jendela PC host."""
     global CACHED_X11_ENV
-    if not win_id:
+    if not is_valid_window_id(win_id):
         return False
+    win_id = str(win_id).strip()
     if sys.platform.startswith('linux'):
         try:
             env = get_x11_env()
@@ -1182,11 +1196,13 @@ def maximize_window(win_id):
             return False
     return False
 
+
 def close_window(win_id):
     """Menutup jendela PC host secara anggun (graceful close)."""
     global CACHED_X11_ENV
-    if not win_id:
+    if not is_valid_window_id(win_id):
         return False
+    win_id = str(win_id).strip()
     if sys.platform.startswith('linux'):
         try:
             env = get_x11_env()
@@ -1214,10 +1230,18 @@ def close_window(win_id):
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
 
+def is_localhost(request):
+    """Memeriksa apakah request HTTP berasal dari localhost (PC host lokal)."""
+    remote = getattr(request, 'remote', '') or ''
+    return remote in ('127.0.0.1', '::1', 'localhost')
+
 async def broadcast_prompt(prompt_data):
-    """Menyiarkan prompt tindakan interaktif ke semua client yang terhubung."""
+    """Menyiarkan prompt tindakan interaktif ke client yang terotentikasi."""
     payload = json.dumps(prompt_data)
     for client in list(CONNECTED_CLIENTS):
+        # Hanya kirim ke client yang terotorisasi jika pairing aktif
+        if pairing_manager.pairing_enabled and not client.get('authorized', False):
+            continue
         try:
             await client.send_str(payload)
         except Exception:
@@ -1358,7 +1382,7 @@ def release_all_client_keys(keys_set):
 
 async def websocket_handler(request):
     global CURRENT_APP_CONTEXT
-    ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0)
+    ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0, max_msg_size=131072)
     await ws.prepare(request)
     CONNECTED_CLIENTS.add(ws)
     client_ip = request.remote
@@ -1369,6 +1393,7 @@ async def websocket_handler(request):
     # Inisialisasi status otentikasi client (localhost diizinkan cepat jika dev/usb)
     is_client_authorized = pairing_manager.is_authorized("", client_ip)
     client_token = None
+    ws['authorized'] = is_client_authorized
 
     # Kirim handshake inisialisasi ke client
     try:
@@ -1412,14 +1437,15 @@ async def websocket_handler(request):
             'class_name': CURRENT_APP_CONTEXT['class_name']
         }))
 
-        # Kirim prompt yang sedang aktif jika ada (misal client baru bangun dari sleep atau reconnect)
-        for p_info in list(PENDING_PROMPTS.values()):
-            p_payload = p_info.get('payload')
-            if p_payload:
-                try:
-                    await ws.send_str(json.dumps(p_payload))
-                except Exception:
-                    pass
+        # Kirim prompt yang sedang aktif HANYA jika client terotorisasi
+        if is_client_authorized:
+            for p_info in list(PENDING_PROMPTS.values()):
+                p_payload = p_info.get('payload')
+                if p_payload:
+                    try:
+                        await ws.send_str(json.dumps(p_payload))
+                    except Exception:
+                        pass
     except Exception:
         pass
 
@@ -1452,6 +1478,7 @@ async def websocket_handler(request):
                     dev_name = data.get('device_name') or device_label
                     if pairing_manager.is_authorized(token, client_ip):
                         is_client_authorized = True
+                        ws['authorized'] = True
                         client_token = token
                         await ws.send_str(json.dumps({
                             'type': 'auth_status',
@@ -1465,8 +1492,17 @@ async def websocket_handler(request):
                             'role': 'active',
                             'message': 'Perangkat terhubung sebagai Pengendali PC.'
                         }))
+                        # Kirim prompt yang sedang aktif ke client yang baru terotorisasi
+                        for p_info in list(PENDING_PROMPTS.values()):
+                            p_payload = p_info.get('payload')
+                            if p_payload:
+                                try:
+                                    await ws.send_str(json.dumps(p_payload))
+                                except Exception:
+                                    pass
                     else:
                         is_client_authorized = False
+                        ws['authorized'] = False
                         await ws.send_str(json.dumps({
                             'type': 'auth_status',
                             'authorized': False,
@@ -1483,6 +1519,7 @@ async def websocket_handler(request):
                     token, msg_str = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua)
                     if token:
                         is_client_authorized = True
+                        ws['authorized'] = True
                         client_token = token
                         await ws.send_str(json.dumps({
                             'type': 'pairing_result',
@@ -1498,6 +1535,14 @@ async def websocket_handler(request):
                             'message': 'Perangkat terhubung sebagai Pengendali PC.'
                         }))
                         print(f"[PAIR] Perangkat ter-pairing: {dev_name} ({client_ip})")
+                        # Kirim prompt yang sedang aktif ke client yang baru terotorisasi
+                        for p_info in list(PENDING_PROMPTS.values()):
+                            p_payload = p_info.get('payload')
+                            if p_payload:
+                                try:
+                                    await ws.send_str(json.dumps(p_payload))
+                                except Exception:
+                                    pass
                     else:
                         await ws.send_str(json.dumps({
                             'type': 'pairing_result',
@@ -1507,20 +1552,38 @@ async def websocket_handler(request):
                     continue
 
                 elif msg_type == 'get_pairing_info':
+                    is_local = client_ip in ('127.0.0.1', '::1', 'localhost')
+                    if not is_local and not is_client_authorized:
+                        await ws.send_str(json.dumps({
+                            'type': 'error',
+                            'code': 'UNAUTHORIZED',
+                            'message': 'Akses ditolak.'
+                        }))
+                        continue
+                    pin_to_send = pairing_manager.get_or_create_pin() if is_local else None
                     await ws.send_str(json.dumps({
                         'type': 'pairing_info',
-                        'pin': pairing_manager.get_or_create_pin(),
+                        'pin': pin_to_send,
                         'devices': pairing_manager.get_paired_list()
                     }))
                     continue
 
                 elif msg_type == 'unpair_device':
+                    is_local = client_ip in ('127.0.0.1', '::1', 'localhost')
+                    if not is_local and not is_client_authorized:
+                        await ws.send_str(json.dumps({
+                            'type': 'error',
+                            'code': 'UNAUTHORIZED',
+                            'message': 'Akses ditolak.'
+                        }))
+                        continue
                     dev_id = data.get('device_id') or data.get('token_prefix')
                     if dev_id:
                         pairing_manager.unpair_device(dev_id)
+                        pin_to_send = pairing_manager.get_or_create_pin() if is_local else None
                         await ws.send_str(json.dumps({
                             'type': 'pairing_info',
-                            'pin': pairing_manager.get_or_create_pin(),
+                            'pin': pin_to_send,
                             'devices': pairing_manager.get_paired_list()
                         }))
                     continue
@@ -1528,7 +1591,7 @@ async def websocket_handler(request):
                 elif msg_type == 'activate_license':
                     key_str = data.get('key', '')
                     email = data.get('email', '')
-                    ok, act_msg = license_manager.activate_key(key_str, email)
+                    ok, act_msg = license_manager.activate_key(key_str, email, ip=client_ip)
                     lic_info = license_manager.get_info()
                     await ws.send_str(json.dumps({
                         'type': 'license_activation_result',
@@ -1562,6 +1625,14 @@ async def websocket_handler(request):
                     continue
 
                 elif msg_type == 'prompt_response':
+                    if not is_client_authorized and pairing_manager.pairing_enabled:
+                        if not pairing_manager.is_authorized(client_token, client_ip):
+                            await ws.send_str(json.dumps({
+                                'type': 'error',
+                                'code': 'UNAUTHORIZED',
+                                'message': 'Perangkat belum di-pairing dengan PC host. Silakan masukkan PIN.'
+                            }))
+                            continue
                     p_id = data.get('prompt_id')
                     key = data.get('key')
                     val = data.get('value')
@@ -1686,6 +1757,8 @@ async def websocket_handler(request):
                 elif msg_type == 'combo':
                     # Eksekusi kombinasi tombol, contoh: ["ctrl", "c"]
                     combo_keys = data.get('keys', [])
+                    if not isinstance(combo_keys, list) or len(combo_keys) > 10:
+                        continue
                     resolved = [resolve_key(k) for k in combo_keys if resolve_key(k)]
                     # Tekan semua berurutan
                     for k in resolved:
@@ -1696,39 +1769,66 @@ async def websocket_handler(request):
                         simulate_release(k)
 
                 elif msg_type == 'mousemove':
-                    dx = data.get('dx', 0)
-                    dy = data.get('dy', 0)
-                    simulate_mouse_move(dx, dy)
+                    try:
+                        dx = float(data.get('dx', 0))
+                        dy = float(data.get('dy', 0))
+                        if math.isfinite(dx) and math.isfinite(dy):
+                            dx = max(-2000.0, min(2000.0, dx))
+                            dy = max(-2000.0, min(2000.0, dy))
+                            simulate_mouse_move(dx, dy)
+                    except Exception:
+                        pass
 
                 elif msg_type == 'mouseclick':
-                    btn = data.get('button', 'left')
-                    simulate_mouse_click(btn)
+                    btn = str(data.get('button', 'left')).lower()
+                    if btn in ('left', 'right', 'middle'):
+                        simulate_mouse_click(btn)
 
                 elif msg_type == 'mousedown':
-                    btn = data.get('button', 'left')
-                    simulate_mouse_down(btn)
+                    btn = str(data.get('button', 'left')).lower()
+                    if btn in ('left', 'right', 'middle'):
+                        simulate_mouse_down(btn)
 
                 elif msg_type == 'mouseup':
-                    btn = data.get('button', 'left')
-                    simulate_mouse_up(btn)
+                    btn = str(data.get('button', 'left')).lower()
+                    if btn in ('left', 'right', 'middle'):
+                        simulate_mouse_up(btn)
 
                 elif msg_type == 'mouseabs':
-                    rx = data.get('x', 0)
-                    ry = data.get('y', 0)
-                    simulate_mouse_abs(rx, ry)
+                    try:
+                        rx = float(data.get('x', 0))
+                        ry = float(data.get('y', 0))
+                        if math.isfinite(rx) and math.isfinite(ry):
+                            rx = max(0.0, min(1.0, rx))
+                            ry = max(0.0, min(1.0, ry))
+                            simulate_mouse_abs(rx, ry)
+                    except Exception:
+                        pass
 
                 elif msg_type == 'volume_set':
-                    val = data.get('value', 50)
-                    set_system_volume(val)
+                    try:
+                        val = int(data.get('value', 50))
+                        val = max(0, min(100, val))
+                        set_system_volume(val)
+                    except Exception:
+                        pass
 
                 elif msg_type == 'mousescroll':
-                    dx = data.get('dx', 0)
-                    dy = data.get('dy', 0)
-                    simulate_mouse_scroll(dx, dy)
+                    try:
+                        dx = float(data.get('dx', 0))
+                        dy = float(data.get('dy', 0))
+                        if math.isfinite(dx) and math.isfinite(dy):
+                            dx = max(-500.0, min(500.0, dx))
+                            dy = max(-500.0, min(500.0, dy))
+                            simulate_mouse_scroll(dx, dy)
+                    except Exception:
+                        pass
 
                 elif msg_type == 'type_text':
                     text_content = data.get('text', '')
-                    if text_content:
+                    if text_content and isinstance(text_content, str):
+                        # Sanitasi panjang input maksimal 5000 karakter per pengiriman
+                        text_content = text_content[:5000]
                         if KEYBOARD_AVAILABLE and keyboard_controller and not UINPUT_AVAILABLE:
                             try:
                                 keyboard_controller.type(text_content)
@@ -1967,8 +2067,18 @@ async def options_handler(request):
     })
 
 
+async def api_pairing_pin_handler(request):
+    """Endpoint HTTP GET /api/pairing/pin untuk membaca PIN pairing saat ini (Hanya Localhost)."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden: PIN pairing hanya dapat diakses dari localhost PC host.'}, status=403)
+    return web.json_response({'pin': pairing_manager.get_or_create_pin()}, headers={'Access-Control-Allow-Origin': '*'})
+
+
 async def api_trigger_prompt_handler(request):
-    """Endpoint HTTP POST /api/prompt untuk memicu prompt konfirmasi tindakan dari CLI/skrip."""
+    """Endpoint HTTP POST /api/prompt untuk memicu prompt konfirmasi tindakan dari CLI/skrip (Hanya Localhost)."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden: Prompt API hanya dapat diakses dari localhost PC host.'}, status=403)
+
     try:
         if request.content_type == 'application/json':
             data = await request.json()
@@ -1989,8 +2099,8 @@ async def api_trigger_prompt_handler(request):
     options = data.get('options')
     if not options or not isinstance(options, list):
         options = [
-            {'label': 'Ya (Enter)', 'value': 'y', 'key': 'enter', 'primary': True},
-            {'label': 'Batal (Esc)', 'value': 'n', 'key': 'escape', 'danger': True}
+            {'label': 'Ya', 'value': 'y', 'key': 'enter', 'primary': True},
+            {'label': 'Batal', 'value': 'n', 'key': 'escape', 'danger': True}
         ]
 
     try:
@@ -2048,7 +2158,10 @@ async def api_trigger_prompt_handler(request):
 
 
 async def api_dismiss_prompt_handler(request):
-    """Endpoint HTTP POST /api/prompt/dismiss untuk membatalkan/menutup prompt."""
+    """Endpoint HTTP POST /api/prompt/dismiss untuk membatalkan/menutup prompt (Hanya Localhost)."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden: Prompt API hanya dapat diakses dari localhost PC host.'}, status=403)
+
     try:
         if request.content_type == 'application/json':
             data = await request.json()
@@ -2074,7 +2187,10 @@ async def api_dismiss_prompt_handler(request):
 
 
 async def api_test_reconnect_handler(request):
-    """Endpoint HTTP POST/GET /api/test/reconnect untuk menguji tampilan modal reconnecting di semua client."""
+    """Endpoint HTTP POST/GET /api/test/reconnect untuk menguji tampilan modal reconnecting di semua client (Hanya Localhost)."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden: Test reconnect hanya dapat diakses dari localhost PC host.'}, status=403)
+
     count = len(CONNECTED_CLIENTS)
     for client in list(CONNECTED_CLIENTS):
         try:
@@ -2103,7 +2219,8 @@ def create_app(ports=[8080]):
     app.router.add_get('/api/info', api_info_handler)
     app.router.add_options('/api/info', options_handler)
     app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
-    app.router.add_get('/api/pairing/pin', lambda r: web.json_response({'pin': pairing_manager.get_or_create_pin()}, headers={'Access-Control-Allow-Origin': '*'}))
+    app.router.add_get('/api/pairing/pin', api_pairing_pin_handler)
+    app.router.add_options('/api/pairing/pin', options_handler)
     app.router.add_post('/api/prompt', api_trigger_prompt_handler)
     app.router.add_options('/api/prompt', options_handler)
     app.router.add_post('/api/prompt/dismiss', api_dismiss_prompt_handler)

@@ -1561,21 +1561,35 @@ body.is-fullscreen {
 
 /* Remote Action Prompt / Smart Confirmation Card */
 .remote-action-card {
-  width: min(440px, 92vw);
+  width: min(640px, 94vw);
+  max-width: 640px;
   background: var(--header-bg);
   border: 1px solid rgba(88, 166, 255, 0.45);
+  border-radius: 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(88, 166, 255, 0.2);
   animation: rap-card-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 @keyframes rap-card-in {
   from {
     opacity: 0;
-    transform: scale(0.92) translateY(-14px);
+    transform: scale(0.94) translateY(-10px);
   }
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+}
+.rap-header {
+  background: rgba(88, 166, 255, 0.08);
+  border-bottom: 1px solid rgba(88, 166, 255, 0.18);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
 }
 .rap-app-badge {
   background: rgba(88, 166, 255, 0.18);
@@ -1592,15 +1606,37 @@ body.is-fullscreen {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.rap-body {
+  padding: 14px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
 .rap-message-box {
   background: rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(88, 166, 255, 0.18);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 12px 14px;
-  margin-bottom: 16px;
   word-break: break-word;
-  max-height: 200px;
+  max-height: 180px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.rap-message-box::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.rap-message-box::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.rap-message-box::-webkit-scrollbar-thumb {
+  background: rgba(88, 166, 255, 0.35);
+  border-radius: 4px;
+}
+.rap-message-box::-webkit-scrollbar-thumb:hover {
+  background: rgba(88, 166, 255, 0.6);
 }
 .rap-message-text {
   font-size: 12.5px;
@@ -1609,36 +1645,39 @@ body.is-fullscreen {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   white-space: pre-wrap;
 }
+/* Tata letak tombol: selalu satu baris saja dan 100% simetris merata */
 .rap-options-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
   align-items: stretch;
-}
-.rap-options-container:has(> :only-child) {
-  grid-template-columns: 1fr;
+  width: 100%;
 }
 .rap-btn {
   appearance: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text);
-  padding: 10px 12px;
+  padding: 8px 6px;
   border-radius: 8px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  min-height: 48px;
+  min-height: 44px;
   touch-action: manipulation;
   transition: all 0.15s ease;
   user-select: none;
   -webkit-user-select: none;
   text-align: center;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-height: 1.15;
 }
 .rap-btn:active {
   transform: scale(0.96);
@@ -1663,7 +1702,7 @@ body.is-fullscreen {
   color: #fff;
 }
 .rap-btn-sub {
-  font-size: 10px;
+  font-size: 9.5px;
   color: var(--text-dim);
   font-weight: 400;
   text-transform: uppercase;
@@ -1673,6 +1712,69 @@ body.is-fullscreen {
 }
 .rap-btn-danger .rap-btn-sub {
   color: rgba(255, 123, 114, 0.8);
+}
+
+/* Tampilan HP Landscape / Layar Compact: Fullscreen pop-up nyaman dan ergonomis */
+@media screen and (max-height: 480px) {
+  #modal-remote-prompt {
+    padding: 0 !important;
+  }
+  .remote-action-card {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    border-top: 1px solid rgba(88, 166, 255, 0.3) !important;
+    box-shadow: none !important;
+  }
+  .rap-header {
+    padding: 8px 14px !important;
+    min-height: 38px !important;
+  }
+  .rap-body {
+    padding: 10px 14px !important;
+    flex: 1 !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  .rap-message-box {
+    flex: 1 !important;
+    min-height: 60px !important;
+    max-height: calc(100vh - 120px) !important;
+    padding: 8px 10px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .rap-message-text {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+  }
+  .rap-options-container {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: 1fr !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    width: 100% !important;
+  }
+  .rap-btn {
+    min-height: 40px !important;
+    padding: 6px 4px !important;
+    font-size: 11px !important;
+    gap: 1px !important;
+  }
+  .rap-btn-sub {
+    font-size: 8.5px !important;
+  }
+  .rap-timer-row {
+    margin-top: 4px !important;
+    font-size: 10px !important;
+  }
 }
 .modal-body {
   padding: 16px 18px;
@@ -8093,15 +8195,15 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
 <!-- Modal Remote Action Prompt / Smart Confirmation Card -->
 <div class="modal-backdrop hidden" id="modal-remote-prompt" style="z-index:99999;backdrop-filter:blur(8px);background:rgba(8,10,14,0.78);">
-  <div class="modal-dialog remote-action-card" style="max-width:440px;border-color:rgba(88,166,255,0.4);box-shadow:0 12px 36px rgba(0,0,0,0.65),0 0 24px rgba(88,166,255,0.2);">
-    <div class="modal-header rap-header" style="background:rgba(88,166,255,0.08);border-bottom:1px solid rgba(88,166,255,0.18);">
+  <div class="modal-dialog remote-action-card">
+    <div class="modal-header rap-header">
       <div class="modal-title" style="gap:8px;">
         <span class="rap-app-badge" id="rap-app-badge">Terminal</span>
         <span id="rap-title" style="font-weight:700;color:var(--text);" data-i18n="rap_default_title">Konfirmasi Tindakan</span>
       </div>
       <button class="modal-close" id="btn-close-rap" type="button" title="Tutup">✕</button>
     </div>
-    <div class="modal-body" style="padding:16px 18px 20px;">
+    <div class="modal-body rap-body">
       <div class="rap-message-box" id="rap-message-box">
         <div class="rap-message-text" id="rap-message-text">Lanjutkan proses?</div>
       </div>
@@ -9856,8 +9958,8 @@ function showRemotePrompt(data) {
   if (optionsContainer) {
     optionsContainer.innerHTML = '';
     const options = (data.options && data.options.length > 0) ? data.options : [
-      { label: 'Ya (Enter)', value: 'y', key: 'enter', primary: true },
-      { label: 'Batal (Esc)', value: 'n', key: 'escape', danger: true }
+      { label: 'Ya', value: 'y', key: 'enter', primary: true },
+      { label: 'Batal', value: 'n', key: 'escape', danger: true }
     ];
 
     options.forEach(opt => {
@@ -9868,16 +9970,12 @@ function showRemotePrompt(data) {
       else if (opt.danger) btnClass += ' rap-btn-danger';
       btn.className = btnClass;
 
-      const labelSpan = document.createElement('span');
-      labelSpan.textContent = opt.label || 'OK';
-      btn.appendChild(labelSpan);
+      let cleanLabel = (opt.label || 'OK').trim();
+      cleanLabel = cleanLabel.replace(/\s*[\(\[][^\)\]]*[\)\]]$/, '').trim();
 
-      if (opt.key || opt.value) {
-        const subSpan = document.createElement('span');
-        subSpan.className = 'rap-btn-sub';
-        subSpan.textContent = opt.key ? opt.key.toUpperCase() : String(opt.value);
-        btn.appendChild(subSpan);
-      }
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = cleanLabel || opt.label || 'OK';
+      btn.appendChild(labelSpan);
 
       btn.addEventListener('click', () => {
         playClickSound(true);

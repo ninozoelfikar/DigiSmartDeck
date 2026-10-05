@@ -30,6 +30,7 @@ class DevicePairingManager:
         self.pin_ttl_seconds = 900  # 15 menit
         self.pairing_enabled = True
         self.paired_devices = {}
+        self.failed_attempts = {}  # ip -> {'count': int, 'lockout_until': float}
         self._load()
         self.get_or_create_pin()
 
@@ -60,6 +61,10 @@ class DevicePairingManager:
                     'pin_created_at': self.pin_created_at,
                     'paired_devices': self.paired_devices
                 }, f, indent=2)
+            try:
+                os.chmod(PAIRED_DEVICES_FILE, 0o600)
+            except Exception:
+                pass
         except Exception as e:
             print(f"[!] Gagal menyimpan data pairing: {e}")
 
@@ -78,17 +83,34 @@ class DevicePairingManager:
     def verify_and_register(self, pin_input, device_name, ip, user_agent):
         """Verifikasi PIN dari client. Jika valid, buatkan token otentikasi permanen."""
         self._load()
+        now = time.time()
+
+        # Proteksi Brute-Force: Cek apakah IP sedang dalam masa penalti lockout
+        attempt_info = self.failed_attempts.get(ip, {'count': 0, 'lockout_until': 0})
+        if now < attempt_info.get('lockout_until', 0):
+            wait_secs = max(1, int(attempt_info['lockout_until'] - now))
+            return None, f"Terlalu banyak percobaan PIN salah. Coba lagi dalam {wait_secs} detik."
+
         clean_pin = str(pin_input).replace(" ", "").replace("-", "").strip()
         if not clean_pin:
             return None, "PIN tidak boleh kosong."
 
-        now = time.time()
         if now - self.pin_created_at > self.pin_ttl_seconds:
             self.get_or_create_pin(force_new=True)
             return None, "PIN sudah kedaluwarsa. Silakan gunakan PIN baru di layar PC."
 
-        if clean_pin != self.pin:
+        # Komparasi konstan (constant-time) untuk mencegah serangan timing
+        if not hmac.compare_digest(clean_pin, self.pin):
+            attempt_info['count'] = attempt_info.get('count', 0) + 1
+            if attempt_info['count'] >= 10:
+                attempt_info['lockout_until'] = now + 300  # Lockout 5 menit jika gagal 10 kali
+            elif attempt_info['count'] >= 5:
+                attempt_info['lockout_until'] = now + 30   # Lockout 30 detik jika gagal 5 kali
+            self.failed_attempts[ip] = attempt_info
             return None, "PIN tidak sesuai dengan yang tampil di PC host."
+
+        # Jika cocok, bersihkan riwayat percobaan gagal untuk IP ini
+        self.failed_attempts.pop(ip, None)
 
         # Buat token unik permanen untuk perangkat ini
         device_token = secrets.token_hex(24)
@@ -159,6 +181,7 @@ class LicenseManager:
     """
     def __init__(self):
         self.license_data = {}
+        self.failed_license_attempts = {}  # ip -> {'count': int, 'lockout_until': float}
         self._load()
 
     def _load(self):
@@ -194,6 +217,10 @@ class LicenseManager:
         try:
             with open(LICENSE_FILE, 'w', encoding='utf-8') as f:
                 json.dump(self.license_data, f, indent=2)
+            try:
+                os.chmod(LICENSE_FILE, 0o600)
+            except Exception:
+                pass
         except Exception as e:
             print(f"[!] Gagal menyimpan data lisensi: {e}")
 
@@ -227,18 +254,33 @@ class LicenseManager:
         tier_code, rand_part, sig = parts[1], parts[2], parts[3]
         body = f"DIGI-{tier_code}-{rand_part}"
         expected_sig = hmac.new(LICENSE_SECRET, body.encode('utf-8'), hashlib.sha256).hexdigest()[:4].upper()
-        if sig != expected_sig:
+        if not hmac.compare_digest(sig, expected_sig):
             return False, None, 0
 
         tier = "lifetime" if tier_code == "LIFE" else "monthly"
         days = 0 if tier == "lifetime" else 30
         return True, tier, days
 
-    def activate_key(self, key_str, email=""):
+    def activate_key(self, key_str, email="", ip=""):
         """Mengaktifkan lisensi baru pada server."""
+        now_ts = time.time()
+        if ip:
+            lic_info = self.failed_license_attempts.get(ip, {'count': 0, 'lockout_until': 0})
+            if now_ts < lic_info.get('lockout_until', 0):
+                wait_secs = max(1, int(lic_info['lockout_until'] - now_ts))
+                return False, f"Terlalu banyak percobaan aktivasi lisensi salah. Coba lagi dalam {wait_secs} detik."
+
         valid, tier, days = self.verify_key_signature(key_str)
         if not valid:
+            if ip:
+                lic_info['count'] = lic_info.get('count', 0) + 1
+                if lic_info['count'] >= 5:
+                    lic_info['lockout_until'] = now_ts + 300  # Lockout 5 menit
+                self.failed_license_attempts[ip] = lic_info
             return False, "Kode lisensi tidak valid atau format salah."
+
+        if ip:
+            self.failed_license_attempts.pop(ip, None)
 
         now = datetime.now()
         email_clean = email.strip() if email else self.license_data.get('email', 'customer@digismartdeck.com')
