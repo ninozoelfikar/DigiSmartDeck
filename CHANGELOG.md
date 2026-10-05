@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.18.5] - 2026-10-05
+- Eliminasi total nada beep penutup Google Speech saat mic dimatikan
+
 ### [1.18.4] - 2026-10-05
 - Sinkronisasi UI APK dan Web identik serta pengembalian redaman nada mic Google Voice
 
@@ -246,6 +249,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.18.5] - 2026-10-05
+- Release v1.18.5 updates
 
 ### [1.18.4] - 2026-10-05
 - Release v1.18.4 updates
