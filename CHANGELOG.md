@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.7] - 2026-10-06
+- Pembaruan kontrol volume, kecerahan layar, wake up, anti-sleep pada Power Mode dan eliminasi menu mode kerja utama
+
 ### [1.20.6] - 2026-10-06
 - Pemulihan deklarasi isPowerModeActive dan listener ikon top bar
 
@@ -279,6 +282,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.7] - 2026-10-06
+- Release v1.20.7 updates
 
 ### [1.20.6] - 2026-10-06
 - Release v1.20.6 updates

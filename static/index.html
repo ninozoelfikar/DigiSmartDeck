@@ -5912,25 +5912,253 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   gap: 8px;
 }
 
-.power-back-btn {
-  display: inline-flex;
+.power-controls-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .power-controls-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.power-ctrl-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.power-ctrl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.power-ctrl-title {
+  display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.power-ctrl-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(88, 166, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+}
+
+.power-ctrl-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.power-mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 9px;
   background: var(--key-bg);
   border: 1px solid var(--key-border);
   border-radius: 8px;
   color: var(--text);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
-.power-back-btn:hover, .power-back-btn:active {
-  background: rgba(88, 166, 255, 0.12);
+.power-mini-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
+.power-mini-btn:active {
+  transform: scale(0.95);
+  background: rgba(88, 166, 255, 0.15);
+}
+
+.power-range-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+  outline: none;
+}
+.power-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--accent);
+  transition: transform 0.12s ease;
+}
+.power-range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+}
+
+.power-presets {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+.power-pill {
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--key-border);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.power-pill:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.power-pill.active {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.power-awake-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.power-wake-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.18), rgba(63, 185, 80, 0.18));
+  border: 1px solid rgba(88, 166, 255, 0.4);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.power-wake-btn:hover {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.28), rgba(63, 185, 80, 0.28));
+  border-color: var(--accent);
+}
+.power-wake-btn:active {
+  transform: scale(0.96);
+}
+
+.power-anti-sleep-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.power-switch-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.power-switch-text {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+.power-switch-text strong {
+  font-size: 11px;
+  color: var(--text);
+}
+.power-switch-text small {
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+.power-toggle-switch {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.power-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.power-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 20px;
+  border: 1px solid var(--key-border);
+}
+.power-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 50%;
+}
+.power-toggle-switch input:checked + .power-toggle-slider {
+  background-color: #2ea043;
+  border-color: #3fb950;
+  box-shadow: 0 0 8px rgba(63, 185, 80, 0.5);
+}
+.power-toggle-switch input:checked + .power-toggle-slider:before {
+  transform: translateX(16px);
+}
+
+.power-status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
+  border: 1px solid var(--key-border);
+  text-transform: uppercase;
+}
+.power-status-tag.active {
+  background: rgba(63, 185, 80, 0.18);
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.4);
+}
+
 
 .power-grid {
   display: grid;
@@ -6596,32 +6824,6 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     </div>
 
     <div class="deck-body">
-      <!-- SECTION 0: MODE KERJA UTAMA (4 MODE) -->
-      <div class="deck-section">
-        <div class="deck-section-title">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-          <span data-i18n="deck_modes_title">MODE KERJA UTAMA</span>
-        </div>
-        <div class="deck-chips deck-chips-modes">
-          <button type="button" class="tbtn deck-chip active" id="btn-mode-standard" data-i18n-title="quick_keyboard" title="Keyboard PC">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
-            <span data-i18n="deck_mode_standard">Keyboard</span>
-          </button>
-          <button type="button" class="tbtn deck-chip" id="btn-game-mode" data-i18n-title="quick_gamepad" title="Game Controller">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="6"/></svg>
-            <span data-i18n="deck_mode_game">Gamepad</span>
-          </button>
-          <button type="button" class="tbtn deck-chip" id="btn-ai-mode" data-i18n-title="quick_ai" title="AI Workstation">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
-            <span data-i18n="deck_mode_ai">AI Workstation</span>
-          </button>
-          <button type="button" class="tbtn deck-chip" id="btn-power-mode" data-i18n-title="deck_power_title" title="Power &amp; Session Control">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-            <span data-i18n="deck_mode_power">Power Menu</span>
-          </button>
-        </div>
-      </div>
-
       <!-- SECTION 1: KEYBOARD LAYERS -->
       <div class="deck-section">
         <div class="deck-section-title">
@@ -7909,23 +8111,118 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 
   <!-- POWER & SESSION CONTROLLER VIEW -->
   <section id="power-view" class="power-view hidden">
-    <!-- Header: Title, OS Info, Hostname, and Back Button -->
+    <!-- Header: Title on Left, OS Name & Host Badge on Far Right -->
     <div class="power-header">
       <div class="power-header-left">
         <div class="power-title-wrap">
           <svg class="svg-icon power-title-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-          <span class="power-title" data-i18n="power_title">Menu Daya &amp; Sesi PC</span>
+          <span class="power-title" data-i18n="power_title">Menu Daya &amp; Kontrol Sistem</span>
         </div>
+      </div>
+      <div class="power-header-right">
         <div class="power-os-badge" id="power-os-badge">
           <span id="power-host-name">PC Host</span>
           <span class="power-os-tag" id="power-os-tag">Linux</span>
         </div>
       </div>
-      <div class="power-header-right">
-        <button type="button" class="power-back-btn" id="btn-power-back" title="Kembali ke Keyboard">
-          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          <span data-i18n="power_back_keyboard">Keyboard</span>
-        </button>
+    </div>
+
+    <!-- System Controls: Kecerahan Layar, Volume Suara, Wake Up & Anti-Sleep -->
+    <div class="power-controls-panel" id="power-controls-panel">
+      <!-- 1. Kontrol Kecerahan Layar -->
+      <div class="power-ctrl-card">
+        <div class="power-ctrl-header">
+          <div class="power-ctrl-title">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <span data-i18n="power_brightness_title">Kecerahan Layar</span>
+          </div>
+          <span class="power-ctrl-val" id="power-bright-val">100%</span>
+        </div>
+        <div class="power-ctrl-body">
+          <div class="power-ctrl-actions">
+            <button type="button" class="power-mini-btn" id="btn-bright-down" title="Kurangi Kecerahan">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>-10%</span>
+            </button>
+            <input type="range" class="power-range-slider" id="slider-power-brightness" min="10" max="100" step="5" value="100">
+            <button type="button" class="power-mini-btn" id="btn-bright-up" title="Tambah Kecerahan">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+10%</span>
+            </button>
+          </div>
+          <div class="power-presets">
+            <button type="button" class="power-pill" data-bright="30">30%</button>
+            <button type="button" class="power-pill" data-bright="50">50%</button>
+            <button type="button" class="power-pill" data-bright="75">75%</button>
+            <button type="button" class="power-pill active" data-bright="100">100%</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Kontrol Volume Suara -->
+      <div class="power-ctrl-card">
+        <div class="power-ctrl-header">
+          <div class="power-ctrl-title">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <span data-i18n="power_volume_title">Volume Suara</span>
+          </div>
+          <span class="power-ctrl-val" id="power-volume-val">80%</span>
+        </div>
+        <div class="power-ctrl-body">
+          <div class="power-ctrl-actions">
+            <button type="button" class="power-mini-btn" id="btn-vol-mute" title="Mute Suara">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" id="icon-vol-mute"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></svg>
+              <span>Mute</span>
+            </button>
+            <button type="button" class="power-mini-btn" id="btn-vol-down" title="Kurangi Volume">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>-5%</span>
+            </button>
+            <input type="range" class="power-range-slider" id="slider-power-volume" min="0" max="100" step="5" value="80">
+            <button type="button" class="power-mini-btn" id="btn-vol-up" title="Tambah Volume">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+5%</span>
+            </button>
+          </div>
+          <div class="power-presets">
+            <button type="button" class="power-pill" data-vol="0">0%</button>
+            <button type="button" class="power-pill" data-vol="30">30%</button>
+            <button type="button" class="power-pill" data-vol="60">60%</button>
+            <button type="button" class="power-pill active" data-vol="80">80%</button>
+            <button type="button" class="power-pill" data-vol="100">100%</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Wake Up & Anti-Sleep (Supaya tidak sleep PC-nya) -->
+      <div class="power-ctrl-card power-ctrl-card-awake">
+        <div class="power-ctrl-header">
+          <div class="power-ctrl-title">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span data-i18n="power_awake_title">Wake Up &amp; Anti-Sleep</span>
+          </div>
+          <span class="power-status-tag" id="power-anti-sleep-tag">STANDAR</span>
+        </div>
+        <div class="power-ctrl-body">
+          <div class="power-awake-row">
+            <button type="button" class="power-wake-btn" id="btn-power-wake" title="Bangunkan Layar / PC sekarang">
+              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 18v4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M20 12h2"/><path d="m19.07 4.93-2.83 2.83"/></svg>
+              <span data-i18n="power_wake_btn">Bangunkan PC</span>
+            </button>
+            <div class="power-anti-sleep-wrap">
+              <label class="power-switch-label" for="toggle-anti-sleep">
+                <span class="power-switch-text">
+                  <strong data-i18n="power_stay_awake">Tetap Terjaga</strong>
+                  <small data-i18n="power_stay_awake_sub">Cegah PC sleep otomatis</small>
+                </span>
+                <div class="power-toggle-switch">
+                  <input type="checkbox" id="toggle-anti-sleep">
+                  <span class="power-toggle-slider"></span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -8373,7 +8670,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.6</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.7</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8912,7 +9209,13 @@ const I18N = {
     quick_canvas: "Drawing Canvas",
     deck_power_title: "Power & Session Controls",
     deck_power: "Power",
-    power_title: "Power & Session Control",
+    power_title: "Power & System Controls",
+    power_brightness_title: "Display Brightness",
+    power_volume_title: "Sound Volume",
+    power_awake_title: "Wake Up & Anti-Sleep",
+    power_wake_btn: "Wake PC",
+    power_stay_awake: "Keep Awake",
+    power_stay_awake_sub: "Prevent PC sleep",
     power_back_keyboard: "Keyboard",
     power_shutdown: "Shutdown",
     power_shutdown_sub: "Power off PC",
@@ -9210,7 +9513,13 @@ const I18N = {
     quick_canvas: "Kanvas Gambar",
     deck_power_title: "Kontrol Daya & Sesi PC",
     deck_power: "Power",
-    power_title: "Menu Daya & Sesi PC",
+    power_title: "Menu Daya & Kontrol Sistem",
+    power_brightness_title: "Kecerahan Layar",
+    power_volume_title: "Volume Suara",
+    power_awake_title: "Wake Up & Anti-Sleep",
+    power_wake_btn: "Bangunkan PC",
+    power_stay_awake: "Tetap Terjaga",
+    power_stay_awake_sub: "Cegah PC sleep otomatis",
     power_back_keyboard: "Keyboard",
     power_shutdown: "Shutdown",
     power_shutdown_sub: "Matikan daya PC",
@@ -9875,8 +10184,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.6';
-const APP_CLIENT_VERSION_CODE = 12006;
+const APP_CLIENT_VERSION = '1.20.7';
+const APP_CLIENT_VERSION_CODE = 12007;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -17246,10 +17555,11 @@ function triggerPowerAction(action) {
   executePowerActionNow(action);
 }
 
-function executePowerActionNow(action) {
+function executePowerActionNow(action, value = null) {
   send({
     type: 'power_action',
-    action: action
+    action: action,
+    value: value
   });
 
   let label = action;
@@ -17261,6 +17571,16 @@ function executePowerActionNow(action) {
   else if (action === 'logout') label = currentUiLang === 'id' ? 'Keluar dari sesi...' : 'Signing out...';
   else if (action === 'screen_off') label = currentUiLang === 'id' ? 'Mematikan layar monitor...' : 'Turning screen off...';
   else if (action === 'hibernate') label = currentUiLang === 'id' ? 'Menghibernasi PC...' : 'Hibernating PC...';
+  else if (action === 'wake_up') label = currentUiLang === 'id' ? 'Membangunkan layar & PC...' : 'Waking PC display...';
+  else if (action === 'volume_up') label = currentUiLang === 'id' ? 'Volume dinaikkan (+5%)' : 'Volume up (+5%)';
+  else if (action === 'volume_down') label = currentUiLang === 'id' ? 'Volume diturunkan (-5%)' : 'Volume down (-5%)';
+  else if (action === 'volume_mute') label = currentUiLang === 'id' ? 'Mute audio diubah' : 'Audio mute toggled';
+  else if (action === 'volume_set') label = `Volume: ${value}%`;
+  else if (action === 'brightness_up') label = currentUiLang === 'id' ? 'Kecerahan dinaikkan (+10%)' : 'Brightness up (+10%)';
+  else if (action === 'brightness_down') label = currentUiLang === 'id' ? 'Kecerahan diturunkan (-10%)' : 'Brightness down (-10%)';
+  else if (action === 'brightness_set') label = currentUiLang === 'id' ? `Kecerahan: ${value}%` : `Brightness: ${value}%`;
+  else if (action === 'anti_sleep_on') label = currentUiLang === 'id' ? 'Anti-Sleep: Aktif (PC Terjaga)' : 'Anti-Sleep: Active (PC Awake)';
+  else if (action === 'anti_sleep_off') label = currentUiLang === 'id' ? 'Anti-Sleep: Nonaktif' : 'Anti-Sleep: Disabled';
 
   if (typeof showSmartToast === 'function') {
     showSmartToast(label);
@@ -17363,14 +17683,200 @@ function initPowerControls() {
     });
   }
 
-  const btnBack = $('btn-power-back');
-  if (btnBack) {
-    btnBack.addEventListener('click', () => {
+  // ── 1. Brightness Controls ──
+  const sliderBright = $('slider-power-brightness');
+  const valBright = $('power-bright-val');
+  const btnBrightDown = $('btn-bright-down');
+  const btnBrightUp = $('btn-bright-up');
+  const brightPills = document.querySelectorAll('.power-pill[data-bright]');
+
+  function updateBrightnessUI(val) {
+    val = Math.max(10, Math.min(100, parseInt(val, 10) || 100));
+    if (sliderBright) sliderBright.value = val;
+    if (valBright) valBright.textContent = val + '%';
+    brightPills.forEach(p => {
+      const pVal = parseInt(p.getAttribute('data-bright'), 10);
+      p.classList.toggle('active', pVal === val);
+    });
+    try { localStorage.setItem('digi_brightness', val); } catch (e) {}
+  }
+
+  // Restore saved brightness
+  try {
+    const savedBright = localStorage.getItem('digi_brightness');
+    if (savedBright) updateBrightnessUI(savedBright);
+  } catch (e) {}
+
+  if (sliderBright) {
+    sliderBright.addEventListener('input', () => {
+      updateBrightnessUI(sliderBright.value);
+    });
+    sliderBright.addEventListener('change', () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
-      switchAppMode('standard');
+      executePowerActionNow('brightness_set', parseInt(sliderBright.value, 10));
     });
   }
+
+  if (btnBrightDown) {
+    btnBrightDown.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      let cur = parseInt(sliderBright ? sliderBright.value : 100, 10);
+      cur = Math.max(10, cur - 10);
+      updateBrightnessUI(cur);
+      executePowerActionNow('brightness_set', cur);
+    });
+  }
+
+  if (btnBrightUp) {
+    btnBrightUp.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      let cur = parseInt(sliderBright ? sliderBright.value : 100, 10);
+      cur = Math.min(100, cur + 10);
+      updateBrightnessUI(cur);
+      executePowerActionNow('brightness_set', cur);
+    });
+  }
+
+  brightPills.forEach(p => {
+    p.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      const val = parseInt(p.getAttribute('data-bright'), 10);
+      updateBrightnessUI(val);
+      executePowerActionNow('brightness_set', val);
+    });
+  });
+
+  // ── 2. Volume Controls ──
+  const sliderVol = $('slider-power-volume');
+  const valVol = $('power-volume-val');
+  const btnVolDown = $('btn-vol-down');
+  const btnVolUp = $('btn-vol-up');
+  const btnVolMute = $('btn-vol-mute');
+  const volPills = document.querySelectorAll('.power-pill[data-vol]');
+
+  function updateVolumeUI(val) {
+    val = Math.max(0, Math.min(100, parseInt(val, 10) || 80));
+    if (sliderVol) sliderVol.value = val;
+    if (valVol) valVol.textContent = val + '%';
+    volPills.forEach(p => {
+      const pVal = parseInt(p.getAttribute('data-vol'), 10);
+      p.classList.toggle('active', pVal === val);
+    });
+    try { localStorage.setItem('digi_volume', val); } catch (e) {}
+  }
+
+  try {
+    const savedVol = localStorage.getItem('digi_volume');
+    if (savedVol) updateVolumeUI(savedVol);
+  } catch (e) {}
+
+  if (sliderVol) {
+    sliderVol.addEventListener('input', () => {
+      updateVolumeUI(sliderVol.value);
+    });
+    sliderVol.addEventListener('change', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      executePowerActionNow('volume_set', parseInt(sliderVol.value, 10));
+    });
+  }
+
+  if (btnVolDown) {
+    btnVolDown.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      let cur = parseInt(sliderVol ? sliderVol.value : 80, 10);
+      cur = Math.max(0, cur - 5);
+      updateVolumeUI(cur);
+      executePowerActionNow('volume_set', cur);
+    });
+  }
+
+  if (btnVolUp) {
+    btnVolUp.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      let cur = parseInt(sliderVol ? sliderVol.value : 80, 10);
+      cur = Math.min(100, cur + 5);
+      updateVolumeUI(cur);
+      executePowerActionNow('volume_set', cur);
+    });
+  }
+
+  if (btnVolMute) {
+    btnVolMute.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(20);
+      executePowerActionNow('volume_mute');
+    });
+  }
+
+  volPills.forEach(p => {
+    p.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      const val = parseInt(p.getAttribute('data-vol'), 10);
+      updateVolumeUI(val);
+      executePowerActionNow('volume_set', val);
+    });
+  });
+
+  // ── 3. Wake Up & Anti-Sleep ──
+  const btnWake = $('btn-power-wake');
+  const toggleAntiSleep = $('toggle-anti-sleep');
+  const tagAntiSleep = $('power-anti-sleep-tag');
+  let antiSleepTimer = null;
+
+  function updateAntiSleepUI(active) {
+    if (tagAntiSleep) {
+      tagAntiSleep.textContent = active ? (currentUiLang === 'id' ? 'TERJAGA' : 'AWAKE') : (currentUiLang === 'id' ? 'STANDAR' : 'STANDARD');
+      tagAntiSleep.classList.toggle('active', active);
+    }
+    if (toggleAntiSleep) toggleAntiSleep.checked = active;
+
+    if (antiSleepTimer) {
+      clearInterval(antiSleepTimer);
+      antiSleepTimer = null;
+    }
+    if (active) {
+      antiSleepTimer = setInterval(() => {
+        if (toggleAntiSleep && toggleAntiSleep.checked) {
+          send({ type: 'power_action', action: 'anti_sleep_on' });
+        }
+      }, 30000);
+    }
+    try { localStorage.setItem('digi_anti_sleep', active ? '1' : '0'); } catch (e) {}
+  }
+
+  if (btnWake) {
+    btnWake.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(25);
+      executePowerActionNow('wake_up');
+    });
+  }
+
+  if (toggleAntiSleep) {
+    toggleAntiSleep.addEventListener('change', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(25);
+      const isAwake = toggleAntiSleep.checked;
+      updateAntiSleepUI(isAwake);
+      executePowerActionNow(isAwake ? 'anti_sleep_on' : 'anti_sleep_off');
+    });
+  }
+
+  try {
+    const savedAwake = localStorage.getItem('digi_anti_sleep') === '1';
+    if (savedAwake) {
+      updateAntiSleepUI(true);
+      executePowerActionNow('anti_sleep_on');
+    }
+  } catch (e) {}
 
   updatePowerViewLabels(currentOS);
 }

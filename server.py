@@ -650,16 +650,172 @@ def set_system_volume(percent):
             import subprocess
             try:
                 subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', f"{val}%"], timeout=1, check=False)
-                return
+                return val
             except Exception:
                 pass
             try:
                 subprocess.run(['amixer', '-D', 'pulse', 'sset', 'Master', f"{val}%"], timeout=1, check=False)
-                return
+                return val
             except Exception:
                 pass
+        elif sys.platform == 'darwin':
+            subprocess.run(['osascript', '-e', f'set volume output volume {val}'], timeout=1, check=False)
+            return val
     except Exception as e:
         print(f"[Error set volume]: {e}")
+    return 100
+
+
+CURRENT_SYSTEM_BRIGHTNESS = 100
+
+def set_system_brightness(percent: int):
+    """Menyetel kecerahan layar monitor host (10 - 100%)"""
+    global CURRENT_SYSTEM_BRIGHTNESS
+    try:
+        CURRENT_SYSTEM_BRIGHTNESS = max(10, min(100, int(percent)))
+    except Exception:
+        CURRENT_SYSTEM_BRIGHTNESS = 100
+    val = CURRENT_SYSTEM_BRIGHTNESS
+
+    if sys.platform.startswith('linux'):
+        env = get_x11_env()
+        # 1. Coba brightnessctl untuk laptop/panel terintegrasi
+        try:
+            subprocess.run(['brightnessctl', 'set', f'{val}%'], env=env, capture_output=True, timeout=1)
+        except Exception:
+            pass
+        # 2. Atur via xrandr untuk desktop monitor (software brightness gamma)
+        try:
+            p = subprocess.run(['xrandr', '--query'], env=env, capture_output=True, text=True, timeout=1)
+            if p.returncode == 0:
+                float_val = max(0.1, val / 100.0)
+                outputs = [line.split()[0] for line in p.stdout.splitlines() if ' connected' in line]
+                for out in outputs:
+                    subprocess.run(['xrandr', '--output', out, '--brightness', f'{float_val:.2f}'], env=env, timeout=1)
+        except Exception:
+            pass
+    elif sys.platform == 'win32':
+        try:
+            ps = f"(Get-WmiObject -Namespace root/wmi -Class WmiMonitorBrightnessMethods).WmiSetBrightness(1,{val})"
+            subprocess.Popen(['powershell', '-NoProfile', '-Command', ps])
+        except Exception:
+            pass
+    elif sys.platform == 'darwin':
+        try:
+            subprocess.Popen(['brightness', str(val / 100.0)])
+        except Exception:
+            pass
+    return CURRENT_SYSTEM_BRIGHTNESS
+
+
+def adjust_system_brightness(delta: int):
+    """Menambah atau mengurangi kecerahan layar secara bertahap."""
+    global CURRENT_SYSTEM_BRIGHTNESS
+    new_val = max(10, min(100, CURRENT_SYSTEM_BRIGHTNESS + delta))
+    return set_system_brightness(new_val)
+
+
+def trigger_wake_up():
+    """Membangunkan layar monitor dan sesi PC dari kondisi redup/sleep."""
+    if sys.platform.startswith('linux'):
+        env = get_x11_env()
+        try:
+            subprocess.run(['xset', 'dpms', 'force', 'on'], env=env, timeout=1)
+        except Exception:
+            pass
+        try:
+            subprocess.run(['xdg-screensaver', 'reset'], env=env, timeout=1)
+        except Exception:
+            pass
+    elif sys.platform == 'win32':
+        try:
+            ps_cmd = '(Add-Type \'[DllImport("user32.dll")]public static extern int SendMessage(int hWnd, int Msg, int wParam, int lParam);\' -Name a -Passthru)::SendMessage(-1, 0x0112, 0xF170, -1)'
+            subprocess.Popen(['powershell', '-NoProfile', '-Command', ps_cmd])
+        except Exception:
+            pass
+    elif sys.platform == 'darwin':
+        try:
+            subprocess.Popen(['caffeinate', '-u', '-t', '2'])
+        except Exception:
+            pass
+
+    # Beri sedikit stimulasi kursor mouse atau tombol shift agar layar seketika aktif
+    try:
+        cur_pos = mouse_controller.position
+        mouse_controller.position = (cur_pos[0] + 1, cur_pos[1])
+        mouse_controller.position = cur_pos
+    except Exception:
+        simulate_tap(resolve_key('shift'))
+    return True
+
+
+ANTI_SLEEP_ACTIVE = False
+ANTI_SLEEP_PROC = None
+
+def set_anti_sleep(enable: bool):
+    """Mengaktifkan atau menonaktifkan mode Anti-Sleep (mencegah PC dan layar tidur)."""
+    global ANTI_SLEEP_ACTIVE, ANTI_SLEEP_PROC
+    ANTI_SLEEP_ACTIVE = bool(enable)
+    if ANTI_SLEEP_ACTIVE:
+        if sys.platform.startswith('linux'):
+            env = get_x11_env()
+            try:
+                subprocess.run(['xset', '-dpms'], env=env, timeout=1)
+                subprocess.run(['xset', 's', 'off'], env=env, timeout=1)
+                subprocess.run(['xset', 's', 'noblank'], env=env, timeout=1)
+            except Exception:
+                pass
+            if ANTI_SLEEP_PROC is None:
+                try:
+                    ANTI_SLEEP_PROC = subprocess.Popen(
+                        ['systemd-inhibit', '--what=idle:sleep', '--who=DigiSmartDeck',
+                         '--why=Tetap terjaga anti-sleep', 'sleep', '86400'],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                    )
+                except Exception:
+                    ANTI_SLEEP_PROC = None
+        elif sys.platform == 'win32':
+            try:
+                import ctypes
+                ctypes.windll.kernel32.SetThreadExecutionState(0x80000000 | 0x00000001 | 0x00000002)
+            except Exception:
+                pass
+        elif sys.platform == 'darwin':
+            if ANTI_SLEEP_PROC is None:
+                try:
+                    ANTI_SLEEP_PROC = subprocess.Popen(['caffeinate', '-d', '-i', '-s'])
+                except Exception:
+                    ANTI_SLEEP_PROC = None
+    else:
+        if sys.platform.startswith('linux'):
+            env = get_x11_env()
+            try:
+                subprocess.run(['xset', '+dpms'], env=env, timeout=1)
+                subprocess.run(['xset', 's', 'on'], env=env, timeout=1)
+                subprocess.run(['xset', 's', 'blank'], env=env, timeout=1)
+            except Exception:
+                pass
+            if ANTI_SLEEP_PROC:
+                try:
+                    ANTI_SLEEP_PROC.terminate()
+                except Exception:
+                    pass
+                ANTI_SLEEP_PROC = None
+        elif sys.platform == 'win32':
+            try:
+                import ctypes
+                ctypes.windll.kernel32.SetThreadExecutionState(0x80000000)
+            except Exception:
+                pass
+        elif sys.platform == 'darwin':
+            if ANTI_SLEEP_PROC:
+                try:
+                    ANTI_SLEEP_PROC.terminate()
+                except Exception:
+                    pass
+                ANTI_SLEEP_PROC = None
+    return ANTI_SLEEP_ACTIVE
+
 
 
 
@@ -1228,13 +1384,121 @@ def close_window(win_id):
     return False
 
 
-def execute_power_action(action: str, host_os: str = None) -> dict:
+def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
     """Mengeksekusi perintah daya dan kontrol sesi sesuai sistem operasi host."""
     if not host_os:
         host_os = get_host_os()
 
     action = str(action).lower().strip()
+    if ':' in action:
+        parts = action.split(':', 1)
+        action = parts[0].strip()
+        if value is None:
+            try:
+                value = int(parts[1].strip())
+            except Exception:
+                value = parts[1].strip()
+
     result = {'success': False, 'action': action, 'os': host_os, 'message': ''}
+
+    # Kontrol Sistem Universal (Suara, Kecerahan, Wake Up, Anti-Sleep)
+    if action == 'volume_up':
+        if sys.platform.startswith('linux'):
+            try:
+                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', '+5%'], timeout=1, check=False)
+            except Exception:
+                pass
+        elif sys.platform == 'darwin':
+            try:
+                subprocess.run(['osascript', '-e', 'set volume output volume (output volume of (get volume settings) + 5)'], timeout=1, check=False)
+            except Exception:
+                pass
+        simulate_tap(resolve_key('volume_up'))
+        result['success'] = True
+        result['message'] = 'Volume dinaikkan (+5%).'
+        return result
+
+    elif action == 'volume_down':
+        if sys.platform.startswith('linux'):
+            try:
+                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', '-5%'], timeout=1, check=False)
+            except Exception:
+                pass
+        elif sys.platform == 'darwin':
+            try:
+                subprocess.run(['osascript', '-e', 'set volume output volume (output volume of (get volume settings) - 5)'], timeout=1, check=False)
+            except Exception:
+                pass
+        simulate_tap(resolve_key('volume_down'))
+        result['success'] = True
+        result['message'] = 'Volume diturunkan (-5%).'
+        return result
+
+    elif action == 'volume_mute':
+        if sys.platform.startswith('linux'):
+            try:
+                subprocess.run(['pactl', 'set-sink-mute', '@DEFAULT_SINK@', 'toggle'], timeout=1, check=False)
+            except Exception:
+                pass
+        elif sys.platform == 'darwin':
+            try:
+                subprocess.run(['osascript', '-e', 'set volume output muted not (output muted of (get volume settings))'], timeout=1, check=False)
+            except Exception:
+                pass
+        simulate_tap(resolve_key('volume_mute'))
+        result['success'] = True
+        result['message'] = 'Status mute audio diubah.'
+        return result
+
+    elif action == 'volume_set':
+        val = int(value) if value is not None else 80
+        set_system_volume(val)
+        result['success'] = True
+        result['value'] = val
+        result['message'] = f'Volume diatur ke {val}%.'
+        return result
+
+    elif action == 'brightness_up':
+        val = adjust_system_brightness(10)
+        result['success'] = True
+        result['value'] = val
+        result['message'] = f'Kecerahan layar: {val}%.'
+        return result
+
+    elif action == 'brightness_down':
+        val = adjust_system_brightness(-10)
+        result['success'] = True
+        result['value'] = val
+        result['message'] = f'Kecerahan layar: {val}%.'
+        return result
+
+    elif action == 'brightness_set':
+        val = int(value) if value is not None else 100
+        val = set_system_brightness(val)
+        result['success'] = True
+        result['value'] = val
+        result['message'] = f'Kecerahan layar: {val}%.'
+        return result
+
+    elif action == 'wake_up':
+        trigger_wake_up()
+        result['success'] = True
+        result['message'] = 'Sinyal bangunkan layar/PC berhasil dikirim.'
+        return result
+
+    elif action in ('anti_sleep_on', 'keep_awake_on'):
+        set_anti_sleep(True)
+        result['success'] = True
+        result['active'] = True
+        result['message'] = 'Mode Anti-Sleep aktif (PC dicegah tidur otomatis).'
+        return result
+
+    elif action in ('anti_sleep_off', 'keep_awake_off'):
+        set_anti_sleep(False)
+        result['success'] = True
+        result['active'] = False
+        result['message'] = 'Mode Anti-Sleep nonaktif (Pengaturan daya standar dipulihkan).'
+        return result
 
     # 1. LINUX / UBUNTU
     if host_os == 'ubuntu' or sys.platform.startswith('linux'):
@@ -2018,6 +2282,14 @@ async def websocket_handler(request):
                     except Exception:
                         pass
 
+                elif msg_type == 'brightness_set':
+                    try:
+                        val = int(data.get('value', 100))
+                        val = max(10, min(100, val))
+                        set_system_brightness(val)
+                    except Exception:
+                        pass
+
                 elif msg_type == 'mousescroll':
                     try:
                         dx = float(data.get('dx', 0))
@@ -2124,14 +2396,17 @@ async def websocket_handler(request):
 
                 elif msg_type == 'power_action':
                     action = data.get('action')
+                    value = data.get('value')
                     if action:
-                        res = await asyncio.to_thread(execute_power_action, action)
+                        res = await asyncio.to_thread(execute_power_action, action, None, value)
                         try:
                             await ws.send_str(json.dumps({
                                 'type': 'power_result',
                                 'action': action,
                                 'success': res.get('success', False),
                                 'message': res.get('message', ''),
+                                'value': res.get('value', None),
+                                'active': res.get('active', None),
                                 'os': res.get('os', '')
                             }))
                         except Exception:
@@ -2303,9 +2578,10 @@ async def api_power_handler(request):
     except Exception:
         data = {}
     action = data.get('action') or request.query.get('action')
+    value = data.get('value') or request.query.get('value')
     if not action:
         return web.json_response({'error': 'Parameter action diperlukan.'}, status=400, headers={'Access-Control-Allow-Origin': '*'})
-    res = await asyncio.to_thread(execute_power_action, action)
+    res = await asyncio.to_thread(execute_power_action, action, None, value)
     return web.json_response(res, headers={'Access-Control-Allow-Origin': '*'})
 
 
