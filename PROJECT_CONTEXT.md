@@ -1779,6 +1779,28 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
 
-
-
+## 98. CATATAN CHECKPOINT (v1.20.5 - Aktivasi Mandiri & Otomatis Sistem Auto-Updater OTA)
+- **Sistem Auto-Updater Otomatis & Terjadwal (static/index.html):**
+  - Mengimplementasikan alur pemeriksaan pembaruan OTA otomatis di latar belakang via fungsi `checkAutoUpdate(silent = true)`.
+  - Terpicu mandiri tanpa interaksi manual pada beberapa titik utama:
+    1. 2.5 detik setelah aplikasi dibuka (startup / splash screen).
+    2. Seketika saat WebSocket berhasil terhubung ke host PC (`ws.onopen`).
+    3. Berkala setiap 15 menit melalui timer interval background.
+    4. Saat pesan inisialisasi WebSocket (`init`) mendeteksi versi server lebih tinggi dari versi klien.
+- **Banner Notifikasi Pembaruan Melayang (Floating Notification Banner):**
+  - Menambahkan `#update-notification-banner` dengan tampilan sleek cyber dark-mode di sudut atas antarmuka.
+  - Menampilkan ringkasan versi baru, ukuran file APK, tombol aksi 1-ketukan 'Pasang', 'Detail', dan 'Tutup'.
+  - Dilengkapi progress bar unduhan real-time inline di dalam banner saat proses download berlangsung via `DigiAndroidBridge.downloadAndInstallUpdate()`.
+  - Menambahkan indikator dot badge berdenyut (`#update-badge-dot`) pada tombol About di header saat update tersedia.
+- **Helper Toast Terpadu (showSmartToast):**
+  - Mengimplementasikan fungsi global `showSmartToast(msg, app)` yang terhubung langsung ke `#smart-context-toast` sehingga seluruh panggilan toast status berjalan mulus tanpa error.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.5`.
+  - Sinkronisasi konstanta `APP_CLIENT_VERSION` dan `APP_CLIENT_VERSION_CODE` pada `bump-version.sh`.
+  - File APK baru terkompilasi di `dist/` dan `static/`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
