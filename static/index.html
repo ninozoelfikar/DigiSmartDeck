@@ -7079,10 +7079,16 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
           <div class="ai-transcript-text empty" id="ai-transcript-preview" data-i18n="ai_transcript_empty">Speak to dictate...</div>
           <div class="ai-transcript-actions">
-            <label class="ai-autosend-label" data-i18n-title="ai_auto_send_title" title="Automatically transmit text to host upon silence detection">
-              <input type="checkbox" id="ai-autosend-chk">
-              <span data-i18n="ai_auto_send">Auto-Send</span>
-            </label>
+            <div class="ai-options-cluster" style="display:inline-flex; align-items:center; gap:8px;">
+              <label class="ai-autosend-label" id="ai-alwayson-label" data-i18n-title="ai_always_on_title" title="Continuous dictation without timeouts or start/stop sounds">
+                <input type="checkbox" id="ai-alwayson-chk">
+                <span data-i18n="ai_always_on">Always-On</span>
+              </label>
+              <label class="ai-autosend-label" id="ai-autosend-label" data-i18n-title="ai_auto_send_title" title="Automatically transmit text to host upon silence detection">
+                <input type="checkbox" id="ai-autosend-chk">
+                <span data-i18n="ai_auto_send">Auto-Send</span>
+              </label>
+            </div>
             <div class="ai-tr-btns">
               <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-undo" data-i18n="ai_undo" title="Kembalikan teks yang terakhir dikirim atau dibersihkan">Undo</button>
               <button type="button" class="ai-btn-tr-act" id="btn-ai-tr-clear" data-i18n="ai_clear">Clear</button>
@@ -8393,6 +8399,8 @@ const I18N = {
     ai_mic_ready_2: "Tap Mic to speak",
     ai_dictation_lang: "Dictation Language",
     ai_transcript_empty: "Speak to dictate...",
+    ai_always_on: "Always-On",
+    ai_always_on_title: "Continuous dictation without timeouts or start/stop sounds",
     ai_auto_send: "Auto-Send",
     ai_auto_send_title: "Automatically transmit text to host upon silence detection",
     ai_undo: "Undo",
@@ -8662,6 +8670,8 @@ const I18N = {
     ai_mic_ready_2: "Ketuk Mic untuk bicara",
     ai_dictation_lang: "Bahasa Dikte",
     ai_transcript_empty: "Bicara untuk mendikte...",
+    ai_always_on: "Always-On",
+    ai_always_on_title: "Dikte terus menerus tanpa batas hening dan tanpa bunyi pemutus",
     ai_auto_send: "Auto-Kirim",
     ai_auto_send_title: "Kirim teks otomatis ke PC setiap selesai berbicara",
     ai_undo: "Undo",
@@ -14218,15 +14228,25 @@ window.onNativeSpeechResult = function(text) {
 };
 
 window.onNativeSpeechEnd = function() {
+  commitCurrentSession();
+  if (aiSpeechAlwaysOn && aiSpeechWanted) {
+    isAiRecording = true;
+    updateAiMicUI();
+    return;
+  }
   isAiRecording = false;
   isAiStarting = false;
   aiSpeechWanted = false;
-  commitCurrentSession();
   updateAiMicUI();
 };
 
 window.onNativeSpeechError = function(code) {
   console.warn('[Native Speech Error Code]:', code);
+  if (aiSpeechAlwaysOn && aiSpeechWanted && (code === 6 || code === 7 || code === 8)) {
+    isAiRecording = true;
+    updateAiMicUI();
+    return;
+  }
   isAiRecording = false;
   isAiStarting = false;
   aiSpeechWanted = false;
@@ -14279,7 +14299,14 @@ function startAiSpeechSession() {
   // 1. Prioritaskan Native Android SpeechRecognizer jika berjalan di APK WebView
   if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.startNativeSpeech === 'function' && window.DigiAndroidBridge.isNativeSpeechAvailable()) {
     try {
-      window.DigiAndroidBridge.startNativeSpeech(aiSpeechLang);
+      if (typeof window.DigiAndroidBridge.startNativeSpeechWithOptions === 'function') {
+        window.DigiAndroidBridge.startNativeSpeechWithOptions(aiSpeechLang, aiSpeechAlwaysOn);
+      } else {
+        if (typeof window.DigiAndroidBridge.setAlwaysOnSpeech === 'function') {
+          window.DigiAndroidBridge.setAlwaysOnSpeech(aiSpeechAlwaysOn);
+        }
+        window.DigiAndroidBridge.startNativeSpeech(aiSpeechLang);
+      }
       return { native: true };
     } catch(e) {
       console.warn('Fallback ke Web Speech API:', e);
@@ -14378,10 +14405,24 @@ function startAiSpeechSession() {
     };
 
     recognition.onend = () => {
+      commitCurrentSession();
+      if (aiSpeechAlwaysOn && aiSpeechWanted) {
+        setTimeout(() => {
+          if (aiSpeechWanted) {
+            try {
+              recognition.start();
+              isAiRecording = true;
+              updateAiMicUI();
+            } catch(e) {
+              startAiSpeechSession();
+            }
+          }
+        }, 120);
+        return;
+      }
       isAiRecording = false;
       isAiStarting = false;
-      aiSpeechWanted = false; // Google Mic berhenti natural saat hening, tanpa auto-restart paksa
-      commitCurrentSession();
+      aiSpeechWanted = false;
       updateAiMicUI();
     };
 
@@ -14564,9 +14605,58 @@ if (btnLangId && btnLangEn) {
   btnLangEn.classList.toggle('active', aiSpeechLang === 'en-US');
 }
 
+// Checkbox Always-On
+let aiSpeechAlwaysOn = localStorage.getItem('digi_ai_always_on') !== 'false';
+const chkAlwaysOn = $('ai-alwayson-chk');
+const lblAlwaysOn = $('ai-alwayson-label');
+
+function toggleAlwaysOn(forceVal) {
+  playClickSound();
+  if (typeof forceVal === 'boolean') {
+    aiSpeechAlwaysOn = forceVal;
+  } else {
+    aiSpeechAlwaysOn = !aiSpeechAlwaysOn;
+  }
+  if (chkAlwaysOn) chkAlwaysOn.checked = aiSpeechAlwaysOn;
+  localStorage.setItem('digi_ai_always_on', aiSpeechAlwaysOn ? 'true' : 'false');
+  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.setAlwaysOnSpeech === 'function') {
+    try {
+      window.DigiAndroidBridge.setAlwaysOnSpeech(aiSpeechAlwaysOn);
+    } catch(e) {}
+  }
+  vibe(10);
+}
+
+if (chkAlwaysOn) {
+  chkAlwaysOn.checked = aiSpeechAlwaysOn;
+  chkAlwaysOn.addEventListener('change', (e) => {
+    e.stopPropagation();
+    toggleAlwaysOn(chkAlwaysOn.checked);
+  });
+}
+
+if (lblAlwaysOn) {
+  let lastTouchAlwaysOn = 0;
+  lblAlwaysOn.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    if (e.target !== chkAlwaysOn) {
+      if (e.cancelable) e.preventDefault();
+      lastTouchAlwaysOn = Date.now();
+      toggleAlwaysOn();
+    }
+  });
+  lblAlwaysOn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (Date.now() - lastTouchAlwaysOn < 450) return;
+    if (e.target !== chkAlwaysOn) {
+      toggleAlwaysOn();
+    }
+  });
+}
+
 // Checkbox Auto-Kirim
 const chkAutoSend = $('ai-autosend-chk');
-const lblAutoSend = document.querySelector('.ai-autosend-label');
+const lblAutoSend = $('ai-autosend-label') || document.querySelector('.ai-autosend-label');
 
 function toggleAutoSend(forceVal) {
   playClickSound();

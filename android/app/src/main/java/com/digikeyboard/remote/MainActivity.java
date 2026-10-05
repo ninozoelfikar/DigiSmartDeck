@@ -32,6 +32,9 @@ import android.content.Intent;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.media.AudioManager;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
     private PermissionRequest pendingPermissionRequest;
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
+    private AudioManager audioManager;
+    private Handler speechHandler = new Handler(Looper.getMainLooper());
+    private boolean isAlwaysOnSpeech = true;
+    private boolean isListeningActive = false;
+    private boolean isMutedByBridge = false;
+    private String currentSpeechLang = "id-ID";
 
     public class WebAppInterface {
         @android.webkit.JavascriptInterface
@@ -73,17 +82,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @android.webkit.JavascriptInterface
+        public void setAlwaysOnSpeech(boolean enable) {
+            isAlwaysOnSpeech = enable;
+        }
+
+        @android.webkit.JavascriptInterface
+        public boolean isAlwaysOnSpeech() {
+            return isAlwaysOnSpeech;
+        }
+
+        @android.webkit.JavascriptInterface
         public void startNativeSpeech(String lang) {
+            startNativeSpeechWithOptions(lang, isAlwaysOnSpeech);
+        }
+
+        @android.webkit.JavascriptInterface
+        public void startNativeSpeechWithOptions(String lang, boolean alwaysOn) {
             runOnUiThread(() -> {
                 if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_PERMISSIONS);
                     return;
                 }
+                isAlwaysOnSpeech = alwaysOn;
+                isListeningActive = true;
+                currentSpeechLang = (lang != null && !lang.isEmpty()) ? lang : "id-ID";
+
+                muteChime();
                 if (speechRecognizer == null) {
                     initSpeechRecognizer();
                 }
                 if (speechRecognizer != null) {
-                    speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, (lang != null && !lang.isEmpty()) ? lang : "id-ID");
+                    speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, currentSpeechLang);
                     try {
                         speechRecognizer.startListening(speechRecognizerIntent);
                     } catch (Exception e) {
@@ -96,6 +125,10 @@ public class MainActivity extends AppCompatActivity {
         @android.webkit.JavascriptInterface
         public void stopNativeSpeech() {
             runOnUiThread(() -> {
+                isListeningActive = false;
+                if (speechHandler != null) {
+                    speechHandler.removeCallbacksAndMessages(null);
+                }
                 if (speechRecognizer != null) {
                     try {
                         speechRecognizer.stopListening();
@@ -103,12 +136,17 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                unmuteChimeDelayed(150);
             });
         }
 
         @android.webkit.JavascriptInterface
         public void cancelNativeSpeech() {
             runOnUiThread(() -> {
+                isListeningActive = false;
+                if (speechHandler != null) {
+                    speechHandler.removeCallbacksAndMessages(null);
+                }
                 if (speechRecognizer != null) {
                     try {
                         speechRecognizer.cancel();
@@ -116,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                unmuteChimeDelayed(150);
             });
         }
 
@@ -425,15 +464,92 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void muteChime() {
+        try {
+            if (audioManager == null) {
+                audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            }
+            if (audioManager != null && !isMutedByBridge) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_MUTE, 0);
+                    audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, AudioManager.ADJUST_MUTE, 0);
+                } else {
+                    audioManager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
+                    audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+                }
+                isMutedByBridge = true;
+            }
+        } catch (Throwable ignored) {}
+    }
+
+    private void unmuteChimeDelayed(long delayMs) {
+        if (speechHandler == null) return;
+        speechHandler.postDelayed(() -> {
+            try {
+                if (audioManager != null && isMutedByBridge) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0);
+                        audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, AudioManager.ADJUST_UNMUTE, 0);
+                    } else {
+                        audioManager.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
+                        audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, false);
+                    }
+                    isMutedByBridge = false;
+                }
+            } catch (Throwable ignored) {}
+        }, delayMs);
+    }
+
+    private void scheduleSpeechRestart(long delayMs) {
+        if (!isListeningActive || !isAlwaysOnSpeech) return;
+        if (speechHandler == null) return;
+        speechHandler.removeCallbacksAndMessages(null);
+        speechHandler.postDelayed(() -> {
+            if (!isListeningActive || !isAlwaysOnSpeech) return;
+            runOnUiThread(() -> {
+                try {
+                    muteChime();
+                    if (speechRecognizer == null) {
+                        initSpeechRecognizer();
+                    }
+                    if (speechRecognizer != null && speechRecognizerIntent != null) {
+                        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, currentSpeechLang);
+                        speechRecognizer.startListening(speechRecognizerIntent);
+                    }
+                } catch (Exception e) {
+                    if (isListeningActive && isAlwaysOnSpeech) {
+                        speechHandler.postDelayed(() -> scheduleSpeechRestart(250), 150);
+                    }
+                }
+            });
+        }, delayMs);
+    }
+
     private void initSpeechRecognizer() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             return;
         }
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        if (speechRecognizer != null) {
+            try {
+                speechRecognizer.destroy();
+            } catch (Exception ignored) {}
+            speechRecognizer = null;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && SpeechRecognizer.isOnDeviceRecognitionAvailable(this)) {
+            speechRecognizer = SpeechRecognizer.createOnDeviceSpeechRecognizer(this);
+        } else {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        }
+
         speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+        speechRecognizerIntent.putExtra("android.speech.extra.DICTATION_MODE", true);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 2500L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 1500L);
 
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
@@ -465,6 +581,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(int error) {
+                if (isListeningActive && isAlwaysOnSpeech) {
+                    if (error == SpeechRecognizer.ERROR_NO_MATCH ||
+                        error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT ||
+                        error == SpeechRecognizer.ERROR_RECOGNIZER_BUSY ||
+                        error == SpeechRecognizer.ERROR_NETWORK_TIMEOUT) {
+                        scheduleSpeechRestart(120);
+                        return;
+                    }
+                }
+
+                isListeningActive = false;
+                unmuteChimeDelayed(100);
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechError) window.onNativeSpeechError(" + error + ");", null);
@@ -485,6 +613,13 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                     }
+                }
+
+                if (isListeningActive && isAlwaysOnSpeech) {
+                    scheduleSpeechRestart(100);
+                } else {
+                    isListeningActive = false;
+                    unmuteChimeDelayed(100);
                 }
             }
 
@@ -510,8 +645,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (isListeningActive) {
+            isListeningActive = false;
+            if (speechHandler != null) {
+                speechHandler.removeCallbacksAndMessages(null);
+            }
+            if (speechRecognizer != null) {
+                try {
+                    speechRecognizer.cancel();
+                } catch (Exception ignored) {}
+            }
+            unmuteChimeDelayed(0);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        isListeningActive = false;
+        if (speechHandler != null) {
+            speechHandler.removeCallbacksAndMessages(null);
+        }
+        unmuteChimeDelayed(0);
         if (bluetoothHidHelper != null) {
             bluetoothHidHelper.unregister();
         }
