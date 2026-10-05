@@ -1229,6 +1229,7 @@ def close_window(win_id):
 
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
+ENABLE_REMOTE_PROMPTS = os.environ.get('DIGI_ENABLE_PROMPTS', '0') == '1'
 
 def cleanup_pending_prompts():
     """Membersihkan prompt kedaluwarsa atau yang sudah melewati batas waktu timeout."""
@@ -1299,8 +1300,8 @@ async def smart_context_tracker_loop():
                         except Exception:
                             pass
 
-                # Deteksi dan siarkan prompt dialog jendela GUI PC jika ada
-                if info.get('is_dialog'):
+                # Deteksi dan siarkan prompt dialog jendela GUI PC jika ada (fitur eksperimental)
+                if ENABLE_REMOTE_PROMPTS and info.get('is_dialog'):
                     dialog_pid = f"win_dialog_{info.get('win_id')}"
                     if dialog_pid != ACTIVE_WINDOW_DIALOG_ID:
                         if ACTIVE_WINDOW_DIALOG_ID:
@@ -2101,6 +2102,9 @@ async def api_trigger_prompt_handler(request):
     """Endpoint HTTP POST /api/prompt untuk memicu prompt konfirmasi tindakan dari CLI/skrip (Hanya Localhost)."""
     if not is_localhost(request):
         return web.json_response({'error': 'Forbidden: Prompt API hanya dapat diakses dari localhost PC host.'}, status=403)
+
+    if not ENABLE_REMOTE_PROMPTS:
+        return web.json_response({'status': 'disabled', 'message': 'Remote action prompt is disabled for MVP launch.'}, headers={'Access-Control-Allow-Origin': '*'})
 
     try:
         if request.content_type == 'application/json':
