@@ -1709,12 +1709,15 @@ async def websocket_handler(request):
 
                 elif msg_type == 'pair_request':
                     pin = data.get('pin', '')
+                    activation_code = data.get('activation_code', '')
                     dev_name = data.get('device_name') or device_label
-                    token, msg_str = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua)
+                    token, msg_str = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua, activation_code=activation_code)
                     if token:
                         is_client_authorized = True
                         ws['authorized'] = True
                         client_token = token
+                        if token.startswith("dev_rdc_"):
+                            license_manager.activate_key("RICHDADDYCOMPANY", email="developer@richdaddycompany.local", ip=client_ip)
                         await ws.send_str(json.dumps({
                             'type': 'pairing_result',
                             'success': True,
@@ -2418,12 +2421,15 @@ async def api_pair_handler(request):
         data = {}
 
     pin = data.get('pin') or request.query.get('pin', '')
+    activation_code = data.get('activation_code') or request.query.get('activation_code', '')
     dev_name = data.get('device_name') or request.query.get('device_name', 'Client Device')
     client_ip = getattr(request, 'remote', '') or '127.0.0.1'
     ua = request.headers.get('User-Agent', '')
 
-    token, msg = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua)
+    token, msg = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua, activation_code=activation_code)
     if token:
+        if token.startswith("dev_rdc_"):
+            license_manager.activate_key("RICHDADDYCOMPANY", email="developer@richdaddycompany.local", ip=client_ip)
         return web.json_response({
             'success': True,
             'token': token,

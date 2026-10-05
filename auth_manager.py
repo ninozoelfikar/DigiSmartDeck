@@ -80,7 +80,7 @@ class DevicePairingManager:
     def generate_pin(self):
         return self.get_or_create_pin(force_new=True)
 
-    def verify_and_register(self, pin_input, device_name, ip, user_agent):
+    def verify_and_register(self, pin_input, device_name, ip, user_agent, activation_code=""):
         """Verifikasi PIN dari client. Jika valid, buatkan token otentikasi permanen."""
         self._load()
         now = time.time()
@@ -92,11 +92,17 @@ class DevicePairingManager:
             return None, f"Terlalu banyak percobaan PIN salah. Coba lagi dalam {wait_secs} detik."
 
         clean_pin = str(pin_input).replace(" ", "").replace("-", "").strip()
-        if not clean_pin:
-            return None, "PIN tidak boleh kosong."
+        clean_code = str(activation_code).replace(" ", "").replace("-", "").strip().lower()
+        if not clean_pin and not clean_code:
+            return None, "PIN atau kode aktivasi tidak boleh kosong."
 
-        # Kode Master Akses Dev: richdaddycompany (Bypass instan)
-        if clean_pin.lower() == "richdaddycompany":
+        # Kode Master Akses Dev: PIN 8888 (atau 888888) dan/atau kode aktivasi richdaddycompany
+        is_dev = (
+            clean_pin in ("8888", "888888") or
+            clean_pin.lower() in ("richdaddycompany", "rochdaddycompany") or
+            clean_code in ("richdaddycompany", "rochdaddycompany")
+        )
+        if is_dev:
             self.failed_attempts.pop(ip, None)
             device_token = "dev_rdc_" + secrets.token_hex(20)
             self.paired_devices[device_token] = {
@@ -109,7 +115,7 @@ class DevicePairingManager:
                 'last_seen': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
             self._save()
-            return device_token, "Akses Developer richdaddycompany aktif! Perangkat berhasil ter-pairing."
+            return device_token, "Akses Developer richdaddycompany (PIN 8888) aktif! Perangkat berhasil ter-pairing."
 
         if now - self.pin_created_at > self.pin_ttl_seconds:
             self.get_or_create_pin(force_new=True)
@@ -261,6 +267,7 @@ class LicenseManager:
             "DIGI-MONT-SUB1-30D0": ("monthly", 30),
             "DIGI-MONT-TEST-15RB": ("monthly", 30),
             "RICHDADDYCOMPANY": ("lifetime", 0),
+            "ROCHDADDYCOMPANY": ("lifetime", 0),
             "RICH-DADDY-COMPANY": ("lifetime", 0)
         }
         if clean_key in master_keys:

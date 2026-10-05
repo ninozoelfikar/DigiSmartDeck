@@ -1738,4 +1738,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 96. CATATAN CHECKPOINT (v1.20.3 - Dukungan PIN Dev 888888 & Pemulihan Tombol Mode Control Deck)
+- **Integrasi Master PIN Developer 888888 & 8888:**
+  - Menambahkan dukungan PIN `888888` dan `8888` pada `DevicePairingManager.verify_and_register` di `auth_manager.py`.
+  - PIN developer terhubung dengan kode aktivasi master `richdaddycompany` dan otomatis mengaktifkan lisensi Lifetime Pro Developer (`RICHDADDYCOMPANY`) pada `LicenseManager`.
+  - Memperbarui `submitPairingPin()` di `static/index.html` agar menerima input developer tanpa terblokir validasi PIN reguler.
+  - Menambahkan tombol instan 'Aktifkan Akses Dev (PIN: 888888)' pada modal pairing untuk auto-fill dan aktivasi developer 1-ketukan.
+- **Pemulihan Sentral Tombol Mode Kerja (Control Deck & Header):**
+  - Menambahkan kembali Section 0: Mode Kerja Utama pada antarmuka `#control-deck` dengan 4 mode lengkap: Keyboard PC (`#btn-mode-standard`), Game Controller (`#btn-game-mode`), AI Workstation (`#btn-ai-mode`), dan Power Menu (`#btn-power-mode`).
+  - Memperbesar area sentuh tombol mode header (`.header-mode-btn`) menjadi 32x32px dengan `touch-action: manipulation` agar responsif terhadap sentuhan jari di layar sentuh ponsel.
+  - Mengoptimalkan helper `bindModeBtn()` dengan mekanisme debounce 250ms dan penanganan event touch/click yang bersih agar tidak terjadi pembatalan klik atau pemanggilan ganda.
+  - Memperbaiki penanganan `activeOs` pada `switchAppMode('power')` agar kebal terhadap status uninitialized variabel OS.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.3`.
+  - File APK baru terkompilasi di `dist/` dan `static/`.
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+
 
