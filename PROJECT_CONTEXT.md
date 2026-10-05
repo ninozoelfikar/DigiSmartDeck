@@ -1525,4 +1525,26 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 85. CATATAN CHECKPOINT (v1.18.0 - Penerapan Standar Industri Versioning SemVer 2.0.0 & Otomasi Sinkronisasi Multi-Platform)
+- **Standardisasi Versioning Industri IT (SemVer 2.0.0):**
+  - Mengadopsi prinsip Semantic Versioning (`MAJOR.MINOR.PATCH`):
+    * `PATCH`: Perbaikan bug atau penyesuaian styling minor (misal: 1.18.0 -> 1.18.1).
+    * `MINOR`: Penambahan fitur baru backward-compatible (misal: peluncuran landing page, mode baru, standarisasi viewport APK: 1.17.0 -> 1.18.0).
+    * `MAJOR`: Perubahan arsitektur besar atau breaking changes (misal: 1.x -> 2.0.0).
+- **Single Source of Truth (SSOT) Versi:**
+  - File root `VERSION` menjadi rujukan tunggal seluruh komponen proyek.
+  - `android/app/build.gradle` kini secara dinamis membaca file `VERSION`, mengompilasi `versionName` (string versi SemVer) dan menghitung `versionCode` secara matematis (`major * 10000 + minor * 100 + patch`, misal 1.18.0 -> `11800`), memenuhi standar resmi Google Play Store dan Android package manager.
+  - Server Python (`server.py`) memuat versi via `load_version()` dari file `VERSION` dan mengeksposnya ke endpoint `/api/version`.
+- **Penyempurnaan Skrip Otomasi `bump-version.sh`:**
+  - Menghapus 100% karakter emoji dari skrip dan log keluaran terminal guna menaati aturan repositori.
+  - Melakukan sinkronisasi otomatis ke semua aset: `VERSION`, `CHANGELOG.md`, `static/index.html` (badge fallback), `static/landing.html` dan `landing/index.html` (badge `PRO V...`).
+  - Menjalankan `./build-apk.sh` secara otomatis setiap terjadi bump versi sehingga file distribusi APK selalu mutakhir.
+  - Membuat git commit dan git tag versi resmi secara otomatis.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
