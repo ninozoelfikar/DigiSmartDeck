@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.18.4] - 2026-10-05
+- Sinkronisasi UI APK dan Web identik serta pengembalian redaman nada mic Google Voice
+
 ### [1.18.3] - 2026-10-05
 - Perbaikan transkripsi berulang dan stabilitas mikrofon
 
@@ -243,6 +246,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.18.4] - 2026-10-05
+- Release v1.18.4 updates
 
 ### [1.18.3] - 2026-10-05
 - Release v1.18.3 updates

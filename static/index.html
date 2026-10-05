@@ -6254,15 +6254,6 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
           <button type="button" class="tbtn deck-chip" id="btn-fs" title="Layar Penuh" style="display:none;">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
             <span>Fullscreen</span>
-          </button>
-          <button type="button" class="tbtn deck-chip" id="btn-bt" style="display:none;" title="Mode Bluetooth HID Hardware">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
-            <span>BT</span>
-          </button>
-          <button type="button" class="tbtn deck-chip" id="btn-server-config" style="display:none;" title="Ganti Alamat Server PC">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span>Server IP</span>
-          </button>
           <a href="/landing" target="_blank" rel="noopener" class="tbtn deck-chip" id="btn-landing" title="Informasi Produk &amp; Lisensi Pro" style="text-decoration:none;">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
             <span>Landing Page</span>
@@ -7775,7 +7766,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.3</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.4</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8079,7 +8070,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.3</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.4</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -16081,35 +16072,6 @@ if (btnExitCanvas) {
     switchAppMode('standard');
   });
 }
-
-// ── Inisialisasi Tombol Bridge Android App (Bluetooth HID & Server IP) ──
-try {
-  if (window.DigiAndroidBridge) {
-    if (typeof window.DigiAndroidBridge.isBluetoothAvailable === 'function' && window.DigiAndroidBridge.isBluetoothAvailable()) {
-      const btnBt = document.getElementById('btn-bt');
-      if (btnBt) {
-        btnBt.style.display = 'inline-flex';
-        btnBt.addEventListener('click', () => {
-          playClickSound();
-          vibe(15);
-          window.DigiAndroidBridge.enableBluetoothHid();
-        });
-      }
-    }
-    if (typeof window.DigiAndroidBridge.openServerSettings === 'function') {
-      const btnServerCfg = document.getElementById('btn-server-config');
-      if (btnServerCfg) {
-        btnServerCfg.style.display = 'inline-flex';
-        btnServerCfg.addEventListener('click', () => {
-          playClickSound();
-          vibe(15);
-          closeControlDeck();
-          window.DigiAndroidBridge.openServerSettings();
-        });
-      }
-    }
-  }
-} catch(e) {}
 
 // ── Inisialisasi Sentral Mode Kerja (Semua Dependensi & Modul Sudah Siap) ──
 const btnModeStandardDeck = $('btn-mode-standard');
