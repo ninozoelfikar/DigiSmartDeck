@@ -7781,7 +7781,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.0</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.18.1</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -8085,7 +8085,7 @@ body:has(#splash-screen:not(.fade-out)) .modal-backdrop {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.0</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.18.1</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -13879,6 +13879,8 @@ let aiSpeechRecognition = null;
 let isAiRecording = false;
 let isAiStarting = false;
 let aiSpeechWanted = false; // Status apakah mic harus mendengarkan
+let aiWebSessionStartTs = 0;
+let aiWebQuickFails = 0;
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
 let aiKbTarget = localStorage.getItem('digi_ai_kb_target') || 'device'; // 'device' | 'pc'
@@ -14239,6 +14241,16 @@ function renderLiveTranscript() {
   renderTranscriptPreview(liveText);
 }
 
+// Simpan kata-kata interim yang belum sempat difinalkan saat engine berhenti/restart,
+// meniru perilaku Google Voice Typing yang tidak membuang ucapan terakhir.
+function promoteInterimToFinal() {
+  if (currentSessionInterim) {
+    currentSessionFinal = mergeTranscripts(currentSessionFinal, currentSessionInterim);
+    currentSessionInterim = '';
+    renderLiveTranscript();
+  }
+}
+
 // Global Callback Bridge untuk Native Android SpeechRecognizer
 window.onNativeSpeechStart = function() {
   isAiStarting = false;
@@ -14258,25 +14270,39 @@ window.onNativeSpeechResult = function(text) {
   currentSessionInterim = '';
   renderLiveTranscript();
   commitCurrentSession();
+  if (!aiSpeechAlwaysOn) {
+    isAiRecording = false;
+    isAiStarting = false;
+    aiSpeechWanted = false;
+  }
   updateAiMicUI();
 };
 
-window.onNativeSpeechEnd = function() {
+// Dipanggil native saat segmen berakhir tanpa hasil final (timeout/error) dan mic di-restart.
+window.onNativeSpeechRestart = function() {
+  promoteInterimToFinal();
   commitCurrentSession();
+  if (aiSpeechWanted) {
+    isAiRecording = true;
+    updateAiMicUI();
+  }
+};
+
+window.onNativeSpeechEnd = function() {
+  // Hasil final menyusul lewat onNativeSpeechResult; jangan buang interim di sini.
   if (aiSpeechAlwaysOn && aiSpeechWanted) {
     isAiRecording = true;
     updateAiMicUI();
     return;
   }
-  isAiRecording = false;
-  isAiStarting = false;
-  aiSpeechWanted = false;
-  updateAiMicUI();
 };
 
 window.onNativeSpeechError = function(code) {
   console.warn('[Native Speech Error Code]:', code);
-  if (aiSpeechAlwaysOn && aiSpeechWanted && (code === 1 || code === 5 || code === 6 || code === 7 || code === 8)) {
+  const fatal = (code === 9 || code === 12 || code === 13 || code === -1);
+  promoteInterimToFinal();
+  commitCurrentSession();
+  if (aiSpeechAlwaysOn && aiSpeechWanted && !fatal) {
     isAiRecording = true;
     updateAiMicUI();
     return;
@@ -14288,6 +14314,9 @@ window.onNativeSpeechError = function(code) {
   if (statusEl) {
     if (code === 9) {
       statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di sistem Android.' : 'Android mic permission denied.';
+      statusEl.style.color = '#f85149';
+    } else if (code === 12 || code === 13) {
+      statusEl.textContent = currentUiLang === 'id' ? 'Bahasa dikte tidak tersedia di perangkat.' : 'Dictation language unavailable.';
       statusEl.style.color = '#f85149';
     } else if (code === 7) {
       statusEl.textContent = currentUiLang === 'id' ? 'Suara tidak terdeteksi.' : 'No speech detected.';
@@ -14308,6 +14337,8 @@ function stopAiSpeechRecognition() {
     } catch(e) {}
   }
   if (aiSpeechRecognition) {
+    // abort() membuang hasil yang belum final; simpan teks yang sudah terlihat di layar.
+    promoteInterimToFinal();
     try {
       aiSpeechRecognition.onresult = null;
       aiSpeechRecognition.onerror = null;
@@ -14382,6 +14413,7 @@ function startAiSpeechSession() {
     recognition.onstart = () => {
       isAiStarting = false;
       isAiRecording = true;
+      aiWebSessionStartTs = Date.now();
       updateAiMicUI();
     };
 
@@ -14419,11 +14451,11 @@ function startAiSpeechSession() {
     recognition.onerror = (err) => {
       console.warn('[AI Speech Error]:', err.error);
       const statusEl = $('ai-mic-status');
-      if (err.error === 'not-allowed') {
+      if (err.error === 'not-allowed' || err.error === 'service-not-allowed' || err.error === 'language-not-supported') {
         aiSpeechWanted = false;
         isAiRecording = false;
         isAiStarting = false;
-        if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.requestAudioPermission === 'function') {
+        if (err.error === 'not-allowed' && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.requestAudioPermission === 'function') {
           window.DigiAndroidBridge.requestAudioPermission();
         }
         if (aiMicTransitionTimer) {
@@ -14431,27 +14463,42 @@ function startAiSpeechSession() {
           aiMicTransitionTimer = null;
         }
         if (statusEl) {
-          statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di sistem.' : 'Microphone permission denied.';
+          if (err.error === 'language-not-supported') {
+            statusEl.textContent = currentUiLang === 'id' ? 'Bahasa dikte tidak didukung.' : 'Dictation language not supported.';
+          } else {
+            statusEl.textContent = currentUiLang === 'id' ? 'Izin mic ditolak di sistem.' : 'Microphone permission denied.';
+          }
           statusEl.style.color = '#f85149';
         }
         return;
       }
+      // no-speech, aborted, network, audio-capture: ditangani oleh restart otomatis di onend.
     };
 
     recognition.onend = () => {
+      promoteInterimToFinal();
       commitCurrentSession();
       if (aiSpeechAlwaysOn && aiSpeechWanted) {
+        // Sesi yang berakhir < 2 detik dihitung gagal cepat -> jeda bertahap agar tidak loop liar.
+        const age = Date.now() - aiWebSessionStartTs;
+        if (aiWebSessionStartTs && age > 2000) {
+          aiWebQuickFails = 0;
+        } else {
+          aiWebQuickFails++;
+        }
+        const delay = aiWebQuickFails <= 2 ? 60 : Math.min(150 * Math.pow(2, aiWebQuickFails - 2), 2500);
+        isAiRecording = true;
+        updateAiMicUI();
         setTimeout(() => {
-          if (aiSpeechWanted) {
-            try {
-              recognition.start();
-              isAiRecording = true;
-              updateAiMicUI();
-            } catch(e) {
-              startAiSpeechSession();
-            }
+          if (!aiSpeechWanted || aiSpeechRecognition !== recognition) return;
+          aiWebSessionStartTs = 0;
+          try {
+            recognition.start();
+          } catch(e) {
+            isAiStarting = false;
+            startAiSpeechSession();
           }
-        }, 120);
+        }, delay);
         return;
       }
       isAiRecording = false;

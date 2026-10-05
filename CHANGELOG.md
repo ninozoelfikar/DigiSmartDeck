@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.18.1] - 2026-10-05
+- Perbaikan mic continuous listening: perpanjang silence window, auto-restart tanpa putus seperti Google Voice typing, dan peredam chime
+
 ### [1.18.0] - 2026-10-05
 - Peluncuran MVP Landing Page dan standarisasi tampilan APK identik dengan Chrome mobile
 
@@ -234,6 +237,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.18.1] - 2026-10-05
+- Release v1.18.1 updates
 
 ### [1.18.0] - 2026-10-05
 - Release v1.18.0 updates
