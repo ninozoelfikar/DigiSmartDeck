@@ -34,7 +34,6 @@ import android.content.Intent;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -59,13 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private PermissionRequest pendingPermissionRequest;
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
-    private AudioManager audioManager;
     private Handler speechHandler = new Handler(Looper.getMainLooper());
-    private final Handler muteHandler = new Handler(Looper.getMainLooper());
     private boolean isAlwaysOnSpeech = true;
     private boolean isListeningActive = false;
-    private boolean isMutedByBridge = false;
-    private boolean isMusicMutedForBeep = false;
     private int speechQuickFailStreak = 0;
     private long speechSessionStartMs = 0L;
     private String currentSpeechLang = "id-ID";
@@ -116,9 +111,8 @@ public class MainActivity extends AppCompatActivity {
                 isListeningActive = true;
                 speechQuickFailStreak = 0;
                 currentSpeechLang = (lang != null && !lang.isEmpty()) ? lang : "id-ID";
-                // Jeda 150ms agar bunyi klik mekanikal dari tombol mic sempat terdengar
-                // sebelum stream audio dibisukan untuk meredam chime Google.
-                startListeningNow(150, false);
+                // Jeda 50ms agar tombol mic responsif
+                startListeningNow(50, false);
             });
         }
 
@@ -136,9 +130,6 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                // Biarkan chime penutup lewat dalam keadaan bisu, lalu pulihkan volume.
-                muteHandler.removeCallbacksAndMessages(null);
-                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 700);
             });
         }
 
@@ -156,8 +147,6 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                muteHandler.removeCallbacksAndMessages(null);
-                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 500);
             });
         }
 
@@ -518,67 +507,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ─── Peredam chime Google SpeechRecognizer ───
-    // NOTIFICATION & SYSTEM dibisukan selama sesi dikte aktif (tidak memengaruhi
-    // suara klik WebView). MUSIC hanya dibisukan sesaat di sekitar restart karena
-    // klik mekanikal WebAudio diputar lewat stream tersebut.
-    private AudioManager getAudio() {
-        if (audioManager == null) {
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        }
-        return audioManager;
-    }
-
-    @SuppressWarnings("deprecation")
-    private void setStreamMuted(int stream, boolean mute) {
-        AudioManager am = getAudio();
-        if (am == null) return;
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                am.adjustStreamVolume(stream, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
-            } else {
-                am.setStreamMute(stream, mute);
-            }
-        } catch (Exception ignored) {
-            // Mode Jangan Ganggu dapat menolak perubahan stream notifikasi.
-        }
-    }
-
-    private void muteBeepStreams() {
-        muteHandler.removeCallbacksAndMessages(null);
-        if (!isMutedByBridge) {
-            setStreamMuted(AudioManager.STREAM_NOTIFICATION, true);
-            setStreamMuted(AudioManager.STREAM_SYSTEM, true);
-            isMutedByBridge = true;
-        }
-        if (!isMusicMutedForBeep) {
-            setStreamMuted(AudioManager.STREAM_MUSIC, true);
-            isMusicMutedForBeep = true;
-        }
-    }
-
-    private void unmuteMusicLater(long delayMs) {
-        muteHandler.removeCallbacksAndMessages(null);
-        muteHandler.postDelayed(() -> {
-            if (isMusicMutedForBeep) {
-                setStreamMuted(AudioManager.STREAM_MUSIC, false);
-                isMusicMutedForBeep = false;
-            }
-        }, delayMs);
-    }
-
-    private void restoreBeepStreams() {
-        muteHandler.removeCallbacksAndMessages(null);
-        if (isMusicMutedForBeep) {
-            setStreamMuted(AudioManager.STREAM_MUSIC, false);
-            isMusicMutedForBeep = false;
-        }
-        if (isMutedByBridge) {
-            setStreamMuted(AudioManager.STREAM_NOTIFICATION, false);
-            setStreamMuted(AudioManager.STREAM_SYSTEM, false);
-            isMutedByBridge = false;
-        }
-    }
-
     private void notifyJsSegmentRestart() {
         if (webView != null) {
             webView.evaluateJavascript("if (window.onNativeSpeechRestart) window.onNativeSpeechRestart();", null);
@@ -602,7 +530,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, currentSpeechLang);
                 speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, currentSpeechLang);
-                muteBeepStreams();
                 speechRecognizer.cancel();
                 speechRecognizer.startListening(speechRecognizerIntent);
             } catch (Exception e) {
@@ -645,16 +572,14 @@ public class MainActivity extends AppCompatActivity {
         // Jendela hening diperpanjang agar jeda berpikir tidak langsung memotong sesi.
         // Sebagian versi layanan Google mengabaikan nilai ini; restart otomatis di bawah
         // tetap menjaga mic terus aktif.
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 6000L);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 5000L);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 10000L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3500L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 2500L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 1500L);
 
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
                 speechSessionStartMs = System.currentTimeMillis();
-                // Chime pembuka sudah lewat; pulihkan stream MUSIC agar klik tetap terdengar.
-                unmuteMusicLater(450);
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechStart) window.onNativeSpeechStart();", null);
@@ -675,10 +600,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onEndOfSpeech() {
-                if (isListeningActive && isAlwaysOnSpeech) {
-                    // Restart akan segera terjadi; bisukan chime penutup.
-                    muteBeepStreams();
-                }
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechEnd) window.onNativeSpeechEnd();", null);
@@ -720,14 +641,12 @@ public class MainActivity extends AppCompatActivity {
                         delay = Math.min(150L << Math.min(speechQuickFailStreak - 2, 4), 2400L);
                     }
 
-                    muteBeepStreams();
                     runOnUiThread(MainActivity.this::notifyJsSegmentRestart);
                     scheduleSpeechRestart(delay, recreate);
                     return;
                 }
 
                 isListeningActive = false;
-                restoreBeepStreams();
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechError) window.onNativeSpeechError(" + error + ");", null);
@@ -752,12 +671,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (isListeningActive && isAlwaysOnSpeech) {
-                    muteBeepStreams();
                     scheduleSpeechRestart(40, false);
                 } else {
                     isListeningActive = false;
-                    muteHandler.removeCallbacksAndMessages(null);
-                    muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 500);
                 }
             }
 
@@ -799,7 +715,6 @@ public class MainActivity extends AppCompatActivity {
                 webView.evaluateJavascript("if (window.onNativeSpeechError) window.onNativeSpeechError(-1);", null);
             }
         }
-        restoreBeepStreams();
     }
 
     @Override
@@ -809,7 +724,6 @@ public class MainActivity extends AppCompatActivity {
         if (speechHandler != null) {
             speechHandler.removeCallbacksAndMessages(null);
         }
-        restoreBeepStreams();
         if (bluetoothHidHelper != null) {
             bluetoothHidHelper.unregister();
         }
