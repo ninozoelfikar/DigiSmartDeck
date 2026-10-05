@@ -73,6 +73,7 @@ def clean_terminal_text(buffer_text):
 
 AI_PERMISSION_KW = re.compile(
     r'(?i)\b('
+    r'requesting\s+permission\s+for|'
     r'ask(?:ing)? for permission|'
     r'run(?:ning)? (?:this|the following)?\s*command|'
     r'execute(?:ing)? (?:this|the following)?\s*command|'
@@ -90,21 +91,64 @@ AI_PERMISSION_KW = re.compile(
 
 
 def extract_prompt_details(lines, context, inspect_line):
-    # 1. Cari perintah yang dieksekusi jika ada (CommandLine, Command, run_command)
-    cmd = ''
-    cmd_match = re.search(r'(?i)(?:commandline|command|perintah)\s*:\s*["\'`]?\s*(.*?)(?:["\'`]?\s*$|\n)', context, re.MULTILINE)
-    if cmd_match:
-        cmd = cmd_match.group(1).strip()
-    else:
-        m2 = re.search(r'(?i)run_command\s*\(\s*["\'`]?([^\)"\'`]+)', context)
-        if m2:
-            cmd = m2.group(1).strip()
+    # 1. Prioritaskan ekstraksi info dari 'Requesting permission for:' jika ada
+    message = ""
+    req_match = re.search(
+        r'(?i)requesting\s+permission\s+for\s*:\s*(.*?)(?=\n\s*(?:❯|[\[\(]?\d[\]\).:]|run this command\?|allow tool call\?|do you want|\Z))',
+        context,
+        re.DOTALL
+    )
+    if req_match:
+        raw_info = req_match.group(1).strip()
+        info_lines = []
+        for l in raw_info.split('\n'):
+            s = l.strip()
+            if not s:
+                continue
+            s_low = s.lower()
+            if s_low in ('run command', 'run comment', 'tool confirmation', 'proposed command:', 'proposed command'):
+                continue
+            if not info_lines or info_lines[-1].lower() != s.lower():
+                info_lines.append(s)
+        if info_lines:
+            message = '\n'.join(info_lines)
 
-    # 2. Tentukan judul yang jelas
+    # 2. Jika tidak ada 'Requesting permission for:', cari CommandLine atau run_command
+    if not message:
+        cmd = ''
+        cmd_match = re.search(r'(?i)(?:commandline|command|perintah)\s*:\s*["\'`]?\s*(.*?)(?:["\'`]?\s*$|\n)', context, re.MULTILINE)
+        if cmd_match:
+            cmd = cmd_match.group(1).strip()
+        else:
+            m2 = re.search(r'(?i)run_command\s*\(\s*["\'`]?([^\)"\'`]+)', context)
+            if m2:
+                cmd = m2.group(1).strip()
+        if cmd:
+            message = f"Perintah:\n> {cmd}"
+
+    # 3. Fallback jika masih kosong
+    if not message:
+        clean_lines = []
+        seen = set()
+        for l in lines[-12:]:
+            s = l.strip()
+            if not s or re.match(r'^[❯>#\$%:\?]\s*$', s):
+                continue
+            if re.match(r'^\s*[❯>]?\s*(?:[\[\(]?\d{1,2}[\]\).:]|[\[\(][ xX●•*]?[\]\)])\s+\w+', s):
+                continue
+            s_low = s.lower()
+            if s_low in ('run command', 'run comment', 'tool confirmation', 'proposed command:', 'proposed command'):
+                continue
+            if s_low not in seen:
+                seen.add(s_low)
+                clean_lines.append(s)
+        message = '\n'.join(clean_lines) if clean_lines else inspect_line
+
+    # 4. Tentukan title / pertanyaan
     c_lower = context.lower()
-    if 'run' in c_lower or 'command' in c_lower or cmd:
-        title = "Run This Command?"
-    elif 'tool' in c_lower:
+    if 'run this command' in c_lower or 'run' in c_lower or 'command' in c_lower or 'requesting permission' in c_lower:
+        title = "Run this command?"
+    elif 'tool call' in c_lower or 'tool' in c_lower:
         title = "Allow Tool Call?"
     elif 'permission' in c_lower or 'izin' in c_lower:
         title = "Ask for Permission"
@@ -113,38 +157,7 @@ def extract_prompt_details(lines, context, inspect_line):
     elif 'delete' in c_lower or 'remove' in c_lower:
         title = "Confirm Deletion?"
     else:
-        title = "Izin Tindakan CLI"
-
-    # 3. Bentuk pesan bersih (hilangkan duplikasi 'Run command' berulang dan abaikan opsi tombol)
-    clean_lines = []
-    seen = set()
-    for l in lines[-12:]:
-        s = l.strip()
-        if not s:
-            continue
-        # Abaikan opsi menu/tombol karena sudah ada tombol interaktifnya di kartu
-        if re.match(r'^\s*[❯>]?\s*(?:[\[\(]?\d{1,2}[\]\).:]|[\[\(][ xX●•*]?[\]\)])\s+\w+', s):
-            continue
-        # Abaikan kursor kosong
-        if re.match(r'^[❯>#\$%:\?]\s*$', s):
-            continue
-        # Abaikan baris duplikat atau frasa tunggal 'run command' / 'tool confirmation' berulang
-        s_low = s.lower()
-        if s_low in ('run command', 'run comment', 'tool confirmation', 'proposed command:', 'proposed command'):
-            continue
-        if s_low not in seen:
-            seen.add(s_low)
-            clean_lines.append(s)
-
-    if cmd:
-        message = f"Perintah yang akan dijalankan:\n> {cmd}"
-        other_lines = [l for l in clean_lines if cmd not in l and not l.lower().startswith('commandline:')]
-        if other_lines:
-            message += '\n\n' + '\n'.join(other_lines[-4:])
-    elif clean_lines:
-        message = '\n'.join(clean_lines)
-    else:
-        message = inspect_line
+        title = "Run this command?"
 
     return title, message
 

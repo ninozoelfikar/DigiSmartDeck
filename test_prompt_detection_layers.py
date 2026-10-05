@@ -144,9 +144,25 @@ Ask for permission:
 """
     res_cursor = dt.detect_prompt(cursor_sample)
     assert res_cursor is not None, "Failed to detect menu with separate cursor line"
-    assert len(res_cursor['options']) == 4
+    # Test E: 'Requesting permission for:' and 'Run this command?' format
+    req_sample = """
+Requesting permission for:
+CommandLine: git status
+Run command
+Run command
+Run this command?
+❯ 1. Yes, allow tool call
+  2. Allow in this chat
+  3. Allow in this project
+  4. No, deny tool call
+"""
+    res_req = dt.detect_prompt(req_sample)
+    assert res_req is not None, "Failed to detect Requesting permission for prompt"
+    assert res_req['title'] == 'Run this command?', f"Expected title 'Run this command?', got: {res_req['title']}"
+    assert 'CommandLine: git status' in res_req['message'], f"Expected 'CommandLine: git status' in message, got: {res_req['message']}"
+    assert 'run command\nrun command' not in res_req['message'].lower(), "Repeated 'Run command' must be removed!"
 
-    print("  -> Passed: All active prompt formats (binary y/n, press enter, Bubbletea list, cursor prompt) correctly parsed.")
+    print("  -> Passed: All active prompt formats (binary y/n, press enter, Bubbletea list, cursor prompt, Requesting permission for) correctly parsed.")
 
 
 # ══════════════════════════════════════════════════════════════
