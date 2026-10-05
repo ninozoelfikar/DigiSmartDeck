@@ -29,7 +29,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 import android.content.Intent;
 import android.speech.RecognitionListener;
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_PERMISSIONS = 2001;
 
     private WebView webView;
-    private ImageButton btnServerSettings;
     private SharedPreferences prefs;
     private BluetoothHidHelper bluetoothHidHelper;
     private PermissionRequest pendingPermissionRequest;
@@ -229,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         webView = findViewById(R.id.webView);
-        btnServerSettings = findViewById(R.id.btnServerSettings);
 
         // Inisialisasi Bluetooth HID Helper
         bluetoothHidHelper = new BluetoothHidHelper(this);
@@ -250,10 +247,7 @@ public class MainActivity extends AppCompatActivity {
         // Periksa & minta izin runtime Android (Audio Mic & Bluetooth)
         checkAndRequestPermissions();
 
-        // 4. Tombol pengaturan server
-        btnServerSettings.setOnClickListener(v -> showServerConfigDialog());
-
-        // 5. Muat URL Server tersimpan atau minta input pertama kali
+        // 4. Muat URL Server tersimpan atau minta input pertama kali
         String savedUrl = prefs.getString(KEY_SERVER_URL, null);
         if (savedUrl != null && !savedUrl.trim().isEmpty()) {
             loadServerUrl(savedUrl);
@@ -309,6 +303,10 @@ public class MainActivity extends AppCompatActivity {
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setSupportZoom(false);
+        settings.setDisplayZoomControls(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
@@ -381,11 +379,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (url != null && !url.contains("localhost:8080") && !url.startsWith("data:")) {
-                    if (btnServerSettings != null) {
-                        btnServerSettings.setVisibility(View.GONE);
-                    }
-                }
             }
 
             @Override
@@ -462,9 +455,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showConnectionErrorPage() {
-        if (btnServerSettings != null) {
-            btnServerSettings.setVisibility(View.VISIBLE);
-        }
         String currentUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_URL);
         String errorHtml = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
             + "<style>body{background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:24px;box-sizing:border-box;}"

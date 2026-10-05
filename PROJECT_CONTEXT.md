@@ -1506,3 +1506,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 84. CATATAN CHECKPOINT (v0.9.80 - Standardisasi Tampilan APK Sesuai Benchmark Chrome Mobile & Landing Page MVP)
+- **Standardisasi Tampilan APK 100% Identik dengan Chrome Mobile:**
+  - Menghilangkan tombol overlay native Android (`btnServerSettings` ImageButton) dari `activity_main.xml` dan `MainActivity.java` sehingga area WebView 100% murni tanpa elemen asing.
+  - Mengonfigurasi `WebSettings` di `MainActivity.java` dengan `setUseWideViewPort(true)`, `setLoadWithOverviewMode(true)`, `setSupportZoom(false)`, dan `setDisplayZoomControls(false)` agar rendering viewport, rasio DPI, dan penskalaan elemen di APK bekerja persis seperti peramban Chrome mobile.
+  - Mengembalikan styling CSS `.top-bar` dan `.deck-trigger-btn` di `static/index.html` sesuai patokan Chrome.
+- **Isolasi Fitur Smart Confirmation untuk MVP:**
+  - Memisahkan kode eksperimen Smart Confirmation ke branch terisolasi `feature/smart-confirmation`.
+  - Menambahkan flag `ENABLE_REMOTE_PROMPTS = os.environ.get('DIGI_ENABLE_PROMPTS', '0') == '1'` di `server.py` yang secara default bernilai `False` untuk memastikan kestabilan peluncuran MVP.
+- **Penyediaan Halaman Landing Page Komersial MVP:**
+  - Membangun landing page mandiri `static/landing.html` dan `landing/index.html` dengan desain modern responsif, showcase mockup interaktif, matriks perbandingan harga (Rp 25.000/bln vs Rp 250.000 Lifetime Pro), dan tombol unduh APK langsung.
+  - Menambahkan endpoint rute di `server.py`: `/landing`, `/landing.html`, `/about`, dan `/download/apk`.
+- **Kompilasi Ulang APK:**
+  - APK berhasil dikompilasi ulang via `./build-apk.sh` ke `dist/DigiSmartDeck.apk` dan `static/DigiSmartDeck.apk` dengan ukuran ringkas 5.4 MB.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
