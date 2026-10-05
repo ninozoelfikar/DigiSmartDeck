@@ -1546,5 +1546,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 86. CATATAN CHECKPOINT (v1.18.1 - Perbaikan Continuous Mic Google Voice Typing & Redaman Chime)
+- **Perpanjangan Jendela Silence Timeout:**
+  - `EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS` dinaikkan ke 6000ms.
+  - `EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS` dinaikkan ke 5000ms.
+  - `EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS` disetel ke 10000ms.
+  - Pengguna dapat berhenti sejenak untuk berpikir tanpa mic langsung mati tergesa-gesa.
+- **Penyelamatan Teks Interim saat Restart:**
+  - Ditambahkan fungsi `promoteInterimToFinal()` pada JavaScript klien dan callback `onNativeSpeechRestart()`.
+  - Kata-kata yang sedang terucap saat sesi timeout/restart tidak pernah terbuang atau hilang dari layar, meniru perilaku Google Voice Typing native.
+- **Peredam Chime Sistem Android Saat Restart Otomatis:**
+  - Stream notifikasi dan sistem dibisukan selama sesi aktif berlangsung, dan stream media dibisukan sesaat saat restart agar bunyi chime/ding sistem Google tidak berulang kali mengganggu alur dikte.
+  - Efek suara mekanikal WebAudio tetap terdengar normal.
+- **Pemulihan Cerdas dengan Backoff Bertingkat (Resilient Recovery):**
+  - Timeout hening biasa di-restart dengan jeda instan (40-60ms) tanpa jeda panjang.
+  - Error engine atau koneksi ditangani dengan backoff adaptif (hingga 2.4s) guna mencegah loop restart yang tidak terkendali.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
