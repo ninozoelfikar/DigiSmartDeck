@@ -1567,6 +1567,21 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
 
+---
+
+## 87. CATATAN CHECKPOINT (v1.18.2 - Otomatisasi Penuh Always-On Google Voice Typing & Reduksi UI Clutter)
+- **Otomatisasi Permanen Continuous Listening (Always-On Default):**
+  - Mengunci status `aiSpeechAlwaysOn = true` secara permanen dan otomatis di klien web dan aplikasi APK.
+  - Menghapus elemen checkbox manual "Always-On" (`#ai-alwayson-label`) dari antarmuka AI Workstation footer actions.
+  - Bar aksi transkripsi kini lebih bersih dan ringkas: hanya menyisakan checklist `Auto-Send` berdampingan dengan tombol aksi `Undo`, `Clear`, dan `Send to Host`.
+- **Perilaku Pengoperasian Alami:**
+  - Mic langsung mendengarkan secara kontinu tanpa terpotong jeda berpikir, tanpa perlu mengaktifkan toggle tambahan.
+  - Sesi dikte hanya berhenti saat pengguna secara eksplisit menekan tombol mikrofon utama untuk berhenti, berpindah mode kerja, atau mengirim teks.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons haptik tetap aktif sempurna di semua tombol.
+
+
 
 
 
