@@ -2315,32 +2315,14 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* ─── FLOATING AUTO-UPDATER NOTIFICATION BANNER ─── */
+/* ─── AUTO-UPDATER NOTIFICATION BADGE (STANDAR IT) ─── */
 @keyframes pulse-update {
-  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(88, 166, 255, 0.7); }
-  70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(88, 166, 255, 0); }
-  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(88, 166, 255, 0); }
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(240, 136, 62, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(240, 136, 62, 0); }
+  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(240, 136, 62, 0); }
 }
 
 .update-notification-banner {
-  position: fixed;
-  top: 42px;
-  right: 12px;
-  z-index: 99990;
-  max-width: min(390px, 94vw);
-  background: rgba(13, 17, 23, 0.96);
-  border: 1px solid rgba(88, 166, 255, 0.4);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(88, 166, 255, 0.15);
-  border-radius: 12px;
-  padding: 8px 12px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-  -webkit-user-select: none;
-  animation: banner-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.update-notification-banner.hidden {
   display: none !important;
 }
 @keyframes banner-slide-in {
@@ -7034,7 +7016,7 @@ body.portrait-dismissed .orientation-guard {
         <span class="logo">
           <span>DigiSmartDeck</span>
         </span>
-        <span id="update-badge-dot" style="display:none; width:7px; height:7px; background:#58a6ff; border-radius:50%; margin-left:6px; box-shadow:0 0 6px #58a6ff; animation:pulse-update 2s infinite;"></span>
+        <span id="update-badge-dot" style="display:none; width:8px; height:8px; background:#f0883e; border-radius:50%; margin-left:6px; box-shadow:0 0 6px rgba(240,136,62,0.8); animation:pulse-update 2s infinite;" title="Pembaruan Tersedia"></span>
       </div>
 
       <span id="badge" class="status-badge disconnected" style="cursor:pointer;" data-i18n-title="conn_status_title" title="Connection Status">
@@ -7215,42 +7197,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- FLOATING AUTO-UPDATER NOTIFICATION BANNER -->
-  <div id="update-notification-banner" class="update-notification-banner hidden">
-    <div class="update-banner-content">
-      <div class="update-banner-icon">
-        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      </div>
-      <div class="update-banner-info">
-        <div class="update-banner-title">
-          <span id="update-banner-text">Pembaruan Tersedia</span>
-          <span id="update-banner-badge" class="update-banner-chip">OTA</span>
-        </div>
-        <div class="update-banner-sub" id="update-banner-sub">Versi baru siap dipasang</div>
-        <!-- Progress bar inline saat downloading -->
-        <div id="update-banner-progress-wrap" style="display:none; width:100%; margin-top:5px;">
-          <div style="display:flex; justify-content:space-between; font-size:10px; color:#8b949e; margin-bottom:2px;">
-            <span id="update-banner-prog-text">Mengunduh...</span>
-            <span id="update-banner-prog-val">0%</span>
-          </div>
-          <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;">
-            <div id="update-banner-prog-bar" style="width:0%; height:100%; background:var(--accent); border-radius:2px; transition:width 0.15s ease;"></div>
-          </div>
-        </div>
-      </div>
-      <div class="update-banner-actions">
-        <button type="button" id="btn-banner-install" class="btn-banner-action primary">
-          <span id="txt-banner-install">Pasang</span>
-        </button>
-        <button type="button" id="btn-banner-about" class="btn-banner-action secondary" title="Detail Pembaruan">
-          <span>Detail</span>
-        </button>
-        <button type="button" id="btn-banner-dismiss" class="btn-banner-action close" title="Tutup">
-          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- SHORTCUT BAR -->
   <div class="panel hidden" id="sc-bar">
@@ -8920,7 +8867,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.11</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.12</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9040,7 +8987,6 @@ body.portrait-dismissed .orientation-guard {
             <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" style="color:#f1e05a;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             <span data-i18n="store_pro_bundle_title">Pro All-Access Lifetime Pass</span>
           </div>
-          <span class="store-price-tag">$6.99 / Rp 99.000 <s style="opacity:0.6;font-size:10px;">Rp 250k</s></span>
         </div>
         <div class="store-card-desc" data-i18n="store_pro_bundle_desc">
           Unlock all Pro plugins, complete theme skins catalog, mechanical switch audio profiles, and unlimited voice dictation with a single perpetual license.
@@ -9370,23 +9316,6 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Commercial SaaS Pricing Info -->
-      <div class="license-card">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;" data-i18n="pricing_title">Pilihan Paket Komersial</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;" data-i18n="pricing_sub">Mendukung koneksi multi-perangkat, tanpa batas waktu hening pada AI mic, dan pemrosesan offline lokal.</div>
-        <div class="pricing-plans-grid">
-          <div class="pricing-plan-item">
-            <div class="pricing-plan-title" data-i18n="pricing_monthly_title">Langganan Bulanan</div>
-            <div class="pricing-plan-price">Rp 25.000</div>
-            <div class="pricing-plan-sub" data-i18n="pricing_monthly_sub">Per bulan (Hemat &amp; Fleksibel)</div>
-          </div>
-          <div class="pricing-plan-item highlight">
-            <div class="pricing-plan-title" data-i18n="pricing_lifetime_title">Lisensi Seumur Hidup</div>
-            <div class="pricing-plan-price">Rp 250.000</div>
-            <div class="pricing-plan-sub" data-i18n="pricing_lifetime_sub">Sekali bayar untuk selamanya</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -10461,8 +10390,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.11';
-const APP_CLIENT_VERSION_CODE = 12011;
+const APP_CLIENT_VERSION = '1.20.12';
+const APP_CLIENT_VERSION_CODE = 12012;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10558,32 +10487,12 @@ function syncAppUpdateDisplay(updateData) {
 }
 
 function handleAutoUpdateResult(data, silent) {
-  const banner = $('update-notification-banner');
   const dot = $('update-badge-dot');
-  const bannerText = $('update-banner-text');
-  const bannerSub = $('update-banner-sub');
 
   if (data && data.update_available) {
     if (dot) dot.style.display = 'inline-block';
 
     const targetVer = (data.current_server_version || '').replace(/^v/, '');
-    const sizeStr = data.apk_size_mb ? ` (${data.apk_size_mb} MB)` : '';
-
-    if (bannerText) {
-      bannerText.textContent = (currentUiLang === 'id')
-        ? `Pembaruan v${targetVer} Tersedia`
-        : `Update v${targetVer} Available`;
-    }
-    if (bannerSub) {
-      bannerSub.textContent = (currentUiLang === 'id')
-        ? `Versi baru siap dipasang${sizeStr}`
-        : `New version ready to install${sizeStr}`;
-    }
-
-    if (banner && !updateBannerDismissed && !isSplashScreenActive) {
-      banner.classList.remove('hidden');
-    }
-
     if (!silent) {
       showSmartToast(
         (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia!` : `Update v${targetVer} available!`,
@@ -10593,7 +10502,6 @@ function handleAutoUpdateResult(data, silent) {
     }
   } else {
     if (dot) dot.style.display = 'none';
-    if (banner) banner.classList.add('hidden');
     if (!silent) {
       showSmartToast(
         (currentUiLang === 'id') ? 'Aplikasi sudah versi terbaru.' : 'App is already up to date.',
@@ -10802,33 +10710,6 @@ if (statusBadge) {
     const txtStatus = $('txt-about-update-status');
     if (txtStatus) txtStatus.textContent = (currentUiLang === 'id') ? 'Memeriksa pembaruan...' : 'Checking for updates...';
     checkAutoUpdate(false);
-  });
-}
-
-const btnBannerInstall = $('btn-banner-install');
-if (btnBannerInstall) {
-  btnBannerInstall.addEventListener('click', () => {
-    executeAppUpdate();
-  });
-}
-
-const btnBannerAbout = $('btn-banner-about');
-if (btnBannerAbout) {
-  btnBannerAbout.addEventListener('click', () => {
-    playClickSound();
-    vibe(15);
-    openAboutModal();
-  });
-}
-
-const btnBannerDismiss = $('btn-banner-dismiss');
-if (btnBannerDismiss) {
-  btnBannerDismiss.addEventListener('click', () => {
-    playClickSound();
-    vibe(10);
-    updateBannerDismissed = true;
-    const banner = $('update-notification-banner');
-    if (banner) banner.classList.add('hidden');
   });
 }
 
