@@ -107,7 +107,7 @@ try:
     with open("static/index.html", "r", encoding="utf-8") as f:
         html = f.read()
     html = re.sub(r"DigiSmartDeck v[0-9.]+", "DigiSmartDeck v" + new_ver, html)
-    html = re.sub(r"<span id=\"about-app-version\"([^>]*)>v[0-9.]+<", r"<span id=\"about-app-version\"\1>v" + new_ver + "<", html)
+    html = re.sub(r"<span id=[^>]*about-app-version[^>]*>v[0-9.]+<", "<span id=\"about-app-version\" style=\"display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;\">v" + new_ver + "<", html)
     parts = [int(p) for p in re.findall(r"\d+", new_ver)]
     while len(parts) < 3: parts.append(0)
     new_code = parts[0] * 10000 + parts[1] * 100 + parts[2]
