@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAlwaysOnSpeech = true;
     private boolean isListeningActive = false;
     private boolean isMutedByBridge = false;
-    private boolean isMusicMutedForBeep = false;
     private int speechQuickFailStreak = 0;
     private long speechSessionStartMs = 0L;
     private String currentSpeechLang = "id-ID";
@@ -139,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
         public void stopNativeSpeech() {
             runOnUiThread(() -> {
                 isListeningActive = false;
-                muteBeepStreams();
                 if (speechHandler != null) {
                     speechHandler.removeCallbacksAndMessages(null);
                 }
@@ -150,8 +148,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                muteHandler.removeCallbacksAndMessages(null);
-                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 1200);
+                restoreBeepStreams();
             });
         }
 
@@ -159,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
         public void cancelNativeSpeech() {
             runOnUiThread(() -> {
                 isListeningActive = false;
-                muteBeepStreams();
                 if (speechHandler != null) {
                     speechHandler.removeCallbacksAndMessages(null);
                 }
@@ -170,8 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                muteHandler.removeCallbacksAndMessages(null);
-                muteHandler.postDelayed(MainActivity.this::restoreBeepStreams, 1000);
+                restoreBeepStreams();
             });
         }
 
@@ -594,28 +589,10 @@ public class MainActivity extends AppCompatActivity {
             setStreamMuted(AudioManager.STREAM_SYSTEM, true);
             isMutedByBridge = true;
         }
-        if (!isMusicMutedForBeep) {
-            setStreamMuted(AudioManager.STREAM_MUSIC, true);
-            isMusicMutedForBeep = true;
-        }
-    }
-
-    private void unmuteMusicLater(long delayMs) {
-        muteHandler.removeCallbacksAndMessages(null);
-        muteHandler.postDelayed(() -> {
-            if (isMusicMutedForBeep) {
-                setStreamMuted(AudioManager.STREAM_MUSIC, false);
-                isMusicMutedForBeep = false;
-            }
-        }, delayMs);
     }
 
     private void restoreBeepStreams() {
         muteHandler.removeCallbacksAndMessages(null);
-        if (isMusicMutedForBeep) {
-            setStreamMuted(AudioManager.STREAM_MUSIC, false);
-            isMusicMutedForBeep = false;
-        }
         if (isMutedByBridge) {
             setStreamMuted(AudioManager.STREAM_NOTIFICATION, false);
             setStreamMuted(AudioManager.STREAM_SYSTEM, false);
@@ -697,7 +674,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReadyForSpeech(Bundle params) {
                 speechSessionStartMs = System.currentTimeMillis();
-                unmuteMusicLater(450);
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechStart) window.onNativeSpeechStart();", null);

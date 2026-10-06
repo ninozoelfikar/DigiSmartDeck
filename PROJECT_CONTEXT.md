@@ -2008,6 +2008,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) konsisten di seluruh tombol interaktif.
 
+---
+
+## 110. CATATAN CHECKPOINT (v1.20.17 - Restorasi Mutlak Audio Mode Switch & Eliminasi Mute STREAM_MUSIC Android)
+- **Eliminasi Mute STREAM_MUSIC pada Android Native Bridge (`MainActivity.java`):**
+  - Mengidentifikasi akar masalah hilangnya suara saat berpindah mode dari keyboard ke gamepad atau mode AI: `muteBeepStreams()` sebelumnya mematikan `AudioManager.STREAM_MUSIC` (jalur Web Audio API) selama 1.2 detik setiap kali speech recognizer dihentikan atau dibatalkan saat peralihan mode.
+  - Menghapus muting pada `STREAM_MUSIC` di seluruh siklus hidup bridge Android, sehingga Web Audio API (`playClickSound()`) tetap aktif 100% tanpa henti.
+- **Pembersihan Siklus Penghentian AI Speech pada Mode Switch:**
+  - `switchAppMode` hanya memanggil `stopAiSpeechRecognition()` jika perekaman suara AI memang sedang aktif (`isAiRecording || aiSpeechWanted`), mencegah reset berlebihan saat beralih antara Keyboard dan Gamepad.
+- **Eliminasi Suara Ganda pada Tombol Mode:**
+  - Menghilangkan panggilan ganda `playClickSound()` yang sebelumnya dieksekusi bersamaan di `bindModeBtn` dan `switchAppMode` pada milidetik ke-0, memastikan sintesis nada klik terdengar bersih dan tajam.
+- **Sinkronisasi Badge Versi:**
+  - Memastikan atribut ID pada modal Tentang Aplikasi tetap bersih (`id="about-app-version"`) dan tersinkronisasi ke versi SemVer terbaru.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) konsisten di seluruh tombol interaktif.
+
+
 
 
 
