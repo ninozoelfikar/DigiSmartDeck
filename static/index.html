@@ -8856,7 +8856,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.8</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.9</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -10382,8 +10382,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.8';
-const APP_CLIENT_VERSION_CODE = 12008;
+const APP_CLIENT_VERSION = '1.20.9';
+const APP_CLIENT_VERSION_CODE = 12009;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -12775,8 +12775,8 @@ function releaseKey(el) {
 const touches = new Map();
 
 document.getElementById('app').addEventListener('touchstart', (e) => {
-  // Allow toolbar buttons, shortcuts, laptop trackpad deck, modal dialogs, gamepad, present-view, ai-workstation-view, media-view, canvas-view, and control-deck to handle their own events
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .control-deck')) return;
+  // Allow toolbar buttons, shortcuts, laptop trackpad deck, modal dialogs, gamepad, present-view, ai-workstation-view, media-view, canvas-view, control-deck, and power-view to handle their own events
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .power-view, .control-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -12785,7 +12785,7 @@ document.getElementById('app').addEventListener('touchstart', (e) => {
 }, { passive: false });
 
 document.getElementById('app').addEventListener('touchend', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .control-deck')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .power-view, .control-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
     releaseKey(touches.get(t.identifier));
@@ -12806,7 +12806,7 @@ window.addEventListener('blur', clearAllRepeats);
 // ── Mouse Fallback (Desktop Testing) ──
 let mouseEl = null;
 document.getElementById('app').addEventListener('mousedown', (e) => {
-  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .control-deck')) return;
+  if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .power-view, .control-deck')) return;
   mouseEl = e.target;
   pressKey(e.target);
 });
@@ -17760,11 +17760,28 @@ function triggerPowerAction(action) {
 }
 
 function executePowerActionNow(action, value = null) {
-  send({
+  const payload = {
     type: 'power_action',
     action: action,
     value: value
-  });
+  };
+
+  let sent = false;
+  if (connected && ws && ws.readyState === 1) {
+    send(payload);
+    sent = true;
+  }
+
+  // Fallback via HTTP REST API jika websocket sedang transisi atau belum tersambung
+  if (!sent) {
+    try {
+      fetch('/api/power', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, value: value })
+      }).catch(() => {});
+    } catch (e) {}
+  }
 
   let label = action;
   if (action === 'shutdown') label = currentUiLang === 'id' ? 'Mematikan PC...' : 'Shutting down PC...';
@@ -17844,6 +17861,23 @@ function closePowerConfirmModal() {
 }
 
 function initPowerControls() {
+  function bindPowerBtn(el, handler) {
+    if (!el) return;
+    let lastTrigger = 0;
+    const trigger = (e) => {
+      if (e) {
+        if (e.stopPropagation) e.stopPropagation();
+        if (e.cancelable && e.type === 'touchend') e.preventDefault();
+      }
+      const now = Date.now();
+      if (now - lastTrigger < 200) return;
+      lastTrigger = now;
+      handler(e);
+    };
+    el.addEventListener('touchend', trigger, { passive: false });
+    el.addEventListener('click', trigger);
+  }
+
   const actions = [
     { id: 'power-btn-shutdown', action: 'shutdown' },
     { id: 'power-btn-restart', action: 'restart' },
@@ -17858,16 +17892,23 @@ function initPowerControls() {
   actions.forEach(item => {
     const el = $(item.id);
     if (el) {
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        triggerPowerAction(item.action);
-      });
+      bindPowerBtn(el, () => triggerPowerAction(item.action));
     }
   });
 
+  const modalConfirm = $('modal-power-confirm');
+  if (modalConfirm) {
+    modalConfirm.addEventListener('click', (e) => {
+      if (e.target === modalConfirm) {
+        if (typeof playClickSound === 'function') playClickSound();
+        closePowerConfirmModal();
+      }
+    });
+  }
+
   const btnCancel = $('btn-power-confirm-cancel');
   if (btnCancel) {
-    btnCancel.addEventListener('click', () => {
+    bindPowerBtn(btnCancel, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       closePowerConfirmModal();
@@ -17876,7 +17917,7 @@ function initPowerControls() {
 
   const btnProceed = $('btn-power-confirm-proceed');
   if (btnProceed) {
-    btnProceed.addEventListener('click', () => {
+    bindPowerBtn(btnProceed, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(25);
       const actionToRun = pendingPowerAction;
@@ -17895,7 +17936,8 @@ function initPowerControls() {
   const brightPills = document.querySelectorAll('.power-pill[data-bright]');
 
   function updateBrightnessUI(val) {
-    val = Math.max(10, Math.min(100, parseInt(val, 10) || 100));
+    const num = parseInt(val, 10);
+    val = isNaN(num) ? 100 : Math.max(10, Math.min(100, num));
     if (sliderBright) sliderBright.value = val;
     if (valBright) valBright.textContent = val + '%';
     brightPills.forEach(p => {
@@ -17905,7 +17947,6 @@ function initPowerControls() {
     try { localStorage.setItem('digi_brightness', val); } catch (e) {}
   }
 
-  // Restore saved brightness
   try {
     const savedBright = localStorage.getItem('digi_brightness');
     if (savedBright) updateBrightnessUI(savedBright);
@@ -17923,7 +17964,7 @@ function initPowerControls() {
   }
 
   if (btnBrightDown) {
-    btnBrightDown.addEventListener('click', () => {
+    bindPowerBtn(btnBrightDown, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       let cur = parseInt(sliderBright ? sliderBright.value : 100, 10);
@@ -17934,7 +17975,7 @@ function initPowerControls() {
   }
 
   if (btnBrightUp) {
-    btnBrightUp.addEventListener('click', () => {
+    bindPowerBtn(btnBrightUp, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       let cur = parseInt(sliderBright ? sliderBright.value : 100, 10);
@@ -17945,7 +17986,7 @@ function initPowerControls() {
   }
 
   brightPills.forEach(p => {
-    p.addEventListener('click', () => {
+    bindPowerBtn(p, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       const val = parseInt(p.getAttribute('data-bright'), 10);
@@ -17963,7 +18004,8 @@ function initPowerControls() {
   const volPills = document.querySelectorAll('.power-pill[data-vol]');
 
   function updateVolumeUI(val) {
-    val = Math.max(0, Math.min(100, parseInt(val, 10) || 80));
+    const num = parseInt(val, 10);
+    val = isNaN(num) ? 80 : Math.max(0, Math.min(100, num));
     if (sliderVol) sliderVol.value = val;
     if (valVol) valVol.textContent = val + '%';
     volPills.forEach(p => {
@@ -17990,7 +18032,7 @@ function initPowerControls() {
   }
 
   if (btnVolDown) {
-    btnVolDown.addEventListener('click', () => {
+    bindPowerBtn(btnVolDown, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       let cur = parseInt(sliderVol ? sliderVol.value : 80, 10);
@@ -18001,7 +18043,7 @@ function initPowerControls() {
   }
 
   if (btnVolUp) {
-    btnVolUp.addEventListener('click', () => {
+    bindPowerBtn(btnVolUp, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       let cur = parseInt(sliderVol ? sliderVol.value : 80, 10);
@@ -18012,7 +18054,7 @@ function initPowerControls() {
   }
 
   if (btnVolMute) {
-    btnVolMute.addEventListener('click', () => {
+    bindPowerBtn(btnVolMute, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(20);
       executePowerActionNow('volume_mute');
@@ -18020,7 +18062,7 @@ function initPowerControls() {
   }
 
   volPills.forEach(p => {
-    p.addEventListener('click', () => {
+    bindPowerBtn(p, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
       const val = parseInt(p.getAttribute('data-vol'), 10);
@@ -18049,7 +18091,7 @@ function initPowerControls() {
     if (active) {
       antiSleepTimer = setInterval(() => {
         if (toggleAntiSleep && toggleAntiSleep.checked) {
-          send({ type: 'power_action', action: 'anti_sleep_on' });
+          executePowerActionNow('anti_sleep_on');
         }
       }, 30000);
     }
@@ -18057,7 +18099,7 @@ function initPowerControls() {
   }
 
   if (btnWake) {
-    btnWake.addEventListener('click', () => {
+    bindPowerBtn(btnWake, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(25);
       executePowerActionNow('wake_up');
@@ -18065,13 +18107,14 @@ function initPowerControls() {
   }
 
   if (toggleAntiSleep) {
-    toggleAntiSleep.addEventListener('change', () => {
+    const handleToggle = () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(25);
       const isAwake = toggleAntiSleep.checked;
       updateAntiSleepUI(isAwake);
       executePowerActionNow(isAwake ? 'anti_sleep_on' : 'anti_sleep_off');
-    });
+    };
+    toggleAntiSleep.addEventListener('change', handleToggle);
   }
 
   try {

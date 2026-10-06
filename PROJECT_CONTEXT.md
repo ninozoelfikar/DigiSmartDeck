@@ -1878,4 +1878,29 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 102. CATATAN CHECKPOINT (v1.20.9 - Perbaikan Total Malfungsi Tombol & Interaksi Layar Sentuh Mobile pada Power Mode)
+- **Akar Masalah Tombol Tidak Berfungsi (Root Cause Analysis):**
+  - Container `#app` memiliki listener global `touchstart`, `touchend`, dan `mousedown` untuk keyboard multi-touch yang secara agresif memanggil `e.preventDefault()`.
+  - Class selector `.power-view` tertinggal dan tidak dimasukkan ke dalam daftar pengecualian (`e.target.closest(...)`).
+  - Akibatnya, setiap sentuhan pada tombol kartu aksi daya, tombol mini penyesuaian volume/kecerahan, preset pill, tombol bangunkan PC, slider, dan modal konfirmasi di layar ponsel dicegat dan dibatalkan sebelum browser sempat memicu event `click` atau `change`.
+- **Perbaikan Sentral:**
+  - Menambahkan selector `.power-view` ke daftar pengecualian `e.target.closest(...)` pada handler `touchstart`, `touchend`, dan `mousedown` di `#app`.
+  - Mengimplementasikan helper universal `bindPowerBtn(el, handler)` yang mengikat event `touchend` dan `click` dengan debounce 200ms pada seluruh tombol kontrol daya:
+    - 8 kartu aksi daya (Shutdown, Restart, Suspend, Lock Screen, Switch User, Sign Out, Screen Off, Hibernate).
+    - Tombol mini Brightness (-10%, +10%) dan preset pills (30%, 50%, 75%, 100%).
+    - Tombol mini Volume (-5%, +5%), tombol Mute, dan preset pills (0%, 30%, 60%, 80%, 100%).
+    - Tombol Wake PC (`#btn-power-wake`) dan tombol modal konfirmasi (`#btn-power-confirm-cancel`, `#btn-power-confirm-proceed`).
+  - Memperbaiki parsing nilai batas pada `updateVolumeUI` di mana nilai `0%` sebelumnya dianggap falsy (`0 || 80`) dan keliru berubah menjadi `80%`.
+  - Menambahkan fallback eksekusi via HTTP POST `/api/power` jika koneksi WebSocket sedang dalam masa transisi atau belum siap saat tombol ditekan.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.9`.
+  - File APK baru terkompilasi di `dist/` dan `static/` (~5.4 MB).
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+
 

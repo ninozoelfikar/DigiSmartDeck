@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.9] - 2026-10-06
+- Perbaikan responsivitas sentuh dan eksekusi tombol Power Mode di mobile
+
 ### [1.20.8] - 2026-10-06
 - Optimasi responsif tampilan HP untuk Power Mode dan akses mode potret
 
@@ -285,6 +288,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.9] - 2026-10-06
+- Release v1.20.9 updates
 
 ### [1.20.8] - 2026-10-06
 - Release v1.20.8 updates
