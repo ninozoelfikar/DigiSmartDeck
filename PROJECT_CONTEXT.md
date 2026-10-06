@@ -1974,5 +1974,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe(20)`) dipertahankan pada seluruh interaksi.
 
+---
+
+## 108. CATATAN CHECKPOINT (v1.20.15 - Fiksasi Audio Engine Keep-Alive & Restorasi Bunyi Tuts Keyboard Tablet)
+- **Fiksasi Audio Sleep / Suspended State pada Perangkat Tablet:**
+  - Android tablet WebView / Chrome secara agresif mematikan (sleep/standby) audio sink hardware ketika tidak ada audio node yang terhubung ke `ctx.destination` setelah 1-2 detik keheningan.
+  - Mengimplementasikan `ensureAudioKeepAlive(ctx)` berupa buffer loop senyap (gain `0.00001`) yang terus terhubung ke `ctx.destination`, menjaga audio pipeline tablet selalu dalam status aktif tanpa mematikan hardware amplifier.
+  - Menangani kondisi `suspended` dan `interrupted` pada `playClickSound()` secara asinkron dengan fallback langsung jika resume tertunda.
+- **Pembersihan Throttle Agresif & Restorasi Tuts Keyboard Tablet:**
+  - Menghapus blanket debounce 320ms pada `bindAiKey()` yang sebelumnya memblokir pengetikan huruf kembar (misal: "buku", "apple", spasi ganda) dan pengetikan cepat di keyboard tablet (`.ai-tablet-keyboard`).
+  - Menggantinya dengan deduplikasi event sentuh sintetik aman (`mousedown` diabaikan jika terjadi dalam 400ms setelah `touchstart`).
+  - Menambahkan pemanggilan `playClickSound()` dan getaran haptik `vibe(15)` pada tombol `btnShift` (`#ai-tk-btn-shift`) dan tombol mode simbol `btnMode` (`#ai-tk-btn-mode` / `?123`).
+- **Optimalisasi Multi-Touch Hit-Testing Keyboard Utama di Layar Tablet:**
+  - Memprioritaskan `t.target.closest('.k')` sebelum fallback ke `document.elementFromPoint(t.clientX, t.clientY)` pada event `touchstart` di `#app`, menjamin resolusi tuts 100% akurat pada layar beresolusi tinggi (high-DPI) tablet.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) konsisten di seluruh tombol.
+
+
 
 

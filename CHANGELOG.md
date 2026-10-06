@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.15] - 2026-10-06
+- Fiksasi audio engine keepalive dan restorasi bunyi tuts keyboard tablet
+
 ### [1.20.14] - 2026-10-06
 - Implementasi Target Lock Execution untuk Windows dan Linux
 
@@ -303,6 +306,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.15] - 2026-10-06
+- Release v1.20.15 updates
 
 ### [1.20.14] - 2026-10-06
 - Release v1.20.14 updates

@@ -8907,7 +8907,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.14</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.15</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -10441,8 +10441,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.14';
-const APP_CLIENT_VERSION_CODE = 12014;
+const APP_CLIENT_VERSION = '1.20.15';
+const APP_CLIENT_VERSION_CODE = 12015;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11754,9 +11754,27 @@ if (btnCloseRap) {
 }
 
 let audioCtx = null;
+let audioKeepAliveNode = null;
 let soundEnabled = localStorage.getItem('digi_sound') !== 'false';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
 if (isNaN(soundVolume) || soundVolume <= 0) soundVolume = 0.7;
+
+function ensureAudioKeepAlive(ctx) {
+  if (!ctx || ctx.state === 'closed' || audioKeepAliveNode) return;
+  try {
+    // Silent keep-alive buffer untuk mencegah audio hardware tablet/Android masuk ke sleep/standby
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    src.loop = true;
+    const g = ctx.createGain();
+    g.gain.value = 0.00001; // nyaris senyap total
+    src.connect(g);
+    g.connect(ctx.destination);
+    src.start(0);
+    audioKeepAliveNode = src;
+  } catch(e) {}
+}
 
 function getAudioContext() {
   try {
@@ -11773,8 +11791,11 @@ function getAudioContext() {
 function unlockAudio() {
   try {
     const ctx = getAudioContext();
-    if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
-      ctx.resume().catch(() => {});
+    if (ctx) {
+      if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+        ctx.resume().catch(() => {});
+      }
+      ensureAudioKeepAlive(ctx);
     }
   } catch(e) {}
 }
@@ -11852,10 +11873,14 @@ function playClickSound(force = false, atTime = null, pitch = 1.0) {
     if (!ctx) return;
     if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
       ctx.resume().then(() => {
+        ensureAudioKeepAlive(ctx);
         doSynthesizeClick(atTime, pitch);
-      }).catch(() => {});
+      }).catch(() => {
+        doSynthesizeClick(atTime, pitch);
+      });
       return;
     }
+    ensureAudioKeepAlive(ctx);
     doSynthesizeClick(atTime, pitch);
   } catch(e) {}
 }
@@ -12867,7 +12892,8 @@ document.getElementById('app').addEventListener('touchstart', (e) => {
   if (e.target.closest('.top-bar, .sc-btn, .tbtn, .laptop-deck, .modal-backdrop, .modal-dialog, .gamepad-view, .present-view, .ai-workstation-view, .media-view, .canvas-view, .power-view, .control-deck')) return;
   e.preventDefault();
   for (const t of e.changedTouches) {
-    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const directK = (t.target && typeof t.target.closest === 'function') ? t.target.closest('.k') : null;
+    const el = directK || document.elementFromPoint(t.clientX, t.clientY);
     if (el) { touches.set(t.identifier, el); pressKey(el); }
   }
 }, { passive: false });
@@ -16224,18 +16250,19 @@ function sendAiText(txt) {
 function bindAiKey(btnId, action) {
   const el = typeof btnId === 'string' ? $(btnId) : btnId;
   if (!el) return;
-  let lastTriggerTime = 0;
+  let lastTouchTime = 0;
 
   function handleTrigger(e) {
     if (e) {
+      if (e.type === 'mousedown' && Date.now() - lastTouchTime < 400) {
+        return; // Mencegah duplikasi event mouse sintetik setelah touchstart pada layar sentuh
+      }
       e.stopPropagation();
       if (e.cancelable && e.type === 'touchstart') {
         e.preventDefault();
+        lastTouchTime = Date.now();
       }
     }
-    const now = Date.now();
-    if (now - lastTriggerTime < 320) return;
-    lastTriggerTime = now;
     unlockAudio();
     el.classList.add('pressed');
     action();
@@ -16881,6 +16908,8 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
   if (btnShift) {
     bindAiKey(btnShift, () => {
+      playClickSound();
+      vibe(15);
       if (isSymbolMode) return;
       isShift = !isShift;
       updateKeyLabels();
@@ -16889,6 +16918,8 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
   if (btnMode) {
     bindAiKey(btnMode, () => {
+      playClickSound();
+      vibe(15);
       isSymbolMode = !isSymbolMode;
       isShift = false;
       updateKeyLabels();
