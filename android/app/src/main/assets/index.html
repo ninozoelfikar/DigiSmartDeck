@@ -7175,6 +7175,10 @@ body.portrait-dismissed .orientation-guard {
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
             <span id="deck-pairing-lbl">Pairing</span>
           </button>
+          <button type="button" class="tbtn deck-chip" id="btn-bt" data-i18n-title="util_bt_title" title="Mode Bluetooth HID Hardware">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
+            <span id="deck-bt-lbl" data-i18n="util_bt">Bluetooth</span>
+          </button>
           <button type="button" class="tbtn deck-chip" id="btn-settings" data-i18n-title="util_settings_title" title="Appearance &amp; Preferences">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             <span data-i18n="util_settings">Settings</span>
@@ -8907,7 +8911,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.1</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.2</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9210,7 +9214,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.1</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.2</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -9499,6 +9503,8 @@ const I18N = {
     util_license_title: "DigiSmartDeck SaaS License",
     util_pairing: "Pairing",
     util_pairing_title: "Device Pairing & Security",
+    util_bt: "Bluetooth",
+    util_bt_title: "Hardware Bluetooth HID Peripheral Mode",
     pairing_title: "Pair New Device",
     pairing_desc: "Enter the 6-digit PIN shown on your PC monitor or terminal to securely authorize this device.",
     pairing_btn_connect: "Connect Device",
@@ -9817,6 +9823,8 @@ const I18N = {
     util_license_title: "Lisensi SaaS DigiSmartDeck",
     util_pairing: "Pairing",
     util_pairing_title: "Pairing & Keamanan Perangkat",
+    util_bt: "Bluetooth",
+    util_bt_title: "Mode Hardware Bluetooth HID Mandiri",
     pairing_title: "Pairing Perangkat Baru",
     pairing_desc: "Masukkan 6 digit kode PIN yang tampil di layar monitor atau terminal PC host Anda untuk menyambungkan perangkat ini.",
     pairing_btn_connect: "Sambungkan",
@@ -10446,8 +10454,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.1';
-const APP_CLIENT_VERSION_CODE = 12101;
+const APP_CLIENT_VERSION = '1.21.2';
+const APP_CLIENT_VERSION_CODE = 12102;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11068,6 +11076,15 @@ function closeLicenseModal() {
 
 if (btnLicenseDeck) btnLicenseDeck.onclick = () => { playClickSound(); vibe(15); openLicenseModal(); };
 if (btnPairingDeck) btnPairingDeck.onclick = () => { playClickSound(); vibe(15); openPairingModal(); };
+const btnBtDeck = $('btn-bt');
+if (btnBtDeck) {
+  btnBtDeck.onclick = () => {
+    playClickSound();
+    vibe(15);
+    closeControlDeck();
+    toggleBluetoothMode();
+  };
+}
 if (btnCloseLicense) btnCloseLicense.onclick = () => { playClickSound(); vibe(10); closeLicenseModal(); };
 if (modalLicense) {
   modalLicense.addEventListener('click', (e) => {
@@ -12539,10 +12556,16 @@ if (btnRcUsb) {
   };
 }
 
+function updateBluetoothUI() {
+  const btnBt = $('btn-bt');
+  if (btnBt) btnBt.classList.toggle('on', !!window.isBluetoothActive);
+}
+
 function enableBluetoothMode() {
   if (typeof playClickSound === 'function') playClickSound();
   if (typeof vibe === 'function') vibe(15);
   window.isBluetoothActive = true;
+  updateBluetoothUI();
   if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.enableBluetoothHid === 'function') {
     window.DigiAndroidBridge.enableBluetoothHid();
     setStatus(false, 'Bluetooth HID Aktif. Pasangkan dari PC...');
@@ -12562,10 +12585,25 @@ function enableBluetoothMode() {
   }
 }
 
+function toggleBluetoothMode() {
+  if (typeof playClickSound === 'function') playClickSound();
+  if (typeof vibe === 'function') vibe(15);
+  if (window.isBluetoothActive) {
+    window.isBluetoothActive = false;
+    updateBluetoothUI();
+    setStatus(false, 'Mode Wi-Fi');
+    connect();
+  } else {
+    enableBluetoothMode();
+  }
+}
+
 window.enableBluetoothMode = enableBluetoothMode;
+window.toggleBluetoothMode = toggleBluetoothMode;
 
 window.onBluetoothStatus = function(status, isConnected) {
   window.isBluetoothActive = isConnected || window.isBluetoothActive;
+  updateBluetoothUI();
   if (isConnected) {
     setStatus(true, status || 'Bluetooth Terhubung');
     hideReconnectBanner();
