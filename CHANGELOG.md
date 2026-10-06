@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.1] - 2026-10-07
+- Fiksasi double click spasi keyboard AI dan pembersihan label mode window switcher
+
 ### [1.21.0] - 2026-10-06
 - Implementasi Penuh Standalone Offline & Bluetooth HID Tanpa Server PC
 
@@ -315,6 +318,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.1] - 2026-10-07
+- Release v1.21.1 updates
 
 ### [1.21.0] - 2026-10-06
 - Release v1.21.0 updates

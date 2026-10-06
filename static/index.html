@@ -8907,7 +8907,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.0</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.1</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9210,7 +9210,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.0</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.1</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -10446,8 +10446,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.0';
-const APP_CLIENT_VERSION_CODE = 12100;
+const APP_CLIENT_VERSION = '1.21.1';
+const APP_CLIENT_VERSION_CODE = 12101;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11460,9 +11460,6 @@ function renderWindowList(windows) {
     const item = document.createElement('div');
     item.className = 'win-switcher-item' + (win.is_active ? ' active-window' : '') + (isLocked ? ' target-locked' : '');
 
-    const modeLabelKey = 'smart_mode_' + (win.suggested_mode || 'standard');
-    const modeLabel = t(modeLabelKey) || win.suggested_mode;
-
     const left = document.createElement('div');
     left.className = 'win-switcher-left';
 
@@ -11507,23 +11504,6 @@ function renderWindowList(windows) {
 
     const right = document.createElement('div');
     right.className = 'win-switcher-right';
-
-    const isTerminal = (win.app && win.app.toLowerCase().includes('terminal')) ||
-                       (win.class_name && (win.class_name.toLowerCase().includes('terminal') ||
-                                           win.class_name.toLowerCase().includes('konsole') ||
-                                           win.class_name.toLowerCase().includes('kitty') ||
-                                           win.class_name.toLowerCase().includes('alacritty') ||
-                                           win.class_name.toLowerCase().includes('xterm') ||
-                                           win.class_name.toLowerCase().includes('terminator') ||
-                                           win.class_name.toLowerCase().includes('tilix') ||
-                                           win.class_name.toLowerCase().includes('wezterm')));
-
-    if (!isTerminal) {
-      const tag = document.createElement('span');
-      tag.className = 'win-switcher-mode-tag';
-      tag.textContent = modeLabel;
-      right.appendChild(tag);
-    }
 
     const ctrlGroup = document.createElement('div');
     ctrlGroup.className = 'win-switcher-controls';
@@ -16379,18 +16359,29 @@ function bindAiKey(btnId, action) {
   const el = typeof btnId === 'string' ? $(btnId) : btnId;
   if (!el) return;
   let lastTouchTime = 0;
+  let lastTriggerTime = 0;
 
   function handleTrigger(e) {
     if (e) {
-      if (e.type === 'mousedown' && Date.now() - lastTouchTime < 400) {
-        return; // Mencegah duplikasi event mouse sintetik setelah touchstart pada layar sentuh
+      if (e.type === 'touchstart') {
+        lastTouchTime = Date.now();
+        if (e.cancelable) e.preventDefault();
+      } else if (e.type === 'mousedown') {
+        if (Date.now() - lastTouchTime < 450) {
+          return; // Mencegah duplikasi event mouse sintetik setelah touchstart pada layar sentuh
+        }
       }
       e.stopPropagation();
-      if (e.cancelable && e.type === 'touchstart') {
-        e.preventDefault();
-        lastTouchTime = Date.now();
-      }
     }
+    const now = Date.now();
+    // Guard against physical touch bounce / accidental double-tap on large keys (spasi) dan tombol lainnya
+    const isSpace = el.classList && el.classList.contains('ai-tk-space');
+    const debounceMin = isSpace ? 120 : 80;
+    if (now - lastTriggerTime < debounceMin) {
+      return;
+    }
+    lastTriggerTime = now;
+
     unlockAudio();
     el.classList.add('pressed');
     action();
@@ -16405,10 +16396,14 @@ function bindAiKey(btnId, action) {
     el.classList.remove('pressed');
   }, { passive: true });
   el.addEventListener('mousedown', (e) => {
-    handleTrigger(e);
+    if (e.button === 0) handleTrigger(e);
   });
   window.addEventListener('mouseup', () => {
     el.classList.remove('pressed');
+  });
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
   });
 }
 
@@ -16999,7 +16994,14 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     }
   }
 
+  let lastSpaceInputTime = 0;
   function handleCharInput(char) {
+    if (char === ' ') {
+      const now = Date.now();
+      if (now - lastSpaceInputTime < 130) return;
+      lastSpaceInputTime = now;
+    }
+
     playClickSound();
     vibe(12);
 
@@ -17113,10 +17115,16 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
       }
     }
 
+    let lastBsTouchTime = 0;
     function startBackspace(e) {
       if (e) {
+        if (e.type === 'touchstart') {
+          lastBsTouchTime = Date.now();
+          if (e.cancelable) e.preventDefault();
+        } else if (e.type === 'mousedown') {
+          if (Date.now() - lastBsTouchTime < 450) return;
+        }
         e.stopPropagation();
-        if (e.cancelable && e.type === 'touchstart') e.preventDefault();
       }
       if (bsIsPressed) return;
       bsIsPressed = true;
@@ -17191,6 +17199,10 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
     });
     btnBackspace.addEventListener('mouseup', stopBackspace);
     btnBackspace.addEventListener('mouseleave', stopBackspace);
+    btnBackspace.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (e.cancelable) e.preventDefault();
+    });
   }
 
   // Tombol Panah Navigasi di Keyboard Mode AI
