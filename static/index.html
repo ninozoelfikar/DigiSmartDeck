@@ -8867,7 +8867,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.12</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.13</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -10390,8 +10390,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.12';
-const APP_CLIENT_VERSION_CODE = 12012;
+const APP_CLIENT_VERSION = '1.20.13';
+const APP_CLIENT_VERSION_CODE = 12013;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11432,10 +11432,22 @@ function renderWindowList(windows) {
     const right = document.createElement('div');
     right.className = 'win-switcher-right';
 
-    const tag = document.createElement('span');
-    tag.className = 'win-switcher-mode-tag';
-    tag.textContent = modeLabel;
-    right.appendChild(tag);
+    const isTerminal = (win.app && win.app.toLowerCase().includes('terminal')) ||
+                       (win.class_name && (win.class_name.toLowerCase().includes('terminal') ||
+                                           win.class_name.toLowerCase().includes('konsole') ||
+                                           win.class_name.toLowerCase().includes('kitty') ||
+                                           win.class_name.toLowerCase().includes('alacritty') ||
+                                           win.class_name.toLowerCase().includes('xterm') ||
+                                           win.class_name.toLowerCase().includes('terminator') ||
+                                           win.class_name.toLowerCase().includes('tilix') ||
+                                           win.class_name.toLowerCase().includes('wezterm')));
+
+    if (!isTerminal) {
+      const tag = document.createElement('span');
+      tag.className = 'win-switcher-mode-tag';
+      tag.textContent = modeLabel;
+      right.appendChild(tag);
+    }
 
     const ctrlGroup = document.createElement('div');
     ctrlGroup.className = 'win-switcher-controls';

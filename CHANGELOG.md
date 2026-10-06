@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.13] - 2026-10-06
+- Hilangkan label jenis keyboard pada baris Terminal di daftar jendela active window switcher
+
 ### [1.20.12] - 2026-10-06
 - Nonaktifkan pop-up update banner, gunakan indikator dot orange standar IT pada logo, dan hapus informasi harga pada modal aktivasi & lifetime pass
 
@@ -297,6 +300,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.13] - 2026-10-06
+- Release v1.20.13 updates
 
 ### [1.20.12] - 2026-10-06
 - Release v1.20.12 updates
