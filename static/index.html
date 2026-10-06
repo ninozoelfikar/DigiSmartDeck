@@ -432,13 +432,11 @@ html, body {
   z-index: 11;
   max-width: calc(100% - 240px);
 }
-@media (max-width: 500px) {
+@media (max-width: 480px) {
   .center-controls {
-    max-width: 140px;
+    display: none;
   }
-}
-@media (max-width: 380px) {
-  .center-controls {
+  .ping {
     display: none;
   }
 }
@@ -860,6 +858,9 @@ html, body {
   overflow: hidden;
   width: 100%;
 }
+.kb-wrap.hidden {
+  display: none !important;
+}
 .kb-main {
   flex: 1;
   height: 100%;
@@ -1011,7 +1012,7 @@ body.is-fullscreen {
   color: #fff;
 }
 .laptop-deck.hidden {
-  display: none;
+  display: none !important;
 }
 .palm-rest {
   flex: 1;
@@ -1431,7 +1432,7 @@ body.is-fullscreen {
   }
 
   /* Keyboard di Mode Potret: Memenuhi sisa 100% tinggi layar tanpa ruang kosong */
-  .kb-wrap {
+  .kb-wrap:not(.hidden) {
     flex: 1 !important;
     height: 100% !important;
     min-height: 0 !important;
@@ -5915,22 +5916,23 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .power-controls-panel {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
-@media (max-width: 900px) {
+@media (orientation: portrait), (max-width: 580px) {
   .power-controls-panel {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 }
 
 .power-ctrl-card {
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 10px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
@@ -5938,6 +5940,32 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.power-ctrl-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.power-mute-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background: var(--key-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.power-mute-chip:hover, .power-mute-chip:active {
+  border-color: #f85149;
+  color: #f85149;
+  background: rgba(248, 81, 73, 0.12);
 }
 
 .power-ctrl-title {
@@ -5955,15 +5983,15 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   font-weight: 700;
   color: var(--accent);
   background: rgba(88, 166, 255, 0.12);
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 2px 7px;
+  border-radius: 8px;
   border: 1px solid rgba(88, 166, 255, 0.3);
 }
 
 .power-ctrl-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .power-mini-btn {
@@ -5971,10 +5999,10 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 5px 9px;
+  padding: 4px 8px;
   background: var(--key-bg);
   border: 1px solid var(--key-border);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text);
   font-size: 11px;
   font-weight: 600;
@@ -5996,7 +6024,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 
 .power-range-slider {
   flex: 1;
-  height: 6px;
+  height: 5px;
   -webkit-appearance: none;
   appearance: none;
   background: rgba(255, 255, 255, 0.12);
@@ -6006,8 +6034,8 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .power-range-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--accent);
   cursor: pointer;
@@ -6015,21 +6043,21 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   transition: transform 0.12s ease;
 }
 .power-range-slider::-webkit-slider-thumb:active {
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 
 .power-presets {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   justify-content: flex-end;
 }
 
 .power-pill {
-  padding: 2px 7px;
-  font-size: 10px;
+  padding: 2px 6px;
+  font-size: 9.5px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 5px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--key-border);
   color: var(--text-dim);
@@ -6050,18 +6078,18 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .power-awake-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   justify-content: space-between;
 }
 
 .power-wake-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
+  gap: 5px;
+  padding: 6px 10px;
   background: linear-gradient(135deg, rgba(88, 166, 255, 0.18), rgba(63, 185, 80, 0.18));
   border: 1px solid rgba(88, 166, 255, 0.4);
-  border-radius: 8px;
+  border-radius: 6px;
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -6105,8 +6133,8 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 
 .power-toggle-switch {
   position: relative;
-  width: 38px;
-  height: 22px;
+  width: 36px;
+  height: 20px;
   flex-shrink: 0;
 }
 .power-toggle-switch input {
@@ -6128,8 +6156,8 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   content: "";
   height: 14px;
   width: 14px;
-  left: 3px;
-  bottom: 3px;
+  left: 2px;
+  bottom: 2px;
   background-color: #fff;
   transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: 50%;
@@ -6147,7 +6175,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   font-size: 10px;
   font-weight: 700;
   padding: 2px 7px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-dim);
   border: 1px solid var(--key-border);
@@ -6159,19 +6187,154 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   border-color: rgba(63, 185, 80, 0.4);
 }
 
-
 .power-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
   flex: 1;
   min-height: 0;
   align-content: start;
 }
 
-@media (max-width: 680px) {
+@media (orientation: portrait), (max-width: 580px) {
   .power-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+/* ─── Compact Phone Landscape Optimization (Height <= 520px) ─── */
+@media (max-height: 520px) and (orientation: landscape) {
+  .power-view {
+    padding: 4px 8px 6px;
+    gap: 5px;
+  }
+  .power-header {
+    padding: 4px 8px;
+    border-radius: 8px;
+    min-height: 26px;
+  }
+  .power-title-wrap {
+    font-size: 11.5px;
+    gap: 5px;
+  }
+  .power-title-icon {
+    width: 14px;
+    height: 14px;
+  }
+  .power-os-badge {
+    padding: 2px 6px;
+    font-size: 9.5px;
+    gap: 4px;
+  }
+  .power-os-tag {
+    padding: 1px 4px;
+    font-size: 8.5px;
+  }
+  .power-controls-panel {
+    gap: 5px;
+  }
+  .power-ctrl-card {
+    padding: 4px 6px;
+    gap: 3px;
+    border-radius: 7px;
+  }
+  .power-ctrl-title {
+    font-size: 10.5px;
+    gap: 4px;
+  }
+  .power-ctrl-title .svg-icon {
+    width: 12px;
+    height: 12px;
+  }
+  .power-ctrl-val {
+    font-size: 9.5px;
+    padding: 1px 4px;
+  }
+  .power-mute-chip {
+    padding: 1px 4px;
+    font-size: 9px;
+  }
+  .power-ctrl-actions {
+    gap: 4px;
+  }
+  .power-mini-btn {
+    padding: 2px 5px;
+    font-size: 9px;
+    border-radius: 4px;
+  }
+  .power-range-slider {
+    height: 3px;
+  }
+  .power-range-slider::-webkit-slider-thumb {
+    width: 13px;
+    height: 13px;
+  }
+  .power-presets {
+    gap: 2px;
+  }
+  .power-pill {
+    padding: 1px 3px;
+    font-size: 8.5px;
+    border-radius: 4px;
+  }
+  .power-awake-row {
+    gap: 6px;
+  }
+  .power-wake-btn {
+    padding: 3px 6px;
+    font-size: 9.5px;
+    gap: 3px;
+    border-radius: 5px;
+  }
+  .power-wake-btn .svg-icon {
+    width: 12px;
+    height: 12px;
+  }
+  .power-switch-text strong {
+    font-size: 9.5px;
+  }
+  .power-switch-text small {
+    display: none;
+  }
+  .power-toggle-switch {
+    width: 28px;
+    height: 16px;
+  }
+  .power-toggle-slider:before {
+    width: 10px;
+    height: 10px;
+    left: 2px;
+    bottom: 2px;
+  }
+  .power-toggle-switch input:checked + .power-toggle-slider:before {
+    transform: translateX(12px);
+  }
+  .power-grid {
+    gap: 4px;
+  }
+  .power-card {
+    padding: 5px 3px;
+    border-radius: 7px;
+  }
+  .power-card-icon-wrap {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 2px;
+    border-radius: 5px;
+  }
+  .power-card-icon-wrap .svg-icon {
+    width: 13px;
+    height: 13px;
+  }
+  .power-card-label {
+    font-size: 10px;
+    margin-bottom: 0px;
+  }
+  .power-card-sub {
+    font-size: 8px;
+    max-width: 80px;
+    line-height: 1.1;
   }
 }
 
@@ -6420,6 +6583,26 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   .orientation-guard-btn:active {
     background: #2ea043;
   }
+  .orientation-guard-btn-secondary {
+    background: transparent;
+    border: 1px solid #30363d;
+    color: #8b949e;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.15s ease;
+  }
+  .orientation-guard-btn-secondary:hover, .orientation-guard-btn-secondary:active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+body.portrait-dismissed .orientation-guard {
+  display: none !important;
 }
 
 /* SMART APP CONTEXT BADGE & TOAST */
@@ -6729,6 +6912,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     <div class="orientation-guard-title">Gunakan Posisi Melintang</div>
     <div class="orientation-guard-desc">DigiSmartDeck didesain khusus untuk tampilan landscape mendatar. Silakan miringkan ponsel Anda ke posisi horizontal.</div>
     <button type="button" class="orientation-guard-btn" id="btn-lock-landscape-fs">Kunci Mode Melintang (Landscape)</button>
+    <button type="button" class="orientation-guard-btn-secondary" id="btn-continue-portrait" data-i18n="guard_continue_portrait">Lanjutkan dalam Mode Vertikal</button>
   </div>
 </div>
 <div id="app">
@@ -8166,14 +8350,16 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
             <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
             <span data-i18n="power_volume_title">Volume Suara</span>
           </div>
-          <span class="power-ctrl-val" id="power-volume-val">80%</span>
+          <div class="power-ctrl-header-right">
+            <button type="button" class="power-mute-chip" id="btn-vol-mute" title="Mute Suara">
+              <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24" id="icon-vol-mute"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></svg>
+              <span>Mute</span>
+            </button>
+            <span class="power-ctrl-val" id="power-volume-val">80%</span>
+          </div>
         </div>
         <div class="power-ctrl-body">
           <div class="power-ctrl-actions">
-            <button type="button" class="power-mini-btn" id="btn-vol-mute" title="Mute Suara">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" id="icon-vol-mute"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></svg>
-              <span>Mute</span>
-            </button>
             <button type="button" class="power-mini-btn" id="btn-vol-down" title="Kurangi Volume">
               <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>-5%</span>
@@ -8670,7 +8856,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.7</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.8</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9238,6 +9424,7 @@ const I18N = {
     reload_app: "Reload Application",
     menu_button: "Menu",
     conn_status_title: "Connection Status",
+    guard_continue_portrait: "Continue in Portrait Mode",
     smart_context_chip_title: "Active Host Application",
     deck_smart_context_title: "SMART APP CONTEXT",
     smart_context_toggle_title: "Automatically adapt layout to active PC application",
@@ -9542,6 +9729,7 @@ const I18N = {
     reload_app: "Muat Ulang Halaman",
     menu_button: "Menu",
     conn_status_title: "Status Koneksi",
+    guard_continue_portrait: "Lanjutkan dalam Mode Vertikal",
     smart_context_chip_title: "Aplikasi PC Aktif",
     deck_smart_context_title: "KONTEKS APLIKASI CERDAS",
     smart_context_toggle_title: "Otomatis sesuaikan tata letak dengan aplikasi PC yang aktif",
@@ -10128,6 +10316,16 @@ if (_btnLockLs) {
   });
 }
 
+const _btnContPortrait = $('btn-continue-portrait');
+if (_btnContPortrait) {
+  _btnContPortrait.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playClickSound();
+    vibe(15);
+    document.body.classList.add('portrait-dismissed');
+  });
+}
+
 // ── Floating Control Deck Controller (Pilihan A) ──
 const controlDeck = $('control-deck');
 const deckBackdrop = $('control-deck-backdrop');
@@ -10184,8 +10382,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.7';
-const APP_CLIENT_VERSION_CODE = 12007;
+const APP_CLIENT_VERSION = '1.20.8';
+const APP_CLIENT_VERSION_CODE = 12008;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10988,7 +11186,10 @@ function switchAppMode(targetMode) {
 
   if (targetMode === 'standard') {
     // Mode Standard (Keyboard PC Utama)
-    if (kbWrap) kbWrap.style.display = '';
+    if (kbWrap) {
+      kbWrap.style.display = '';
+      kbWrap.classList.remove('hidden');
+    }
     if (typeof tpEnabled !== 'undefined' && tpEnabled && laptopDeck) {
       laptopDeck.classList.remove('hidden');
     }
@@ -10998,7 +11199,10 @@ function switchAppMode(targetMode) {
     vibe(15);
   } else {
     // Mode Khusus (Game / Presentasi / AI Workstation / Media / Canvas / Power)
-    if (kbWrap) kbWrap.style.display = 'none';
+    if (kbWrap) {
+      kbWrap.style.display = 'none';
+      kbWrap.classList.add('hidden');
+    }
     if (laptopDeck) laptopDeck.classList.add('hidden');
     if (scBar) scBar.classList.add('hidden');
 

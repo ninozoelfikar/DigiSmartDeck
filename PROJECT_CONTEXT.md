@@ -1855,3 +1855,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 101. CATATAN CHECKPOINT (v1.20.8 - Optimasi Responsif Tampilan HP Mobile: Power Mode Landscape Compact, Perbaikan Potret, dan Pemisahan Keyboard)
+- **Optimasi Landscape Ponsel (Tampilan Mendatar):**
+  - Menerapkan query media ultra-kompak `@media (max-height: 520px) and (orientation: landscape)` untuk `.power-view`.
+  - Mengurangi padding, ukuran kartu kontrol (~60px), slider, dan kartu aksi daya sehingga seluruh 3 panel kontrol dan 8 tombol aksi daya muat 100% di layar ponsel tanpa memerlukan scrolling vertikal (tinggi total ~260px, aman di rentang 360px-412px tinggi ponsel).
+  - Merestrukturisasi kartu Volume Suara dengan memindahkan chip tombol Mute ke baris header kanan di samping badge persentase volume, menyelaraskan bentuk tata letak secara simetris dengan kartu Kecerahan Layar.
+- **Perbaikan Isolasi Tampilan Potret & Penanganan Keyboard (.kb-wrap):**
+  - Memperbaiki bug di mana selector potret `.kb-wrap` memiliki `display: flex !important;` tanpa filter class `.hidden`, yang menyebabkan keyboard tetap tampil menumpuk di atas tampilan mode khusus saat dibuka dalam mode vertikal.
+  - Menambahkan aturan `.kb-wrap.hidden { display: none !important; }` dan `.laptop-deck.hidden { display: none !important; }`, serta memperbarui `switchAppMode` untuk secara eksplisit mengelola class `.hidden` pada `.kb-wrap`.
+  - Pada layar ponsel potret yang sempit (lebar <= 480px), indikator ping dan context chip di-hide dari top bar untuk mencegah tumpang-tindih visual dengan logo.
+- **Akses Fleksibel pada Guard Orientasi (#orientation-landscape-guard):**
+  - Menambahkan tombol kedua "Lanjutkan dalam Mode Vertikal" (`#btn-continue-portrait`) pada modal pengingat orientasi sehingga pengguna tidak terkunci apabila sistem auto-rotate ponsel sedang dinonaktifkan.
+  - Menambahkan kelas `portrait-dismissed` pada `body` saat tombol ditekan dengan feedback klik suara mekanikal (`playClickSound()`) dan getaran haptik (`vibe(15)`).
+  - Menyinkronkan kunci kamus multibahasa `guard_continue_portrait` pada `I18N.en` dan `I18N.id`.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.8`.
+  - File APK baru terkompilasi di `dist/` dan `static/` (~5.4 MB).
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+
