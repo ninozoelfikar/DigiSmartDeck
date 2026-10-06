@@ -679,12 +679,7 @@ def set_system_brightness(percent: int):
 
     if sys.platform.startswith('linux'):
         env = get_x11_env()
-        # 1. Coba brightnessctl untuk laptop/panel terintegrasi
-        try:
-            subprocess.run(['brightnessctl', 'set', f'{val}%'], env=env, capture_output=True, timeout=1)
-        except Exception:
-            pass
-        # 2. Atur via xrandr untuk desktop monitor (software brightness gamma)
+        # 1. Atur via xrandr untuk desktop monitor (software brightness gamma)
         try:
             p = subprocess.run(['xrandr', '--query'], env=env, capture_output=True, text=True, timeout=1)
             if p.returncode == 0:
@@ -692,6 +687,11 @@ def set_system_brightness(percent: int):
                 outputs = [line.split()[0] for line in p.stdout.splitlines() if ' connected' in line]
                 for out in outputs:
                     subprocess.run(['xrandr', '--output', out, '--brightness', f'{float_val:.2f}'], env=env, timeout=1)
+        except Exception:
+            pass
+        # 2. Coba brightnessctl untuk laptop/panel terintegrasi
+        try:
+            subprocess.run(['brightnessctl', 'set', f'{val}%'], env=env, capture_output=True, timeout=1)
         except Exception:
             pass
     elif sys.platform == 'win32':
@@ -725,6 +725,10 @@ def trigger_wake_up():
             pass
         try:
             subprocess.run(['xdg-screensaver', 'reset'], env=env, timeout=1)
+        except Exception:
+            pass
+        try:
+            simulate_tap(resolve_key('shift'))
         except Exception:
             pass
     elif sys.platform == 'win32':
@@ -900,7 +904,22 @@ def get_x11_env():
         return CACHED_X11_ENV
 
     env = dict(os.environ)
-    if 'DISPLAY' not in env:
+    uid = os.getuid()
+
+    # Pastikan direktori runtime dan DBus user terisi untuk session Linux desktop
+    if 'XDG_RUNTIME_DIR' not in env:
+        run_user = f'/run/user/{uid}'
+        if os.path.exists(run_user):
+            env['XDG_RUNTIME_DIR'] = run_user
+
+    if 'DBUS_SESSION_BUS_ADDRESS' not in env:
+        bus_path = f'/run/user/{uid}/bus'
+        if os.path.exists(bus_path):
+            env['DBUS_SESSION_BUS_ADDRESS'] = f'unix:path={bus_path}'
+
+    # Jika DISPLAY atau XAUTHORITY belum ada (misal di bawah systemd service),
+    # telusuri proses sesi GUI pengguna di /proc
+    if 'DISPLAY' not in env or 'XAUTHORITY' not in env:
         try:
             for pid in os.listdir('/proc'):
                 if not pid.isdigit():
@@ -908,12 +927,19 @@ def get_x11_env():
                 try:
                     with open(f'/proc/{pid}/environ', 'rb') as f:
                         data = f.read()
-                    if b'DISPLAY=' in data and b'XAUTHORITY=' in data:
+                    if b'DISPLAY=' in data and (b'XAUTHORITY=' in data or b'DBUS_SESSION_BUS_ADDRESS=' in data):
                         parts = data.split(b'\x00')
                         d = dict(p.split(b'=', 1) for p in parts if b'=' in p)
-                        env['DISPLAY'] = d.get(b'DISPLAY', b':1').decode('utf-8', 'ignore')
-                        env['XAUTHORITY'] = d.get(b'XAUTHORITY', b'').decode('utf-8', 'ignore')
-                        break
+                        if 'DISPLAY' not in env and b'DISPLAY' in d:
+                            env['DISPLAY'] = d[b'DISPLAY'].decode('utf-8', 'ignore')
+                        if 'XAUTHORITY' not in env and b'XAUTHORITY' in d:
+                            env['XAUTHORITY'] = d[b'XAUTHORITY'].decode('utf-8', 'ignore')
+                        if 'DBUS_SESSION_BUS_ADDRESS' not in env and b'DBUS_SESSION_BUS_ADDRESS' in d:
+                            env['DBUS_SESSION_BUS_ADDRESS'] = d[b'DBUS_SESSION_BUS_ADDRESS'].decode('utf-8', 'ignore')
+                        if 'XDG_RUNTIME_DIR' not in env and b'XDG_RUNTIME_DIR' in d:
+                            env['XDG_RUNTIME_DIR'] = d[b'XDG_RUNTIME_DIR'].decode('utf-8', 'ignore')
+                        if 'DISPLAY' in env and 'XAUTHORITY' in env:
+                            break
                 except Exception:
                     continue
         except Exception:
@@ -921,7 +947,13 @@ def get_x11_env():
     if 'DISPLAY' not in env:
         env['DISPLAY'] = ':1'
     if 'XAUTHORITY' not in env or not env['XAUTHORITY']:
-        env['XAUTHORITY'] = '/run/user/1000/gdm/Xauthority'
+        common_xauth = f'/run/user/{uid}/gdm/Xauthority'
+        if os.path.exists(common_xauth):
+            env['XAUTHORITY'] = common_xauth
+        else:
+            home_xauth = os.path.expanduser('~/.Xauthority')
+            if os.path.exists(home_xauth):
+                env['XAUTHORITY'] = home_xauth
 
     CACHED_X11_ENV = env
     return env
@@ -1404,8 +1436,9 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
     # Kontrol Sistem Universal (Suara, Kecerahan, Wake Up, Anti-Sleep)
     if action == 'volume_up':
         if sys.platform.startswith('linux'):
+            env = get_x11_env()
             try:
-                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', '+5%'], timeout=1, check=False)
+                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', '+5%'], env=env, timeout=1, check=False)
             except Exception:
                 pass
         elif sys.platform == 'darwin':
@@ -1420,8 +1453,9 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
 
     elif action == 'volume_down':
         if sys.platform.startswith('linux'):
+            env = get_x11_env()
             try:
-                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', '-5%'], timeout=1, check=False)
+                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', '-5%'], env=env, timeout=1, check=False)
             except Exception:
                 pass
         elif sys.platform == 'darwin':
@@ -1436,8 +1470,9 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
 
     elif action == 'volume_mute':
         if sys.platform.startswith('linux'):
+            env = get_x11_env()
             try:
-                subprocess.run(['pactl', 'set-sink-mute', '@DEFAULT_SINK@', 'toggle'], timeout=1, check=False)
+                subprocess.run(['pactl', 'set-sink-mute', '@DEFAULT_SINK@', 'toggle'], env=env, timeout=1, check=False)
             except Exception:
                 pass
         elif sys.platform == 'darwin':
@@ -1505,41 +1540,127 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
         env = get_x11_env()
         try:
             if action in ('shutdown', 'poweroff'):
-                subprocess.Popen(['systemctl', 'poweroff'])
+                done = False
+                try:
+                    p = subprocess.run(['systemctl', 'poweroff', '-i'], env=env, capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        done = True
+                except Exception:
+                    pass
+                if not done:
+                    try:
+                        p = subprocess.run(['gdbus', 'call', '--session', '--dest', 'org.gnome.SessionManager',
+                                            '--object-path', '/org/gnome/SessionManager',
+                                            '--method', 'org.gnome.SessionManager.Shutdown'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                if not done:
+                    try:
+                        p = subprocess.run(['loginctl', 'poweroff', '-i'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                if not done:
+                    try:
+                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
+                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
+                                          'org.freedesktop.login1.Manager.PowerOff', 'boolean:true'], env=env)
+                    except Exception:
+                        pass
                 result['success'] = True
                 result['message'] = 'Mematikan PC Linux...'
             elif action in ('restart', 'reboot'):
-                subprocess.Popen(['systemctl', 'reboot'])
+                done = False
+                try:
+                    p = subprocess.run(['systemctl', 'reboot', '-i'], env=env, capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        done = True
+                except Exception:
+                    pass
+                if not done:
+                    try:
+                        p = subprocess.run(['gdbus', 'call', '--session', '--dest', 'org.gnome.SessionManager',
+                                            '--object-path', '/org/gnome/SessionManager',
+                                            '--method', 'org.gnome.SessionManager.Reboot'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                if not done:
+                    try:
+                        p = subprocess.run(['loginctl', 'reboot', '-i'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                if not done:
+                    try:
+                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
+                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
+                                          'org.freedesktop.login1.Manager.Reboot', 'boolean:true'], env=env)
+                    except Exception:
+                        pass
                 result['success'] = True
                 result['message'] = 'Me-restart PC Linux...'
             elif action in ('sleep', 'suspend'):
-                subprocess.Popen(['systemctl', 'suspend'])
+                done = False
+                try:
+                    p = subprocess.run(['systemctl', 'suspend', '-i'], env=env, capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        done = True
+                except Exception:
+                    pass
+                if not done:
+                    try:
+                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
+                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
+                                          'org.freedesktop.login1.Manager.Suspend', 'boolean:true'], env=env)
+                    except Exception:
+                        pass
                 result['success'] = True
                 result['message'] = 'Menangguhkan PC Linux (Suspend)...'
             elif action == 'hibernate':
-                subprocess.Popen(['systemctl', 'hibernate'])
+                done = False
+                try:
+                    p = subprocess.run(['systemctl', 'hibernate', '-i'], env=env, capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        done = True
+                except Exception:
+                    pass
+                if not done:
+                    try:
+                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
+                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
+                                          'org.freedesktop.login1.Manager.Hibernate', 'boolean:true'], env=env)
+                    except Exception:
+                        pass
                 result['success'] = True
                 result['message'] = 'Menghibernasi PC Linux...'
             elif action == 'lock':
                 locked = False
                 try:
-                    p = subprocess.run(['loginctl', 'lock-session'], capture_output=True, timeout=2)
+                    p = subprocess.run(['gdbus', 'call', '--session', '--dest', 'org.gnome.ScreenSaver',
+                                        '--object-path', '/org/gnome/ScreenSaver',
+                                        '--method', 'org.gnome.ScreenSaver.Lock'], env=env, capture_output=True, timeout=2)
                     if p.returncode == 0:
                         locked = True
                 except Exception:
                     pass
                 if not locked:
                     try:
-                        subprocess.Popen(['xdg-screensaver', 'lock'], env=env)
-                        locked = True
+                        p = subprocess.run(['loginctl', 'lock-sessions'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            locked = True
                     except Exception:
                         pass
                 if not locked:
                     try:
-                        subprocess.Popen(['gdbus', 'call', '--session', '--dest', 'org.gnome.ScreenSaver',
-                                          '--object-path', '/org/gnome/ScreenSaver',
-                                          '--method', 'org.gnome.ScreenSaver.Lock'], env=env)
-                        locked = True
+                        p = subprocess.run(['loginctl', 'lock-session'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            locked = True
                     except Exception:
                         pass
                 if not locked:
@@ -1551,32 +1672,56 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
             elif action == 'switch_user':
                 switched = False
                 try:
-                    p = subprocess.run(['dm-tool', 'switch-to-greeter'], env=env, capture_output=True, timeout=2)
+                    p = subprocess.run(['gdbus', 'call', '--session', '--dest', 'org.gnome.DisplayManager.LocalDisplayFactory',
+                                        '--object-path', '/org/gnome/DisplayManager/LocalDisplayFactory',
+                                        '--method', 'org.gnome.DisplayManager.LocalDisplayFactory.CreateTransientDisplay'], env=env, capture_output=True, timeout=2)
                     if p.returncode == 0:
                         switched = True
                 except Exception:
                     pass
                 if not switched:
                     try:
-                        subprocess.Popen(['gdbus', 'call', '--session', '--dest', 'org.gnome.ScreenSaver',
-                                          '--object-path', '/org/gnome/ScreenSaver',
-                                          '--method', 'org.gnome.ScreenSaver.Lock'], env=env)
+                        p = subprocess.run(['dm-tool', 'switch-to-greeter'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            switched = True
+                    except Exception:
+                        pass
+                if not switched:
+                    try:
+                        subprocess.run(['gdbus', 'call', '--session', '--dest', 'org.gnome.ScreenSaver',
+                                        '--object-path', '/org/gnome/ScreenSaver',
+                                        '--method', 'org.gnome.ScreenSaver.Lock'], env=env, capture_output=True, timeout=2)
                         switched = True
                     except Exception:
                         pass
                 if not switched:
-                    subprocess.Popen(['loginctl', 'lock-session'])
+                    subprocess.Popen(['loginctl', 'lock-sessions'], env=env)
                 result['success'] = True
                 result['message'] = 'Beralih ke layar login pengguna.'
             elif action == 'logout':
+                done = False
                 try:
-                    subprocess.Popen(['gnome-session-quit', '--logout', '--no-prompt'], env=env)
-                    result['success'] = True
-                    result['message'] = 'Keluar dari sesi Linux.'
+                    p = subprocess.run(['gdbus', 'call', '--session', '--dest', 'org.gnome.SessionManager',
+                                        '--object-path', '/org/gnome/SessionManager',
+                                        '--method', 'org.gnome.SessionManager.Logout', 'uint32:1'], env=env, capture_output=True, timeout=2)
+                    if p.returncode == 0:
+                        done = True
                 except Exception:
-                    subprocess.Popen(['loginctl', 'terminate-user', os.environ.get('USER', 'nino')])
-                    result['success'] = True
-                    result['message'] = 'Mengakhiri sesi Linux.'
+                    pass
+                if not done:
+                    try:
+                        p = subprocess.run(['gnome-session-quit', '--logout', '--no-prompt'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                if not done:
+                    try:
+                        subprocess.Popen(['loginctl', 'terminate-user', os.environ.get('USER', 'nino')], env=env)
+                    except Exception:
+                        pass
+                result['success'] = True
+                result['message'] = 'Keluar dari sesi Linux.'
             elif action == 'screen_off':
                 subprocess.Popen(['xset', 'dpms', 'force', 'off'], env=env)
                 result['success'] = True

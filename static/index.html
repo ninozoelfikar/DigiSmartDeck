@@ -6505,6 +6505,99 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-shadow: 0 0 16px rgba(227, 179, 65, 0.25);
 }
 
+.card-wake {
+  border-color: rgba(63, 185, 80, 0.35);
+}
+.card-wake .power-card-icon-wrap {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.3);
+}
+.card-wake:hover, .card-wake:active {
+  border-color: #3fb950;
+  box-shadow: 0 0 16px rgba(63, 185, 80, 0.25);
+}
+
+.card-brightness {
+  border-color: rgba(227, 179, 65, 0.35);
+}
+.card-brightness .power-card-icon-wrap {
+  background: rgba(227, 179, 65, 0.15);
+  color: #e3b341;
+  border: 1px solid rgba(227, 179, 65, 0.3);
+}
+.card-brightness:hover, .card-brightness:active {
+  border-color: #e3b341;
+  box-shadow: 0 0 16px rgba(227, 179, 65, 0.25);
+}
+
+.card-volume {
+  border-color: rgba(121, 192, 255, 0.35);
+}
+.card-volume .power-card-icon-wrap {
+  background: rgba(121, 192, 255, 0.15);
+  color: #79c0ff;
+  border: 1px solid rgba(121, 192, 255, 0.3);
+}
+.card-volume:hover, .card-volume:active {
+  border-color: #79c0ff;
+  box-shadow: 0 0 16px rgba(121, 192, 255, 0.25);
+}
+
+.card-anti-sleep {
+  border-color: rgba(46, 160, 67, 0.35);
+}
+.card-anti-sleep .power-card-icon-wrap {
+  background: rgba(46, 160, 67, 0.15);
+  color: #2ea043;
+  border: 1px solid rgba(46, 160, 67, 0.3);
+}
+.card-anti-sleep:hover, .card-anti-sleep:active {
+  border-color: #2ea043;
+  box-shadow: 0 0 16px rgba(46, 160, 67, 0.25);
+}
+.card-anti-sleep.active {
+  background: rgba(46, 160, 67, 0.12);
+  border-color: #3fb950;
+  box-shadow: 0 0 16px rgba(46, 160, 67, 0.3);
+}
+.card-anti-sleep.active .power-card-icon-wrap {
+  background: rgba(46, 160, 67, 0.3);
+  color: #3fb950;
+  border-color: #3fb950;
+}
+
+.power-slider-dialog {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+.power-popup-val {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 10px 0 16px;
+  line-height: 1;
+}
+.power-popup-range {
+  width: 100%;
+  height: 8px !important;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.power-popup-range::-webkit-slider-thumb {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 @media (max-width: 600px) {
   .media-main-deck {
     grid-template-columns: 1fr;
@@ -8311,107 +8404,6 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- System Controls: Kecerahan Layar, Volume Suara, Wake Up & Anti-Sleep -->
-    <div class="power-controls-panel" id="power-controls-panel">
-      <!-- 1. Kontrol Kecerahan Layar -->
-      <div class="power-ctrl-card">
-        <div class="power-ctrl-header">
-          <div class="power-ctrl-title">
-            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <span data-i18n="power_brightness_title">Kecerahan Layar</span>
-          </div>
-          <span class="power-ctrl-val" id="power-bright-val">100%</span>
-        </div>
-        <div class="power-ctrl-body">
-          <div class="power-ctrl-actions">
-            <button type="button" class="power-mini-btn" id="btn-bright-down" title="Kurangi Kecerahan">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>-10%</span>
-            </button>
-            <input type="range" class="power-range-slider" id="slider-power-brightness" min="10" max="100" step="5" value="100">
-            <button type="button" class="power-mini-btn" id="btn-bright-up" title="Tambah Kecerahan">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+10%</span>
-            </button>
-          </div>
-          <div class="power-presets">
-            <button type="button" class="power-pill" data-bright="30">30%</button>
-            <button type="button" class="power-pill" data-bright="50">50%</button>
-            <button type="button" class="power-pill" data-bright="75">75%</button>
-            <button type="button" class="power-pill active" data-bright="100">100%</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Kontrol Volume Suara -->
-      <div class="power-ctrl-card">
-        <div class="power-ctrl-header">
-          <div class="power-ctrl-title">
-            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-            <span data-i18n="power_volume_title">Volume Suara</span>
-          </div>
-          <div class="power-ctrl-header-right">
-            <button type="button" class="power-mute-chip" id="btn-vol-mute" title="Mute Suara">
-              <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24" id="icon-vol-mute"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></svg>
-              <span>Mute</span>
-            </button>
-            <span class="power-ctrl-val" id="power-volume-val">80%</span>
-          </div>
-        </div>
-        <div class="power-ctrl-body">
-          <div class="power-ctrl-actions">
-            <button type="button" class="power-mini-btn" id="btn-vol-down" title="Kurangi Volume">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>-5%</span>
-            </button>
-            <input type="range" class="power-range-slider" id="slider-power-volume" min="0" max="100" step="5" value="80">
-            <button type="button" class="power-mini-btn" id="btn-vol-up" title="Tambah Volume">
-              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+5%</span>
-            </button>
-          </div>
-          <div class="power-presets">
-            <button type="button" class="power-pill" data-vol="0">0%</button>
-            <button type="button" class="power-pill" data-vol="30">30%</button>
-            <button type="button" class="power-pill" data-vol="60">60%</button>
-            <button type="button" class="power-pill active" data-vol="80">80%</button>
-            <button type="button" class="power-pill" data-vol="100">100%</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Wake Up & Anti-Sleep (Supaya tidak sleep PC-nya) -->
-      <div class="power-ctrl-card power-ctrl-card-awake">
-        <div class="power-ctrl-header">
-          <div class="power-ctrl-title">
-            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span data-i18n="power_awake_title">Wake Up &amp; Anti-Sleep</span>
-          </div>
-          <span class="power-status-tag" id="power-anti-sleep-tag">STANDAR</span>
-        </div>
-        <div class="power-ctrl-body">
-          <div class="power-awake-row">
-            <button type="button" class="power-wake-btn" id="btn-power-wake" title="Bangunkan Layar / PC sekarang">
-              <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 18v4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M20 12h2"/><path d="m19.07 4.93-2.83 2.83"/></svg>
-              <span data-i18n="power_wake_btn">Bangunkan PC</span>
-            </button>
-            <div class="power-anti-sleep-wrap">
-              <label class="power-switch-label" for="toggle-anti-sleep">
-                <span class="power-switch-text">
-                  <strong data-i18n="power_stay_awake">Tetap Terjaga</strong>
-                  <small data-i18n="power_stay_awake_sub">Cegah PC sleep otomatis</small>
-                </span>
-                <div class="power-toggle-switch">
-                  <input type="checkbox" id="toggle-anti-sleep">
-                  <span class="power-toggle-slider"></span>
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Power Grid of Action Tiles -->
     <div class="power-grid" id="power-grid">
       <!-- 1. Shutdown Tile -->
@@ -8458,29 +8450,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 5. Switch User Tile (Label & action varies by OS) -->
-      <button type="button" class="power-card card-switch-user" data-action="switch_user" id="power-btn-switch-user">
-        <div class="power-card-icon-wrap">
-          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div class="power-card-content">
-          <div class="power-card-label" id="lbl-power-switch-user" data-i18n="power_switch_user">Switch User</div>
-          <div class="power-card-sub" id="lbl-power-switch-user-sub" data-i18n="power_switch_user_sub">Ganti profil akun</div>
-        </div>
-      </button>
-
-      <!-- 6. Log Out / Sign Out Tile -->
-      <button type="button" class="power-card card-logout" data-action="logout" id="power-btn-logout">
-        <div class="power-card-icon-wrap">
-          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-        </div>
-        <div class="power-card-content">
-          <div class="power-card-label" data-i18n="power_logout">Sign Out</div>
-          <div class="power-card-sub" data-i18n="power_logout_sub">Keluar dari sesi aktif</div>
-        </div>
-      </button>
-
-      <!-- 7. Turn Off Display Tile -->
+      <!-- 5. Turn Off Display Tile -->
       <button type="button" class="power-card card-screen-off" data-action="screen_off" id="power-btn-screen-off">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -8491,7 +8461,73 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 8. Hibernate Tile -->
+      <!-- 6. Wake Up Tile -->
+      <button type="button" class="power-card card-wake" data-action="wake_up" id="power-btn-wake">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_wake">Bangunkan PC</div>
+          <div class="power-card-sub" data-i18n="power_wake_sub">Aktifkan layar PC</div>
+        </div>
+      </button>
+
+      <!-- 7. Brightness Tile (Opens popup slider) -->
+      <button type="button" class="power-card card-brightness" id="power-btn-brightness">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_brightness">Kecerahan</div>
+          <div class="power-card-sub" id="power-card-bright-sub" data-i18n="power_brightness_sub">Atur intensitas layar</div>
+        </div>
+      </button>
+
+      <!-- 8. Volume Tile (Opens popup slider) -->
+      <button type="button" class="power-card card-volume" id="power-btn-volume">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_volume">Volume Suara</div>
+          <div class="power-card-sub" id="power-card-volume-sub" data-i18n="power_volume_sub">Atur volume audio</div>
+        </div>
+      </button>
+
+      <!-- 9. Anti-Sleep Tile -->
+      <button type="button" class="power-card card-anti-sleep" id="power-btn-anti-sleep">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_anti_sleep">Anti-Sleep</div>
+          <div class="power-card-sub" id="power-card-anti-sleep-sub" data-i18n="power_anti_sleep_sub">Cegah PC sleep</div>
+        </div>
+      </button>
+
+      <!-- 10. Switch User Tile (Label & action varies by OS) -->
+      <button type="button" class="power-card card-switch-user" data-action="switch_user" id="power-btn-switch-user">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" id="lbl-power-switch-user" data-i18n="power_switch_user">Switch User</div>
+          <div class="power-card-sub" id="lbl-power-switch-user-sub" data-i18n="power_switch_user_sub">Ganti profil akun</div>
+        </div>
+      </button>
+
+      <!-- 11. Log Out / Sign Out Tile -->
+      <button type="button" class="power-card card-logout" data-action="logout" id="power-btn-logout">
+        <div class="power-card-icon-wrap">
+          <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </div>
+        <div class="power-card-content">
+          <div class="power-card-label" data-i18n="power_logout">Sign Out</div>
+          <div class="power-card-sub" data-i18n="power_logout_sub">Keluar dari sesi aktif</div>
+        </div>
+      </button>
+
+      <!-- 12. Hibernate Tile -->
       <button type="button" class="power-card card-hibernate" data-action="hibernate" id="power-btn-hibernate">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -8515,6 +8551,44 @@ body.portrait-dismissed .orientation-guard {
       <div style="display:flex;gap:10px;justify-content:center;">
         <button type="button" class="tbtn" id="btn-power-confirm-cancel" style="flex:1;padding:10px;border-radius:8px;font-weight:600;background:var(--key-bg);border:1px solid var(--key-border);color:var(--text);">Batal</button>
         <button type="button" class="tbtn" id="btn-power-confirm-proceed" style="flex:1;padding:10px;border-radius:8px;font-weight:600;background:var(--accent);color:#fff;border:none;">Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POWER BRIGHTNESS POPUP MODAL -->
+  <div class="modal-backdrop hidden" id="modal-power-brightness">
+    <div class="modal-dialog power-slider-dialog" style="max-width:380px;text-align:center;padding:22px 20px;border-radius:16px;">
+      <div class="power-popup-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" style="stroke:var(--accent);"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <span style="font-size:16px;font-weight:700;color:var(--text);" data-i18n="power_brightness_title">Kecerahan Layar</span>
+        </div>
+        <button type="button" class="modal-close" id="btn-close-power-brightness" style="cursor:pointer;background:none;border:none;color:var(--text-dim);font-size:18px;">✕</button>
+      </div>
+      <div style="margin:12px 0 16px;">
+        <div class="power-popup-val" id="popup-bright-val" style="font-size:36px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;">100%</div>
+      </div>
+      <div style="padding:0 8px 10px;">
+        <input type="range" class="power-range-slider power-popup-range" id="slider-popup-brightness" min="10" max="100" step="5" value="100" style="width:100%;height:10px;cursor:pointer;">
+      </div>
+    </div>
+  </div>
+
+  <!-- POWER VOLUME POPUP MODAL -->
+  <div class="modal-backdrop hidden" id="modal-power-volume">
+    <div class="modal-dialog power-slider-dialog" style="max-width:380px;text-align:center;padding:22px 20px;border-radius:16px;">
+      <div class="power-popup-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" style="stroke:var(--accent);"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <span style="font-size:16px;font-weight:700;color:var(--text);" data-i18n="power_volume_title">Volume Suara</span>
+        </div>
+        <button type="button" class="modal-close" id="btn-close-power-volume" style="cursor:pointer;background:none;border:none;color:var(--text-dim);font-size:18px;">✕</button>
+      </div>
+      <div style="margin:12px 0 16px;">
+        <div class="power-popup-val" id="popup-volume-val" style="font-size:36px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;">80%</div>
+      </div>
+      <div style="padding:0 8px 10px;">
+        <input type="range" class="power-range-slider power-popup-range" id="slider-popup-volume" min="0" max="100" step="5" value="80" style="width:100%;height:10px;cursor:pointer;">
       </div>
     </div>
   </div>
@@ -9397,9 +9471,17 @@ const I18N = {
     deck_power: "Power",
     power_title: "Power & System Controls",
     power_brightness_title: "Display Brightness",
+    power_brightness: "Brightness",
+    power_brightness_sub: "Adjust display level",
     power_volume_title: "Sound Volume",
+    power_volume: "Volume",
+    power_volume_sub: "Adjust sound level",
     power_awake_title: "Wake Up & Anti-Sleep",
+    power_wake: "Wake PC",
+    power_wake_sub: "Wake display & PC",
     power_wake_btn: "Wake PC",
+    power_anti_sleep: "Anti-Sleep",
+    power_anti_sleep_sub: "Prevent sleep",
     power_stay_awake: "Keep Awake",
     power_stay_awake_sub: "Prevent PC sleep",
     power_back_keyboard: "Keyboard",
@@ -9702,9 +9784,17 @@ const I18N = {
     deck_power: "Power",
     power_title: "Menu Daya & Kontrol Sistem",
     power_brightness_title: "Kecerahan Layar",
+    power_brightness: "Kecerahan",
+    power_brightness_sub: "Atur intensitas layar",
     power_volume_title: "Volume Suara",
+    power_volume: "Volume Suara",
+    power_volume_sub: "Atur volume audio",
     power_awake_title: "Wake Up & Anti-Sleep",
+    power_wake: "Bangunkan PC",
+    power_wake_sub: "Aktifkan layar PC",
     power_wake_btn: "Bangunkan PC",
+    power_anti_sleep: "Anti-Sleep",
+    power_anti_sleep_sub: "Cegah PC sleep",
     power_stay_awake: "Tetap Terjaga",
     power_stay_awake_sub: "Cegah PC sleep otomatis",
     power_back_keyboard: "Keyboard",
@@ -17886,7 +17976,8 @@ function initPowerControls() {
     { id: 'power-btn-switch-user', action: 'switch_user' },
     { id: 'power-btn-logout', action: 'logout' },
     { id: 'power-btn-screen-off', action: 'screen_off' },
-    { id: 'power-btn-hibernate', action: 'hibernate' }
+    { id: 'power-btn-hibernate', action: 'hibernate' },
+    { id: 'power-btn-wake', action: 'wake_up' }
   ];
 
   actions.forEach(item => {
@@ -17928,22 +18019,20 @@ function initPowerControls() {
     });
   }
 
-  // ── 1. Brightness Controls ──
-  const sliderBright = $('slider-power-brightness');
-  const valBright = $('power-bright-val');
-  const btnBrightDown = $('btn-bright-down');
-  const btnBrightUp = $('btn-bright-up');
-  const brightPills = document.querySelectorAll('.power-pill[data-bright]');
+  // ── 1. Brightness Popup Modal ──
+  const modalBright = $('modal-power-brightness');
+  const btnOpenBright = $('power-btn-brightness');
+  const btnCloseBright = $('btn-close-power-brightness');
+  const sliderBright = $('slider-popup-brightness');
+  const valBright = $('popup-bright-val');
+  const subBright = $('power-card-bright-sub');
 
   function updateBrightnessUI(val) {
     const num = parseInt(val, 10);
     val = isNaN(num) ? 100 : Math.max(10, Math.min(100, num));
     if (sliderBright) sliderBright.value = val;
     if (valBright) valBright.textContent = val + '%';
-    brightPills.forEach(p => {
-      const pVal = parseInt(p.getAttribute('data-bright'), 10);
-      p.classList.toggle('active', pVal === val);
-    });
+    if (subBright) subBright.textContent = val + '%';
     try { localStorage.setItem('digi_brightness', val); } catch (e) {}
   }
 
@@ -17952,9 +18041,35 @@ function initPowerControls() {
     if (savedBright) updateBrightnessUI(savedBright);
   } catch (e) {}
 
+  if (btnOpenBright) {
+    bindPowerBtn(btnOpenBright, () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(20);
+      if (modalBright) modalBright.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseBright) {
+    bindPowerBtn(btnCloseBright, () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      if (modalBright) modalBright.classList.add('hidden');
+    });
+  }
+
+  if (modalBright) {
+    modalBright.addEventListener('click', (e) => {
+      if (e.target === modalBright) {
+        if (typeof playClickSound === 'function') playClickSound();
+        modalBright.classList.add('hidden');
+      }
+    });
+  }
+
   if (sliderBright) {
     sliderBright.addEventListener('input', () => {
       updateBrightnessUI(sliderBright.value);
+      executePowerActionNow('brightness_set', parseInt(sliderBright.value, 10));
     });
     sliderBright.addEventListener('change', () => {
       if (typeof playClickSound === 'function') playClickSound();
@@ -17963,55 +18078,20 @@ function initPowerControls() {
     });
   }
 
-  if (btnBrightDown) {
-    bindPowerBtn(btnBrightDown, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(15);
-      let cur = parseInt(sliderBright ? sliderBright.value : 100, 10);
-      cur = Math.max(10, cur - 10);
-      updateBrightnessUI(cur);
-      executePowerActionNow('brightness_set', cur);
-    });
-  }
-
-  if (btnBrightUp) {
-    bindPowerBtn(btnBrightUp, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(15);
-      let cur = parseInt(sliderBright ? sliderBright.value : 100, 10);
-      cur = Math.min(100, cur + 10);
-      updateBrightnessUI(cur);
-      executePowerActionNow('brightness_set', cur);
-    });
-  }
-
-  brightPills.forEach(p => {
-    bindPowerBtn(p, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(15);
-      const val = parseInt(p.getAttribute('data-bright'), 10);
-      updateBrightnessUI(val);
-      executePowerActionNow('brightness_set', val);
-    });
-  });
-
-  // ── 2. Volume Controls ──
-  const sliderVol = $('slider-power-volume');
-  const valVol = $('power-volume-val');
-  const btnVolDown = $('btn-vol-down');
-  const btnVolUp = $('btn-vol-up');
-  const btnVolMute = $('btn-vol-mute');
-  const volPills = document.querySelectorAll('.power-pill[data-vol]');
+  // ── 2. Volume Popup Modal ──
+  const modalVol = $('modal-power-volume');
+  const btnOpenVol = $('power-btn-volume');
+  const btnCloseVol = $('btn-close-power-volume');
+  const sliderVol = $('slider-popup-volume');
+  const valVol = $('popup-volume-val');
+  const subVol = $('power-card-volume-sub');
 
   function updateVolumeUI(val) {
     const num = parseInt(val, 10);
     val = isNaN(num) ? 80 : Math.max(0, Math.min(100, num));
     if (sliderVol) sliderVol.value = val;
     if (valVol) valVol.textContent = val + '%';
-    volPills.forEach(p => {
-      const pVal = parseInt(p.getAttribute('data-vol'), 10);
-      p.classList.toggle('active', pVal === val);
-    });
+    if (subVol) subVol.textContent = val + '%';
     try { localStorage.setItem('digi_volume', val); } catch (e) {}
   }
 
@@ -18020,9 +18100,35 @@ function initPowerControls() {
     if (savedVol) updateVolumeUI(savedVol);
   } catch (e) {}
 
+  if (btnOpenVol) {
+    bindPowerBtn(btnOpenVol, () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(20);
+      if (modalVol) modalVol.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseVol) {
+    bindPowerBtn(btnCloseVol, () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      vibe(15);
+      if (modalVol) modalVol.classList.add('hidden');
+    });
+  }
+
+  if (modalVol) {
+    modalVol.addEventListener('click', (e) => {
+      if (e.target === modalVol) {
+        if (typeof playClickSound === 'function') playClickSound();
+        modalVol.classList.add('hidden');
+      }
+    });
+  }
+
   if (sliderVol) {
     sliderVol.addEventListener('input', () => {
       updateVolumeUI(sliderVol.value);
+      executePowerActionNow('volume_set', parseInt(sliderVol.value, 10));
     });
     sliderVol.addEventListener('change', () => {
       if (typeof playClickSound === 'function') playClickSound();
@@ -18031,90 +18137,45 @@ function initPowerControls() {
     });
   }
 
-  if (btnVolDown) {
-    bindPowerBtn(btnVolDown, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(15);
-      let cur = parseInt(sliderVol ? sliderVol.value : 80, 10);
-      cur = Math.max(0, cur - 5);
-      updateVolumeUI(cur);
-      executePowerActionNow('volume_set', cur);
-    });
-  }
-
-  if (btnVolUp) {
-    bindPowerBtn(btnVolUp, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(15);
-      let cur = parseInt(sliderVol ? sliderVol.value : 80, 10);
-      cur = Math.min(100, cur + 5);
-      updateVolumeUI(cur);
-      executePowerActionNow('volume_set', cur);
-    });
-  }
-
-  if (btnVolMute) {
-    bindPowerBtn(btnVolMute, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(20);
-      executePowerActionNow('volume_mute');
-    });
-  }
-
-  volPills.forEach(p => {
-    bindPowerBtn(p, () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(15);
-      const val = parseInt(p.getAttribute('data-vol'), 10);
-      updateVolumeUI(val);
-      executePowerActionNow('volume_set', val);
-    });
-  });
-
-  // ── 3. Wake Up & Anti-Sleep ──
-  const btnWake = $('btn-power-wake');
-  const toggleAntiSleep = $('toggle-anti-sleep');
-  const tagAntiSleep = $('power-anti-sleep-tag');
+  // ── 3. Anti-Sleep Toggle Tile ──
+  const btnAntiSleep = $('power-btn-anti-sleep');
+  const subAntiSleep = $('power-card-anti-sleep-sub');
+  let isAntiSleepActive = false;
   let antiSleepTimer = null;
 
   function updateAntiSleepUI(active) {
-    if (tagAntiSleep) {
-      tagAntiSleep.textContent = active ? (currentUiLang === 'id' ? 'TERJAGA' : 'AWAKE') : (currentUiLang === 'id' ? 'STANDAR' : 'STANDARD');
-      tagAntiSleep.classList.toggle('active', active);
+    isAntiSleepActive = !!active;
+    if (btnAntiSleep) {
+      btnAntiSleep.classList.toggle('active', isAntiSleepActive);
     }
-    if (toggleAntiSleep) toggleAntiSleep.checked = active;
+    if (subAntiSleep) {
+      subAntiSleep.textContent = isAntiSleepActive ?
+        (currentUiLang === 'id' ? 'Aktif (PC Terjaga)' : 'Active (PC Awake)') :
+        (currentUiLang === 'id' ? 'Cegah PC sleep' : 'Prevent sleep');
+    }
 
     if (antiSleepTimer) {
       clearInterval(antiSleepTimer);
       antiSleepTimer = null;
     }
-    if (active) {
+    if (isAntiSleepActive) {
       antiSleepTimer = setInterval(() => {
-        if (toggleAntiSleep && toggleAntiSleep.checked) {
+        if (isAntiSleepActive) {
           executePowerActionNow('anti_sleep_on');
         }
       }, 30000);
     }
-    try { localStorage.setItem('digi_anti_sleep', active ? '1' : '0'); } catch (e) {}
+    try { localStorage.setItem('digi_anti_sleep', isAntiSleepActive ? '1' : '0'); } catch (e) {}
   }
 
-  if (btnWake) {
-    bindPowerBtn(btnWake, () => {
+  if (btnAntiSleep) {
+    bindPowerBtn(btnAntiSleep, () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(25);
-      executePowerActionNow('wake_up');
+      const nextState = !isAntiSleepActive;
+      updateAntiSleepUI(nextState);
+      executePowerActionNow(nextState ? 'anti_sleep_on' : 'anti_sleep_off');
     });
-  }
-
-  if (toggleAntiSleep) {
-    const handleToggle = () => {
-      if (typeof playClickSound === 'function') playClickSound();
-      vibe(25);
-      const isAwake = toggleAntiSleep.checked;
-      updateAntiSleepUI(isAwake);
-      executePowerActionNow(isAwake ? 'anti_sleep_on' : 'anti_sleep_off');
-    };
-    toggleAntiSleep.addEventListener('change', handleToggle);
   }
 
   try {
