@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.16] - 2026-10-06
+- Zero-delay audio menu, eliminasi logo statis pre-splash, dan penguatan target lock
+
 ### [1.20.15] - 2026-10-06
 - Fiksasi audio engine keepalive dan restorasi bunyi tuts keyboard tablet
 
@@ -306,6 +309,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.16] - 2026-10-06
+- Release v1.20.16 updates
 
 ### [1.20.15] - 2026-10-06
 - Release v1.20.15 updates

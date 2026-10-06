@@ -1991,6 +1991,24 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) konsisten di seluruh tombol.
 
+---
+
+## 109. CATATAN CHECKPOINT (v1.20.16 - Zero-Delay Audio Menu, Eliminasi Logo Statis Pre-Splash, dan Penguatan Target Lock)
+- **Fiksasi Zero-Delay Audio pada Seluruh Tombol Menu & Modal:**
+  - Memindahkan pemicu tombol Menu header (`#btn-control-deck`) langsung ke event `touchstart` dengan deduplikasi sentuh sintetik (0ms respon).
+  - Menambahkan efek suara mekanikal (`playClickSound()`) dan respons haptik pada seluruh tombol fungsi di dalam Menu Drawer (`#btn-fn`, `#btn-nav`, `#btn-num`, `#btn-sc`, `#btn-tp`, `#btn-latch`, `#btn-haptic`, `#btn-settings`, `#btn-close-deck`, dan seluruh tombol close modal).
+  - Seluruh tombol pergantian mode kerja (`switchAppMode` & `bindModeBtn`) merespons seketika pada `touchstart` tanpa jeda.
+- **Eliminasi Layar Logo Statis Pre-Splash & Proteksi Split Screen:**
+  - Menetapkan `windowSplashScreenAnimatedIcon` ke drawable transparan kosong pada Android 12+ (`values-v31/styles.xml`), menghilangkan logo statis sistem saat aplikasi dibuka sehingga transisi langsung menuju ke Flash Screen resmi DigiSmartDeck.
+  - Membatasi orientation guard hanya pada layar ponsel kecil (`max-width: 599px`), sehingga tablet pada mode split-screen atau rotasi potret tidak lagi terblokir oleh layar orientasi.
+  - Flash Screen resmi ("DigiSmartDeck by King Ali Studio" dengan mechanical typing jingle 5-tuts) dipertahankan utuh 100%.
+- **Penguatan Target Lock Execution:**
+  - Menambahkan fallback eksekusi `xdotool windowactivate` pada backend Linux jika `wmctrl` mengembalikan kode non-nol, menjamin penguncian target selalu berhasil mengarahkan input ke jendela yang dikunci.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) konsisten di seluruh tombol interaktif.
+
+
 
 
 

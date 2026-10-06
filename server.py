@@ -1297,7 +1297,16 @@ def activate_and_focus_window(win_id, maximize=True):
                 timeout=0.8
             )
             if res.returncode != 0:
-                return False
+                # Fallback menggunakan xdotool jika wmctrl gagal
+                res_xdo = subprocess.run(
+                    ['xdotool', 'windowactivate', win_id],
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    timeout=0.8
+                )
+                if res_xdo.returncode != 0:
+                    return False
             # 2. Maksimalkan jendela jika diminta
             if maximize:
                 subprocess.run(

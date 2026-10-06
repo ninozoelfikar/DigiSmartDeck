@@ -6594,7 +6594,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .orientation-guard {
   display: none;
 }
-@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) and (max-width: 599px) {
   .orientation-guard {
     display: flex !important;
     position: fixed;
@@ -8907,7 +8907,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.15</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.16</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -10217,6 +10217,8 @@ function setPanelState(panelId, btnId, storageKey, isVisible) {
 }
 
 function togglePanel(panelId, btnId, storageKey) {
+  playClickSound();
+  vibe(15);
   const p = $(panelId);
   if (!p) return;
   const willBeVisible = p.classList.contains('hidden');
@@ -10243,6 +10245,7 @@ $('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc', 'digi_panel_sc');
 // Pulihkan status settingan panel keyboard utama saat start
 restoreKeyboardPanels();
 $('btn-latch').onclick = () => {
+  playClickSound();
   // Cycle mode: lock (aktif terus) -> oneshot (1-shot) -> hold (manual) -> lock
   if (modLockMode === 'lock') {
     modLockMode = 'oneshot';
@@ -10257,6 +10260,7 @@ $('btn-latch').onclick = () => {
   vibe(15);
 };
 $('btn-haptic').onclick = () => {
+  playClickSound();
   if (typeof setHapticState === 'function') {
     setHapticState(!haptic);
   } else {
@@ -10424,25 +10428,26 @@ function toggleControlDeck() {
 
 if (btnControlDeck) {
   let lastTouchDeck = 0;
-  btnControlDeck.addEventListener('touchend', (e) => {
-    e.stopPropagation();
-    if (e.cancelable) e.preventDefault();
-    lastTouchDeck = Date.now();
+  const handleMenuTrigger = (e) => {
+    if (e) {
+      if (e.type === 'click' && Date.now() - lastTouchDeck < 450) return;
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.type === 'touchstart') {
+        e.preventDefault();
+        lastTouchDeck = Date.now();
+      }
+    }
+    unlockAudio();
     playClickSound();
     vibe(15);
     toggleControlDeck();
-  }, { passive: false });
-  btnControlDeck.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (Date.now() - lastTouchDeck < 450) return;
-    playClickSound();
-    vibe(15);
-    toggleControlDeck();
-  });
+  };
+  btnControlDeck.addEventListener('touchstart', handleMenuTrigger, { passive: false });
+  btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.20.15';
-const APP_CLIENT_VERSION_CODE = 12015;
+const APP_CLIENT_VERSION = '1.20.16';
+const APP_CLIENT_VERSION_CODE = 12016;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10770,6 +10775,7 @@ function handleDeckCloseEvent(e) {
     if (e.cancelable) e.preventDefault();
     e.stopPropagation();
   }
+  playClickSound();
   closeControlDeck();
   vibe(10);
 }
@@ -10795,6 +10801,7 @@ function handleUniversalClose(e) {
   if (closeBtn) {
     if (e.cancelable) e.preventDefault();
     e.stopPropagation();
+    playClickSound();
     if (closeBtn.classList.contains('deck-close') || closeBtn.id === 'btn-close-deck') {
       closeControlDeck();
     } else {
@@ -10809,6 +10816,7 @@ function handleUniversalClose(e) {
   if (target.classList.contains('modal-backdrop')) {
     if (Date.now() - lastModalOpenTime < 350) return;
     if (e.cancelable) e.preventDefault();
+    playClickSound();
     target.classList.add('hidden');
     vibe(10);
   }
@@ -11136,6 +11144,7 @@ if (btnActivateLic) {
 
 // ─── PENGATUR SENTRAL MODE KERJA (ANTI-KONFLIK & SELESAI SENGKETA TAMPILAN) ───
 function switchAppMode(targetMode) {
+  playClickSound();
   // Matikan proses background spesifik mode sebelumnya
   if (targetMode !== 'game' && typeof releaseAllGpKeys === 'function') {
     releaseAllGpKeys();
@@ -12989,6 +12998,7 @@ function setTpEnabled(enabled) {
 
 if (btnTpToggle) {
   btnTpToggle.addEventListener('click', () => {
+    playClickSound();
     setTpEnabled(!tpEnabled);
     vibe(20);
   });
@@ -12996,6 +13006,7 @@ if (btnTpToggle) {
 
 if (btnTpHide) {
   btnTpHide.addEventListener('click', () => {
+    playClickSound();
     setTpEnabled(false);
     vibe(20);
   });
@@ -13003,6 +13014,7 @@ if (btnTpHide) {
 
 if (optTpOn) {
   optTpOn.addEventListener('click', () => {
+    playClickSound();
     setTpEnabled(true);
     vibe(20);
   });
@@ -13241,6 +13253,7 @@ const btnSaveSettings = $('btn-save-settings');
 
 function openSettings() {
   if (settingsModal) {
+    playClickSound();
     settingsModal.classList.remove('hidden');
     vibe(15);
   }
@@ -13248,6 +13261,7 @@ function openSettings() {
 
 function closeSettings() {
   if (settingsModal) {
+    playClickSound();
     settingsModal.classList.add('hidden');
     vibe(10);
   }
@@ -18231,16 +18245,18 @@ function bindModeBtn(btn, handler) {
   let lastTrigger = 0;
   const trigger = (e) => {
     if (e) {
+      if (e.type === 'click' && Date.now() - lastTrigger < 450) return;
       if (e.stopPropagation) e.stopPropagation();
-      if (e.cancelable && e.type === 'touchend') e.preventDefault();
+      if (e.cancelable && e.type === 'touchstart') {
+        e.preventDefault();
+        lastTrigger = Date.now();
+      }
     }
-    const now = Date.now();
-    if (now - lastTrigger < 250) return;
-    lastTrigger = now;
+    unlockAudio();
     if (typeof playClickSound === 'function') playClickSound();
     handler();
   };
-  btn.addEventListener('touchend', trigger, { passive: false });
+  btn.addEventListener('touchstart', trigger, { passive: false });
   btn.addEventListener('click', trigger);
 }
 
