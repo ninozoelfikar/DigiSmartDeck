@@ -1925,5 +1925,54 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
 
+---
+
+## 103. CATATAN CHECKPOINT (v1.20.10 - Penyederhanaan 3 Mode Utama MVP & Percabangan Power Mode)
+- **Fokus 3 Mode Utama MVP:**
+  - Mengunci antarmuka hanya pada 3 mode utama (PC Keyboard, Game Console, AI Workstation).
+  - Memisahkan dan mencabangkan pengembangan Power Mode ke branch tersendiri (`feature/power-mode`).
+
+---
+
+## 104. CATATAN CHECKPOINT (v1.20.11 - Fiksasi Badge APK, Modal Reconnecting Otomatis, Audio Engine & Startup Jingle)
+- **Fiksasi Badge APK:**
+  - Menghapus label redundant "APK Native" dari modal About.
+- **Modal Reconnecting Otomatis:**
+  - Menghapus tombol bottom manual tambahan pada modal reconnecting untuk alur pemulihan murni otomatis.
+- **Stabilisasi Web Audio & Startup Jingle:**
+  - Memperbaiki siklus hidup Web Audio context, menghilangkan memory leak oscillator/gain, dan merestorasi jingle 5-tuts mechanical click startup.
+
+---
+
+## 105. CATATAN CHECKPOINT (v1.20.12 - Indikator Notifikasi Orange Standar IT & Pembersihan Informasi Harga)
+- **Indikator Notifikasi Standar IT:**
+  - Menonaktifkan floating update banner pop-up dan menggantikannya dengan titik oranye modern (`#f0883e`) pada logo brand top header (`#btn-brand-toggle`).
+- **Pembersihan Informasi Harga:**
+  - Menghapus teks harga langganan dan pass seumur hidup pada modal aktivasi lisensi dan modal store.
+
+---
+
+## 106. CATATAN CHECKPOINT (v1.20.13 - Pembersihan Label Mode Keyboard Baris Terminal)
+- **Pembersihan Baris Terminal:**
+  - Menghilangkan badge mode keyboard khusus pada baris jendela Terminal di Window Switcher.
+
+---
+
+## 107. CATATAN CHECKPOINT (v1.20.14 - Implementasi Target Lock Execution untuk Windows dan Linux)
+- **Fitur Penguncian Target Window (Target Lock Execution):**
+  - Menambahkan tombol Lock (`.win-ctrl-btn.win-ctrl-lock`) di samping Minimize `[-]`, Maximize `[□]`, dan Close `[✕]` pada Window Switcher (`#modal-window-switcher`).
+  - Mengunci input dari semua mode kerja DigiSmartDeck (AI Workstation dictation/prompt chips, PC Keyboard, Gamepad, Touchpad, Macros) secara khusus langsung ke jendela yang dikunci, meskipun jendela tersebut sedang di latar belakang atau terminimalkan.
+  - Dukungan lintas platform penuh:
+    - **Linux**: Memanfaatkan `wmctrl -i -a` untuk focus, unminimize, dan raise jendela secara instan.
+    - **Windows**: Menggunakan Win32 API `ShowWindow(hwnd, SW_RESTORE)` jika ikonik, `AllowSetForegroundWindow(-1)`, dan `SetForegroundWindow(hwnd)`.
+- **Indikator Visual & Status Dua Arah:**
+  - Ikon padlock SVG dengan status toggle interaktif (terkunci dengan aksen gold/amber `#f0883e` dan unlocked).
+  - Baris jendela yang dikunci ditandai dengan border amber, latar redup, dan badge `Target Terkunci` (`Target Lock`).
+  - Active context chip (`#smart-context-chip`) di top header otomatis berpendar dengan aksen amber `#f0883e` saat target lock aktif.
+  - Server otomatis mereset status kunci jika jendela yang bersangkutan ditutup oleh pengguna.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe(20)`) dipertahankan pada seluruh interaksi.
+
 
 

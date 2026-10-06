@@ -890,6 +890,7 @@ def get_host_os():
 
 # --- Smart App Context Tracking ---
 CACHED_X11_ENV = None
+LOCKED_TARGET_WIN_ID = None
 CURRENT_APP_CONTEXT = {
     'app': 'Desktop',
     'title': '',
@@ -1157,9 +1158,10 @@ def get_active_window_info():
 
 def get_open_windows_list():
     """Mengambil daftar jendela aplikasi GUI yang terbuka di PC host."""
-    global CACHED_X11_ENV, CURRENT_APP_CONTEXT
+    global CACHED_X11_ENV, CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID
     windows = []
     current_active_id = CURRENT_APP_CONTEXT.get('win_id', '') if CURRENT_APP_CONTEXT else ''
+    found_locked = False
 
     if sys.platform.startswith('linux'):
         try:
@@ -1211,13 +1213,23 @@ def get_open_windows_list():
                         except Exception:
                             is_active = (win_id.lower() == current_active_id.lower())
 
+                    is_locked = False
+                    if LOCKED_TARGET_WIN_ID:
+                        try:
+                            is_locked = (int(win_id, 16) == int(LOCKED_TARGET_WIN_ID, 16))
+                        except Exception:
+                            is_locked = (win_id.lower() == str(LOCKED_TARGET_WIN_ID).lower())
+                        if is_locked:
+                            found_locked = True
+
                     windows.append({
                         'win_id': win_id,
                         'app': friendly_name,
                         'title': title,
                         'suggested_mode': suggested_mode,
                         'class_name': wm_class,
-                        'is_active': is_active
+                        'is_active': is_active,
+                        'is_locked': is_locked
                     })
         except Exception:
             pass
@@ -1226,6 +1238,7 @@ def get_open_windows_list():
         try:
             import win32gui, win32process
             def enum_cb(hwnd, extra):
+                nonlocal found_locked
                 if win32gui.IsWindowVisible(hwnd):
                     title = win32gui.GetWindowText(hwnd) or ''
                     if title and title != 'Program Manager':
@@ -1234,17 +1247,26 @@ def get_open_windows_list():
                             return
                         suggested_mode, friendly_name = classify_app_context([class_name], title)
                         is_active = (str(hwnd) == str(current_active_id))
+                        is_locked = False
+                        if LOCKED_TARGET_WIN_ID:
+                            is_locked = (str(hwnd).strip().lower() == str(LOCKED_TARGET_WIN_ID).strip().lower())
+                            if is_locked:
+                                found_locked = True
                         extra.append({
                             'win_id': str(hwnd),
                             'app': friendly_name,
                             'title': title,
                             'suggested_mode': suggested_mode,
                             'class_name': class_name,
-                            'is_active': is_active
+                            'is_active': is_active,
+                            'is_locked': is_locked
                         })
             win32gui.EnumWindows(enum_cb, windows)
         except Exception:
             pass
+
+    if LOCKED_TARGET_WIN_ID and not found_locked:
+        LOCKED_TARGET_WIN_ID = None
 
     return windows
 
@@ -1258,7 +1280,7 @@ def is_valid_window_id(win_id):
 
 
 def activate_and_focus_window(win_id, maximize=True):
-    """Mengangkat jendela PC ke depan dan memaksimalkan ukurannya."""
+    """Mengangkat jendela PC ke depan dan memaksimalkan ukurannya (jika maximize=True)."""
     global CACHED_X11_ENV
     if not is_valid_window_id(win_id):
         return False
@@ -1267,13 +1289,15 @@ def activate_and_focus_window(win_id, maximize=True):
         try:
             env = get_x11_env()
             # 1. Aktifkan dan angkat jendela ke depan (focus & raise)
-            subprocess.run(
+            res = subprocess.run(
                 ['wmctrl', '-i', '-a', win_id],
                 env=env,
                 capture_output=True,
                 text=True,
                 timeout=0.8
             )
+            if res.returncode != 0:
+                return False
             # 2. Maksimalkan jendela jika diminta
             if maximize:
                 subprocess.run(
@@ -1288,18 +1312,49 @@ def activate_and_focus_window(win_id, maximize=True):
             return False
     elif sys.platform == 'win32':
         try:
-            import win32gui, win32con
+            import win32gui, win32con, ctypes
             hwnd = int(win_id)
             if win32gui.IsWindow(hwnd):
+                try:
+                    ctypes.windll.user32.AllowSetForegroundWindow(-1)
+                except Exception:
+                    pass
                 if maximize:
                     win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
                 else:
-                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    if win32gui.IsIconic(hwnd):
+                        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    else:
+                        win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
                 win32gui.SetForegroundWindow(hwnd)
                 return True
         except Exception:
             return False
     return False
+
+
+def ensure_target_window_focused():
+    """Memastikan jendela target yang dikunci (LOCKED_TARGET_WIN_ID) berada di latar depan sebelum injeksi input."""
+    global LOCKED_TARGET_WIN_ID, CURRENT_APP_CONTEXT
+    if not LOCKED_TARGET_WIN_ID:
+        return
+    try:
+        cur_id = CURRENT_APP_CONTEXT.get('win_id', '') if CURRENT_APP_CONTEXT else ''
+        is_same = False
+        if cur_id:
+            try:
+                is_same = (int(str(cur_id), 16) == int(str(LOCKED_TARGET_WIN_ID), 16))
+            except Exception:
+                is_same = (str(cur_id).strip().lower() == str(LOCKED_TARGET_WIN_ID).strip().lower())
+        if not is_same:
+            ok = activate_and_focus_window(LOCKED_TARGET_WIN_ID, maximize=False)
+            if ok:
+                if CURRENT_APP_CONTEXT:
+                    CURRENT_APP_CONTEXT['win_id'] = str(LOCKED_TARGET_WIN_ID)
+            else:
+                LOCKED_TARGET_WIN_ID = None
+    except Exception:
+        pass
 
 
 def minimize_window(win_id):
@@ -1982,7 +2037,7 @@ def release_all_client_keys(keys_set):
     keys_set.clear()
 
 async def websocket_handler(request):
-    global CURRENT_APP_CONTEXT
+    global CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID
     ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0, max_msg_size=131072)
     await ws.prepare(request)
     CONNECTED_CLIENTS.add(ws)
@@ -2007,7 +2062,8 @@ async def websocket_handler(request):
             'caps_lock': is_caps_lock_on(),
             'pairing_required': not is_client_authorized,
             'host_name': socket.gethostname(),
-            'license': license_manager.get_info()
+            'license': license_manager.get_info(),
+            'locked_win_id': LOCKED_TARGET_WIN_ID
         }))
         if is_client_authorized:
             await ws.send_str(json.dumps({
@@ -2261,6 +2317,8 @@ async def websocket_handler(request):
                             if win_id:
                                 await asyncio.to_thread(activate_and_focus_window, win_id, False)
                                 await asyncio.sleep(0.06)
+                            else:
+                                ensure_target_window_focused()
 
                             combo = data.get('combo')
                             if combo and isinstance(combo, list):
@@ -2307,6 +2365,7 @@ async def websocket_handler(request):
                         continue
 
                 if msg_type == 'keypress':
+                    ensure_target_window_focused()
                     key_name = data.get('key')
                     char = data.get('char')
                     mods = data.get('modifiers', {})
@@ -2349,6 +2408,7 @@ async def websocket_handler(request):
                         simulate_release(m)
 
                 elif msg_type == 'keydown':
+                    ensure_target_window_focused()
                     key_name = data.get('key')
                     target = resolve_key(key_name)
                     if target:
@@ -2369,6 +2429,7 @@ async def websocket_handler(request):
                         ACTIVE_KEYS.discard(target)
 
                 elif msg_type == 'combo':
+                    ensure_target_window_focused()
                     # Eksekusi kombinasi tombol, contoh: ["ctrl", "c"]
                     combo_keys = data.get('keys', [])
                     if not isinstance(combo_keys, list) or len(combo_keys) > 10:
@@ -2447,6 +2508,7 @@ async def websocket_handler(request):
                         pass
 
                 elif msg_type == 'type_text':
+                    ensure_target_window_focused()
                     text_content = data.get('text', '')
                     if text_content and isinstance(text_content, str):
                         # Sanitasi panjang input maksimal 5000 karakter per pengiriman
@@ -2473,6 +2535,37 @@ async def websocket_handler(request):
                     except Exception:
                         pass
 
+                elif msg_type == 'lock_target_window':
+                    target_win_id = data.get('win_id')
+                    # Buka kunci jika target_win_id None/falsy atau sama dengan window yang sudah dikunci
+                    if not target_win_id or (LOCKED_TARGET_WIN_ID and str(LOCKED_TARGET_WIN_ID).strip().lower() == str(target_win_id).strip().lower()):
+                        LOCKED_TARGET_WIN_ID = None
+                    else:
+                        if is_valid_window_id(target_win_id):
+                            LOCKED_TARGET_WIN_ID = str(target_win_id).strip()
+                            await asyncio.to_thread(activate_and_focus_window, LOCKED_TARGET_WIN_ID, False)
+
+                    lock_payload = json.dumps({
+                        'type': 'target_lock_update',
+                        'locked_win_id': LOCKED_TARGET_WIN_ID
+                    })
+                    for client in list(CONNECTED_CLIENTS):
+                        try:
+                            await client.send_str(lock_payload)
+                        except Exception:
+                            pass
+
+                    windows = await asyncio.to_thread(get_open_windows_list)
+                    list_payload = json.dumps({
+                        'type': 'window_list',
+                        'windows': windows
+                    })
+                    for client in list(CONNECTED_CLIENTS):
+                        try:
+                            await client.send_str(list_payload)
+                        except Exception:
+                            pass
+
                 elif msg_type == 'control_window':
                     win_id = data.get('win_id')
                     action = data.get('action')
@@ -2483,6 +2576,17 @@ async def websocket_handler(request):
                             await asyncio.to_thread(maximize_window, win_id)
                         elif action == 'close':
                             await asyncio.to_thread(close_window, win_id)
+                            if LOCKED_TARGET_WIN_ID and (str(LOCKED_TARGET_WIN_ID).strip().lower() == str(win_id).strip().lower()):
+                                LOCKED_TARGET_WIN_ID = None
+                                lock_payload = json.dumps({
+                                    'type': 'target_lock_update',
+                                    'locked_win_id': None
+                                })
+                                for client in list(CONNECTED_CLIENTS):
+                                    try:
+                                        await client.send_str(lock_payload)
+                                    except Exception:
+                                        pass
                         elif action == 'activate':
                             maximize = data.get('maximize', False)
                             await asyncio.to_thread(activate_and_focus_window, win_id, maximize)

@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.14] - 2026-10-06
+- Implementasi Target Lock Execution untuk Windows dan Linux
+
 ### [1.20.13] - 2026-10-06
 - Hilangkan label jenis keyboard pada baris Terminal di daftar jendela active window switcher
 
@@ -300,6 +303,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.14] - 2026-10-06
+- Release v1.20.14 updates
 
 ### [1.20.13] - 2026-10-06
 - Release v1.20.13 updates

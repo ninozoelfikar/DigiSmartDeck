@@ -6917,6 +6917,46 @@ body.portrait-dismissed .orientation-guard {
   border-color: #e63946;
   color: #ff6b64;
 }
+.win-ctrl-btn.win-ctrl-lock {
+  color: var(--text-dim, #8b949e);
+}
+.win-ctrl-btn.win-ctrl-lock:hover,
+.win-ctrl-btn.win-ctrl-lock:active {
+  background: rgba(240, 136, 62, 0.2);
+  border-color: #f0883e;
+  color: #f0883e;
+}
+.win-ctrl-btn.win-ctrl-lock.locked {
+  background: rgba(240, 136, 62, 0.28);
+  border-color: #f0883e;
+  color: #f0883e;
+  box-shadow: 0 0 6px rgba(240, 136, 62, 0.4);
+}
+.win-switcher-item.target-locked {
+  border-color: #f0883e !important;
+  background: rgba(240, 136, 62, 0.12) !important;
+}
+.win-switcher-badge-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(240, 136, 62, 0.2);
+  color: #f0883e;
+  border: 1px solid rgba(240, 136, 62, 0.4);
+}
+.smart-context-chip.target-locked {
+  border-color: #f0883e !important;
+  background: rgba(240, 136, 62, 0.16) !important;
+  color: #f0883e !important;
+}
+.smart-context-chip.target-locked .sc-dot {
+  background: #f0883e !important;
+  box-shadow: 0 0 6px #f0883e !important;
+}
 @media (max-width: 480px) {
   .win-switcher-right {
     flex-direction: column;
@@ -8867,7 +8907,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.13</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.14</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9371,6 +9411,7 @@ function dismissSplashScreenNow() {
 let modLockMode = localStorage.getItem('digi_mod_mode') || 'lock'; // 'lock' (Aktif Terus / Default), 'oneshot' (1x), 'hold' (manual)
 let autoSwitchContextEnabled = localStorage.getItem('digi_smart_context_auto') !== 'false';
 let lastAppContext = null;
+let lockedTargetWinId = null;
 let toastTimeout = null;
 
 // ── Industry Standard Dual-Language Translation System (en / id) ──
@@ -9441,14 +9482,19 @@ const I18N = {
     win_switcher_empty: "No other open applications found on PC",
     win_switcher_refresh: "Refresh List",
     win_switcher_active_badge: "Active",
+    win_switcher_locked_badge: "Target Lock",
     win_switcher_toast: "Activating",
     win_switcher_maximized: "Maximized",
+    win_ctrl_lock: "Lock Target Window",
+    win_ctrl_unlock: "Unlock Target Window",
     win_ctrl_min: "Minimize",
     win_ctrl_max: "Maximize / Restore",
     win_ctrl_close: "Close",
     win_status_minimized: "Minimized",
     win_status_maximized: "Maximized",
     win_status_closed: "Closed",
+    target_locked_toast: "Target Locked",
+    target_unlocked_toast: "Target Unlocked",
     // Pairing & Licensing
     util_license_title: "DigiSmartDeck SaaS License",
     util_pairing: "Pairing",
@@ -9754,14 +9800,19 @@ const I18N = {
     win_switcher_empty: "Tidak ada aplikasi lain yang terbuka di PC",
     win_switcher_refresh: "Segarkan Daftar",
     win_switcher_active_badge: "Aktif",
+    win_switcher_locked_badge: "Target Terkunci",
     win_switcher_toast: "Mengaktifkan",
     win_switcher_maximized: "Jendela Penuh",
+    win_ctrl_lock: "Kunci Target Window (Lock)",
+    win_ctrl_unlock: "Lepas Kunci Target (Unlock)",
     win_ctrl_min: "Kecilkan (Minimize)",
     win_ctrl_max: "Maksimalkan / Pulihkan",
     win_ctrl_close: "Tutup (Close)",
     win_status_minimized: "Diminimalkan",
     win_status_maximized: "Dimaksimalkan",
     win_status_closed: "Ditutup",
+    target_locked_toast: "Target Terkunci",
+    target_unlocked_toast: "Kunci Target Dilepas",
     // Pairing & Licensing
     util_license_title: "Lisensi SaaS DigiSmartDeck",
     util_pairing: "Pairing",
@@ -10390,8 +10441,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.13';
-const APP_CLIENT_VERSION_CODE = 12013;
+const APP_CLIENT_VERSION = '1.20.14';
+const APP_CLIENT_VERSION_CODE = 12014;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11293,6 +11344,7 @@ function updateSmartContextUI() {
 
   if (chip) {
     chip.classList.toggle('paused', !autoSwitchContextEnabled);
+    chip.classList.toggle('target-locked', !!lockedTargetWinId);
     chip.title = (lastAppContext && lastAppContext.app ? lastAppContext.app + ' - ' : '') + t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
   }
   if (appEl && lastAppContext && lastAppContext.app) {
@@ -11310,6 +11362,14 @@ function updateSmartContextUI() {
   }
   if (btnStOff) {
     btnStOff.classList.toggle('active', !autoSwitchContextEnabled);
+  }
+}
+
+function handleTargetLockUpdate(newLockedId) {
+  lockedTargetWinId = newLockedId || null;
+  const chip = $('smart-context-chip');
+  if (chip) {
+    chip.classList.toggle('target-locked', !!lockedTargetWinId);
   }
 }
 
@@ -11388,8 +11448,9 @@ function renderWindowList(windows) {
 
   listEl.innerHTML = '';
   windows.forEach(win => {
+    const isLocked = win.is_locked || (lockedTargetWinId && String(lockedTargetWinId).trim().toLowerCase() === String(win.win_id).trim().toLowerCase());
     const item = document.createElement('div');
-    item.className = 'win-switcher-item' + (win.is_active ? ' active-window' : '');
+    item.className = 'win-switcher-item' + (win.is_active ? ' active-window' : '') + (isLocked ? ' target-locked' : '');
 
     const modeLabelKey = 'smart_mode_' + (win.suggested_mode || 'standard');
     const modeLabel = t(modeLabelKey) || win.suggested_mode;
@@ -11417,6 +11478,13 @@ function renderWindowList(windows) {
       activeBadge.className = 'win-switcher-badge-active';
       activeBadge.textContent = t('win_switcher_active_badge', 'Aktif');
       appLine.appendChild(activeBadge);
+    }
+
+    if (isLocked) {
+      const lockBadge = document.createElement('span');
+      lockBadge.className = 'win-switcher-badge-locked';
+      lockBadge.textContent = t('win_switcher_locked_badge', 'Target Terkunci');
+      appLine.appendChild(lockBadge);
     }
 
     const winTitle = document.createElement('span');
@@ -11451,6 +11519,27 @@ function renderWindowList(windows) {
 
     const ctrlGroup = document.createElement('div');
     ctrlGroup.className = 'win-switcher-controls';
+
+    // 0. Tombol Lock Target
+    const btnLock = document.createElement('button');
+    btnLock.type = 'button';
+    btnLock.className = 'win-ctrl-btn win-ctrl-lock' + (isLocked ? ' locked' : '');
+    btnLock.title = isLocked ? t('win_ctrl_unlock', 'Lepas Kunci Target') : t('win_ctrl_lock', 'Kunci Target Window');
+    btnLock.innerHTML = isLocked
+      ? '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></svg>'
+      : '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+    btnLock.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playClickSound();
+      vibe(20);
+      const targetId = isLocked ? null : win.win_id;
+      send({ type: 'lock_target_window', win_id: targetId });
+      if (!isLocked) {
+        showSmartContextToast(win.app || 'App', t('target_locked_toast', 'Target Terkunci'));
+      } else {
+        showSmartContextToast(win.app || 'App', t('target_unlocked_toast', 'Kunci Target Dilepas'));
+      }
+    });
 
     // 1. Tombol Minimize
     const btnMin = document.createElement('button');
@@ -11500,6 +11589,7 @@ function renderWindowList(windows) {
     ctrlGroup.addEventListener('pointerdown', (e) => e.stopPropagation());
     ctrlGroup.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
 
+    ctrlGroup.appendChild(btnLock);
     ctrlGroup.appendChild(btnMin);
     ctrlGroup.appendChild(btnMax);
     ctrlGroup.appendChild(btnClose);
@@ -12048,6 +12138,9 @@ function connect() {
           mods.caps_lock = d.caps_lock;
           refreshMods();
         }
+        if (d.locked_win_id !== undefined) {
+          handleTargetLockUpdate(d.locked_win_id);
+        }
       } else if (d.type === 'controller_status') {
         if (d.role === 'active') {
           document.body.classList.remove('controller-standby');
@@ -12056,6 +12149,8 @@ function connect() {
         }
       } else if (d.type === 'app_context') {
         handleAppContextUpdate(d);
+      } else if (d.type === 'target_lock_update') {
+        handleTargetLockUpdate(d.locked_win_id);
       } else if (d.type === 'window_list') {
         renderWindowList(d.windows);
       } else if (d.type === 'power_result') {
