@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.0] - 2026-10-06
+- Implementasi Penuh Standalone Offline & Bluetooth HID Tanpa Server PC
+
 ### [1.20.17] - 2026-10-06
 - Restorasi mutlak audio mode switch dan eliminasi mute STREAM_MUSIC Android
 
@@ -312,6 +315,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.0] - 2026-10-06
+- Release v1.21.0 updates
 
 ### [1.20.17] - 2026-10-06
 - Release v1.20.17 updates

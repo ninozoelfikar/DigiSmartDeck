@@ -36,6 +36,16 @@ if [ -z "$ANDROID_HOME" ] && [ -d "$HOME/Android/sdk" ]; then
     export ANDROID_HOME="$HOME/Android/sdk"
 fi
 
+# Sinkronkan aset antarmuka web offline ke dalam folder assets Android
+mkdir -p "$SCRIPT_DIR/android/app/src/main/assets"
+cp -f "$SCRIPT_DIR/static/index.html" "$SCRIPT_DIR/android/app/src/main/assets/index.html"
+if [ -f "$SCRIPT_DIR/static/icon-192.png" ]; then
+    cp -f "$SCRIPT_DIR/static/icon-192.png" "$SCRIPT_DIR/android/app/src/main/assets/"
+fi
+if [ -f "$SCRIPT_DIR/static/icon.svg" ]; then
+    cp -f "$SCRIPT_DIR/static/icon.svg" "$SCRIPT_DIR/android/app/src/main/assets/"
+fi
+
 echo -e "${GREEN}[OK] Memulai proses kompilasi APK via Gradle Wrapper...${NC}"
 ./gradlew assembleDebug
 

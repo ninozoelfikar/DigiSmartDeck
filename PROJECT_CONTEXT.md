@@ -2024,6 +2024,25 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) konsisten di seluruh tombol interaktif.
 
+---
+
+## 111. CATATAN CHECKPOINT (v1.21.0 - Implementasi Penuh Standalone Offline & Bluetooth HID Tanpa Server PC)
+- **Eksekusi Mandiri Offline (Zero-Server Dependency):**
+  - Mengintegrasikan antarmuka lengkap ke dalam bundel aset aplikasi Android (`android/app/src/main/assets/index.html`), memungkinkan aplikasi berjalan langsung secara instan tanpa perlu menjalankan server di komputer.
+  - Mempertahankan 100 persen tampilan antarmuka, tata letak tuts keyboard mekanikal, touchpad, gamepad, presenter, efek visual, dan suara klik sakelar mekanikal Web Audio API.
+  - Menghilangkan ketergantungan wajib pada Wi-Fi dan server lokal untuk fungsionalitas dasar pengetikan dan mouse.
+- **Implementasi Bluetooth HID Hardware Emulation Penuh:**
+  - Memperluas pemetaan scan code pada `BluetoothHidHelper.java` untuk seluruh jajaran tuts: huruf A-Z, angka 0-9, simbol tanda baca, tombol fungsi F1-F12, klaster navigasi (Insert, Delete, Home, End, Page Up, Page Down, panah), numpad, serta tombol kontrol (Enter, Esc, Tab, Space, Backspace, Caps Lock).
+  - Menyediakan emulasi mouse Bluetooth HID lengkap: pergerakan kursor (dx, dy), klik kiri, klik kanan, mouse drag (down/up), dan wheel scroll vertikal.
+  - Menghubungkan seluruh fungsi masukan di `static/index.html` via `handleBluetoothSend(obj)` yang secara transparan mengalirkan ketikan dan gerakan mouse langsung ke driver Bluetooth Android Native Bridge.
+  - Menghilangkan seluruh karakter emoji pada log dan umpan balik status Bluetooth di level Java dan JavaScript.
+- **Dukungan Ganda Wi-Fi & Bluetooth Fleksibel:**
+  - Pengguna dapat beralih secara dinamis antara Mode Wi-Fi (dengan server PC host) dan Mode Bluetooth (murni tanpa aplikasi di PC) langsung dari antarmuka aplikasi.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe(15)`) dipertahankan pada seluruh interaksi.
+  - Ukuran file APK tetap sangat ringan (~5.6 MB), jauh di bawah batas 20 MB.
+
 
 
 

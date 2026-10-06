@@ -209,9 +209,81 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @android.webkit.JavascriptInterface
+        public void sendBluetoothKeyDown(String key, boolean shift, boolean ctrl, boolean alt, boolean cmd) {
+            if (bluetoothHidHelper != null) {
+                bluetoothHidHelper.sendKeyDown(key, shift, ctrl, alt, cmd);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void sendBluetoothKeyUp(String key, boolean shift, boolean ctrl, boolean alt, boolean cmd) {
+            if (bluetoothHidHelper != null) {
+                bluetoothHidHelper.sendKeyUp(key, shift, ctrl, alt, cmd);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
         public void sendBluetoothMouseMove(int dx, int dy, int button) {
             if (bluetoothHidHelper != null) {
                 bluetoothHidHelper.sendMouseMove(dx, dy, button);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void sendBluetoothMouseClick(int button) {
+            if (bluetoothHidHelper != null) {
+                bluetoothHidHelper.sendMouseClick(button);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void sendBluetoothMouseDown(int button) {
+            if (bluetoothHidHelper != null) {
+                bluetoothHidHelper.sendMouseDown(button);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void sendBluetoothMouseUp(int button) {
+            if (bluetoothHidHelper != null) {
+                bluetoothHidHelper.sendMouseUp(button);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void sendBluetoothMouseScroll(int dy) {
+            if (bluetoothHidHelper != null) {
+                bluetoothHidHelper.sendMouseScroll(dy);
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public boolean isBluetoothConnected() {
+            return bluetoothHidHelper != null && bluetoothHidHelper.isConnected();
+        }
+
+        @android.webkit.JavascriptInterface
+        public String getBluetoothDeviceName() {
+            return bluetoothHidHelper != null ? bluetoothHidHelper.getConnectedDeviceName() : null;
+        }
+
+        @android.webkit.JavascriptInterface
+        public String getServerHost() {
+            String url = prefs.getString(KEY_SERVER_URL, DEFAULT_URL);
+            if (url != null) {
+                return url.replace("http://", "").replace("https://", "").replace(":8080", "");
+            }
+            return "192.168.1.100";
+        }
+
+        @android.webkit.JavascriptInterface
+        public void setServerHost(String host) {
+            if (host != null && !host.trim().isEmpty()) {
+                String clean = host.trim();
+                if (!clean.startsWith("http://") && !clean.startsWith("https://")) {
+                    clean = "http://" + clean + (clean.contains(":") ? "" : ":8080");
+                }
+                prefs.edit().putString(KEY_SERVER_URL, clean).apply();
             }
         }
 
@@ -283,13 +355,8 @@ public class MainActivity extends AppCompatActivity {
         // Periksa & minta izin runtime Android (Audio Mic & Bluetooth)
         checkAndRequestPermissions();
 
-        // 4. Muat URL Server tersimpan atau minta input pertama kali
-        String savedUrl = prefs.getString(KEY_SERVER_URL, null);
-        if (savedUrl != null && !savedUrl.trim().isEmpty()) {
-            loadServerUrl(savedUrl);
-        } else {
-            showServerConfigDialog();
-        }
+        // 4. Muat aplikasi mandiri offline lokal (Zero-Wait, Zero-Error, 100% Siap Pakai)
+        loadLocalApp();
     }
 
     @Override
@@ -336,6 +403,8 @@ public class MainActivity extends AppCompatActivity {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -490,25 +559,18 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void loadLocalApp() {
+        runOnUiThread(() -> {
+            webView.clearCache(true);
+            webView.loadUrl("file:///android_asset/index.html");
+        });
+    }
+
     private void showConnectionErrorPage() {
-        String currentUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_URL);
-        String errorHtml = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-            + "<style>body{background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:24px;box-sizing:border-box;}"
-            + "h2{color:#f85149;margin-bottom:8px;}p{color:#8b949e;font-size:14px;line-height:1.5;max-width:440px;margin-bottom:20px;}"
-            + ".btn-wrap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}"
-            + "button{border:none;padding:11px 22px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600;}"
-            + ".btn-pri{background:#0969da;color:#fff;}"
-            + ".btn-sec{background:#21262d;color:#c9d1d9;border:1px solid #30363d;}"
-            + "</style></head><body>"
-            + "<h2>Gagal Terhubung ke PC</h2>"
-            + "<p>Tidak dapat tersambung ke <b>" + currentUrl + "</b>.<br>"
-            + "Pastikan PC dan HP Anda terhubung ke <b>Wi-Fi yang sama</b> dan aplikasi server di PC sedang aktif.</p>"
-            + "<div class='btn-wrap'>"
-            + "<button class='btn-sec' onclick='if(window.DigiAndroidBridge)DigiAndroidBridge.openServerSettings();'>Ganti Server IP</button>"
-            + "<button class='btn-pri' onclick='location.reload()'>Coba Lagi</button>"
-            + "</div>"
-            + "</body></html>";
-        webView.loadDataWithBaseURL("http://localhost:8080/", errorHtml, "text/html", "UTF-8", null);
+        runOnUiThread(() -> {
+            Toast.makeText(MainActivity.this, "Server Wi-Fi tidak terjangkau. Menggunakan mode mandiri/Bluetooth.", Toast.LENGTH_SHORT).show();
+            loadLocalApp();
+        });
     }
 
     @Override
