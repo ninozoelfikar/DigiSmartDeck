@@ -7070,7 +7070,7 @@ body.portrait-dismissed .orientation-guard {
         <button type="button" class="header-mode-btn" id="quick-mode-ai" data-i18n-title="quick_ai" title="AI Workstation">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
         </button>
-        <button type="button" class="header-mode-btn" id="quick-mode-power" data-i18n-title="quick_power" title="Power &amp; Session Control">
+        <button type="button" class="header-mode-btn" id="quick-mode-power" data-i18n-title="quick_power" title="Power &amp; Session Control" style="display:none;">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
         </button>
         <button type="button" class="header-mode-btn" id="quick-mode-media" data-i18n-title="quick_media" title="Media Controller" style="display:none;">
@@ -8930,7 +8930,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.9</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.10</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -10472,8 +10472,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.9';
-const APP_CLIENT_VERSION_CODE = 12009;
+const APP_CLIENT_VERSION = '1.20.10';
+const APP_CLIENT_VERSION_CODE = 12010;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;

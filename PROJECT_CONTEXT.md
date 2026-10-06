@@ -1807,6 +1807,29 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 
 ---
 
+## 103. CATATAN CHECKPOINT (v1.20.10 - Penyederhanaan 3 Mode Utama MVP & Percabangan Mandiri Mode Power)
+- **Fokus Tunggal pada 3 Mode MVP:**
+  - Sesuai arahan pengguna untuk mempercepat peluncuran rilis MVP yang matang dan stabil, antarmuka utama dibatasi secara eksklusif hanya untuk 3 mode inti:
+    1. Keyboard PC (`quick-mode-standard`)
+    2. Game Controller (`quick-mode-game`)
+    3. AI Workstation (`quick-mode-ai`)
+  - Tombol Power (`quick-mode-power`) disembunyikan dari bar navigasi atas (`display: none`), sejajar dengan mode sekunder lainnya (Slide Presenter, Media, Canvas).
+- **Percabangan Mandiri untuk Pengembangan Mode Power (`feature/power-mode`):**
+  - Fitur kontrol daya dan sesi PC dipindahkan ke branch git terdedikasi `feature/power-mode` untuk pengembangan mendalam lebih lanjut di masa mendatang.
+  - Peningkatan arsitektur yang telah diselesaikan dan tersimpan di branch:
+    - Penyederhanaan antarmuka kontrol sistem: Volume dan Kecerahan dijadikan tombol mandiri dalam grid yang memunculkan pop-up modal slider minimalis saat diklik ('cukup barnya saja').
+    - Penggabungan Wake Up dan Anti-Sleep langsung ke dalam grid aksi daya.
+    - Perbaikan eksekusi perintah Linux di `server.py`: passing session environment (`XDG_RUNTIME_DIR`, `DBUS_SESSION_BUS_ADDRESS`), penambahan flag `-i` (`--ignore-inhibitors`) pada `systemctl` dan `loginctl`, integrasi GNOME SessionManager DBus dan ScreenSaver DBus, serta prioritas kontrol kecerahan layar desktop via `xrandr`.
+- **Kompilasi & Rilis APK Berpenamaan Versi (SemVer 2.0.0):**
+  - Versi aplikasi dinaikkan ke `v1.20.10`.
+  - File APK baru terkompilasi di `dist/` dan `static/` (~5.4 MB).
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+
+---
+
 ## 99. CATATAN CHECKPOINT (v1.20.6 - Pemulihan Deklarasi isPowerModeActive & Responsivitas Ikon Top Bar)
 - **Akar Masalah Malfungsi Ikon Top Bar (Root Cause):**
   - Pada penambahan Power Mode sebelumnya, variabel global `isPowerModeActive` lupa dideklarasikan di level scope atas IIFE JavaScript.
