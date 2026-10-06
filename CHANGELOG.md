@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.20.11] - 2026-10-06
+- Fiksasi badge APK, restorasi modal reconnecting murni otomatis, stabilisasi Web Audio, dan perbaikan startup jingle
+
 ### [1.20.10] - 2026-10-06
 - Penyederhanaan 3 mode utama MVP dan percabangan mandiri fitur Power Mode
 
@@ -291,6 +294,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.20.11] - 2026-10-06
+- Release v1.20.11 updates
 
 ### [1.20.10] - 2026-10-06
 - Release v1.20.10 updates

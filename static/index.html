@@ -7212,16 +7212,6 @@ body.portrait-dismissed .orientation-guard {
           <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
       </div>
-      <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button type="button" class="btn-primary" id="btn-rc-scan" style="font-size:12px;padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
-          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span data-i18n="rc_btn_scan">Pindai Jaringan (Scan IP)</span>
-        </button>
-        <button type="button" class="tbtn" id="btn-rc-retry" style="font-size:12px;padding:7px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
-          <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          <span data-i18n="rc_btn_retry">Coba Lagi</span>
-        </button>
-      </div>
     </div>
   </div>
 
@@ -8930,7 +8920,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.10</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.20.11</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9234,8 +9224,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id=\"about-app-version\" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.5</span>
-      <span id="about-app-platform-badge" style="display:none;padding:2px 8px;background:rgba(255,255,255,0.08);border-radius:20px;font-size:10px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;">APK Native</span>
+      <span id=\"about-app-version\" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.20.11</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -10472,8 +10461,8 @@ if (btnControlDeck) {
   });
 }
 
-const APP_CLIENT_VERSION = '1.20.10';
-const APP_CLIENT_VERSION_CODE = 12010;
+const APP_CLIENT_VERSION = '1.20.11';
+const APP_CLIENT_VERSION_CODE = 12011;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10507,7 +10496,6 @@ function getClientAppInfo() {
 function syncAppUpdateDisplay(updateData) {
   const clientInfo = getClientAppInfo();
   const badgeVer = $('about-app-version');
-  const badgePlatform = $('about-app-platform-badge');
   const statusBadge = $('about-update-status');
   const btnUpdate = $('btn-check-update');
   const txtStatus = $('txt-about-update-status');
@@ -10515,10 +10503,6 @@ function syncAppUpdateDisplay(updateData) {
   const prgContainer = $('about-update-progress-container');
 
   if (prgContainer) prgContainer.style.display = 'none';
-
-  if (badgePlatform) {
-    badgePlatform.style.display = clientInfo.isNative ? 'inline-block' : 'none';
-  }
 
   currentUpdateData = updateData;
 
@@ -11791,23 +11775,36 @@ let soundEnabled = localStorage.getItem('digi_sound') !== 'false';
 let soundVolume = parseFloat(localStorage.getItem('digi_sound_vol'));
 if (isNaN(soundVolume) || soundVolume <= 0) soundVolume = 0.7;
 
+function getAudioContext() {
+  try {
+    if (!audioCtx || audioCtx.state === 'closed') {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+    }
+  } catch(e) {}
+  return audioCtx;
+}
+
 function unlockAudio() {
   try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(() => {});
+    const ctx = getAudioContext();
+    if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
+      ctx.resume().catch(() => {});
     }
   } catch(e) {}
 }
-window.addEventListener('touchstart', unlockAudio, { passive: true });
-window.addEventListener('pointerdown', unlockAudio, { passive: true });
-window.addEventListener('mousedown', unlockAudio, { passive: true });
-window.addEventListener('keydown', unlockAudio, { passive: true });
+window.addEventListener('touchstart', unlockAudio, { passive: true, capture: true });
+window.addEventListener('pointerdown', unlockAudio, { passive: true, capture: true });
+window.addEventListener('mousedown', unlockAudio, { passive: true, capture: true });
+window.addEventListener('keydown', unlockAudio, { passive: true, capture: true });
 
 function doSynthesizeClick(atTime, pitch) {
-  if (!audioCtx) return;
-  const now = atTime !== null && atTime !== undefined ? atTime : Math.max(audioCtx.currentTime, 0.005);
-  const vol = soundVolume || 0.7;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = (atTime !== null && atTime !== undefined) ? Math.max(atTime, ctx.currentTime + 0.002) : Math.max(ctx.currentTime + 0.002, 0.005);
+  const vol = (typeof soundVolume === 'number' && soundVolume > 0) ? soundVolume : 0.7;
 
   // Variasi micro-pitch natural layaknya susunan tuts pada keyboard mekanikal fisik
   let finalPitch = pitch || 1.0;
@@ -11817,53 +11814,62 @@ function doSynthesizeClick(atTime, pitch) {
   const bodyPitch = 1 + (finalPitch - 1) * 0.35;
 
   // 1. Transient click (snap switch mekanikal tajam 1800Hz -> 380Hz)
-  const osc1 = audioCtx.createOscillator();
-  const gain1 = audioCtx.createGain();
+  const osc1 = ctx.createOscillator();
+  const gain1 = ctx.createGain();
   osc1.type = 'triangle';
   osc1.frequency.setValueAtTime(1800 * finalPitch, now);
   osc1.frequency.exponentialRampToValueAtTime(Math.max(40, 380 * finalPitch), now + 0.015);
   gain1.gain.setValueAtTime(2.7 * vol, now);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
   osc1.connect(gain1);
-  gain1.connect(audioCtx.destination);
+  gain1.connect(ctx.destination);
   osc1.start(now);
   osc1.stop(now + 0.018);
 
   // 2. Body thock (benturan housing bawah tuts 320Hz -> 85Hz, tergrounding mantap)
-  const osc2 = audioCtx.createOscillator();
-  const gain2 = audioCtx.createGain();
+  const osc2 = ctx.createOscillator();
+  const gain2 = ctx.createGain();
   osc2.type = 'sine';
   osc2.frequency.setValueAtTime(320 * bodyPitch, now);
   osc2.frequency.exponentialRampToValueAtTime(Math.max(20, 85 * bodyPitch), now + 0.026);
   gain2.gain.setValueAtTime(2.2 * vol, now);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.026);
   osc2.connect(gain2);
-  gain2.connect(audioCtx.destination);
+  gain2.connect(ctx.destination);
   osc2.start(now);
   osc2.stop(now + 0.030);
 
   // 3. Metallic spring ping (tekstur per mekanikal renyah 2600Hz -> 900Hz)
-  const osc3 = audioCtx.createOscillator();
-  const gain3 = audioCtx.createGain();
+  const osc3 = ctx.createOscillator();
+  const gain3 = ctx.createGain();
   osc3.type = 'triangle';
   osc3.frequency.setValueAtTime(2600 * finalPitch, now);
   osc3.frequency.exponentialRampToValueAtTime(Math.max(60, 900 * finalPitch), now + 0.010);
   gain3.gain.setValueAtTime(0.35 * vol, now);
   gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.010);
   osc3.connect(gain3);
-  gain3.connect(audioCtx.destination);
+  gain3.connect(ctx.destination);
   osc3.start(now);
   osc3.stop(now + 0.012);
+
+  // Pembersihan otomatis node Web Audio untuk mencegah memory leak & audio drop di Chrome/WebView
+  osc2.onended = () => {
+    try {
+      osc1.disconnect(); gain1.disconnect();
+      osc2.disconnect(); gain2.disconnect();
+      osc3.disconnect(); gain3.disconnect();
+    } catch(e) {}
+  };
 }
 
 function playClickSound(force = false, atTime = null, pitch = 1.0) {
   if (!soundEnabled && !force) return;
   try {
-    unlockAudio();
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume().then(() => {
-        doSynthesizeClick(audioCtx.currentTime, pitch);
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+      ctx.resume().then(() => {
+        doSynthesizeClick(atTime, pitch);
       }).catch(() => {});
       return;
     }
@@ -11877,55 +11883,64 @@ function playStartupTypingJingle() {
   if (localStorage.getItem('digi_sound') === 'false') return;
 
   try {
-    unlockAudio();
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(() => {});
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const executeJingle = () => {
+      if (splashJinglePlayed) return;
+      splashJinglePlayed = true;
+      const t0 = Math.max(ctx.currentTime + 0.04, 0.02);
+
+      // 5 Tuts Keystroke Rhythm:
+      // Note 1 & 2: setengah ketukan masing-masing (0ms, 90ms)
+      // Jeda 1 ketukan (180ms)
+      // Note 3: 1 ketukan (270ms)
+      // Istirahat 1 ketukan (durasi + rest = 360ms)
+      // Note 4 & 5: sama-sama satu ketukan (630ms, 810ms)
+      const pattern = [
+        { delay: 0.000, pitch: 0.94 },
+        { delay: 0.090, pitch: 1.08 },
+        { delay: 0.270, pitch: 0.98 },
+        { delay: 0.630, pitch: 1.14 },
+        { delay: 0.810, pitch: 1.28 }
+      ];
+
+      pattern.forEach(p => {
+        doSynthesizeClick(t0 + p.delay, p.pitch);
+      });
+    };
+
+    if (ctx.state === 'running') {
+      executeJingle();
+    } else {
+      ctx.resume().then(() => {
+        if (ctx.state === 'running') {
+          executeJingle();
+        }
+      }).catch(() => {});
     }
-
-    splashJinglePlayed = true;
-    const t0 = audioCtx.currentTime + 0.05;
-
-    // 5 Tuts Keystroke Rhythm:
-    // Note 1 & 2: setengah ketukan masing-masing (0ms, 90ms)
-    // Jeda 1 ketukan (180ms)
-    // Note 3: 1 ketukan (270ms)
-    // Istirahat 1 ketukan (durasi + rest = 360ms)
-    // Note 4 & 5: sama-sama satu ketukan (630ms, 810ms)
-    // Komposisi nada bergantian natural (seperti ketukan jari tangan kiri & kanan)
-    // dan berakhir secara alami di nada tinggi untuk energi positif
-    const pattern = [
-      { delay: 0.000, pitch: 0.94 },
-      { delay: 0.090, pitch: 1.08 },
-      { delay: 0.270, pitch: 0.98 },
-      { delay: 0.630, pitch: 1.14 },
-      { delay: 0.810, pitch: 1.28 }
-    ];
-
-    pattern.forEach(p => {
-      playClickSound(true, t0 + p.delay, p.pitch);
-    });
   } catch(e) {}
 }
 
 function playPairingSuccessSound() {
   if (localStorage.getItem('digi_sound') === 'false') return;
   try {
-    unlockAudio();
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(() => {});
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+      ctx.resume().then(() => playPairingSuccessSound()).catch(() => {});
+      return;
     }
-    const now = Math.max(audioCtx.currentTime, 0.005);
-    const vol = soundVolume || 0.7;
+    const now = Math.max(ctx.currentTime + 0.002, 0.005);
+    const vol = (typeof soundVolume === 'number' && soundVolume > 0) ? soundVolume : 0.7;
 
-    const masterGain = audioCtx.createGain();
+    const masterGain = ctx.createGain();
     masterGain.gain.setValueAtTime(vol * 0.9, now);
-    masterGain.connect(audioCtx.destination);
+    masterGain.connect(ctx.destination);
 
     // Warm sub foundation (293.66 Hz - D4)
-    const oscSub = audioCtx.createOscillator();
-    const gainSub = audioCtx.createGain();
+    const oscSub = ctx.createOscillator();
+    const gainSub = ctx.createGain();
     oscSub.type = 'sine';
     oscSub.frequency.setValueAtTime(293.66, now);
     gainSub.gain.setValueAtTime(0.0001, now);
@@ -11937,8 +11952,8 @@ function playPairingSuccessSound() {
     oscSub.stop(now + 0.080);
 
     // Note 1: Tone inisiasi (587.33 Hz - D5)
-    const osc1 = audioCtx.createOscillator();
-    const gain1 = audioCtx.createGain();
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
     osc1.type = 'sine';
     osc1.frequency.setValueAtTime(587.33, now);
     gain1.gain.setValueAtTime(0.0001, now);
@@ -11951,8 +11966,8 @@ function playPairingSuccessSound() {
 
     // Note 2: Tone penerimaan sistem (880.00 Hz - A5)
     const t2 = now + 0.065;
-    const osc2 = audioCtx.createOscillator();
-    const gain2 = audioCtx.createGain();
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
     osc2.type = 'sine';
     osc2.frequency.setValueAtTime(880.0, t2);
     gain2.gain.setValueAtTime(0.0001, t2);
@@ -11964,8 +11979,8 @@ function playPairingSuccessSound() {
     osc2.stop(t2 + 0.200);
 
     // Sheen kristal digital aksen canggih (1760.00 Hz - A6)
-    const oscHigh = audioCtx.createOscillator();
-    const gainHigh = audioCtx.createGain();
+    const oscHigh = ctx.createOscillator();
+    const gainHigh = ctx.createGain();
     oscHigh.type = 'triangle';
     oscHigh.frequency.setValueAtTime(1760.0, t2);
     gainHigh.gain.setValueAtTime(0.0001, t2);
@@ -11975,6 +11990,16 @@ function playPairingSuccessSound() {
     gainHigh.connect(masterGain);
     oscHigh.start(t2);
     oscHigh.stop(t2 + 0.140);
+
+    osc2.onended = () => {
+      try {
+        oscSub.disconnect(); gainSub.disconnect();
+        osc1.disconnect(); gain1.disconnect();
+        osc2.disconnect(); gain2.disconnect();
+        oscHigh.disconnect(); gainHigh.disconnect();
+        masterGain.disconnect();
+      } catch(e) {}
+    };
   } catch(e) {}
 }
 
@@ -12382,15 +12407,6 @@ if (badge) {
   badge.addEventListener('click', onBadgeTrigger);
 }
 
-// Banner Action Buttons
-const btnRcRetry = $('btn-rc-retry');
-if (btnRcRetry) {
-  btnRcRetry.onclick = () => {
-    if (typeof playClickSound === 'function') playClickSound();
-    if (typeof vibe === 'function') vibe(15);
-    scheduleReconnect(true);
-  };
-}
 
 const btnRcUsb = $('btn-rc-usb');
 if (btnRcUsb) {
@@ -12453,12 +12469,6 @@ if (btnRcBt) {
     }
   };
 }
-
-const btnRcScan = $('btn-rc-scan');
-if (btnRcScan) btnRcScan.onclick = () => {
-  if (typeof playClickSound === 'function') playClickSound();
-  openReconnectModal();
-};
 
 const btnRcHost = $('btn-rc-host');
 if (btnRcHost) btnRcHost.onclick = () => openReconnectModal();
@@ -18277,8 +18287,8 @@ try {
 const splashScreen = $('splash-screen');
 if (splashScreen) {
   playStartupTypingJingle();
-  window.addEventListener('touchstart', playStartupTypingJingle, { once: true, passive: true });
-  window.addEventListener('pointerdown', playStartupTypingJingle, { once: true, passive: true });
+  window.addEventListener('touchstart', playStartupTypingJingle, { once: true, passive: true, capture: true });
+  window.addEventListener('pointerdown', playStartupTypingJingle, { once: true, passive: true, capture: true });
 
   setTimeout(() => {
     splashScreen.classList.add('fade-out');
