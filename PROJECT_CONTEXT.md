@@ -2087,3 +2087,18 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik dipertahankan penuh pada seluruh elemen interaktif.
 
+---
+
+## 114. CATATAN CHECKPOINT (v1.21.2.5 - Glosarium Bahasa Indonesia Papan Sentuh & Alih Cerdas)
+- **Standardisasi Terminologi Bahasa Indonesia di Menu Control Deck:**
+  - Padanan 'Trackpad' disesuaikan menjadi 'Papan Sentuh' (KBBI/Glosarium TI).
+  - Padanan 'Smart Switch' disesuaikan menjadi 'Alih Cerdas' (pengalihan otomatis konteks aplikasi PC aktif).
+  - Diperbarui pada kamus `I18N.id` (`util_trackpad` dan `util_smart_switch`) di `static/index.html`.
+- **Sinkronisasi Versi & Kompilasi APK:**
+  - Versi aplikasi dinaikkan ke `v1.21.2.5`.
+  - Berkas APK baru terkompilasi di `dist/` dan `static/` (~5.6 MB).
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+

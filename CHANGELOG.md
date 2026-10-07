@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.2.5] - 2026-10-08
+- Standardisasi padanan istilah Bahasa Indonesia: 'Papan Sentuh' (Trackpad) dan 'Alih Cerdas' (Smart Switch) pada Menu Control Deck
+
 ### [1.21.2.4] - 2026-10-08
 - Penambahan tombol reload/refresh aplikasi instan di header bar samping mode AI
 - Penghapusan tombol Bluetooth manual pada Menu Control Deck (beralih otomatis di latar belakang)
