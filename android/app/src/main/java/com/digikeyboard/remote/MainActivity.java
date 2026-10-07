@@ -690,7 +690,9 @@ public class MainActivity extends AppCompatActivity {
                 speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, currentSpeechLang);
                 speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, currentSpeechLang);
                 muteBeepStreams();
-                speechRecognizer.cancel();
+                try {
+                    speechRecognizer.cancel();
+                } catch (Exception ignored) {}
                 speechRecognizer.startListening(speechRecognizerIntent);
             } catch (Exception e) {
                 if (isListeningActive) {

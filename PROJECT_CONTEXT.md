@@ -2067,3 +2067,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
   - Ukuran file APK tetap sangat ringan (~5.6 MB), jauh di bawah batas 20 MB.
 
+---
+
+## 113. CATATAN CHECKPOINT (v1.21.2.4 - Tombol Reload Header, Otomasi Penuh Bluetooth, & Responsivitas Mic AI)
+- **Restorasi Tombol Reload / Refresh di Header Bar Atas:**
+  - Menambahkan `#btn-header-reload` tepat di samping kanan ikon mode AI Workstation (`#quick-mode-ai`).
+  - Dilengkapi efek suara mekanikal `playClickSound()`, getaran haptik `vibe(18)`, dan pemicu `window.location.reload()`.
+- **Pembersihan Tombol Bluetooth Manual dari Menu Control Deck:**
+  - Menghapus tombol Bluetooth manual dari seksi *SYSTEM & UTILITIES* di Control Deck.
+  - Koneksi Bluetooth kini 100% otomatis aktif di latar belakang sebagai fallback saat jaringan Wi-Fi lokal PC tidak terjangkau.
+- **Peningkatan Responsivitas Mic Dikte AI Workstation:**
+  - Menambahkan watchdog timer 3.000 ms pada `startAiSpeechSession()` di `static/index.html` untuk membebaskan kunci status `isAiStarting` secara otomatis apabila mesin pengenal suara sistem Android mengalami jeda respon, mencegah mic macet / tidak merespon saat diketuk ulang.
+  - Membungkus pemanggilan `speechRecognizer.cancel()` dengan blok penanganan galat aman (`try-catch`) pada `MainActivity.java` guna mencegah race condition antar-siklus dengar audio.
+- **Sinkronisasi Versi & Pembaruan APK:**
+  - Versi aplikasi dinaikkan ke `v1.21.2.4`.
+  - Berkas APK baru terkompilasi di `dist/` dan `static/` (~5.6 MB).
+  - Layanan `digikeyboard.service` di-refresh.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik dipertahankan penuh pada seluruh elemen interaktif.
+

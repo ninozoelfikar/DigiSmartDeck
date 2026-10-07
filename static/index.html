@@ -7094,6 +7094,9 @@ body.portrait-dismissed .orientation-guard {
         <button type="button" class="header-mode-btn" id="quick-mode-ai" data-i18n-title="quick_ai" title="AI Workstation">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
         </button>
+        <button type="button" class="header-mode-btn" id="btn-header-reload" data-i18n-title="reload_app" title="Reload Application">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        </button>
         <button type="button" class="header-mode-btn" id="quick-mode-power" data-i18n-title="quick_power" title="Power &amp; Session Control" style="display:none;">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
         </button>
@@ -7177,10 +7180,7 @@ body.portrait-dismissed .orientation-guard {
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
             <span id="deck-pairing-lbl">Pairing</span>
           </button>
-          <button type="button" class="tbtn deck-chip" id="btn-bt" data-i18n-title="util_bt_title" title="Mode Bluetooth HID Hardware">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
-            <span id="deck-bt-lbl" data-i18n="util_bt">Bluetooth</span>
-          </button>
+
           <button type="button" class="tbtn deck-chip" id="btn-settings" data-i18n-title="util_settings_title" title="Appearance &amp; Preferences">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             <span data-i18n="util_settings">Settings</span>
@@ -8913,7 +8913,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.2.2</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.2.4</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9216,7 +9216,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 2: Badge Versi Aplikasi -->
     <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.2.2</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.2.4</span>
     </div>
 
     <!-- Line 3: By Nama Studio -->
@@ -10456,8 +10456,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.2.2';
-const APP_CLIENT_VERSION_CODE = 1210202;
+const APP_CLIENT_VERSION = '1.21.2.4';
+const APP_CLIENT_VERSION_CODE = 1210204;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10806,6 +10806,19 @@ if (statusBadge) {
     const txtStatus = $('txt-about-update-status');
     if (txtStatus) txtStatus.textContent = (currentUiLang === 'id') ? 'Memeriksa pembaruan...' : 'Checking for updates...';
     checkAutoUpdate(false);
+  });
+}
+
+
+const btnHeaderReload = $('btn-header-reload');
+if (btnHeaderReload) {
+  btnHeaderReload.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playClickSound();
+    vibe(18);
+    setTimeout(() => {
+      window.location.reload();
+    }, 120);
   });
 }
 
@@ -16268,6 +16281,16 @@ function startAiSpeechSession() {
   if (isAiStarting) return null;
   isAiStarting = true;
 
+  // Watchdog timeout: jika dalam 3 detik engine tidak memicu onNativeSpeechStart / onstart, lepaskan lock agar tidak macet
+  setTimeout(() => {
+    if (isAiStarting) {
+      isAiStarting = false;
+      if (aiSpeechWanted && !isAiRecording) {
+        updateAiMicUI();
+      }
+    }
+  }, 3000);
+
   // 1. Prioritaskan Native Android SpeechRecognizer jika berjalan di APK WebView
   if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.startNativeSpeech === 'function' && window.DigiAndroidBridge.isNativeSpeechAvailable()) {
     try {
@@ -16281,6 +16304,7 @@ function startAiSpeechSession() {
       }
       return { native: true };
     } catch(e) {
+      isAiStarting = false;
       console.warn('Fallback ke Web Speech API:', e);
     }
   }

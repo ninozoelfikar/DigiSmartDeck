@@ -9,6 +9,12 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.2.4] - 2026-10-08
+- Penambahan tombol reload/refresh aplikasi instan di header bar samping mode AI
+- Penghapusan tombol Bluetooth manual pada Menu Control Deck (beralih otomatis di latar belakang)
+- Penguatan responsivitas mic AI Workstation dengan watchdog timeout 3s pencegah deadlock state
+- Proteksi exception handling pada siklus pembatalan SpeechRecognizer Android native
+
 ### [1.21.2.2] - 2026-10-08
 - Full immersive screen cut-out edge-to-edge tanpa bar hitam pada layar berponi HP
 - Implementasi auto-updater aktif zero-click untuk APK native Android
