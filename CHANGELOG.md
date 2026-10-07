@@ -9,6 +9,13 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.2.2] - 2026-10-08
+- Full immersive screen cut-out edge-to-edge tanpa bar hitam pada layar berponi HP
+- Implementasi auto-updater aktif zero-click untuk APK native Android
+- Standarisasi format kunci lisensi 20 digit alfanumerik (DLIFE / DMONT)
+- Eliminasi tuntas spasi ganda (double-space) AI Workstation dengan smartJoinText dan lookbehind debounce
+- Pembersihan total ikon dan badge jenis mode di Windows Switcher PC
+
 ### [1.21.2] - 2026-10-07
 - Restorasi tombol menu koneksi Bluetooth HID mandiri pada Control Deck
 

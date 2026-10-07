@@ -20,7 +20,36 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 PAIRED_DEVICES_FILE = os.path.join(DATA_DIR, 'paired_devices.json')
 LICENSE_FILE = os.path.join(DATA_DIR, 'license.json')
 
-LICENSE_SECRET = b"digikeyboard_secret_salt_2026_saas"
+# Secret format lama (kunci 16 karakter DIGI-XXXX-XXXX-XXXX), dipertahankan untuk kompatibilitas mundur
+LEGACY_LICENSE_SECRET = b"digikeyboard_secret_salt_2026_saas"
+
+# Secret format baru (kunci 20 karakter XXXXX-XXXXX-XXXXX-XXXXX)
+LICENSE_SECRET = b"DSD-K1ng4l1-St7d10-2026-x9Qv#Lp3"
+
+# Alfabet tanpa karakter ambigu (tanpa 0/O/1/I) agar mudah dibaca dan diketik pembeli
+KEY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+KEY_TIER_PREFIX = {"lifetime": "DLIFE", "monthly": "DMONT"}
+KEY_PREFIX_TIER = {v: k for k, v in KEY_TIER_PREFIX.items()}
+
+# Harga paket (anchor pricing: harga resmi bulanan Rp 25.000, promo peluncuran Rp 15.000)
+PRICE_MONTHLY_OFFICIAL = "Rp 25.000 / bulan"
+PRICE_MONTHLY_PROMO = "Rp 15.000 / bulan"
+PRICE_LIFETIME = "Rp 250.000"
+
+
+def _sign_block(body: str) -> str:
+    """Menghasilkan blok tanda tangan 5 karakter dari HMAC-SHA256 payload kunci."""
+    digest = hmac.new(LICENSE_SECRET, body.encode('utf-8'), hashlib.sha256).digest()
+    return "".join(KEY_ALPHABET[b % len(KEY_ALPHABET)] for b in digest[:5])
+
+
+def normalize_license_key(key_str: str) -> str:
+    """Uppercase, buang spasi/strip, lalu format ulang ke XXXXX-XXXXX-XXXXX-XXXXX jika 20 karakter."""
+    raw = (key_str or "").strip().upper()
+    compact = raw.replace("-", "").replace(" ", "")
+    if len(compact) == 20 and compact[:5] in KEY_PREFIX_TIER:
+        return "-".join(compact[i:i + 5] for i in range(0, 20, 5))
+    return raw
 
 class DevicePairingManager:
     """Mengelola proses pairing perangkat ponsel/tablet ke PC host menggunakan PIN 6-digit."""
@@ -249,17 +278,27 @@ class LicenseManager:
             print(f"[!] Gagal menyimpan data lisensi: {e}")
 
     @staticmethod
-    def generate_license_key(tier="lifetime", seed="VIP2026"):
-        """Menghasilkan kunci lisensi sah dengan checksum HMAC deterministik."""
-        tier_code = "LIFE" if tier == "lifetime" else "MONT"
-        rand_part = seed[:4].upper().ljust(4, 'X')
-        body = f"DIGI-{tier_code}-{rand_part}"
-        sig = hmac.new(LICENSE_SECRET, body.encode('utf-8'), hashlib.sha256).hexdigest()[:4].upper()
-        return f"{body}-{sig}"
+    def generate_license_key(tier="lifetime", seed=None):
+        """
+        Menghasilkan kunci lisensi 20 karakter: PPPPP-RRRRR-RRRRR-SSSSS
+        - PPPPP : kode paket (DLIFE / DMONT)
+        - RRRRR-RRRRR : 10 karakter acak (atau dari seed untuk pengujian deterministik)
+        - SSSSS : tanda tangan HMAC-SHA256 dari 15 karakter pertama
+        """
+        prefix = KEY_TIER_PREFIX.get(tier, KEY_TIER_PREFIX["monthly"])
+        if seed:
+            clean_seed = "".join(c for c in str(seed).upper() if c in KEY_ALPHABET)
+            rand_part = (clean_seed + "X" * 10)[:10]
+        else:
+            rand_part = "".join(secrets.choice(KEY_ALPHABET) for _ in range(10))
+        body = prefix + rand_part
+        sig = _sign_block(body)
+        compact = body + sig
+        return "-".join(compact[i:i + 5] for i in range(0, 20, 5))
 
     def verify_key_signature(self, key_str):
         """Memvalidasi integritas kunci lisensi secara offline."""
-        clean_key = key_str.strip().upper()
+        clean_key = normalize_license_key(key_str)
         # Master demo keys untuk pengujian lokal & evaluasi
         master_keys = {
             "DIGI-LIFE-VIP0-2026": ("lifetime", 0),
@@ -275,12 +314,25 @@ class LicenseManager:
             return True, tier, days
 
         parts = clean_key.split("-")
-        if len(parts) != 4 or parts[0] != "DIGI":
+
+        # Format baru 20 karakter: PPPPP-RRRRR-RRRRR-SSSSS
+        if len(parts) == 4 and all(len(p) == 5 for p in parts) and parts[0] in KEY_PREFIX_TIER:
+            compact = "".join(parts)
+            if any(c not in KEY_ALPHABET for c in compact[5:]):
+                return False, None, 0
+            body, sig = compact[:15], compact[15:]
+            if not hmac.compare_digest(sig, _sign_block(body)):
+                return False, None, 0
+            tier = KEY_PREFIX_TIER[parts[0]]
+            return True, tier, (0 if tier == "lifetime" else 30)
+
+        # Format lama 16 karakter: DIGI-TIER-XXXX-SSSS (kompatibilitas mundur)
+        if len(parts) != 4 or parts[0] != "DIGI" or parts[1] not in ("LIFE", "MONT"):
             return False, None, 0
 
         tier_code, rand_part, sig = parts[1], parts[2], parts[3]
         body = f"DIGI-{tier_code}-{rand_part}"
-        expected_sig = hmac.new(LICENSE_SECRET, body.encode('utf-8'), hashlib.sha256).hexdigest()[:4].upper()
+        expected_sig = hmac.new(LEGACY_LICENSE_SECRET, body.encode('utf-8'), hashlib.sha256).hexdigest()[:4].upper()
         if not hmac.compare_digest(sig, expected_sig):
             return False, None, 0
 
@@ -306,11 +358,22 @@ class LicenseManager:
                 self.failed_license_attempts[ip] = lic_info
             return False, "Kode lisensi tidak valid atau format salah."
 
+        clean_key = normalize_license_key(key_str)
+        used_keys = self.license_data.get('used_keys', [])
+        current_active_key = self.license_data.get('license_key', '')
+        if clean_key == current_active_key or clean_key in used_keys:
+            if tier == "lifetime" and self.license_data.get('tier') == "lifetime":
+                return True, f"Kunci lisensi Lifetime ini sudah aktif pada sistem."
+            return False, "Kode lisensi ini sudah pernah digunakan pada sistem ini."
+
         if ip:
             self.failed_license_attempts.pop(ip, None)
 
         now = datetime.now()
         email_clean = email.strip() if email else self.license_data.get('email', 'customer@digismartdeck.com')
+        new_used_keys = list(used_keys)
+        if clean_key not in new_used_keys:
+            new_used_keys.append(clean_key)
 
         if tier == "lifetime":
             self.license_data = {
@@ -318,10 +381,11 @@ class LicenseManager:
                 'status': 'active',
                 'email': email_clean,
                 'plan_name': 'Lifetime Pro (Seumur Hidup)',
-                'price': 'Rp 250.000',
+                'price': PRICE_LIFETIME,
                 'activated_at': now.strftime("%Y-%m-%d %H:%M:%S"),
                 'expires_at': None,
-                'license_key': key_str.strip().upper()
+                'license_key': clean_key,
+                'used_keys': new_used_keys
             }
         else:
             # Perpanjang jika masih aktif, atau mulai baru
@@ -342,10 +406,12 @@ class LicenseManager:
                 'status': 'active',
                 'email': email_clean,
                 'plan_name': 'Langganan Bulanan Pro',
-                'price': 'Rp 25.000 / bln',
+                'price': PRICE_MONTHLY_PROMO,
+                'price_official': PRICE_MONTHLY_OFFICIAL,
                 'activated_at': now.strftime("%Y-%m-%d %H:%M:%S"),
                 'expires_at': new_exp.strftime("%Y-%m-%d %H:%M:%S"),
-                'license_key': key_str.strip().upper()
+                'license_key': clean_key,
+                'used_keys': new_used_keys
             }
 
         self._save()
@@ -377,7 +443,10 @@ class LicenseManager:
 
         # Mask license key untuk keamanan tampilan
         raw_key = self.license_data.get('license_key', '')
-        if raw_key and len(raw_key) >= 14:
+        if raw_key and len(raw_key) == 23 and raw_key.count('-') == 3:
+            parts = raw_key.split('-')
+            masked_key = f"{parts[0]}-****-****-{parts[3]}"
+        elif raw_key and len(raw_key) >= 14:
             masked_key = raw_key[:9] + "****-" + raw_key[-4:]
         else:
             masked_key = raw_key
@@ -392,8 +461,9 @@ class LicenseManager:
             'expires_at': expires_at_str,
             'days_left': days_left,
             'pricing': {
-                'monthly': 'Rp 25.000 / bulan',
-                'lifetime': 'Rp 250.000 (Lifetime)'
+                'monthly': PRICE_MONTHLY_PROMO,
+                'monthly_official': PRICE_MONTHLY_OFFICIAL,
+                'lifetime': PRICE_LIFETIME
             }
         }
 

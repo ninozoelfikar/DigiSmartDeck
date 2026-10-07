@@ -2043,8 +2043,27 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe(15)`) dipertahankan pada seluruh interaksi.
   - Ukuran file APK tetap sangat ringan (~5.6 MB), jauh di bawah batas 20 MB.
 
+---
 
-
-
-
+## 112. CATATAN CHECKPOINT (v1.21.2.2 - Edge-to-Edge Immersive Display, Active Auto-Updater, & Standarisasi Kunci 20-Digit)
+- **Layar Penuh Sejati Edge-to-Edge (Eliminasi Layar Hitam di Sisi Kiri Layar Berponi/Cutout HP):**
+  - Mengonfigurasi `layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS` pada Android 11+ (API 30+) dan `SHORT_EDGES` pada Android 9-10 (API 28-29).
+  - Menetapkan tema `Theme.DigiSmartDeck.Fullscreen` dengan atribut `android:windowLayoutInDisplayCutoutMode = always`, `android:windowTranslucentStatus = true`, dan `android:windowTranslucentNavigation = true` di `styles.xml`.
+  - Mengeliminasi padding buatan berlebih pada header di `static/index.html` sehingga antarmuka mengisi 100% ruang horizontal dan vertikal tanpa bilah hitam di sisi lekukan/poni kamera HP.
+- **Implementasi Auto-Updater Aktif (Zero-Click Auto Update):**
+  - Mengoptimalkan `handleAutoUpdateResult()` pada `static/index.html`: saat mendeteksi versi server lebih baru, klien APK native Android langsung memicu pengunduhan di latar belakang via `DigiAndroidBridge.downloadAndInstallUpdate()`.
+  - Menambahkan dukungan SemVer 4-bagian (`MAJOR.MINOR.PATCH.BUILD`) pada `android/app/build.gradle` dan `server.py` untuk pembaruan cepat iteratif.
+  - Menyediakan berkas manifest `version.json` dan skrip simulasi `tools/simulate_updater.py` untuk persiapan rilis via GitHub Releases / Firebase.
+- **Format Kunci Lisensi 20 Digit Alfanumerik (auth_manager.py):**
+  - Mengimplementasikan format kunci lisensi 20 karakter alfanumerik `XXXXX-XXXXX-XXXXX-XXXXX` (`DLIFE` untuk Lifetime dan `DMONT` untuk Bulanan) berbasis tanda tangan HMAC-SHA256 deterministik.
+  - Memperbarui skrip batch generator `tools/generate_license_keys.py`.
+- **Fiksasi Mutlak Spasi Ganda AI Workstation (static/index.html):**
+  - Menerapkan fungsi helper `smartJoinText(base, addition)` di seluruh alur penggabungan dikte suara dan pengetikan teks AI.
+  - Menambahkan lookbehind guard dan menaikkan debounce tombol spasi keyboard ke 250ms untuk mencegah double input pada layar sentuh.
+- **Pembersihan Windows Switcher PC:**
+  - Menghilangkan seluruh ikon mode dan label jenis mode pada modal aplikasi aktif PC, menyisakan nama aplikasi, status aktif/terkunci, dan tombol kontrol jendela yang bersih.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+  - Ukuran file APK tetap sangat ringan (~5.6 MB), jauh di bawah batas 20 MB.
 

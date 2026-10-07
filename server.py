@@ -2855,9 +2855,9 @@ def get_latest_apk_info():
     """Mendeteksi file APK rilis terbaru di direktori static/ atau dist/."""
     current_ver = load_version()
     parts = [int(p) for p in re.findall(r'\d+', current_ver)]
-    while len(parts) < 3:
+    while len(parts) < 4:
         parts.append(0)
-    server_code = parts[0] * 10000 + parts[1] * 100 + parts[2]
+    server_code = parts[0] * 1000000 + parts[1] * 10000 + parts[2] * 100 + parts[3]
 
     static_dir = os.path.join(BASE_DIR, 'static')
     dist_dir = os.path.join(BASE_DIR, 'dist')
