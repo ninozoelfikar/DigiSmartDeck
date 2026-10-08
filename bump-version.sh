@@ -27,19 +27,25 @@ if [ -z "$CURRENT_VERSION" ]; then
     CURRENT_VERSION="1.17.0"
 fi
 
-# Parsing semver: MAJOR.MINOR.PATCH
-IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+# Parsing semver: MAJOR.MINOR.PATCH.BUILD
+IFS='.' read -r MAJOR MINOR PATCH BUILD <<< "$CURRENT_VERSION"
 MAJOR=${MAJOR:-1}
 MINOR=${MINOR:-0}
 PATCH=${PATCH:-0}
+BUILD=${BUILD:-}
 
 BUMP_TYPE="${1:-patch}"
 CUSTOM_DESC="${2:-}"
 
 case "$BUMP_TYPE" in
     patch|p)
-        PATCH=$((PATCH + 1))
-        NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+        if [ -n "$BUILD" ]; then
+            BUILD=$((BUILD + 1))
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}.${BUILD}"
+        else
+            PATCH=$((PATCH + 1))
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+        fi
         ;;
     minor|m)
         MINOR=$((MINOR + 1))

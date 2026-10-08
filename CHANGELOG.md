@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.4] - 2026-10-08
+- Pindahkan deskripsi AI Workstation dan Vibe Coding Companion ke atas badge versi
+
 ### [] - 2026-10-08
 - Pindahkan deskripsi AI Workstation dan Vibe Coding Companion ke atas badge versi
 
@@ -343,6 +346,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.3.4] - 2026-10-08
+- Release v1.21.3.4 updates
 
 ### [] - 2026-10-08
 - Release v updates
