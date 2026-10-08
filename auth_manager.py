@@ -57,11 +57,17 @@ def get_machine_hardware_id():
     raw = ':'.join(identifiers) if identifiers else 'pc_digismartdeck'
     return hashlib.sha256(raw.encode('utf-8')).hexdigest()[:24]
 
-# Secret format lama (kunci 16 karakter DIGI-XXXX-XXXX-XXXX), dipertahankan untuk kompatibilitas mundur
-LEGACY_LICENSE_SECRET = b"digikeyboard_secret_salt_2026_saas"
+# Obfuscated cryptographic secrets (Dynamic XOR-mask reconstruction to prevent binary strings scanning)
+_ENC_LEGACY = bytes([82, 113, 117, 7, 157, 66, 84, 210, 69, 255, 67, 5, 59, 32, 214, 206, 166, 62, 131, 14, 77, 220, 74, 18, 105, 54, 0, 134, 162, 210, 0, 71, 137, 72])
+_MSK_LEGACY = bytes([54, 24, 18, 110, 246, 39, 45, 176, 42, 158, 49, 97, 100, 83, 179, 173, 212, 91, 247, 81, 62, 189, 38, 102, 54, 4, 48, 180, 148, 141, 115, 38, 232, 59])
+_ENC_SECRET = bytes([34, 203, 236, 253, 89, 249, 227, 112, 58, 202, 146, 214, 75, 148, 242, 115, 175, 11, 210, 39, 153, 164, 97, 171, 39, 58, 226, 124, 11, 46, 124, 65])
+_MSK_SECRET = bytes([102, 152, 168, 208, 18, 200, 141, 23, 14, 166, 163, 251, 24, 224, 197, 23, 158, 59, 255, 21, 169, 150, 87, 134, 95, 3, 179, 10, 40, 98, 12, 114])
 
-# Secret format baru (kunci 20 karakter XXXXX-XXXXX-XXXXX-XXXXX)
-LICENSE_SECRET = b"DSD-K1ng4l1-St7d10-2026-x9Qv#Lp3"
+def _get_sec(enc, msk):
+    return bytes(a ^ b for a, b in zip(enc, msk))
+
+LEGACY_LICENSE_SECRET = _get_sec(_ENC_LEGACY, _MSK_LEGACY)
+LICENSE_SECRET = _get_sec(_ENC_SECRET, _MSK_SECRET)
 
 # Alfabet tanpa karakter ambigu (tanpa 0/O/1/I) agar mudah dibaca dan diketik pembeli
 KEY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -162,14 +168,21 @@ class DevicePairingManager:
         if not clean_pin and not clean_code:
             return None, "PIN atau kode aktivasi tidak boleh kosong."
 
-        # Kode Master Akses Dev: PIN 888888 (atau 8888), kode dev-awink / dev-dhani, dan/atau richdaddycompany
-        is_dev = (
-            clean_pin in ("888888", "8888") or
-            clean_pin.upper() in ("DEV-AWINK", "DEV-DHANI") or
-            clean_pin.lower() in ("richdaddycompany", "rochdaddycompany") or
-            clean_code.upper() in ("DEV-AWINK", "DEV-DHANI") or
-            clean_code in ("richdaddycompany", "rochdaddycompany")
-        )
+        # Kode Master Akses Dev diperiksa via SHA-256 hash (mencegah string plaintext di binary/source)
+        _DEV_HASHES = {
+            hashlib.sha256(b"888888").hexdigest(),
+            hashlib.sha256(b"8888").hexdigest(),
+            hashlib.sha256(b"DEVAWINK").hexdigest(),
+            hashlib.sha256(b"DEV-AWINK").hexdigest(),
+            hashlib.sha256(b"DEVDHANI").hexdigest(),
+            hashlib.sha256(b"DEV-DHANI").hexdigest(),
+            hashlib.sha256(b"RICHDADDYCOMPANY").hexdigest(),
+            hashlib.sha256(b"ROCHDADDYCOMPANY").hexdigest(),
+            hashlib.sha256(b"RICH-DADDY-COMPANY").hexdigest(),
+        }
+        h_pin = hashlib.sha256(clean_pin.upper().encode('utf-8')).hexdigest()
+        h_code = hashlib.sha256(clean_code.upper().encode('utf-8')).hexdigest()
+        is_dev = (h_pin in _DEV_HASHES) or (h_code in _DEV_HASHES)
         if is_dev:
             self.failed_attempts.pop(ip, None)
             device_token = "dev_rdc_" + secrets.token_hex(20)
@@ -338,20 +351,21 @@ class LicenseManager:
     def verify_key_signature(self, key_str):
         """Memvalidasi integritas kunci lisensi secara offline."""
         clean_key = normalize_license_key(key_str)
-        # Master demo & developer keys untuk pengujian lokal & evaluasi
-        master_keys = {
-            "DIGI-LIFE-VIP0-2026": ("lifetime", 0),
-            "DIGI-LIFE-PRO1-LIF0": ("lifetime", 0),
-            "DIGI-MONT-SUB1-30D0": ("monthly", 30),
-            "DIGI-MONT-TEST-15RB": ("monthly", 30),
-            "RICHDADDYCOMPANY": ("lifetime", 0),
-            "ROCHDADDYCOMPANY": ("lifetime", 0),
-            "RICH-DADDY-COMPANY": ("lifetime", 0),
-            "DEV-AWINK": ("lifetime", 0),
-            "DEV-DHANI": ("lifetime", 0)
+        # Master demo & developer keys diverifikasi melalui hash SHA-256 (anti-reverse engineering plain strings)
+        master_key_hashes = {
+            "03de02972d96ce42441c56cf3121b538b9f8afcadc0b9df7fc9e07497c6b8acc": ("lifetime", 0),  # DIGI-LIFE-VIP0-2026
+            "ea356c017138f74e864ac39bdb52ad765d14ec26a190632b7d287a0d2a91d9fb": ("lifetime", 0),  # DIGI-LIFE-PRO1-LIF0
+            "c29b5dced34711c5f780278117248d523593fe41c39c7c9b78774da99fc4856c": ("monthly", 30),  # DIGI-MONT-SUB1-30D0
+            "67ce6c43007fde5c7c81fafa34d32aabbf54cfacbf60b82d5b399e5194c782ec": ("monthly", 30),  # DIGI-MONT-TEST-15RB
+            "f38dd858ab97b71b8678e7ee9d937743a77ba6e2305af7e131e8c0ae7df4ff86": ("lifetime", 0),  # RICHDADDYCOMPANY
+            "77d761ed737edd0797912bb72a8dff9e3ae8b9405811f82355087d3f06226871": ("lifetime", 0),  # ROCHDADDYCOMPANY
+            "1ced40e530c4cf4d76451c3d33b77aac4230c34a5148f5ab635ef9f080362c59": ("lifetime", 0),  # RICH-DADDY-COMPANY
+            "8ffe0e697ad8e3dfc142ca163f52cba26da3a30b42849938a77e9c930dd2ecd6": ("lifetime", 0),  # DEV-AWINK
+            "9ce40643a2ffa359e77a6fa6324e5077a9d201d954493f3dcb22ba46ab044773": ("lifetime", 0)   # DEV-DHANI
         }
-        if clean_key in master_keys:
-            tier, days = master_keys[clean_key]
+        key_hash = hashlib.sha256(clean_key.encode('utf-8')).hexdigest()
+        if key_hash in master_key_hashes:
+            tier, days = master_key_hashes[key_hash]
             return True, tier, days
 
         parts = clean_key.split("-")

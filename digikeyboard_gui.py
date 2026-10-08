@@ -502,10 +502,6 @@ class DigiSmartDeckHostWindow(QMainWindow):
             self.pin_boxes.append(box)
         pin_vbox.addLayout(box_row)
 
-        sub_info = QLabel("Perangkat otomatis terhubung begitu 6 digit selesai diketik.")
-        sub_info.setStyleSheet("color: #3fb950; font-size: 11px; font-weight: 600;")
-        sub_info.setAlignment(Qt.AlignCenter)
-        pin_vbox.addWidget(sub_info)
 
         btn_row = QHBoxLayout()
         btn_copy = QPushButton("Salin PIN")

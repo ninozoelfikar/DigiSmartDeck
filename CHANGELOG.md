@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.9] - 2026-10-09
+- Pembersihan total informasi rahasia developer dari UI dan penonaktifan interaksi klik manual pada indikator koneksi & popup reconnect agar berjalan 100% otomatis
+
 ### [1.21.3.8] - 2026-10-08
 - Terapkan font native OS dan warna orange cerah permanen pada flash screen untuk bebas flicker
 

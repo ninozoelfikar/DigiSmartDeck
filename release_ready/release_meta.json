@@ -1,10 +1,10 @@
 {
-  "version": "1.21.3.8",
+  "version": "1.21.3.9",
   "app_name": "DigiSmartDeck",
-  "apk_filename": "DigiSmartDeck-v1.21.3.8.apk",
+  "apk_filename": "DigiSmartDeck-v1.21.3.9.apk",
   "generic_apk_filename": "DigiSmartDeck.apk",
-  "changelog": "Flash screen menggunakan tipografi font Native OS permanen dan aksen warna orange cerah tanpa flicker saat aplikasi dimuat.",
-  "release_date": "2026-10-08",
+  "changelog": "Pembersihan total informasi developer dari antarmuka, penonaktifan klik manual pada indikator koneksi & reconnect agar berjalan 100% otomatis, dan proteksi reverse engineering.",
+  "release_date": "2026-10-09",
   "target_platforms": [
     "android",
     "linux_server"

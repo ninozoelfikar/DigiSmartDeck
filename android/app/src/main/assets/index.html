@@ -2027,6 +2027,8 @@ body.is-fullscreen {
   padding: 16px !important;
   user-select: none !important;
   -webkit-user-select: none !important;
+  pointer-events: none !important;
+  cursor: default !important;
   transition: opacity 0.25s ease, visibility 0.25s ease !important;
 }
 .reconnect-banner.hidden {
@@ -2045,6 +2047,8 @@ body.is-fullscreen {
   align-items: center;
   text-align: center;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  pointer-events: none !important;
+  cursor: default !important;
   animation: rc-modal-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -7071,7 +7075,7 @@ body.portrait-dismissed .orientation-guard {
         <span id="update-badge-dot" style="display:none; width:8px; height:8px; background:#f0883e; border-radius:50%; margin-left:6px; box-shadow:0 0 6px rgba(240,136,62,0.8); animation:pulse-update 2s infinite;" title="Pembaruan Tersedia"></span>
       </div>
 
-      <span id="badge" class="status-badge disconnected" style="cursor:pointer;" data-i18n-title="conn_status_title" title="Connection Status">
+      <span id="badge" class="status-badge disconnected" style="cursor:default; pointer-events:none; user-select:none;" data-i18n-title="conn_status_title" title="Connection Status">
         <span class="dot"></span>
         <span id="badge-icon">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
@@ -9237,7 +9241,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.8</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.9</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9321,22 +9325,8 @@ body.portrait-dismissed .orientation-guard {
           Sambungkan
         </button>
       </div>
-      <div class="pairing-hint" style="margin-top:14px;font-size:12px;color:var(--accent);text-align:center;font-weight:600;" data-i18n="pairing_hint">
-        Perangkat otomatis tersambung saat 6 digit PIN (atau PIN Dev: 888888) dimasukkan.
-      </div>
-
-      <!-- Developer Access Code Option (PIN: 888888 & richdaddycompany) -->
-      <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:12px;text-align:center;">
-        <button type="button" id="btn-quick-dev-pair" class="tbtn" style="background:rgba(88,166,255,0.12);border:1px solid var(--accent);color:var(--accent);padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-          <span>Aktifkan Akses Dev (PIN: 888888)</span>
-        </button>
-        <div style="margin-top:8px;">
-          <button type="button" id="btn-toggle-dev-code" style="background:none;border:none;color:var(--text-dim);font-size:11px;cursor:pointer;text-decoration:underline;">Opsi Kode Dev: richdaddycompany</button>
-          <div id="dev-code-wrap" style="display:none;margin-top:8px;flex-direction:column;gap:8px;align-items:center;">
-            <input type="text" id="inp-dev-code" placeholder="richdaddycompany / 888888" autocomplete="off" autocapitalize="none" style="width:100%;max-width:260px;padding:8px 12px;background:rgba(255,255,255,0.06);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-size:13px;text-align:center;outline:none;">
-            <button type="button" class="btn-primary" id="btn-submit-dev-code" style="padding:6px 18px;font-size:11.5px;border-radius:8px;">Verifikasi Developer</button>
-          </div>
-        </div>
+      <div class="pairing-hint" style="margin-top:14px;font-size:12px;color:var(--text-dim);text-align:center;font-weight:500;" data-i18n="pairing_hint">
+        Masukkan 6 digit PIN otorisasi dari layar PC host.
       </div>
     </div>
   </div>
@@ -9534,7 +9524,7 @@ const I18N = {
     pairing_title: "Pair New Device",
     pairing_desc: "Enter the 6-digit PIN shown on your PC monitor or terminal to securely authorize this device.",
     pairing_btn_connect: "Connect Device",
-    pairing_hint: "Device connects automatically once the 6-digit PIN is entered.",
+    pairing_hint: "Enter the authorization PIN from host PC.",
     license_title: "DigiSmartDeck License & Account",
     license_plan_lbl: "Active Plan Status",
     license_expires_lbl: "Valid Until:",
@@ -9855,7 +9845,7 @@ const I18N = {
     pairing_title: "Pairing Perangkat Baru",
     pairing_desc: "Masukkan 6 digit kode PIN yang tampil di layar monitor atau terminal PC host Anda untuk menyambungkan perangkat ini.",
     pairing_btn_connect: "Sambungkan",
-    pairing_hint: "Perangkat otomatis tersambung begitu 6 digit PIN benar dimasukkan.",
+    pairing_hint: "Masukkan 6 digit PIN otorisasi dari layar PC host.",
     license_title: "Lisensi & Akun DigiSmartDeck",
     license_plan_lbl: "Status Paket Aktif",
     license_expires_lbl: "Masa Berlaku:",
@@ -10482,8 +10472,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '';
-const APP_CLIENT_VERSION_CODE = 12103;
+const APP_CLIENT_VERSION = '1.21.3.9';
+const APP_CLIENT_VERSION_CODE = 1210309;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11089,39 +11079,6 @@ if (btnQuickDevPair) {
   });
 }
 
-const btnToggleDevCode = $('btn-toggle-dev-code');
-const devCodeWrap = $('dev-code-wrap');
-const inpDevCode = $('inp-dev-code');
-const btnSubmitDevCode = $('btn-submit-dev-code');
-
-if (btnToggleDevCode && devCodeWrap) {
-  btnToggleDevCode.addEventListener('click', () => {
-    playClickSound();
-    vibe(10);
-    const isHidden = devCodeWrap.style.display === 'none' || !devCodeWrap.style.display;
-    devCodeWrap.style.display = isHidden ? 'flex' : 'none';
-    if (isHidden && inpDevCode) {
-      inpDevCode.value = 'richdaddycompany';
-      inpDevCode.focus();
-      inpDevCode.select();
-    }
-  });
-}
-
-if (btnSubmitDevCode && inpDevCode) {
-  btnSubmitDevCode.addEventListener('click', () => {
-    playClickSound();
-    vibe(20);
-    const code = (inpDevCode.value || '').trim();
-    if (code) submitPairingPin(code);
-  });
-  inpDevCode.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const code = (inpDevCode.value || '').trim();
-      if (code) submitPairingPin(code);
-    }
-  });
-}
 
 if (btnSubmitPair) btnSubmitPair.onclick = () => { playClickSound(); vibe(20); submitPairingPin(); };
 if (btnClosePairing) btnClosePairing.onclick = () => { playClickSound(); vibe(10); closePairingModal(); };
@@ -12573,20 +12530,7 @@ function closeReconnectModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// Klik/sentuh badge status Wi-Fi untuk membuka modal scanner koneksi & host discovery
-if (badge) {
-  const onBadgeTrigger = (e) => {
-    if (e) {
-      if (e.stopPropagation) e.stopPropagation();
-      if (e.cancelable && e.type === 'touchend') e.preventDefault();
-    }
-    if (typeof playClickSound === 'function') playClickSound();
-    if (typeof vibe === 'function') vibe(15);
-    openReconnectModal();
-  };
-  badge.addEventListener('touchend', onBadgeTrigger, { passive: false });
-  badge.addEventListener('click', onBadgeTrigger);
-}
+// Badge status koneksi bersifat murni informatif (koneksi berjalan otomatis di latar belakang)
 
 
 const btnRcUsb = $('btn-rc-usb');
