@@ -8913,7 +8913,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
-        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v1.21.3.3</span>
+        <span id="app-version-badge" style="font-size:11px;color:var(--text-dim);font-weight:600;">DigiSmartDeck v</span>
         <button class="btn-primary" id="btn-save-settings" data-i18n="st_btn_save">Done</button>
       </div>
     </div>
@@ -9212,18 +9212,18 @@ body.portrait-dismissed .orientation-guard {
     <button class="modal-close" id="btn-close-about" type="button" title="Tutup" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:6px;line-height:1;border-radius:6px;">✕</button>
 
     <!-- Line 1: Nama Aplikasi (Typographic Logo) -->
-    <div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:0.4px;margin-bottom:6px;margin-top:6px;">DigiSmartDeck</div>
+    <div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:0.4px;margin-bottom:4px;margin-top:6px;">DigiSmartDeck</div>
 
-    <!-- Line 2: Badge Versi Aplikasi -->
-    <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.3</span>
+    <!-- Line 2: Deskripsi Aplikasi (AI Workstation & Vibe Coding Companion) -->
+    <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto 10px;" data-i18n="about_desc">AI Workstation & Vibe Coding Companion.</div>
+
+    <!-- Line 3: Badge Versi Aplikasi -->
+    <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v</span>
     </div>
 
-    <!-- Line 3: By Nama Studio -->
-    <div style="font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.2px;margin-bottom:14px;">by King Ali Studiō</div>
-
-    <!-- Subtitle (Informasi Aplikasi) -->
-    <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto;" data-i18n="about_desc">AI Workstation & Vibe Coding Companion.</div>
+    <!-- Line 4: By Nama Studio -->
+    <div style="font-size:12px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;margin-bottom:14px;">by King Ali Studiō</div>
 
     <!-- Informasi Status Versi Aplikasi (Langsung tampil jika sudah versi terbaru) -->
     <div style="margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px;" id="about-update-container">
@@ -10456,8 +10456,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.3.3';
-const APP_CLIENT_VERSION_CODE = 12103;
+const APP_CLIENT_VERSION = '';
+const APP_CLIENT_VERSION_CODE = 0;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;

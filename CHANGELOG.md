@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [] - 2026-10-08
+- Pindahkan deskripsi AI Workstation dan Vibe Coding Companion ke atas badge versi
+
 ### [1.21.3.3] - 2026-10-08
 - Pembaruan stabilitas mic tablet fallback recognition service, pengiriman teks HP ke terminal instan, dan perbaikan siklus auto-updater
 
@@ -340,6 +343,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [] - 2026-10-08
+- Release v updates
 
 ### [1.21.3.3] - 2026-10-08
 - Release v1.21.3.3 updates
