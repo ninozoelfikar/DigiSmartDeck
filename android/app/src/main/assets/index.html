@@ -2293,8 +2293,8 @@ body.is-fullscreen {
 .splash-screen {
   position: fixed;
   inset: 0;
-  background: var(--bg, #202020);
-  color: var(--text, #ffffff);
+  background: #1e1e1e !important;
+  color: #ffffff !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2429,16 +2429,16 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .splash-title {
   font-size: 22px;
   font-weight: 800;
-  color: var(--accent, #60cdff);
+  color: #ff7844 !important;
   letter-spacing: 0.5px;
-  font-family: var(--key-font, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Ubuntu", Roboto, sans-serif !important;
 }
 .splash-sub {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-dim, #a0a0a0);
+  color: #e0e0e0 !important;
   letter-spacing: 0.3px;
-  font-family: var(--key-font, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Ubuntu", Roboto, sans-serif !important;
 }
 
 @media (max-width: 440px) {
@@ -9237,7 +9237,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.7</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.8</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
