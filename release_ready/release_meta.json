@@ -1,9 +1,9 @@
 {
-  "version": "1.21.3.7",
+  "version": "1.21.3.8",
   "app_name": "DigiSmartDeck",
-  "apk_filename": "DigiSmartDeck-v1.21.3.7.apk",
+  "apk_filename": "DigiSmartDeck-v1.21.3.8.apk",
   "generic_apk_filename": "DigiSmartDeck.apk",
-  "changelog": "Tema Native OS (Windows/Mac/Ubuntu) dijadikan default pada startup flash screen secara instan tanpa flicker.",
+  "changelog": "Flash screen menggunakan tipografi font Native OS permanen dan aksen warna orange cerah tanpa flicker saat aplikasi dimuat.",
   "release_date": "2026-10-08",
   "target_platforms": [
     "android",

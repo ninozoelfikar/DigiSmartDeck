@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.8] - 2026-10-08
+- Terapkan font native OS dan warna orange cerah permanen pada flash screen untuk bebas flicker
+
 ### [1.21.3.7] - 2026-10-08
 - Jadikan tema Native OS sebagai default visual pada startup flash screen
 
@@ -355,6 +358,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.3.8] - 2026-10-08
+- Release v1.21.3.8 updates
 
 ### [1.21.3.7] - 2026-10-08
 - Release v1.21.3.7 updates
