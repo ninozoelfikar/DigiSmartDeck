@@ -1,9 +1,9 @@
 {
-  "version": "1.21.3.6",
+  "version": "1.21.3.7",
   "app_name": "DigiSmartDeck",
-  "apk_filename": "DigiSmartDeck-v1.21.3.6.apk",
+  "apk_filename": "DigiSmartDeck-v1.21.3.7.apk",
   "generic_apk_filename": "DigiSmartDeck.apk",
-  "changelog": "Pembersihan flash screen tunggal terpadu bebas duplikasi dan penguncian warna gelap konsisten saat pergantian tema.",
+  "changelog": "Tema Native OS (Windows/Mac/Ubuntu) dijadikan default pada startup flash screen secara instan tanpa flicker.",
   "release_date": "2026-10-08",
   "target_platforms": [
     "android",

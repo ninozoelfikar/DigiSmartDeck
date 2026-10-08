@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.7] - 2026-10-08
+- Jadikan tema Native OS sebagai default visual pada startup flash screen
+
 ### [1.21.3.6] - 2026-10-08
 - Perbaikan flash screen tidak lagi double dan warna dikunci gelap permanen agar tidak glitch saat tema berganti
 
@@ -352,6 +355,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.3.7] - 2026-10-08
+- Release v1.21.3.7 updates
 
 ### [1.21.3.6] - 2026-10-08
 - Release v1.21.3.6 updates
