@@ -1167,7 +1167,7 @@ body.is-fullscreen {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 10px;
   width: 100%;
   max-width: 100%;
 }
@@ -7297,6 +7297,14 @@ body.portrait-dismissed .orientation-guard {
                 <input type="range" class="tp-editor-slider custom-slider" id="tp-editor-slider" min="60" max="180" step="5" value="100">
               </div>
             </div>
+
+            <!-- Line 3: Trackpad Pointer Sensitivity -->
+            <div class="tp-editor-row tp-editor-row-slider">
+              <div class="tp-editor-item tp-editor-slider-item">
+                <span class="tp-editor-lbl"><span data-i18n="tp_editor_speed">Sensitivity:</span> <b id="tp-editor-speed-val">1.2x</b></span>
+                <input type="range" class="tp-editor-slider custom-slider" id="tp-editor-speed-slider" min="0.5" max="3.0" step="0.1" value="1.2">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -9219,7 +9227,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.4</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.5</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9580,6 +9588,7 @@ const I18N = {
     tp_editor_top: "Top",
     tp_editor_bottom: "Bottom",
     tp_editor_height: "Height:",
+    tp_editor_speed: "Sensitivity:",
     tp_gear_title: "Trackpad Configuration",
 
     // Gamepad
@@ -9900,6 +9909,7 @@ const I18N = {
     tp_editor_top: "Atas",
     tp_editor_bottom: "Bawah",
     tp_editor_height: "Tinggi:",
+    tp_editor_speed: "Sensitivitas:",
     tp_gear_title: "Editor Trackpad",
 
     // Gamepad
@@ -13135,6 +13145,8 @@ if (tpSpeedSlider) {
   tpSpeedSlider.addEventListener('input', (e) => {
     tpSpeed = parseFloat(e.target.value);
     if (tpSpeedVal) tpSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+    if (tpEditorSpeedVal) tpEditorSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+    if (tpEditorSpeedSlider) tpEditorSpeedSlider.value = tpSpeed;
     localStorage.setItem('digi_tp_speed', tpSpeed);
   });
 }
@@ -13899,6 +13911,8 @@ const tpTogglePosTop = $('tp-toggle-pos-top');
 const tpTogglePosBottom = $('tp-toggle-pos-bottom');
 const tpEditorSlider = $('tp-editor-slider');
 const tpEditorScaleVal = $('tp-editor-scale-val');
+const tpEditorSpeedSlider = $('tp-editor-speed-slider');
+const tpEditorSpeedVal = $('tp-editor-speed-val');
 
 function syncTpEditorUI() {
   const isEnabled = (localStorage.getItem('digi_tp_enabled') !== 'false');
@@ -13911,6 +13925,10 @@ function syncTpEditorUI() {
   const currentScale = parseInt(localStorage.getItem('digi_tp_scale'), 10) || 100;
   if (tpEditorSlider) tpEditorSlider.value = currentScale;
   if (tpEditorScaleVal) tpEditorScaleVal.textContent = currentScale + '%';
+
+  const currentSpeed = parseFloat(localStorage.getItem('digi_tp_speed')) || 1.2;
+  if (tpEditorSpeedSlider) tpEditorSpeedSlider.value = currentSpeed;
+  if (tpEditorSpeedVal) tpEditorSpeedVal.textContent = currentSpeed.toFixed(1) + 'x';
 }
 
 function toggleTpEditor(show) {
@@ -13980,6 +13998,16 @@ if (tpTogglePosBottom) {
 if (tpEditorSlider) {
   tpEditorSlider.addEventListener('input', (e) => {
     applyTpScale(e.target.value);
+  });
+}
+
+if (tpEditorSpeedSlider) {
+  tpEditorSpeedSlider.addEventListener('input', (e) => {
+    tpSpeed = parseFloat(e.target.value);
+    if (tpEditorSpeedVal) tpEditorSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+    if (tpSpeedVal) tpSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+    if (tpSpeedSlider) tpSpeedSlider.value = tpSpeed;
+    localStorage.setItem('digi_tp_speed', tpSpeed);
   });
 }
 

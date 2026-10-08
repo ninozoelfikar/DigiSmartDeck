@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.5] - 2026-10-08
+- Tambahkan pengaturan sensitivitas trackpad di editor overlay mode keyboard dan sinkronkan dengan menu pengaturan
+
 ### [1.21.3.4] - 2026-10-08
 - Pindahkan deskripsi AI Workstation dan Vibe Coding Companion ke atas badge versi
 
@@ -346,6 +349,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.3.5] - 2026-10-08
+- Release v1.21.3.5 updates
 
 ### [1.21.3.4] - 2026-10-08
 - Release v1.21.3.4 updates
