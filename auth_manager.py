@@ -13,12 +13,49 @@ import uuid
 import hmac
 import hashlib
 import secrets
+import socket
+import platform
 from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 PAIRED_DEVICES_FILE = os.path.join(DATA_DIR, 'paired_devices.json')
 LICENSE_FILE = os.path.join(DATA_DIR, 'license.json')
+HARDWARE_LOCK_FILE = os.path.join(DATA_DIR, 'hardware_lock.json')
+
+
+def get_machine_hardware_id():
+    """Menghasilkan Hardware ID unik dan konsisten dari PC host untuk mengunci lisensi 1 PC/laptop."""
+    identifiers = []
+    # 1. Linux machine-id
+    for path in ['/etc/machine-id', '/var/lib/dbus/machine-id']:
+        if os.path.exists(path):
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    val = f.read().strip()
+                    if val:
+                        identifiers.append(val)
+                        break
+            except Exception:
+                pass
+
+    # 2. MAC address node
+    try:
+        node = uuid.getnode()
+        if (node >> 40) % 2 == 0:
+            identifiers.append(str(node))
+    except Exception:
+        pass
+
+    # 3. Hostname & platform machine
+    try:
+        identifiers.append(socket.gethostname())
+    except Exception:
+        pass
+    identifiers.append(platform.machine())
+
+    raw = ':'.join(identifiers) if identifiers else 'pc_digismartdeck'
+    return hashlib.sha256(raw.encode('utf-8')).hexdigest()[:24]
 
 # Secret format lama (kunci 16 karakter DIGI-XXXX-XXXX-XXXX), dipertahankan untuk kompatibilitas mundur
 LEGACY_LICENSE_SECRET = b"digikeyboard_secret_salt_2026_saas"
@@ -125,10 +162,12 @@ class DevicePairingManager:
         if not clean_pin and not clean_code:
             return None, "PIN atau kode aktivasi tidak boleh kosong."
 
-        # Kode Master Akses Dev: PIN 8888 (atau 888888) dan/atau kode aktivasi richdaddycompany
+        # Kode Master Akses Dev: PIN 888888 (atau 8888), kode dev-awink / dev-dhani, dan/atau richdaddycompany
         is_dev = (
-            clean_pin in ("8888", "888888") or
+            clean_pin in ("888888", "8888") or
+            clean_pin.upper() in ("DEV-AWINK", "DEV-DHANI") or
             clean_pin.lower() in ("richdaddycompany", "rochdaddycompany") or
+            clean_code.upper() in ("DEV-AWINK", "DEV-DHANI") or
             clean_code in ("richdaddycompany", "rochdaddycompany")
         )
         if is_dev:
@@ -144,7 +183,7 @@ class DevicePairingManager:
                 'last_seen': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
             self._save()
-            return device_token, "Akses Developer richdaddycompany (PIN 8888) aktif! Perangkat berhasil ter-pairing."
+            return device_token, "Akses Developer (PIN 888888) aktif! Perangkat berhasil ter-pairing."
 
         if now - self.pin_created_at > self.pin_ttl_seconds:
             self.get_or_create_pin(force_new=True)
@@ -299,7 +338,7 @@ class LicenseManager:
     def verify_key_signature(self, key_str):
         """Memvalidasi integritas kunci lisensi secara offline."""
         clean_key = normalize_license_key(key_str)
-        # Master demo keys untuk pengujian lokal & evaluasi
+        # Master demo & developer keys untuk pengujian lokal & evaluasi
         master_keys = {
             "DIGI-LIFE-VIP0-2026": ("lifetime", 0),
             "DIGI-LIFE-PRO1-LIF0": ("lifetime", 0),
@@ -307,7 +346,9 @@ class LicenseManager:
             "DIGI-MONT-TEST-15RB": ("monthly", 30),
             "RICHDADDYCOMPANY": ("lifetime", 0),
             "ROCHDADDYCOMPANY": ("lifetime", 0),
-            "RICH-DADDY-COMPANY": ("lifetime", 0)
+            "RICH-DADDY-COMPANY": ("lifetime", 0),
+            "DEV-AWINK": ("lifetime", 0),
+            "DEV-DHANI": ("lifetime", 0)
         }
         if clean_key in master_keys:
             tier, days = master_keys[clean_key]
@@ -340,8 +381,31 @@ class LicenseManager:
         days = 0 if tier == "lifetime" else 30
         return True, tier, days
 
+    def _load_hardware_locks(self):
+        """Memuat pemetaan kunci lisensi ke Hardware ID dari file persistensi."""
+        if os.path.exists(HARDWARE_LOCK_FILE):
+            try:
+                with open(HARDWARE_LOCK_FILE, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                return {}
+        return {}
+
+    def _save_hardware_locks(self, locks):
+        """Menyimpan pemetaan kunci lisensi ke Hardware ID."""
+        os.makedirs(DATA_DIR, exist_ok=True)
+        try:
+            with open(HARDWARE_LOCK_FILE, 'w', encoding='utf-8') as f:
+                json.dump(locks, f, indent=2)
+            try:
+                os.chmod(HARDWARE_LOCK_FILE, 0o600)
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"[!] Gagal menyimpan hardware lock: {e}")
+
     def activate_key(self, key_str, email="", ip=""):
-        """Mengaktifkan lisensi baru pada server."""
+        """Mengaktifkan lisensi baru pada server dengan penguncian 1 PC/laptop."""
         now_ts = time.time()
         if ip:
             lic_info = self.failed_license_attempts.get(ip, {'count': 0, 'lockout_until': 0})
@@ -359,32 +423,53 @@ class LicenseManager:
             return False, "Kode lisensi tidak valid atau format salah."
 
         clean_key = normalize_license_key(key_str)
+        current_hw_id = get_machine_hardware_id()
+
+        # Validasi Hardware Binding (1 License Key hanya untuk 1 PC/laptop)
+        hw_locks = self._load_hardware_locks()
+        bound_hw = hw_locks.get(clean_key)
+        if bound_hw and bound_hw != current_hw_id:
+            return False, f"Lisensi {clean_key} sudah terikat ke PC/laptop lain. 1 License hanya berlaku untuk 1 PC."
+
+        # Cek apakah kunci sudah aktif di mesin ini
         used_keys = self.license_data.get('used_keys', [])
         current_active_key = self.license_data.get('license_key', '')
+        saved_hw = self.license_data.get('machine_hardware_id', '')
+
         if clean_key == current_active_key or clean_key in used_keys:
+            if saved_hw and saved_hw != current_hw_id:
+                return False, f"Lisensi {clean_key} telah terkunci pada perangkat PC lain."
             if tier == "lifetime" and self.license_data.get('tier') == "lifetime":
-                return True, f"Kunci lisensi Lifetime ini sudah aktif pada sistem."
+                return True, f"Kunci lisensi Lifetime ini sudah aktif pada sistem PC ini."
             return False, "Kode lisensi ini sudah pernah digunakan pada sistem ini."
 
         if ip:
             self.failed_license_attempts.pop(ip, None)
 
+        # Kunci lisensi ke Hardware ID PC saat ini
+        hw_locks[clean_key] = current_hw_id
+        self._save_hardware_locks(hw_locks)
+
         now = datetime.now()
-        email_clean = email.strip() if email else self.license_data.get('email', 'customer@digismartdeck.com')
+        default_email = 'developer@digismartdeck.local' if clean_key in ('DEV-AWINK', 'DEV-DHANI', 'RICHDADDYCOMPANY') else 'customer@digismartdeck.com'
+        email_clean = email.strip() if email else self.license_data.get('email', default_email)
         new_used_keys = list(used_keys)
         if clean_key not in new_used_keys:
             new_used_keys.append(clean_key)
+
+        plan_title = 'Developer Lifetime Pro' if clean_key in ('DEV-AWINK', 'DEV-DHANI') else 'Lifetime Pro (Seumur Hidup)'
 
         if tier == "lifetime":
             self.license_data = {
                 'tier': 'lifetime',
                 'status': 'active',
                 'email': email_clean,
-                'plan_name': 'Lifetime Pro (Seumur Hidup)',
+                'plan_name': plan_title,
                 'price': PRICE_LIFETIME,
                 'activated_at': now.strftime("%Y-%m-%d %H:%M:%S"),
                 'expires_at': None,
                 'license_key': clean_key,
+                'machine_hardware_id': current_hw_id,
                 'used_keys': new_used_keys
             }
         else:
@@ -411,6 +496,7 @@ class LicenseManager:
                 'activated_at': now.strftime("%Y-%m-%d %H:%M:%S"),
                 'expires_at': new_exp.strftime("%Y-%m-%d %H:%M:%S"),
                 'license_key': clean_key,
+                'machine_hardware_id': current_hw_id,
                 'used_keys': new_used_keys
             }
 
@@ -422,13 +508,22 @@ class LicenseManager:
         tier = self.license_data.get('tier', 'trial')
         expires_at_str = self.license_data.get('expires_at')
         now = datetime.now()
+        current_hw_id = get_machine_hardware_id()
+        saved_hw = self.license_data.get('machine_hardware_id')
 
         is_active = True
         days_left = None
 
-        if tier == 'lifetime':
+        # Jika lisensi aktif tetapi hardware id tidak cocok dengan mesin ini
+        if saved_hw and saved_hw != current_hw_id and tier != 'trial':
+            is_active = False
+
+        if not is_active:
+            status = 'locked_other_machine'
+        elif tier == 'lifetime':
             is_active = True
             days_left = -1
+            status = 'active'
         elif expires_at_str:
             try:
                 exp_dt = datetime.strptime(expires_at_str, "%Y-%m-%d %H:%M:%S")
@@ -438,8 +533,9 @@ class LicenseManager:
                     is_active = False
             except Exception:
                 is_active = False
-
-        status = 'active' if is_active else 'expired'
+            status = 'active' if is_active else 'expired'
+        else:
+            status = 'active' if is_active else 'expired'
 
         # Mask license key untuk keamanan tampilan
         raw_key = self.license_data.get('license_key', '')

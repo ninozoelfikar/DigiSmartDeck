@@ -30,8 +30,12 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
 import android.speech.RecognitionListener;
+import android.speech.RecognitionService;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.media.AudioManager;
@@ -98,7 +102,14 @@ public class MainActivity extends AppCompatActivity {
         @android.webkit.JavascriptInterface
         public boolean isNativeSpeechAvailable() {
             try {
-                return SpeechRecognizer.isRecognitionAvailable(MainActivity.this);
+                if (SpeechRecognizer.isRecognitionAvailable(MainActivity.this)) {
+                    return true;
+                }
+                PackageManager pm = getPackageManager();
+                List<ResolveInfo> services = pm.queryIntentServices(
+                    new Intent(RecognitionService.SERVICE_INTERFACE), 0
+                );
+                return services != null && !services.isEmpty();
             } catch (Exception e) {
                 return false;
             }
@@ -708,9 +719,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSpeechRecognizer() {
-        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            return;
-        }
         if (speechRecognizer != null) {
             try {
                 speechRecognizer.destroy();
@@ -719,9 +727,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
-            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            if (SpeechRecognizer.isRecognitionAvailable(this)) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            }
+            if (speechRecognizer == null) {
+                PackageManager pm = getPackageManager();
+                List<ResolveInfo> services = pm.queryIntentServices(
+                    new Intent(RecognitionService.SERVICE_INTERFACE), 0
+                );
+                if (services != null && !services.isEmpty()) {
+                    ServiceInfo serviceInfo = services.get(0).serviceInfo;
+                    ComponentName componentName = new ComponentName(serviceInfo.packageName, serviceInfo.name);
+                    speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this, componentName);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            speechRecognizer = null;
+        }
+
+        if (speechRecognizer == null) {
             return;
         }
 

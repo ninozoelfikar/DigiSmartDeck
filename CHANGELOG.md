@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.3] - 2026-10-08
+- Pembaruan stabilitas mic tablet fallback recognition service, pengiriman teks HP ke terminal instan, dan perbaikan siklus auto-updater
+
 ### [1.21.2.5] - 2026-10-08
 - Standardisasi padanan istilah Bahasa Indonesia: 'Papan Sentuh' (Trackpad) dan 'Alih Cerdas' (Smart Switch) pada Menu Control Deck
 
@@ -337,6 +340,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.3.3] - 2026-10-08
+- Release v1.21.3.3 updates
 
 ### [1.21.2] - 2026-10-07
 - Release v1.21.2 updates

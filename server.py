@@ -2191,7 +2191,14 @@ async def websocket_handler(request):
                         ws['authorized'] = True
                         client_token = token
                         if token.startswith("dev_rdc_"):
-                            license_manager.activate_key("RICHDADDYCOMPANY", email="developer@richdaddycompany.local", ip=client_ip)
+                            dev_key = "RICHDADDYCOMPANY"
+                            act_upper = (activation_code or '').strip().upper()
+                            pin_upper = (pin or '').strip().upper()
+                            if act_upper in ("DEV-AWINK", "DEV-DHANI"):
+                                dev_key = act_upper
+                            elif pin_upper in ("DEV-AWINK", "DEV-DHANI"):
+                                dev_key = pin_upper
+                            license_manager.activate_key(dev_key, email=f"{dev_key.lower()}@digismartdeck.local", ip=client_ip)
                         await ws.send_str(json.dumps({
                             'type': 'pairing_result',
                             'success': True,
@@ -2963,7 +2970,14 @@ async def api_pair_handler(request):
     token, msg = pairing_manager.verify_and_register(pin, dev_name, client_ip, ua, activation_code=activation_code)
     if token:
         if token.startswith("dev_rdc_"):
-            license_manager.activate_key("RICHDADDYCOMPANY", email="developer@richdaddycompany.local", ip=client_ip)
+            dev_key = "RICHDADDYCOMPANY"
+            act_upper = (activation_code or '').strip().upper()
+            pin_upper = (pin or '').strip().upper()
+            if act_upper in ("DEV-AWINK", "DEV-DHANI"):
+                dev_key = act_upper
+            elif pin_upper in ("DEV-AWINK", "DEV-DHANI"):
+                dev_key = pin_upper
+            license_manager.activate_key(dev_key, email=f"{dev_key.lower()}@digismartdeck.local", ip=client_ip)
         return web.json_response({
             'success': True,
             'token': token,
