@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.6] - 2026-10-08
+- Perbaikan flash screen tidak lagi double dan warna dikunci gelap permanen agar tidak glitch saat tema berganti
+
 ### [1.21.3.5] - 2026-10-08
 - Tambahkan pengaturan sensitivitas trackpad di editor overlay mode keyboard dan sinkronkan dengan menu pengaturan
 
@@ -349,6 +352,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.3.6] - 2026-10-08
+- Release v1.21.3.6 updates
 
 ### [1.21.3.5] - 2026-10-08
 - Release v1.21.3.5 updates

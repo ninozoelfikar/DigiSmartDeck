@@ -1,9 +1,9 @@
 {
-  "version": "1.21.3.5",
+  "version": "1.21.3.6",
   "app_name": "DigiSmartDeck",
-  "apk_filename": "DigiSmartDeck-v1.21.3.5.apk",
+  "apk_filename": "DigiSmartDeck-v1.21.3.6.apk",
   "generic_apk_filename": "DigiSmartDeck.apk",
-  "changelog": "Pembaruan sensitivitas trackpad pada keyboard editor overlay, sinkronisasi dua arah real-time, dan tata letak yang proporsional.",
+  "changelog": "Pembersihan flash screen tunggal terpadu bebas duplikasi dan penguncian warna gelap konsisten saat pergantian tema.",
   "release_date": "2026-10-08",
   "target_platforms": [
     "android",
