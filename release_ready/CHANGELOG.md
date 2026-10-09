@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.3.13] - 2026-10-09
+- Smart Switch live app name tanpa auto-switch paksa, pembersihan total bypass developer dari client JS, penonaktifan auto-download agresif, dan penghapusan kartu Bluetooth dari modal reconnecting
+
 ### [1.21.3.9] - 2026-10-09
 - Pembersihan total informasi rahasia developer dari UI dan penonaktifan interaksi klik manual pada indikator koneksi & popup reconnect agar berjalan 100% otomatis
 

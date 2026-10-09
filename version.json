@@ -1,10 +1,10 @@
 {
-  "latest_version": "1.21.3.9",
-  "version_code": 1210309,
-  "release_tag": "v1.21.3.9",
-  "apk_filename": "DigiSmartDeck-v1.21.3.9.apk",
+  "latest_version": "1.21.3.13",
+  "version_code": 1210313,
+  "release_tag": "v1.21.3.13",
+  "apk_filename": "DigiSmartDeck-v1.21.3.13.apk",
   "apk_size_mb": 2.9,
-  "download_url": "https://github.com/ninozoelfikar/digikeyboard/releases/download/v1.21.3.9/DigiSmartDeck-v1.21.3.9.apk",
+  "download_url": "https://github.com/ninozoelfikar/digikeyboard/releases/download/v1.21.3.13/DigiSmartDeck-v1.21.3.13.apk",
   "fallback_direct_url": "http://192.168.8.102:8080/download/apk",
-  "changelog": "Pembersihan total informasi developer dari UI, penonaktifan interaksi klik manual pada indikator koneksi & reconnect agar berjalan 100% otomatis, dan optimasi R8 shrinking."
+  "changelog": "Penghapusan kartu indikator Bluetooth dari modal reconnecting sehingga tampilan bersih dan murni hanya menampilkan kanal koneksi aktif (Wi-Fi LAN & Kabel USB)."
 }

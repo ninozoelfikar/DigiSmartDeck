@@ -19,3 +19,4 @@ android/app/build/
 android/build/
 data/*
 !data/.gitkeep
+RELEASE_FIX_*/

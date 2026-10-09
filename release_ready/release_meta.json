@@ -1,9 +1,9 @@
 {
-  "version": "1.21.3.9",
+  "version": "1.21.3.13",
   "app_name": "DigiSmartDeck",
-  "apk_filename": "DigiSmartDeck-v1.21.3.9.apk",
+  "apk_filename": "DigiSmartDeck-v1.21.3.13.apk",
   "generic_apk_filename": "DigiSmartDeck.apk",
-  "changelog": "Pembersihan total informasi developer dari antarmuka, penonaktifan klik manual pada indikator koneksi & reconnect agar berjalan 100% otomatis, dan proteksi reverse engineering.",
+  "changelog": "Smart Switch live app name tanpa auto-switch paksa, pembersihan total informasi dan bypass developer dari UI/client, penonaktifan auto-download agresif, dan penghapusan kartu Bluetooth dari modal reconnecting.",
   "release_date": "2026-10-09",
   "target_platforms": [
     "android",

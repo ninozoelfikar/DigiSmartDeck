@@ -2131,8 +2131,8 @@ body.is-fullscreen {
 
 .rc-channels-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
   width: 100%;
   margin-top: 10px;
 }
@@ -7206,10 +7206,7 @@ body.portrait-dismissed .orientation-guard {
           <button type="button" class="tbtn deck-chip" id="btn-fs" title="Layar Penuh" style="display:none;">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
             <span>Fullscreen</span>
-          <a href="/landing" target="_blank" rel="noopener" class="tbtn deck-chip" id="btn-landing" title="Informasi Produk &amp; Lisensi Pro" style="text-decoration:none;">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
-            <span>Landing Page</span>
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -7229,7 +7226,7 @@ body.portrait-dismissed .orientation-guard {
       <div class="rc-modal-content">
         <div class="rc-modal-title" id="rc-title"><span id="rc-title-text" data-i18n="rc_title">Menghubungkan</span><span id="rc-dots" class="rc-dots">...</span></div>
         <div class="rc-modal-sub" id="rc-sub" data-i18n="rc_sub">Memindai seluruh jalur koneksi</div>
-        <div class="rc-modal-hint" id="rc-hint" data-i18n="rc_hint">Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang.</div>
+        <div class="rc-modal-hint" id="rc-hint" data-i18n="rc_hint">Pastikan Wi-Fi aktif atau kabel USB terhubung.</div>
       </div>
       <div class="rc-channels-grid">
         <div class="rc-channel-card">
@@ -7244,13 +7241,6 @@ body.portrait-dismissed .orientation-guard {
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="19" r="2"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7" fill="currentColor"/><path d="M12 11h4a2 2 0 0 1 2 2v2"/><circle cx="18" cy="17" r="1.5"/><path d="M12 13H8a2 2 0 0 0-2 2v1"/><rect x="4.5" y="16" width="3" height="3" rx="0.5"/></svg>
           </div>
           <span class="rc-channel-name" data-i18n="rc_channel_usb">USB Cable</span>
-          <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
-        </div>
-        <div class="rc-channel-card">
-          <div class="rc-channel-icon">
-            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>
-          </div>
-          <span class="rc-channel-name" data-i18n="rc_channel_bt">Bluetooth</span>
           <span class="rc-channel-status" data-i18n="rc_status_scanning">Scanning</span>
         </div>
       </div>
@@ -9241,7 +9231,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.9</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.13</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9566,7 +9556,7 @@ const I18N = {
     // Reconnection Overlay
     rc_title: "Connecting",
     rc_sub: "Scanning all connection paths",
-    rc_hint: "Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired.",
+    rc_hint: "Ensure Wi-Fi network is active or USB cable is connected.",
     rc_status_scanning: "Scanning",
     rc_channel_wifi: "Wi-Fi LAN",
     rc_channel_usb: "USB Cable",
@@ -9887,7 +9877,7 @@ const I18N = {
     // Reconnection Overlay
     rc_title: "Menghubungkan",
     rc_sub: "Memindai seluruh jalur koneksi",
-    rc_hint: "Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang.",
+    rc_hint: "Pastikan Wi-Fi aktif atau kabel USB terhubung.",
     rc_status_scanning: "Memindai",
     rc_channel_wifi: "Wi-Fi LAN",
     rc_channel_usb: "Kabel USB",
@@ -10472,8 +10462,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.3.9';
-const APP_CLIENT_VERSION_CODE = 1210309;
+const APP_CLIENT_VERSION = '1.21.3.13';
+const APP_CLIENT_VERSION_CODE = 1210313;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -10575,31 +10565,10 @@ function handleAutoUpdateResult(data, silent) {
     if (dot) dot.style.display = 'inline-block';
 
     const targetVer = (data.current_server_version || '').replace(/^v/, '');
-    const clientInfo = getClientAppInfo();
-
-    // Auto update untuk APK native dengan perlindungan anti-loop
-    if (clientInfo.isNative && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.downloadAndInstallUpdate === 'function') {
-      const lastAttempt = sessionStorage.getItem('digi_auto_update_attempted_ver');
-      const lastAttemptTime = parseInt(sessionStorage.getItem('digi_auto_update_attempted_time') || '0', 10);
-      const isCoolingDown = (lastAttempt === targetVer) && (Date.now() - lastAttemptTime < 300000); // 5 menit cooldown
-
-      if (!isCoolingDown && !window._hasTriggeredAutoInstall) {
-        window._hasTriggeredAutoInstall = true;
-        sessionStorage.setItem('digi_auto_update_attempted_ver', targetVer);
-        sessionStorage.setItem('digi_auto_update_attempted_time', Date.now().toString());
-
-        showSmartToast(
-          (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia. Mengunduh...` : `Update v${targetVer} available. Downloading...`,
-          'Auto Updater'
-        );
-        setTimeout(() => {
-          executeAppUpdate();
-        }, 1500);
-      }
-    } else if (!silent) {
+    if (!silent) {
       showSmartToast(
-        (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia!` : `Update v${targetVer} available!`,
-        'Auto Updater'
+        (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia di About Application.` : `Update v${targetVer} available in About Application.`,
+        'DigiSmartDeck'
       );
       vibe([20, 30]);
     }
@@ -10608,7 +10577,7 @@ function handleAutoUpdateResult(data, silent) {
     if (!silent) {
       showSmartToast(
         (currentUiLang === 'id') ? 'Aplikasi sudah versi terbaru.' : 'App is already up to date.',
-        'Auto Updater'
+        'DigiSmartDeck'
       );
     }
   }
@@ -10973,7 +10942,7 @@ pinInputs.forEach((inp, idx) => {
       }
     }
     const fullPin = getFullPinValue();
-    if (fullPin.length === 6 || fullPin === '8888') {
+    if (fullPin.length === 6) {
       submitPairingPin();
     }
   });
@@ -10992,16 +10961,12 @@ pinInputs.forEach((inp, idx) => {
   inp.addEventListener('paste', (e) => {
     e.preventDefault();
     const rawPaste = ((e.clipboardData || window.clipboardData).getData('text') || '').trim();
-    if (rawPaste.toLowerCase() === 'richdaddycompany' || rawPaste.toLowerCase() === 'rochdaddycompany' || rawPaste === '8888' || rawPaste === '888888' || rawPaste.length > 6) {
-      submitPairingPin(rawPaste);
-      return;
-    }
     const pasteData = rawPaste.replace(/[^0-9]/g, '');
     if (pasteData.length > 0) {
       for (let i = 0; i < pasteData.length && i < 6; i++) {
         if (pinInputs[i]) pinInputs[i].value = pasteData[i];
       }
-      if (pasteData.length >= 6 || pasteData === '8888') {
+      if (pasteData.length >= 6) {
         if (pinInputs[5]) pinInputs[5].focus();
         submitPairingPin();
       } else {
@@ -11019,7 +10984,7 @@ function getFullPinValue() {
 function submitPairingPin(customCode) {
   const pin = customCode ? customCode.trim() : getFullPinValue();
   if (!pin || isPairingSubmitting) return;
-  if (!customCode && pin.length !== 6 && pin !== '8888') return;
+  if (!customCode && pin.length !== 6) return;
   isPairingSubmitting = true;
 
   if (pairingStatusMsg) {
@@ -11028,11 +10993,9 @@ function submitPairingPin(customCode) {
     pairingStatusMsg.classList.remove('hidden');
   }
 
-  const isDev = (pin === '888888' || pin === '8888' || pin.toLowerCase() === 'richdaddycompany' || pin.toLowerCase() === 'rochdaddycompany');
   const payload = {
     type: 'pair_request',
     pin: pin,
-    activation_code: isDev ? 'richdaddycompany' : '',
     device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client Device'
   };
 
@@ -11066,16 +11029,6 @@ function submitPairingPin(customCode) {
   })
   .catch(() => {
     isPairingSubmitting = false;
-  });
-}
-
-const btnQuickDevPair = $('btn-quick-dev-pair');
-if (btnQuickDevPair) {
-  btnQuickDevPair.addEventListener('click', () => {
-    playClickSound();
-    vibe(20);
-    pinInputs.forEach(inp => { if (inp) inp.value = '8'; });
-    submitPairingPin('888888');
   });
 }
 
@@ -11405,8 +11358,12 @@ function updateSmartContextUI() {
     chip.classList.toggle('target-locked', !!lockedTargetWinId);
     chip.title = (lastAppContext && lastAppContext.app ? lastAppContext.app + ' - ' : '') + t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
   }
-  if (appEl && lastAppContext && lastAppContext.app) {
-    appEl.textContent = lastAppContext.app;
+  if (appEl) {
+    if (lastAppContext && lastAppContext.app) {
+      appEl.textContent = lastAppContext.app;
+    } else {
+      appEl.textContent = 'Desktop';
+    }
   }
   if (btnToggle) {
     btnToggle.classList.toggle('on', autoSwitchContextEnabled);
@@ -11440,6 +11397,12 @@ function handleAppContextUpdate(data) {
     appEl.textContent = data.app;
   }
 
+  const chip = $('smart-context-chip');
+  if (chip) {
+    chip.title = (data.app ? data.app + ' - ' : '') + t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
+  }
+
+  // Jika Smart Switch dinonaktifkan, jangan ubah mode keyboard otomatis dan jangan munculkan toast
   if (!autoSwitchContextEnabled) return;
 
   const targetMode = data.suggested_mode || 'standard';
@@ -11643,10 +11606,12 @@ function renderWindowList(windows) {
       // Aktifkan jendela dan bawa ke depan (tanpa memaksa maximize layar penuh)
       send({ type: 'activate_window', win_id: win.win_id, maximize: false });
 
-      // Otomatis ubah mode di HP ke mode aplikasi tersebut
-      const targetMode = win.suggested_mode || 'standard';
-      switchAppMode(targetMode);
-      showSmartContextToast(win.app || 'App', targetMode);
+      // Otomatis ubah mode di HP ke mode aplikasi tersebut jika Smart Switch aktif
+      if (autoSwitchContextEnabled) {
+        const targetMode = win.suggested_mode || 'standard';
+        switchAppMode(targetMode);
+        showSmartContextToast(win.app || 'App', targetMode);
+      }
     });
 
     listEl.appendChild(item);
@@ -12492,7 +12457,7 @@ function showReconnectBanner() {
     sub.textContent = t('rc_sub', currentUiLang === 'id' ? 'Memindai seluruh jalur koneksi' : 'Scanning all connection paths');
   }
   if (hint) {
-    hint.textContent = t('rc_hint', currentUiLang === 'id' ? 'Pastikan Wi-Fi aktif, kabel USB terhubung, atau perangkat Bluetooth terpasang' : 'Ensure Wi-Fi network is active, USB cable connected, or Bluetooth paired');
+    hint.textContent = t('rc_hint', currentUiLang === 'id' ? 'Pastikan Wi-Fi aktif atau kabel USB terhubung' : 'Ensure Wi-Fi network is active or USB cable is connected');
   }
   banner.classList.remove('hidden');
   startRcDots();
@@ -18597,7 +18562,15 @@ document.querySelectorAll('.st-lang-btn').forEach(btn => {
 // Smart App Context Click Handlers
 const btnToggleCtx = $('btn-toggle-smart-context');
 if (btnToggleCtx) {
-  btnToggleCtx.addEventListener('click', () => {
+  let lastToggleCtxTap = 0;
+  const onToggleCtxTrigger = (e) => {
+    if (e) {
+      if (e.stopPropagation) e.stopPropagation();
+      if (e.cancelable && e.type === 'touchend') e.preventDefault();
+    }
+    const now = Date.now();
+    if (now - lastToggleCtxTap < 300) return;
+    lastToggleCtxTap = now;
     playClickSound();
     vibe(15);
     autoSwitchContextEnabled = !autoSwitchContextEnabled;
@@ -18606,7 +18579,9 @@ if (btnToggleCtx) {
     if (autoSwitchContextEnabled && lastAppContext) {
       handleAppContextUpdate(lastAppContext);
     }
-  });
+  };
+  btnToggleCtx.addEventListener('touchend', onToggleCtxTrigger, { passive: false });
+  btnToggleCtx.addEventListener('click', onToggleCtxTrigger);
 }
 
 const chipCtx = $('smart-context-chip');
@@ -18682,6 +18657,7 @@ if (btnStSmartOff) {
 
 // Initialize UI language on application load
 setUiLanguage(currentUiLang);
+updateSmartContextUI();
 
 connect();
 
