@@ -4,7 +4,7 @@
   "release_tag": "v1.21.3.13",
   "apk_filename": "DigiSmartDeck-v1.21.3.13.apk",
   "apk_size_mb": 2.9,
-  "download_url": "https://github.com/ninozoelfikar/digikeyboard/releases/download/v1.21.3.13/DigiSmartDeck-v1.21.3.13.apk",
+  "download_url": "https://github.com/ninozoelfikar/DigiSmartDeck/releases/download/v1.21.3.13/DigiSmartDeck-v1.21.3.13.apk",
   "fallback_direct_url": "http://192.168.8.102:8080/download/apk",
   "changelog": "Penghapusan kartu indikator Bluetooth dari modal reconnecting sehingga tampilan bersih dan murni hanya menampilkan kanal koneksi aktif (Wi-Fi LAN & Kabel USB)."
 }
