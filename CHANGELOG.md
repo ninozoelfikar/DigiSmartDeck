@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.2] - 2026-10-12
+- Rilis versi 1.21.4.2
+
 ### [1.21.4.1] - 2026-10-12
 - Rilis versi 1.21.4.1
 
@@ -364,6 +367,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.2] - 2026-10-12
+- Release v1.21.4.2 updates
 
 ### [1.21.4.1] - 2026-10-12
 - Release v1.21.4.1 updates
