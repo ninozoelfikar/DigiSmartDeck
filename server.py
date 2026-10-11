@@ -2037,16 +2037,18 @@ PENDING_PROMPTS = {}
 ENABLE_REMOTE_PROMPTS = True
 
 def cleanup_pending_prompts():
-    """Membersihkan prompt kedaluwarsa atau yang sudah melewati batas waktu timeout."""
+    """Membersihkan prompt yang sudah selesai atau ditutup."""
     now = time.time()
     for pid, info in list(PENDING_PROMPTS.items()):
         created = info.get('created_at', 0)
-        timeout = float(info.get('payload', {}).get('timeout', 60))
-        if now - created > min(timeout, 60.0):
+        timeout = float(info.get('payload', {}).get('timeout', 0))
+        # Jika timeout 0 atau tidak disetel, tanda tetap aktif menunggu konfirmasi pengguna
+        if timeout > 0 and (now - created > timeout):
             fut = info.get('future')
             if fut and not fut.done():
                 fut.set_result({'action': 'timeout'})
             PENDING_PROMPTS.pop(pid, None)
+
 
 def is_localhost(request):
     """Memeriksa apakah request HTTP berasal dari localhost (PC host lokal)."""
@@ -3143,9 +3145,9 @@ async def api_trigger_prompt_handler(request):
         ]
 
     try:
-        timeout = float(data.get('timeout', 60))
+        timeout = float(data.get('timeout', 0))
     except (ValueError, TypeError):
-        timeout = 60.0
+        timeout = 0.0
 
     wait_flag = str(data.get('wait', '')).lower() in ('1', 'true', 'yes') or 'wait' in request.query
     execute_on_pc = str(data.get('execute_on_pc', 'true')).lower() not in ('0', 'false', 'no')

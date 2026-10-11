@@ -6966,36 +6966,8 @@ body.portrait-dismissed .orientation-guard {
   background: #f0883e !important;
   box-shadow: 0 0 6px #f0883e !important;
 }
-.smart-context-chip.has-action-notify {
-  border-color: #f59e0b !important;
-  background: rgba(245, 158, 11, 0.18) !important;
-  color: #f59e0b !important;
-}
-.smart-context-chip.has-action-notify .sc-dot {
-  background: #f59e0b !important;
-  box-shadow: 0 0 6px #f59e0b !important;
-  animation: none !important;
-}
-.sc-action-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #f59e0b;
-  color: #0b0f19;
-  font-weight: 900;
-  font-size: 10px;
-  line-height: 1;
-  margin-left: 2px;
-  margin-right: 2px;
-  flex-shrink: 0;
-}
-.sc-action-badge.hidden {
-  display: none !important;
-}
 .win-switcher-action-emblem {
+
 
   display: inline-flex;
   align-items: center;
@@ -7144,10 +7116,10 @@ body.portrait-dismissed .orientation-guard {
       <div id="smart-context-chip" class="smart-context-chip" data-i18n-title="smart_context_chip_title" title="Active Host Application">
         <span class="sc-dot"></span>
         <span id="smart-context-app">Desktop</span>
-        <span id="sc-action-badge" class="sc-action-badge hidden">!</span>
         <svg class="sc-chevron svg-icon" width="10" height="10" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
       </div>
     </div>
+
 
 
     <div class="right-controls">
@@ -9288,7 +9260,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.3</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.4</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -10516,7 +10488,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.3';
+const APP_CLIENT_VERSION = '1.21.4.4';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -11555,12 +11527,8 @@ function closeWindowSwitcherModal() {
 }
 
 function renderWindowList(windows) {
-  const scBadge = $('sc-action-badge');
-  if (scBadge) {
-    const anyAction = Array.isArray(windows) && windows.some(w => Boolean(w.has_action));
-    scBadge.classList.toggle('hidden', !anyAction);
-  }
   const listEl = $('win-switcher-list');
+
   if (!listEl) return;
   if (!windows || windows.length === 0) {
     listEl.innerHTML = `<div class="win-switcher-empty">${escapeHtml(t('win_switcher_empty', 'Tidak ada aplikasi lain yang terbuka di PC'))}</div>`;
