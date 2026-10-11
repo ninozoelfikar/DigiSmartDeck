@@ -1156,6 +1156,83 @@ def get_active_window_info():
 
     return None
 
+
+def resolve_terminal_window_by_pid(caller_pid):
+    """Menemukan Window ID (X11) yang tepat dari proses terminal berdasarkan caller PID atau PTS."""
+    if not caller_pid or not sys.platform.startswith('linux'):
+        return None
+    try:
+        pts_minor = None
+        curr = int(caller_pid)
+        while curr and curr > 1:
+            try:
+                with open(f'/proc/{curr}/stat') as f:
+                    parts = f.read().split()
+                    tty_nr = int(parts[6])
+                    if tty_nr and os.major(tty_nr) == 136:
+                        pts_minor = os.minor(tty_nr)
+                        break
+                    curr = int(parts[3])
+            except Exception:
+                break
+
+        if pts_minor is None:
+            return None
+        pts_dev = f'/dev/pts/{pts_minor}'
+        if not os.path.exists(pts_dev):
+            return None
+
+        env = get_x11_env()
+        res = subprocess.run(['wmctrl', '-l', '-x'], env=env, capture_output=True, text=True, timeout=0.8)
+        if res.returncode != 0:
+            return None
+
+        candidate_windows = []
+        for line in res.stdout.strip().splitlines():
+            parts = line.split(maxsplit=4)
+            if len(parts) >= 5:
+                w_id, _, wm_class, _, w_title = parts
+                if any(term in wm_class.lower() for term in ['terminal', 'konsole', 'alacritty', 'kitty']):
+                    candidate_windows.append((w_id, w_title))
+
+        if not candidate_windows:
+            return None
+        if len(candidate_windows) == 1:
+            return candidate_windows[0][0]
+
+        import uuid
+        tag = f'DIGI_PIN_{uuid.uuid4().hex[:8]}'
+        try:
+            with open(pts_dev, 'w') as f:
+                f.write(f'\033]2;{tag}\007')
+                f.flush()
+        except Exception:
+            return None
+
+        time.sleep(0.04)
+
+        matched_win_id = None
+        orig_title = None
+        for w_id, w_title in candidate_windows:
+            prop = subprocess.run(['xprop', '-id', w_id, 'WM_NAME'], env=env, capture_output=True, text=True, timeout=0.2).stdout
+            if tag in prop:
+                matched_win_id = w_id
+                orig_title = w_title
+                break
+
+        if orig_title:
+            try:
+                with open(pts_dev, 'w') as f:
+                    f.write(f'\033]2;{orig_title}\007')
+                    f.flush()
+            except Exception:
+                pass
+
+        return matched_win_id
+    except Exception:
+        return None
+
+
 def get_open_windows_list():
     """Mengambil daftar jendela aplikasi GUI yang terbuka di PC host."""
     global CACHED_X11_ENV, CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID
@@ -1222,6 +1299,56 @@ def get_open_windows_list():
                         if is_locked:
                             found_locked = True
 
+                    has_action = False
+                    action_label = ''
+                    # 1. Periksa apakah ada PENDING_PROMPTS untuk window ini
+                    for pid, p_info in PENDING_PROMPTS.items():
+                        payload = p_info.get('payload', {})
+                        p_win = payload.get('win_id')
+                        p_app = (payload.get('app') or '').lower()
+                        p_cwd = payload.get('cwd') or ''
+
+                        # Cocokkan window ID secara ketat
+                        if p_win and (str(p_win).lower() == str(win_id).lower()):
+                            has_action = True
+                            action_label = payload.get('title') or 'Tindakan Diperlukan'
+                            break
+
+                        # Untuk aplikasi non-terminal dengan window tunggal, cocokkan nama aplikasi spesifik
+                        if p_app and p_app != 'terminal' and (p_app in wm_class_lower or p_app == friendly_name.lower()):
+                            has_action = True
+                            action_label = payload.get('title') or 'Tindakan Diperlukan'
+                            break
+
+
+                    # 2. Periksa dialog modal atau kata kunci prompt konfirmasi di judul
+                    if not has_action and ACTIVE_WINDOW_DIALOG_ID and str(win_id) in str(ACTIVE_WINDOW_DIALOG_ID):
+                        has_action = True
+                        action_label = 'Dialog Konfirmasi'
+
+                    if not has_action:
+                        t_lower = title.lower()
+                        action_keywords = (
+                            '[y/n]', '(y/n)', 'confirm', 'konfirmasi',
+                            'save changes', 'simpan perubahan', 'save as', 'save file',
+                            'warning', 'peringatan', 'waiting', 'menunggu',
+                            'alert', 'attention', 'perhatian', 'prompt',
+                            'authentication', 'autentikasi', 'izin', 'permission', 'question'
+                        )
+                        if any(kw in t_lower for kw in action_keywords) or 'dialog' in wm_class_lower:
+                            has_action = True
+                            action_label = 'Perhatian Diperlukan'
+
+                    # 4. Periksa apakah jendela sedang meminta perhatian (demands_attention) di sistem X11
+                    if not has_action and win_id:
+                        try:
+                            p_prop = subprocess.run(['xprop', '-id', win_id, '_NET_WM_STATE'], env=env, capture_output=True, text=True, timeout=0.15)
+                            if 'DEMANDS_ATTENTION' in p_prop.stdout:
+                                has_action = True
+                                action_label = 'Dialog Aktif'
+                        except Exception:
+                            pass
+
                     windows.append({
                         'win_id': win_id,
                         'app': friendly_name,
@@ -1229,7 +1356,9 @@ def get_open_windows_list():
                         'suggested_mode': suggested_mode,
                         'class_name': wm_class,
                         'is_active': is_active,
-                        'is_locked': is_locked
+                        'is_locked': is_locked,
+                        'has_action': has_action,
+                        'action_label': action_label
                     })
         except Exception:
             pass
@@ -1252,6 +1381,29 @@ def get_open_windows_list():
                             is_locked = (str(hwnd).strip().lower() == str(LOCKED_TARGET_WIN_ID).strip().lower())
                             if is_locked:
                                 found_locked = True
+
+                        has_action = False
+                        action_label = ''
+                        for pid, p_info in PENDING_PROMPTS.items():
+                            payload = p_info.get('payload', {})
+                            p_win = payload.get('win_id')
+                            p_app = (payload.get('app') or '').lower()
+                            if p_win and (str(p_win).lower() == str(hwnd).lower()):
+                                has_action = True
+                                action_label = payload.get('title') or 'Tindakan Diperlukan'
+                                break
+                            if p_app and (p_app in class_name.lower() or p_app in friendly_name.lower()):
+                                has_action = True
+                                action_label = payload.get('title') or 'Tindakan Diperlukan'
+                                break
+
+                        if not has_action:
+                            t_lower = title.lower()
+                            action_keywords = ('[y/n]', '(y/n)', 'confirm', 'konfirmasi', 'save changes', 'simpan perubahan', 'warning', 'peringatan', 'waiting', 'alert')
+                            if any(kw in t_lower for kw in action_keywords) or '#32770' in class_name:
+                                has_action = True
+                                action_label = 'Perhatian Diperlukan'
+
                         extra.append({
                             'win_id': str(hwnd),
                             'app': friendly_name,
@@ -1259,7 +1411,9 @@ def get_open_windows_list():
                             'suggested_mode': suggested_mode,
                             'class_name': class_name,
                             'is_active': is_active,
-                            'is_locked': is_locked
+                            'is_locked': is_locked,
+                            'has_action': has_action,
+                            'action_label': action_label
                         })
             win32gui.EnumWindows(enum_cb, windows)
         except Exception:
@@ -1880,7 +2034,7 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
 
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
-ENABLE_REMOTE_PROMPTS = os.environ.get('DIGI_ENABLE_PROMPTS', '0') == '1'
+ENABLE_REMOTE_PROMPTS = True
 
 def cleanup_pending_prompts():
     """Membersihkan prompt kedaluwarsa atau yang sudah melewati batas waktu timeout."""
@@ -1900,14 +2054,15 @@ def is_localhost(request):
     return remote in ('127.0.0.1', '::1', 'localhost')
 
 async def broadcast_prompt(prompt_data):
-    """Menyiarkan prompt tindakan interaktif ke client yang terotentikasi."""
-    payload = json.dumps(prompt_data)
+    """Menyiarkan sinyal prompt tindakan ke client murni sebagai pembaruan window_list dengan penanda tanda seru (!)."""
+    windows = await asyncio.to_thread(get_open_windows_list)
+    list_payload = json.dumps({
+        'type': 'window_list',
+        'windows': windows
+    })
     for client in list(CONNECTED_CLIENTS):
-        # Hanya kirim ke client yang terotorisasi jika pairing aktif
-        if pairing_manager.pairing_enabled and not client.get('authorized', False):
-            continue
         try:
-            await client.send_str(payload)
+            await client.send_str(list_payload)
         except Exception:
             pass
 
@@ -1920,6 +2075,17 @@ async def broadcast_prompt_dismiss(prompt_id):
     for client in list(CONNECTED_CLIENTS):
         try:
             await client.send_str(payload)
+        except Exception:
+            pass
+
+    windows = await asyncio.to_thread(get_open_windows_list)
+    list_payload = json.dumps({
+        'type': 'window_list',
+        'windows': windows
+    })
+    for client in list(CONNECTED_CLIENTS):
+        try:
+            await client.send_str(list_payload)
         except Exception:
             pass
 
@@ -1951,52 +2117,11 @@ async def smart_context_tracker_loop():
                         except Exception:
                             pass
 
-                # Deteksi dan siarkan prompt dialog jendela GUI PC jika ada (fitur eksperimental)
-                if ENABLE_REMOTE_PROMPTS and info.get('is_dialog'):
-                    dialog_pid = f"win_dialog_{info.get('win_id')}"
-                    if dialog_pid != ACTIVE_WINDOW_DIALOG_ID:
-                        if ACTIVE_WINDOW_DIALOG_ID:
-                            await broadcast_prompt_dismiss(ACTIVE_WINDOW_DIALOG_ID)
-                        ACTIVE_WINDOW_DIALOG_ID = dialog_pid
-
-                        title_lower = (info.get('title') or '').lower()
-                        if any(w in title_lower for w in ('save', 'simpan')):
-                            dialog_options = [
-                                {'label': 'Simpan (Enter)', 'key': 'enter', 'primary': True},
-                                {'label': 'Jangan Simpan', 'key': 'd', 'combo': ['alt', 'd']},
-                                {'label': 'Batal (Esc)', 'key': 'escape', 'danger': True}
-                            ]
-                        elif any(w in title_lower for w in ('delete', 'hapus', 'remove')):
-                            dialog_options = [
-                                {'label': 'Hapus (Enter)', 'key': 'enter', 'danger': True},
-                                {'label': 'Batal (Esc)', 'key': 'escape', 'primary': True}
-                            ]
-                        elif any(w in title_lower for w in ('quit', 'close', 'keluar')):
-                            dialog_options = [
-                                {'label': 'Keluar (Enter)', 'key': 'enter', 'danger': True},
-                                {'label': 'Batal (Esc)', 'key': 'escape', 'primary': True}
-                            ]
-                        else:
-                            dialog_options = [
-                                {'label': 'OK (Enter)', 'key': 'enter', 'primary': True},
-                                {'label': 'Batal (Esc)', 'key': 'escape', 'danger': True}
-                            ]
-
-                        dialog_prompt = {
-                            'type': 'remote_prompt',
-                            'prompt_id': dialog_pid,
-                            'app': info['app'],
-                            'title': info['title'] or f"Dialog {info['app']}",
-                            'message': f"Aplikasi {info['app']} membutuhkan konfirmasi tindakan di PC.",
-                            'options': dialog_options,
-                            'is_window_dialog': True,
-                            'win_id': info.get('win_id')
-                        }
-                        await broadcast_prompt(dialog_prompt)
+                # Deteksi status dialog internal PC untuk penandaan emblem (!) di Window Switcher tanpa pop-up
+                if info.get('is_dialog'):
+                    ACTIVE_WINDOW_DIALOG_ID = f"win_dialog_{info.get('win_id')}"
                 else:
-                    if ACTIVE_WINDOW_DIALOG_ID:
-                        await broadcast_prompt_dismiss(ACTIVE_WINDOW_DIALOG_ID)
-                        ACTIVE_WINDOW_DIALOG_ID = None
+                    ACTIVE_WINDOW_DIALOG_ID = None
         except asyncio.CancelledError:
             break
         except Exception:
@@ -2103,16 +2228,7 @@ async def websocket_handler(request):
             'class_name': CURRENT_APP_CONTEXT['class_name']
         }))
 
-        # Kirim prompt yang sedang aktif HANYA jika client terotorisasi
-        if is_client_authorized:
-            cleanup_pending_prompts()
-            for p_info in list(PENDING_PROMPTS.values()):
-                p_payload = p_info.get('payload')
-                if p_payload:
-                    try:
-                        await ws.send_str(json.dumps(p_payload))
-                    except Exception:
-                        pass
+        # Kirim status inisialisasi selesai tanpa menyiarkan prompt
     except Exception:
         pass
 
@@ -2159,15 +2275,6 @@ async def websocket_handler(request):
                             'role': 'active',
                             'message': 'Perangkat terhubung sebagai Pengendali PC.'
                         }))
-                        # Kirim prompt yang sedang aktif ke client yang baru terotorisasi
-                        cleanup_pending_prompts()
-                        for p_info in list(PENDING_PROMPTS.values()):
-                            p_payload = p_info.get('payload')
-                            if p_payload:
-                                try:
-                                    await ws.send_str(json.dumps(p_payload))
-                                except Exception:
-                                    pass
                     else:
                         is_client_authorized = False
                         ws['authorized'] = False
@@ -2213,15 +2320,6 @@ async def websocket_handler(request):
                             'message': 'Perangkat terhubung sebagai Pengendali PC.'
                         }))
                         print(f"[PAIR] Perangkat ter-pairing: {dev_name} ({client_ip})")
-                        # Kirim prompt yang sedang aktif ke client yang baru terotorisasi
-                        cleanup_pending_prompts()
-                        for p_info in list(PENDING_PROMPTS.values()):
-                            p_payload = p_info.get('payload')
-                            if p_payload:
-                                try:
-                                    await ws.send_str(json.dumps(p_payload))
-                                except Exception:
-                                    pass
                     else:
                         await ws.send_str(json.dumps({
                             'type': 'pairing_result',
@@ -2721,6 +2819,20 @@ async def landing_handler(request):
         )
     return web.HTTPFound('/')
 
+async def desktop_host_handler(request):
+    static_dir = os.path.join(BASE_DIR, 'static')
+    host_file = os.path.join(static_dir, 'desktop_host.html')
+    if os.path.exists(host_file):
+        return web.FileResponse(
+            host_file,
+            headers={
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        )
+    return web.HTTPFound('/')
+
 
 def print_banner(ports, ips):
     if isinstance(ports, int):
@@ -3037,6 +3149,17 @@ async def api_trigger_prompt_handler(request):
 
     wait_flag = str(data.get('wait', '')).lower() in ('1', 'true', 'yes') or 'wait' in request.query
     execute_on_pc = str(data.get('execute_on_pc', 'true')).lower() not in ('0', 'false', 'no')
+    win_id = data.get('win_id') or data.get('window_id')
+    caller_pid = data.get('pid')
+    caller_cwd = data.get('cwd')
+
+    # Jika prompt dari terminal belum memiliki win_id, selesaikan via resolve_terminal_window_by_pid atau fallback ke jendela aktif
+    if not win_id and app_name.lower() == 'terminal':
+        if caller_pid:
+            win_id = await asyncio.to_thread(resolve_terminal_window_by_pid, caller_pid)
+        if not win_id and CURRENT_APP_CONTEXT and CURRENT_APP_CONTEXT.get('win_id'):
+            if 'terminal' in (CURRENT_APP_CONTEXT.get('app') or '').lower() or 'terminal' in (CURRENT_APP_CONTEXT.get('class_name') or '').lower():
+                win_id = CURRENT_APP_CONTEXT.get('win_id')
 
     prompt_payload = {
         'type': 'remote_prompt',
@@ -3046,8 +3169,12 @@ async def api_trigger_prompt_handler(request):
         'message': message,
         'options': options,
         'timeout': timeout,
-        'execute_on_pc': execute_on_pc
+        'execute_on_pc': execute_on_pc,
+        'win_id': win_id,
+        'pid': caller_pid,
+        'cwd': caller_cwd
     }
+
 
     loop = asyncio.get_running_loop()
     future = loop.create_future() if wait_flag else None
@@ -3140,6 +3267,8 @@ def create_app(ports=[8080]):
     static_dir = os.path.join(BASE_DIR, 'static')
 
     app.router.add_get('/', index_handler)
+    app.router.add_get('/desktop', desktop_host_handler)
+    app.router.add_get('/host', desktop_host_handler)
     app.router.add_get('/landing', landing_handler)
     app.router.add_get('/landing.html', landing_handler)
     app.router.add_get('/about', landing_handler)
@@ -3160,8 +3289,11 @@ def create_app(ports=[8080]):
     app.router.add_get('/api/pairing/pin', api_pairing_pin_handler)
     app.router.add_options('/api/pairing/pin', options_handler)
     app.router.add_post('/api/prompt', api_trigger_prompt_handler)
+    app.router.add_get('/api/prompt', api_trigger_prompt_handler)
+    app.router.add_get('/api/prompt/test', api_trigger_prompt_handler)
     app.router.add_options('/api/prompt', options_handler)
     app.router.add_post('/api/prompt/dismiss', api_dismiss_prompt_handler)
+    app.router.add_get('/api/prompt/dismiss', api_dismiss_prompt_handler)
     app.router.add_options('/api/prompt/dismiss', options_handler)
     app.router.add_post('/api/test/reconnect', api_test_reconnect_handler)
     app.router.add_get('/api/test/reconnect', api_test_reconnect_handler)

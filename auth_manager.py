@@ -77,7 +77,7 @@ KEY_PREFIX_TIER = {v: k for k, v in KEY_TIER_PREFIX.items()}
 # Harga paket (anchor pricing: harga resmi bulanan Rp 25.000, promo peluncuran Rp 15.000)
 PRICE_MONTHLY_OFFICIAL = "Rp 25.000 / bulan"
 PRICE_MONTHLY_PROMO = "Rp 15.000 / bulan"
-PRICE_LIFETIME = "Rp 250.000"
+PRICE_LIFETIME = "Rp 125.000"
 
 
 def _sign_block(body: str) -> str:

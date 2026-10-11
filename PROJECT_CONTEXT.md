@@ -25,8 +25,8 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
 - Nama Produk: DigiSmartDeck
 - Fungsi: Pengendali keyboard, touchpad, gamepad, dan deck pintasan AI untuk PC berbasis perangkat ponsel/tablet melalui jaringan lokal (Wi-Fi dan kabel USB).
 - Model Monetisasi: Perangkat lunak komersial berbayar (SaaS):
-  - Paket Langganan: Rp 25.000 per bulan
-  - Paket Lisensi Seumur Hidup (Lifetime): Rp 250.000
+  - Paket Langganan: Rp 25.000 per bulan (Promo Rp 15.000)
+  - Paket Lisensi Seumur Hidup (Lifetime): Rp 125.000 (Rilis Awal) / Rp 250.000 (Resmi)
 - Nilai Jual Utama (USP) di AI Workstation & Controller:
   - Dikte suara profesional untuk menyusun prompt ChatGPT, Claude, atau perintah terminal.
   - Mikrofon tidak mati otomatis saat pengguna berhenti bicara untuk berpikir.

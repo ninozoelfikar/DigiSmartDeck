@@ -6966,6 +6966,41 @@ body.portrait-dismissed .orientation-guard {
   background: #f0883e !important;
   box-shadow: 0 0 6px #f0883e !important;
 }
+.smart-context-chip.has-action-notify {
+  border-color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.18) !important;
+  color: #f59e0b !important;
+}
+.smart-context-chip.has-action-notify .sc-dot {
+  background: #f59e0b !important;
+  box-shadow: 0 0 6px #f59e0b !important;
+  animation: none !important;
+}
+.win-switcher-action-emblem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #0b0f19;
+  font-weight: 900;
+  font-size: 11px;
+  line-height: 1;
+  margin-left: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.win-switcher-action-emblem .emblem-mark {
+  display: block;
+  font-family: inherit;
+  font-weight: 900;
+  transform: translateY(-0.5px);
+}
+.win-switcher-item.has-pending-action {
+  border-color: rgba(245, 158, 11, 0.5) !important;
+}
 @media (max-width: 480px) {
   .win-switcher-right {
     flex-direction: column;
@@ -9231,7 +9266,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.3.13</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.1</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9349,9 +9384,9 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Activation Form -->
-      <div class="license-card">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;" data-i18n="license_act_title">Aktivasi Kunci Lisensi</div>
+      <!-- Activation Form (Hidden if already on Lifetime) -->
+      <div class="license-card" id="license-activation-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;" id="license-act-title-text" data-i18n="license_act_title">Aktivasi Kunci Lisensi</div>
         <div class="pairing-msg hidden" id="license-status-msg"></div>
         <div class="license-form">
           <input type="text" class="license-key-input" id="inp-license-key" placeholder="DLIFE-XXXXX-XXXXX-XXXXX" maxlength="23" autocomplete="off" spellcheck="false">
@@ -9360,30 +9395,15 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-    </div>
-  </div>
-</div>
+      <!-- Lifetime Active Status Banner (Only displayed when tier is Lifetime) -->
+      <div class="license-card hidden" id="license-lifetime-banner" style="background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);text-align:center;padding:16px 12px;">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(63,185,80,0.18);color:#3fb950;margin-bottom:8px;">
+          <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#3fb950;margin-bottom:4px;" data-i18n="license_lifetime_active_title">Lisensi Seumur Hidup Aktif</div>
+        <div style="font-size:11.5px;color:var(--text-dim);line-height:1.4;" data-i18n="license_lifetime_active_desc">Perangkat Anda telah memiliki akses permanen tanpa batas. Tidak diperlukan input kunci lisensi tambahan.</div>
+      </div>
 
-<!-- Modal Remote Action Prompt / Smart Confirmation Card -->
-<div class="modal-backdrop hidden" id="modal-remote-prompt" style="z-index:99999;backdrop-filter:blur(8px);background:rgba(8,10,14,0.78);">
-  <div class="modal-dialog remote-action-card">
-    <div class="modal-header rap-header">
-      <div class="modal-title" style="gap:8px;">
-        <span class="rap-app-badge" id="rap-app-badge">Terminal</span>
-        <span id="rap-title" style="font-weight:700;color:var(--text);" data-i18n="rap_default_title">Konfirmasi Tindakan</span>
-      </div>
-      <button class="modal-close" id="btn-close-rap" type="button" title="Tutup">✕</button>
-    </div>
-    <div class="modal-body rap-body">
-      <div class="rap-message-box" id="rap-message-box">
-        <div class="rap-message-text" id="rap-message-text">Lanjutkan proses?</div>
-      </div>
-      <div class="rap-options-container" id="rap-options-container">
-        <!-- Rendered dynamically -->
-      </div>
-      <div class="rap-timer-row" id="rap-timer-row" style="display:none;margin-top:10px;font-size:11px;color:var(--text-dim);text-align:right;">
-        <span data-i18n="rap_auto_dismiss">Otomatis ditutup dalam:</span> <span id="rap-timer-countdown">30s</span>
-      </div>
     </div>
   </div>
 </div>
@@ -9492,6 +9512,8 @@ const I18N = {
     win_switcher_empty: "No other open applications found on PC",
     win_switcher_refresh: "Refresh List",
     win_switcher_active_badge: "Active",
+    win_switcher_action_badge: "Action Required",
+    win_switcher_action_label: "Action",
     win_switcher_locked_badge: "Target Lock",
     win_switcher_toast: "Activating",
     win_switcher_maximized: "Maximized",
@@ -9522,6 +9544,10 @@ const I18N = {
     license_key_lbl: "License Key:",
     license_act_title: "Activate License Key",
     license_act_btn: "Activate License",
+    license_lifetime_active_title: "Lifetime License Active",
+    license_lifetime_active_desc: "Your device has unlimited permanent access. No additional license key is required.",
+    license_upgrade_lifetime_title: "Upgrade to Lifetime License",
+    license_upgrade_lifetime_btn: "Upgrade to Lifetime",
     pricing_title: "Commercial SaaS Plans",
     pricing_sub: "Includes unlimited AI dictation, low latency control, and 100% offline local processing.",
     pricing_monthly_title: "Monthly Subscription",
@@ -9813,6 +9839,8 @@ const I18N = {
     win_switcher_empty: "Tidak ada aplikasi lain yang terbuka di PC",
     win_switcher_refresh: "Segarkan Daftar",
     win_switcher_active_badge: "Aktif",
+    win_switcher_action_badge: "Aksi Diperlukan",
+    win_switcher_action_label: "Aksi",
     win_switcher_locked_badge: "Target Terkunci",
     win_switcher_toast: "Mengaktifkan",
     win_switcher_maximized: "Jendela Penuh",
@@ -9843,6 +9871,10 @@ const I18N = {
     license_key_lbl: "Kunci Lisensi:",
     license_act_title: "Aktivasi Kunci Lisensi",
     license_act_btn: "Aktifkan Lisensi",
+    license_lifetime_active_title: "Lisensi Seumur Hidup Aktif",
+    license_lifetime_active_desc: "Perangkat Anda telah memiliki akses permanen tanpa batas. Tidak diperlukan input kunci lisensi tambahan.",
+    license_upgrade_lifetime_title: "Tingkatkan ke Lisensi Seumur Hidup",
+    license_upgrade_lifetime_btn: "Tingkatkan ke Lifetime",
     pricing_title: "Pilihan Paket Komersial",
     pricing_sub: "Termasuk dikte AI tanpa batas waktu hening, latensi ultra-rendah, dan pemrosesan offline lokal.",
     pricing_monthly_title: "Langganan Bulanan",
@@ -10462,8 +10494,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.3.13';
-const APP_CLIENT_VERSION_CODE = 1210313;
+const APP_CLIENT_VERSION = '1.21.4.1';
+const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11109,6 +11141,47 @@ function updateLicenseDisplay(lic) {
   if (expEl) expEl.textContent = lic.expires_at || (lic.tier === 'lifetime' ? (currentUiLang === 'id' ? 'Seumur Hidup (Permanen)' : 'Lifetime (Permanent)') : '-');
   if (daysEl) daysEl.textContent = lic.tier === 'lifetime' ? '∞' : (lic.days_left !== null && lic.days_left !== undefined ? `${lic.days_left} ${currentUiLang === 'id' ? 'Hari' : 'Days'}` : '-');
   if (keyEl) keyEl.textContent = lic.license_key || '-';
+
+  // Logika tampilan form aktivasi & upgrade lisensi
+  const actCard = $('license-activation-card');
+  const lifetimeBanner = $('license-lifetime-banner');
+  const actTitleText = $('license-act-title-text');
+  const btnActivate = $('btn-activate-lic');
+  const inpKey = $('inp-license-key');
+
+  if (lic.tier === 'lifetime' && lic.status !== 'expired') {
+    // 1. TIER LIFETIME: Sembunyikan kolom isi lisensi karena sudah aktif permanen
+    if (actCard) actCard.classList.add('hidden');
+    if (lifetimeBanner) lifetimeBanner.classList.remove('hidden');
+  } else {
+    // 2. TIER BULANAN (MONTHLY) ATAU TRIAL: Tampilkan kolom lisensi
+    if (lifetimeBanner) lifetimeBanner.classList.add('hidden');
+    if (actCard) actCard.classList.remove('hidden');
+
+    if (lic.tier === 'monthly' && lic.status !== 'expired') {
+      // Khusus pengguna bulanan: sesuaikan judul untuk upgrade ke Lifetime
+      if (actTitleText) {
+        actTitleText.textContent = t('license_upgrade_lifetime_title', 'Tingkatkan ke Lisensi Seumur Hidup');
+      }
+      if (btnActivate) {
+        btnActivate.textContent = t('license_upgrade_lifetime_btn', 'Tingkatkan ke Lifetime');
+      }
+      if (inpKey) {
+        inpKey.placeholder = 'DLIFE-XXXXX-XXXXX-XXXXX';
+      }
+    } else {
+      // Trial / Expired: Form aktivasi standar
+      if (actTitleText) {
+        actTitleText.textContent = t('license_act_title', 'Aktivasi Kunci Lisensi');
+      }
+      if (btnActivate) {
+        btnActivate.textContent = t('license_act_btn', 'Aktifkan Lisensi');
+      }
+      if (inpKey) {
+        inpKey.placeholder = 'DLIFE-XXXXX / DMONT-XXXXX';
+      }
+    }
+  }
 }
 
 if (btnActivateLic) {
@@ -11487,6 +11560,18 @@ function renderWindowList(windows) {
     appName.textContent = win.app || 'App';
     appLine.appendChild(appName);
 
+    const hasAction = Boolean(win.has_action);
+    if (hasAction) {
+      item.setAttribute('data-has-action', 'true');
+      item.classList.add('has-pending-action');
+
+      // Tanda seru (!) statis bersih tanpa tooltip/teks pop-up apa pun
+      const emblem = document.createElement('span');
+      emblem.className = 'win-switcher-action-emblem';
+      emblem.innerHTML = '<span class="emblem-mark">!</span>';
+      appLine.appendChild(emblem);
+    }
+
     if (win.is_active) {
       const activeBadge = document.createElement('span');
       activeBadge.className = 'win-switcher-badge-active';
@@ -11616,139 +11701,16 @@ function renderWindowList(windows) {
 
     listEl.appendChild(item);
   });
+
+  const anyAction = windows.some(w => Boolean(w.has_action));
+  const chipEl = $('smart-context-chip');
+  if (chipEl) {
+    if (anyAction) chipEl.classList.add('has-action-notify');
+    else chipEl.classList.remove('has-action-notify');
+  }
 }
 
-// ── Remote Action Prompt / Smart Confirmation Card ──
-let currentPromptId = null;
-let promptCountdownTimer = null;
-
-function showRemotePrompt(data) {
-  const splash = $('splash-screen');
-  if (splash) { splash.remove(); isSplashScreenActive = false; }
-  const modal = $('modal-remote-prompt');
-  if (!modal) return;
-
-  lastModalOpenTime = Date.now();
-  currentPromptId = data.prompt_id || ('prompt_' + Date.now());
-
-  const appBadge = $('rap-app-badge');
-  if (appBadge) {
-    appBadge.textContent = data.app || 'PC Host';
   }
-
-  const titleEl = $('rap-title');
-  if (titleEl) {
-    titleEl.textContent = data.title || t('rap_default_title', 'Konfirmasi Tindakan');
-  }
-
-  const msgEl = $('rap-message-text');
-  if (msgEl) {
-    msgEl.textContent = data.message || '';
-  }
-
-  const optionsContainer = $('rap-options-container');
-  if (optionsContainer) {
-    optionsContainer.innerHTML = '';
-    const options = (data.options && data.options.length > 0) ? data.options : [
-      { label: 'Ya', value: 'y', key: 'enter', primary: true },
-      { label: 'Batal', value: 'n', key: 'escape', danger: true }
-    ];
-
-    options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      let btnClass = 'rap-btn';
-      if (opt.primary) btnClass += ' rap-btn-primary';
-      else if (opt.danger) btnClass += ' rap-btn-danger';
-      btn.className = btnClass;
-
-      let cleanLabel = (opt.label || 'OK').trim();
-      cleanLabel = cleanLabel.replace(/\s*[\(\[][^\)\]]*[\)\]]$/, '').trim();
-
-      const labelSpan = document.createElement('span');
-      labelSpan.textContent = cleanLabel || opt.label || 'OK';
-      btn.appendChild(labelSpan);
-
-      btn.addEventListener('click', () => {
-        playClickSound(true);
-        vibe(25);
-        send({
-          type: 'prompt_response',
-          prompt_id: currentPromptId,
-          key: opt.key || null,
-          combo: opt.combo || null,
-          value: opt.value !== undefined ? opt.value : null,
-          text: opt.text || null,
-          win_id: data.win_id || null,
-          execute_on_pc: (data.execute_on_pc !== false) && (opt.execute_on_pc !== false),
-          action: 'responded'
-        });
-        closeRemotePrompt(currentPromptId);
-      });
-
-      optionsContainer.appendChild(btn);
-    });
-  }
-
-  // Handle countdown timer if timeout provided
-  const timerRow = $('rap-timer-row');
-  const timerCountdown = $('rap-timer-countdown');
-  if (promptCountdownTimer) {
-    clearInterval(promptCountdownTimer);
-    promptCountdownTimer = null;
-  }
-
-  if (data.timeout && data.timeout > 0) {
-    let remaining = Math.round(data.timeout);
-    if (timerRow) timerRow.style.display = 'block';
-    if (timerCountdown) timerCountdown.textContent = remaining + 's';
-
-    promptCountdownTimer = setInterval(() => {
-      remaining -= 1;
-      if (timerCountdown) timerCountdown.textContent = remaining + 's';
-      if (remaining <= 0) {
-        clearInterval(promptCountdownTimer);
-        promptCountdownTimer = null;
-        closeRemotePrompt(currentPromptId);
-      }
-    }, 1000);
-  } else {
-    if (timerRow) timerRow.style.display = 'none';
-  }
-
-  modal.classList.remove('hidden');
-  playPairingSuccessSound();
-  vibe([30, 40, 50]);
-}
-
-function closeRemotePrompt(promptId) {
-  if (promptId && currentPromptId && promptId !== currentPromptId) {
-    return;
-  }
-  if (promptCountdownTimer) {
-    clearInterval(promptCountdownTimer);
-    promptCountdownTimer = null;
-  }
-  currentPromptId = null;
-  const modal = $('modal-remote-prompt');
-  if (modal) modal.classList.add('hidden');
-}
-
-const btnCloseRap = $('btn-close-rap');
-if (btnCloseRap) {
-  btnCloseRap.addEventListener('click', () => {
-    playClickSound();
-    vibe(20);
-    if (currentPromptId) {
-      send({
-        type: 'prompt_response',
-        prompt_id: currentPromptId,
-        action: 'dismiss',
-        key: 'escape'
-      });
-    }
-    closeRemotePrompt();
-  });
 }
 
 let audioCtx = null;
@@ -12243,10 +12205,6 @@ function connect() {
         }
       } else if (d.type === 'license_update') {
         if (d.license) updateLicenseDisplay(d.license);
-      } else if (d.type === 'remote_prompt') {
-        showRemotePrompt(d);
-      } else if (d.type === 'remote_prompt_dismiss') {
-        closeRemotePrompt(d.prompt_id);
       }
     } catch(err) {}
   };
