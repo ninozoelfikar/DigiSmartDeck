@@ -2051,6 +2051,7 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
 ENABLE_REMOTE_PROMPTS = True
+AUTO_ENTER_ENABLED = False
 
 def cleanup_pending_prompts():
     """Membersihkan prompt yang sudah selesai atau ditutup."""
@@ -2262,6 +2263,11 @@ async def websocket_handler(request):
             'suggested_mode': CURRENT_APP_CONTEXT['suggested_mode'],
             'class_name': CURRENT_APP_CONTEXT['class_name'],
             'has_action': has_action_init
+        }))
+
+        await ws.send_str(json.dumps({
+            'type': 'auto_enter_update',
+            'enabled': AUTO_ENTER_ENABLED
         }))
 
         # Kirim status inisialisasi selesai tanpa menyiarkan prompt
@@ -2811,6 +2817,41 @@ async def websocket_handler(request):
                         except Exception:
                             pass
 
+                elif msg_type == 'toggle_auto_enter':
+                    global AUTO_ENTER_ENABLED
+                    if 'enabled' in data:
+                        AUTO_ENTER_ENABLED = bool(data['enabled'])
+                    else:
+                        AUTO_ENTER_ENABLED = not AUTO_ENTER_ENABLED
+                    print(f"[Auto-Enter] Mode diubah: {'AKTIF' if AUTO_ENTER_ENABLED else 'NONAKTIF'}")
+                    payload = json.dumps({
+                        'type': 'auto_enter_update',
+                        'enabled': AUTO_ENTER_ENABLED
+                    })
+                    for cws in list(CONNECTED_CLIENTS):
+                        try:
+                            await cws.send_str(payload)
+                        except Exception:
+                            pass
+
+                    # Jika diaktifkan dan ada PENDING_PROMPTS, otomatis eksekusi prompt yang sedang menunggu
+                    if AUTO_ENTER_ENABLED and PENDING_PROMPTS:
+                        for p_id, p_info in list(PENDING_PROMPTS.items()):
+                            p_payload = p_info.get('payload', {})
+                            p_opts = p_payload.get('options', [])
+                            first_opt = p_opts[0] if p_opts else {'value': 'y', 'key': 'enter'}
+                            fut = p_info.get('future')
+                            if fut and not fut.done():
+                                fut.set_result({
+                                    'action': 'responded',
+                                    'value': first_opt.get('value', 'y'),
+                                    'key': first_opt.get('key', 'enter'),
+                                    'auto_enter': True
+                                })
+                            PENDING_PROMPTS.pop(p_id, None)
+                            await broadcast_prompt_dismiss(p_id)
+                    continue
+
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")
 
@@ -3211,6 +3252,53 @@ async def api_trigger_prompt_handler(request):
         'cwd': caller_cwd
     }
 
+
+    if AUTO_ENTER_ENABLED:
+        first_opt = options[0] if options else {'value': 'y', 'key': 'enter'}
+        auto_val = first_opt.get('value', 'y')
+        auto_key = first_opt.get('key', 'enter')
+        auto_res = {
+            'action': 'responded',
+            'value': auto_val,
+            'key': auto_key,
+            'auto_enter': True
+        }
+
+        print(f"[Auto-Enter] Menyetujui konfirmasi otomatis untuk {app_name} (opsi={auto_val})")
+
+        if execute_on_pc:
+            try:
+                if win_id:
+                    await asyncio.to_thread(activate_and_focus_window, win_id, False)
+                    await asyncio.sleep(0.08)
+                await asyncio.to_thread(simulate_tap, 'enter')
+            except Exception as e_ae:
+                print(f"[Auto-Enter Error simulating enter]: {e_ae}")
+
+        toast_payload = json.dumps({
+            'type': 'auto_enter_executed',
+            'app': app_name,
+            'title': title
+        })
+        for cws in list(CONNECTED_CLIENTS):
+            try:
+                await cws.send_str(toast_payload)
+            except Exception:
+                pass
+
+        if wait_flag:
+            await asyncio.sleep(0.12)
+            return web.json_response({
+                'status': 'responded',
+                'prompt_id': prompt_id,
+                'response': auto_res
+            }, headers={'Access-Control-Allow-Origin': '*'})
+        else:
+            return web.json_response({
+                'status': 'auto_entered',
+                'prompt_id': prompt_id,
+                'response': auto_res
+            }, headers={'Access-Control-Allow-Origin': '*'})
 
     loop = asyncio.get_running_loop()
     future = loop.create_future() if wait_flag else None

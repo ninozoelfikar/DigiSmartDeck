@@ -2138,6 +2138,22 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
 
+---
+
+## 118. CATATAN CHECKPOINT (v1.21.4.14 - Fitur Sakelar Auto-Enter di Bawah Tombol Enter AI Workstation)
+- **Tombol / Dongle Toggle Auto-Enter (#ai-btn-auto-enter):**
+  - Menempatkan tombol sakelar toggle Auto-Enter persis di bawah tombol raksasa Enter pada kolom kanan AI Workstation (`.ai-col-right`).
+  - Dilengkapi lampu LED indikator (menyala hijau terang dengan efek pendaran saat aktif, redup abu-abu saat nonaktif), label teks dua bahasa (`Auto-Enter`), badge status dinamis (`ON` / `OFF`), efek suara mekanikal (`playClickSound()`), dan getaran haptik (`vibe(20)`).
+  - Status tersimpan secara persisten di `localStorage` (`digi_ai_auto_enter`) dan tersinkronisasi dua arah ke PC host via WebSocket (`toggle_auto_enter` dan `auto_enter_update`).
+- **Eksekusi Otomatis Konfirmasi CLI / Terminal (Unattended Execution):**
+  - Ketika Auto-Enter aktif, setiap kali terminal meminta konfirmasi izin eksekusi tool/kode (via `digi-term`, `digi-prompt`, atau `/api/prompt`), backend [`server.py`](file:///home/nino/ALI/project/DigiSmartDeck/server.py) langsung mengeksekusi persetujuan otomatis (opsi afirmatif pertama / Enter) tanpa memblokir terminal.
+  - Menghilangkan kebutuhan untuk mencari atau mengawasi jendela terminal satu per satu saat pengguna sedang meninggalkan PC atau meja kerja.
+  - Jika Auto-Enter diaktifkan saat ada prompt yang sedang menunggu di memori server, sistem seketika menyetujui dan menyelesaikan seluruh prompt tertunda tersebut.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+
 
 
 

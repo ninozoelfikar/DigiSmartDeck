@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.14] - 2026-10-18
+- Fitur Sakelar Auto-Enter di Bawah Tombol Enter AI Workstation
+
 ### [1.21.4.13] - 2026-10-18
 - Eliminasi Teks Kurung Siku & Perbaikan Fatal Timeout Prompt Server
 
@@ -406,6 +409,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.14] - 2026-10-18
+- Release v1.21.4.14 updates
 
 ### [1.21.4.13] - 2026-10-18
 - Release v1.21.4.13 updates
