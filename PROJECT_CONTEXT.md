@@ -2177,3 +2177,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+---
+
+## 121. CATATAN CHECKPOINT (v1.21.4.17 - Fitur Mode Hybrid Dual-Path USB + Wi-Fi & Modal Pemilih Jalur Koneksi)
+- **Modal Pemilih Jalur Koneksi Interaktif (#modal-connection-mode):**
+  - Mengaktifkan badge status koneksi (`#badge`) di header bilah atas menjadi tombol interaktif yang dapat diketuk dengan efek suara klik mekanikal (`playClickSound()`) dan getaran haptik (`vibe(20)`).
+  - Menampilkan modal pilihan jalur koneksi dengan 3 opsi:
+    1. **Mode Hybrid (Dual-Path) [Rekomendasi]:** USB Cable + Wi-Fi aktif paralel secara simultan.
+    2. **USB Cable Saja:** Koneksi murni melalui kabel data USB (`localhost:8080`), latensi 0 ms.
+    3. **Wi-Fi LAN Saja:** Koneksi murni nirkabel melalui jaringan lokal Wi-Fi (`<IP-PC>:8080`).
+  - Menampilkan status realtime dari kedua jalur (indikator Terhubung, latency ms, dan alamat IP host).
+- **Arsitektur Multipath Dual-Socket Active-Active (Hybrid):**
+  - Klien ponsel membuka dua koneksi WebSocket aktif sekaligus (`wsUsb` ke `localhost:8080` dan `wsWifi` ke `<IP-PC>:8080`).
+  - Penemuan IP Otomatis: Server PC mengirimkan daftar IP jaringan Wi-Fi lokal (`lan_ips`) pada paket inisialisasi handshake `init`. Klien yang pertama kali tersambung via kabel USB otomatis mengetahui IP Wi-Fi PC dan mengaktifkan jalur Wi-Fi kedua di latar belakang tanpa konfigurasi manual.
+  - Zero-Second Disconnect (Anti Putus): Ketika kabel USB dicabut saat pengguna beranjak dari PC, koneksi tidak terputus dan tidak memicu layar reconnecting, karena jalur Wi-Fi sudah bersiaga penuh.
+  - Deduplikasi Paket Server-Side: Setiap payload aksi input dari klien dilengkapi `seq` dan `client_id`. Server PC hanya memproses paket pertama yang tiba (latensi tercepat) dan otomatis mendiskualifikasi paket duplikat dari jalur kedua melalui filter circular deque `PROCESSED_ACTION_SEQS`.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
