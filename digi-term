@@ -519,7 +519,9 @@ class DigiTermSupervisor:
                         break
                     # Abaikan tombol panah navigasi ANSI (Up/Down/Left/Right) agar pengguna dapat melihat menu di PC tanpa menutup kartu di HP
                     is_nav_key = data in (b'\x1b[A', b'\x1b[B', b'\x1b[C', b'\x1b[D', b'\x1bOA', b'\x1bOB', b'\x1bOC', b'\x1bOD')
-                    if not is_nav_key:
+                    is_enter_key = (b'\r' in data or b'\n' in data)
+                    # Notifikasi prompt menunggu respon hanya ditutup ketika ada respon kemudian di-enter
+                    if is_enter_key:
                         self.dismiss_active()
                         self.clear_buffer()
                     os.write(self.master_fd, data)
@@ -543,6 +545,7 @@ class DigiTermSupervisor:
                                 'app': 'Terminal',
                                 'title': n_title,
                                 'message': n_msg or 'Pemberitahuan dari terminal',
+                                'is_completion': True,
                                 'options': [_opt('OK', 'ok', '\r', key='Enter', primary=True)]
                             }), daemon=True).start()
 
@@ -566,7 +569,31 @@ class DigiTermSupervisor:
                 _, status = os.waitpid(self.pid, 0)
                 exit_code = os.WEXITSTATUS(status) if os.WIFEXITED(status) else 1
             except ChildProcessError:
-                pass
+                exit_code = 0
+
+            # Jika menjalankan perintah spesifik (bukan sekadar shell interaktif kosong),
+            # kirim notifikasi tugas selesai ke DigiSmartDeck
+            if self.command and self.command != [os.environ.get('SHELL', '/bin/bash')]:
+                try:
+                    cmd_label = os.path.basename(self.command[0])
+                    status_text = "berhasil" if exit_code == 0 else f"gagal (kode {exit_code})"
+                    comp_payload = {
+                        'app': 'Terminal',
+                        'title': f'Tugas Selesai: {cmd_label}',
+                        'message': f"Perintah '{' '.join(self.command)}' telah selesai ({status_text}).",
+                        'is_completion': True,
+                        'options': [{'label': 'OK', 'value': 'ok', 'key': 'enter', 'primary': True}],
+                        'timeout': 0,
+                        'execute_on_pc': False,
+                        'win_id': get_current_window_id(),
+                        'pid': os.getpid()
+                    }
+                    req = urllib.request.Request(f"http://127.0.0.1:{SERVER_PORT}/api/prompt",
+                                                 data=json.dumps(comp_payload).encode(),
+                                                 headers={'Content-Type': 'application/json'})
+                    urllib.request.urlopen(req, timeout=1.5).close()
+                except Exception:
+                    pass
         sys.exit(exit_code)
 
 

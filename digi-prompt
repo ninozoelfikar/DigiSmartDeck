@@ -58,6 +58,7 @@ def main():
     parser.add_argument("--json", action="store_true", help="Cetak respon lengkap dalam format JSON")
     parser.add_argument("--win-id", default=None, help="Window ID X11 terminal pengirim (default: auto dari $WINDOWID)")
     parser.add_argument("--nowait", action="store_true", help="Kirim notifikasi tanpa memblokir terminal (fire-and-forget)")
+    parser.add_argument("--completion", action="store_true", help="Tandai notifikasi sebagai tugas selesai (otomatis hilang begitu jendela dibuka)")
     args = parser.parse_args()
 
     # Baca pesan dari stdin jika '-'
@@ -76,6 +77,12 @@ def main():
     if caller_win_id and str(caller_win_id).isdigit():
         caller_win_id = hex(int(caller_win_id))
 
+    is_nowait = args.nowait or args.completion
+    is_comp = bool(
+        args.completion or
+        (is_nowait and any(w in (args.title + " " + args.message).lower() for w in ('selesai', 'completed', 'finished', 'done', 'berhasil', 'sukses', 'success')))
+    )
+
     payload = {
         "app": args.app,
         "title": args.title,
@@ -84,10 +91,11 @@ def main():
         "timeout": args.timeout,
         "execute_on_pc": not args.no_pc_exec,
         "pid": os.getpid(),
-        "win_id": caller_win_id
+        "win_id": caller_win_id,
+        "is_completion": is_comp
     }
 
-    wait_query = "" if args.nowait else "?wait=true"
+    wait_query = "" if is_nowait else "?wait=true"
     url = f"http://127.0.0.1:{args.port}/api/prompt{wait_query}"
     req = urllib.request.Request(
         url,
@@ -102,7 +110,7 @@ def main():
                 print(json.dumps(data))
                 sys.exit(0)
 
-            if args.nowait:
+            if is_nowait:
                 if not args.value_only:
                     print(f"[OK] Notifikasi terkirim ke DigiSmartDeck (id={data.get('prompt_id')})")
                 sys.exit(0)
