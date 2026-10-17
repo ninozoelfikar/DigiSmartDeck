@@ -398,6 +398,23 @@ html, body {
   border-color: rgba(63, 185, 80, 0.35);
   color: #3fb950;
 }
+.status-badge:hover {
+  filter: brightness(1.15);
+  border-color: rgba(255,255,255,0.25);
+}
+.status-badge:active {
+  transform: scale(0.96);
+}
+.status-badge.hybrid-mode {
+  background: rgba(56, 239, 125, 0.18) !important;
+  border-color: rgba(56, 239, 125, 0.6) !important;
+  color: #38ef7d !important;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.25) !important;
+}
+.status-badge.hybrid-mode .dot {
+  background: #38ef7d !important;
+  box-shadow: 0 0 8px #38ef7d !important;
+}
 .status-badge.usb-mode {
   background: rgba(56, 239, 125, 0.15) !important;
   border-color: rgba(56, 239, 125, 0.45) !important;
@@ -2216,6 +2233,84 @@ body.is-fullscreen {
 @keyframes rc-dot-blink {
   0%, 100% { opacity: 0.3; transform: scale(0.85); }
   50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Connection Mode Modal & Cards */
+.conn-mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.conn-mode-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.conn-mode-card:hover {
+  border-color: rgba(88, 166, 255, 0.4);
+  background: rgba(88, 166, 255, 0.04);
+}
+.conn-mode-card.active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.08);
+}
+.conn-mode-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--key-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+.conn-mode-card.active .conn-mode-radio {
+  border-color: var(--accent);
+}
+.conn-mode-card.active .conn-mode-radio .radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.conn-mode-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.conn-mode-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.conn-mode-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.conn-mode-badge.rec {
+  background: rgba(240, 136, 62, 0.15);
+  color: #f0883e;
+  border: 1px solid rgba(240, 136, 62, 0.35);
+}
+.conn-mode-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.35;
 }
 
 /* Quick Mode Switcher in Header */
@@ -7193,7 +7288,7 @@ body.portrait-dismissed .orientation-guard {
         <span id="update-badge-dot" style="display:none; width:8px; height:8px; background:#f0883e; border-radius:50%; margin-left:6px; box-shadow:0 0 6px rgba(240,136,62,0.8); animation:pulse-update 2s infinite;" title="Pembaruan Tersedia"></span>
       </div>
 
-      <span id="badge" class="status-badge disconnected" style="cursor:default; pointer-events:none; user-select:none;" data-i18n-title="conn_status_title" title="Connection Status">
+      <span id="badge" class="status-badge disconnected" style="cursor:pointer; pointer-events:auto; user-select:none;" data-i18n-title="conn_status_title" title="Connection Status (Tap to switch route)">
         <span class="dot"></span>
         <span id="badge-icon">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
@@ -9060,6 +9155,99 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
+<!-- CONNECTION ROUTE & HYBRID MODE MODAL -->
+<div class="modal-backdrop hidden" id="modal-connection-mode">
+  <div class="modal-dialog" style="max-width: 440px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7"/><circle cx="12" cy="19" r="1.5"/></svg>
+        <span data-i18n="conn_modal_title">Jalur Koneksi &amp; Mode Jaringan</span>
+      </div>
+      <button class="modal-close" id="btn-close-conn-mode" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.45;margin-bottom:12px;" data-i18n="conn_modal_desc">
+        Pilih jalur transmisi data antara HP dan PC host. Mode Hybrid menggabungkan koneksi USB dan Wi-Fi secara paralel untuk zero-lag dan anti-putus.
+      </div>
+
+      <!-- MODE OPTIONS -->
+      <div class="conn-mode-list">
+        <!-- HYBRID OPTION -->
+        <div class="conn-mode-card active" id="conn-opt-hybrid" data-mode="hybrid">
+          <div class="conn-mode-radio"><span class="radio-dot"></span></div>
+          <div class="conn-mode-info">
+            <div class="conn-mode-name">
+              <span data-i18n="conn_mode_hybrid">Mode Hybrid (Dual-Path)</span>
+              <span class="conn-mode-badge rec" data-i18n="conn_badge_rec">Rekomendasi</span>
+            </div>
+            <div class="conn-mode-sub" data-i18n="conn_sub_hybrid">
+              USB Cable + Wi-Fi aktif bersamaan. Latensi tercepat (0 ms) dan bebas putus saat kabel dilepas.
+            </div>
+          </div>
+        </div>
+
+        <!-- USB ONLY OPTION -->
+        <div class="conn-mode-card" id="conn-opt-usb" data-mode="usb">
+          <div class="conn-mode-radio"><span class="radio-dot"></span></div>
+          <div class="conn-mode-info">
+            <div class="conn-mode-name">
+              <span data-i18n="conn_mode_usb">USB Cable Saja</span>
+              <span class="conn-mode-badge" style="background:rgba(56,239,125,0.15);color:#38ef7d;border:1px solid rgba(56,239,125,0.3);">0 ms</span>
+            </div>
+            <div class="conn-mode-sub" data-i18n="conn_sub_usb">
+              Hanya melalui kabel data USB (localhost:8080). Sangat stabil dan hemat daya.
+            </div>
+          </div>
+        </div>
+
+        <!-- WIFI ONLY OPTION -->
+        <div class="conn-mode-card" id="conn-opt-wifi" data-mode="wifi">
+          <div class="conn-mode-radio"><span class="radio-dot"></span></div>
+          <div class="conn-mode-info">
+            <div class="conn-mode-name">
+              <span data-i18n="conn_mode_wifi">Wi-Fi LAN Saja</span>
+              <span class="conn-mode-badge" style="background:rgba(88,166,255,0.15);color:#58a6ff;border:1px solid rgba(88,166,255,0.3);">Nirkabel</span>
+            </div>
+            <div class="conn-mode-sub" data-i18n="conn_sub_wifi">
+              Hanya melalui jaringan Wi-Fi lokal. Bebas kabel dan fleksibel di ruangan.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REALTIME CHANNEL STATUS CARD -->
+      <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:8px;padding:10px 12px;margin-top:12px;display:flex;flex-direction:column;gap:6px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Status Jalur Realtime</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;">
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="19" r="2"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7"/><path d="M12 11h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>USB Cable:</span>
+          </span>
+          <span id="conn-status-usb-val" style="font-weight:600;color:var(--text-dim);font-family:monospace;">--</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;">
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
+            <span>Wi-Fi LAN:</span>
+          </span>
+          <span id="conn-status-wifi-val" style="font-weight:600;color:var(--text-dim);font-family:monospace;">--</span>
+        </div>
+      </div>
+
+      <!-- FOOTER ACTIONS -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;">
+        <button type="button" class="btn-secondary" id="btn-conn-open-scanner" style="font-size:11px;padding:6px 10px;display:inline-flex;align-items:center;gap:5px;">
+          <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
+          <span data-i18n="conn_btn_scanner">Pemindai IP Host</span>
+        </button>
+        <button type="button" class="btn-primary" id="btn-conn-save-close" style="font-size:11px;padding:6px 16px;">
+          <span data-i18n="conn_btn_done">Selesai</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- RECONNECTION & IP DISCOVERY MODAL -->
 <div class="modal-backdrop hidden" id="modal-reconnect">
   <div class="modal-dialog">
@@ -9359,7 +9547,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.16</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.17</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9587,7 +9775,18 @@ const I18N = {
     toggle_fullscreen: "Toggle Fullscreen",
     reload_app: "Reload Application",
     menu_button: "Menu",
-    conn_status_title: "Connection Status",
+    conn_status_title: "Connection Status (Tap to switch route)",
+    conn_modal_title: "Connection Mode & Routes",
+    conn_modal_desc: "Select data transmission route between mobile and PC host. Hybrid mode runs USB and Wi-Fi in parallel for zero-latency and seamless failover.",
+    conn_mode_hybrid: "Hybrid Mode (Dual-Path)",
+    conn_badge_rec: "Recommended",
+    conn_sub_hybrid: "USB Cable + Wi-Fi active in parallel. Lowest latency (0 ms) and zero drop when cable is removed.",
+    conn_mode_usb: "USB Cable Only",
+    conn_sub_usb: "Connect strictly via USB cable (localhost:8080). Highly stable and battery friendly.",
+    conn_mode_wifi: "Wi-Fi LAN Only",
+    conn_sub_wifi: "Connect strictly via local Wi-Fi network. Completely wireless.",
+    conn_btn_scanner: "Host IP Scanner",
+    conn_btn_done: "Done",
     guard_continue_portrait: "Continue in Portrait Mode",
     smart_context_chip_title: "Active Host Application",
     deck_smart_context_title: "SMART APP CONTEXT",
@@ -9917,7 +10116,18 @@ const I18N = {
     toggle_fullscreen: "Layar Penuh",
     reload_app: "Muat Ulang Halaman",
     menu_button: "Menu",
-    conn_status_title: "Status Koneksi",
+    conn_status_title: "Status Koneksi (Ketuk untuk ganti jalur)",
+    conn_modal_title: "Jalur Koneksi & Mode Jaringan",
+    conn_modal_desc: "Pilih jalur transmisi data antara HP dan PC host. Mode Hybrid menggabungkan koneksi USB dan Wi-Fi secara paralel untuk zero-lag dan anti-putus.",
+    conn_mode_hybrid: "Mode Hybrid (Dual-Path)",
+    conn_badge_rec: "Rekomendasi",
+    conn_sub_hybrid: "USB Cable + Wi-Fi aktif bersamaan. Latensi tercepat (0 ms) dan bebas putus saat kabel dilepas.",
+    conn_mode_usb: "USB Cable Saja",
+    conn_sub_usb: "Hanya melalui kabel data USB (localhost:8080). Sangat stabil dan hemat daya.",
+    conn_mode_wifi: "Wi-Fi LAN Saja",
+    conn_sub_wifi: "Hanya melalui jaringan Wi-Fi lokal. Bebas kabel dan fleksibel di ruangan.",
+    conn_btn_scanner: "Pemindai IP Host",
+    conn_btn_done: "Selesai",
     guard_continue_portrait: "Lanjutkan dalam Mode Vertikal",
     smart_context_chip_title: "Aplikasi PC Aktif",
     deck_smart_context_title: "KONTEKS APLIKASI CERDAS",
@@ -10347,6 +10557,7 @@ const badgeTxt  = document.getElementById('badge-txt');
 const pingEl    = document.getElementById('ping');
 
 const CONN_ICONS = {
+  hybrid: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7"/><circle cx="18" cy="17" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>',
   wifi: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>',
   usb: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="19" r="2"/><path d="M12 17V6"/><polygon points="9,7 12,2 15,7"/><path d="M12 11h4a2 2 0 0 1 2 2v2"/><circle cx="18" cy="17" r="1.5"/><path d="M12 13H8a2 2 0 0 0-2 2v1"/><rect x="4.5" y="16" width="3" height="3" rx="0.5"/></svg>',
   bluetooth: '<svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>'
@@ -10593,7 +10804,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.16';
+const APP_CLIENT_VERSION = '1.21.4.17';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -12084,21 +12295,48 @@ function vibe(ms = null) {
   } catch(e){}
 }
 
-// ── WebSocket & Self-Healing Connection System ──
+// ── Multipath / Hybrid Connection Engine (Dual-Socket Active-Active) ──
+let wsUsb = null;
+let wsWifi = null;
+let usbConnected = false;
+let wifiConnected = false;
+let usbPing = null;
+let wifiPing = null;
+let lastUsbPong = Date.now();
+let lastWifiPong = Date.now();
+let clientSeqCounter = 0;
+const CLIENT_ID = localStorage.getItem('digi_client_id') || ('c_' + Math.random().toString(36).substring(2, 10));
+localStorage.setItem('digi_client_id', CLIENT_ID);
+
+function getConnMode() {
+  return localStorage.getItem('digi_conn_mode') || 'hybrid';
+}
+
+function setConnMode(mode) {
+  localStorage.setItem('digi_conn_mode', mode);
+  updateConnModeCards();
+  scheduleReconnect(true);
+}
+
 function destroySocket() {
   if (pingTimer) { clearInterval(pingTimer); pingTimer = null; }
   if (watchdogTimer) { clearInterval(watchdogTimer); watchdogTimer = null; }
-  if (ws) {
-    try {
-      ws.onopen = null;
-      ws.onmessage = null;
-      ws.onerror = null;
-      ws.onclose = null;
-      ws.close();
-    } catch(e) {}
+  if (wsUsb) {
+    try { wsUsb.onopen = wsUsb.onmessage = wsUsb.onerror = wsUsb.onclose = null; wsUsb.close(); } catch(e) {}
+    wsUsb = null;
+  }
+  if (wsWifi) {
+    try { wsWifi.onopen = wsWifi.onmessage = wsWifi.onerror = wsWifi.onclose = null; wsWifi.close(); } catch(e) {}
+    wsWifi = null;
+  }
+  if (ws && ws !== wsUsb && ws !== wsWifi) {
+    try { ws.onopen = ws.onmessage = ws.onerror = ws.onclose = null; ws.close(); } catch(e) {}
     ws = null;
   }
+  usbConnected = false;
+  wifiConnected = false;
   connected = false;
+  updateConnStatusUI();
 }
 
 function handleDisconnect(reason = 'Terputus') {
@@ -12121,7 +12359,6 @@ function scheduleReconnect(immediate = false) {
   }
 
   retryCount++;
-  // Exponential backoff dengan jitter: 600ms -> ~4500ms max
   const baseDelay = Math.min(600 * Math.pow(1.3, Math.min(retryCount, 8)), 4500);
   const delay = Math.round(baseDelay + Math.random() * 250);
 
@@ -12134,26 +12371,258 @@ function scheduleReconnect(immediate = false) {
   }, delay);
 }
 
+function createChannelSocket(type, host) {
+  if (!host) return null;
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const url = proto + '//' + host + '/ws';
+  let socket = null;
+  try {
+    socket = new WebSocket(url);
+  } catch(e) {
+    return null;
+  }
+
+  socket.onopen = () => {
+    if (type === 'usb') {
+      usbConnected = true;
+      lastUsbPong = Date.now();
+    } else {
+      wifiConnected = true;
+      lastWifiPong = Date.now();
+    }
+    retryCount = 0;
+    connected = true;
+    ws = (usbConnected && wsUsb) ? wsUsb : (wsWifi || socket);
+    hideReconnectBanner();
+    startHeartbeatAndWatchdog();
+    updateConnStatusUI();
+
+    const savedToken = localStorage.getItem('digi_device_token');
+    if (savedToken) {
+      try {
+        socket.send(JSON.stringify({
+          type: 'auth',
+          token: savedToken,
+          device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client',
+          channel: type
+        }));
+      } catch(e){}
+    }
+    try {
+      socket.send(JSON.stringify({ type: 'get_active_window', channel: type }));
+      if (localStorage.getItem('digi_ai_auto_enter') === 'true') {
+        socket.send(JSON.stringify({ type: 'toggle_auto_enter', enabled: true, channel: type }));
+      }
+    } catch(e){}
+
+    setTimeout(() => { checkAutoUpdate(true); }, 1200);
+  };
+
+  socket.onmessage = (e) => {
+    handleChannelMessage(e, type);
+  };
+
+  socket.onclose = () => {
+    if (type === 'usb') {
+      usbConnected = false;
+      usbPing = null;
+    } else {
+      wifiConnected = false;
+      wifiPing = null;
+    }
+    updateConnStatusUI();
+
+    const mode = getConnMode();
+    const stillAlive = (mode === 'hybrid' && (usbConnected || wifiConnected)) ||
+                       (mode === 'usb' && usbConnected) ||
+                       (mode === 'wifi' && wifiConnected);
+
+    if (!stillAlive) {
+      connected = false;
+      ws = null;
+      pingEl.textContent = '-- ms';
+      setStatus(false, 'Terputus');
+      scheduleReconnect();
+    } else {
+      ws = (usbConnected && wsUsb) ? wsUsb : (wifiConnected && wsWifi ? wsWifi : null);
+    }
+  };
+
+  socket.onerror = () => {};
+
+  return socket;
+}
+
+function handleChannelMessage(e, sourceChannel) {
+  try {
+    const d = JSON.parse(e.data);
+    if (d.type === 'pong') {
+      const now = Date.now();
+      const p = d.t ? (now - d.t) : Math.round(performance.now() - pingT);
+      if (sourceChannel === 'usb') {
+        lastUsbPong = now;
+        usbPing = p;
+      } else {
+        lastWifiPong = now;
+        wifiPing = p;
+      }
+      lastPongTime = now;
+      updatePingDisplay();
+      if (typeof d.caps_lock === 'boolean' && mods.caps_lock !== d.caps_lock) {
+        mods.caps_lock = d.caps_lock;
+        refreshMods();
+      }
+      return;
+    }
+
+    if (d.type === 'init') {
+      if (d.lan_ips && Array.isArray(d.lan_ips) && d.lan_ips.length > 0) {
+        const foundIp = d.lan_ips[0];
+        if (foundIp && !localStorage.getItem('digi_server_host')) {
+          localStorage.setItem('digi_server_host', foundIp + ':8080');
+        }
+        if (getConnMode() === 'hybrid' && (!wsWifi || wsWifi.readyState > 1)) {
+          const wHost = localStorage.getItem('digi_server_host') || (foundIp + ':8080');
+          wsWifi = createChannelSocket('wifi', wHost);
+        }
+      }
+    }
+
+    processServerMessage(d);
+  } catch(err) {}
+}
+
+function processServerMessage(d) {
+  if (d.type === 'init') {
+    if (d.license) updateLicenseDisplay(d.license);
+    if (d.pairing_required) {
+      const savedToken = localStorage.getItem('digi_device_token');
+      if (!savedToken) {
+        openPairingModal();
+      }
+    }
+    if (d.host_os && !localStorage.getItem('digi_os_manual')) {
+      applyOS(d.host_os);
+    }
+    if (d.host_name) {
+      const pHost = $('power-host-name');
+      if (pHost) pHost.textContent = d.host_name;
+    }
+    if (d.version) {
+      const vBadge = $('app-version-badge');
+      if (vBadge) vBadge.textContent = 'DigiSmartDeck v' + d.version;
+      const vAbout = $('about-app-version');
+      if (vAbout) vAbout.textContent = 'v' + d.version;
+
+      const clientInfo = getClientAppInfo();
+      if (clientInfo.verName && d.version !== clientInfo.verName && `v${d.version}` !== clientInfo.verName) {
+        checkAutoUpdate(true);
+      }
+    }
+    if (typeof d.caps_lock === 'boolean') {
+      mods.caps_lock = d.caps_lock;
+      refreshMods();
+    }
+    if (d.locked_win_id !== undefined) {
+      handleTargetLockUpdate(d.locked_win_id);
+    }
+  } else if (d.type === 'controller_status') {
+    if (d.role === 'active') {
+      document.body.classList.remove('controller-standby');
+    } else {
+      document.body.classList.add('controller-standby');
+    }
+  } else if (d.type === 'app_context') {
+    handleAppContextUpdate(d);
+  } else if (d.type === 'target_lock_update') {
+    handleTargetLockUpdate(d.locked_win_id);
+  } else if (d.type === 'window_list') {
+    renderWindowList(d.windows);
+  } else if (d.type === 'auto_enter_update') {
+    if (typeof updateAutoEnterUI === 'function') {
+      updateAutoEnterUI(d.enabled);
+    }
+  } else if (d.type === 'auto_enter_executed') {
+    if (typeof showSmartToast === 'function') {
+      showSmartToast(
+        (currentUiLang === 'id') ? `Auto-Enter: Menyetujui konfirmasi (${d.app || 'Terminal'})` : `Auto-Enter: Approved confirmation (${d.app || 'Terminal'})`,
+        'Auto-Enter'
+      );
+    }
+    vibe([20, 20]);
+  } else if (d.type === 'power_result') {
+    if (typeof showSmartToast === 'function') {
+      showSmartToast(d.message || (d.success ? 'Perintah daya berhasil dikirim.' : 'Gagal mengeksekusi perintah daya.'));
+    }
+  } else if (d.type === 'auth_status') {
+    if (d.license) updateLicenseDisplay(d.license);
+    if (d.authorized) {
+      isPairingSubmitting = false;
+      updatePairingStatusUI(true);
+      closePairingModal();
+      document.body.classList.remove('controller-standby');
+    } else if (d.pin_required) {
+      updatePairingStatusUI(false);
+      openPairingModal();
+    }
+  } else if (d.type === 'pairing_result') {
+    isPairingSubmitting = false;
+    if (d.success) {
+      if (d.token) localStorage.setItem('digi_device_token', d.token);
+      if (d.license) updateLicenseDisplay(d.license);
+      updatePairingStatusUI(true);
+      closePairingModal();
+      document.body.classList.remove('controller-standby');
+      playPairingSuccessSound();
+      vibe([30, 40]);
+      showSmartToast(currentUiLang === 'id' ? 'Status: Paired (Perangkat Terhubung)' : 'Status: Paired (Device Connected)', 'PC Host');
+    } else {
+      updatePairingStatusUI(false);
+      if (pairingStatusMsg) {
+        pairingStatusMsg.className = 'pairing-msg error';
+        pairingStatusMsg.textContent = d.message || (currentUiLang === 'id' ? 'PIN tidak sesuai. Periksa layar PC.' : 'Invalid PIN. Check your PC.');
+        pairingStatusMsg.classList.remove('hidden');
+      }
+      pinInputs.forEach(i => { if (i) i.value = ''; });
+      if (pinInputs[0]) pinInputs[0].focus();
+      vibe([40, 60, 40]);
+    }
+  } else if (d.type === 'license_activation_result') {
+    if (d.license) updateLicenseDisplay(d.license);
+    if (licenseStatusMsg) {
+      licenseStatusMsg.className = d.success ? 'pairing-msg success' : 'pairing-msg error';
+      licenseStatusMsg.textContent = d.message;
+      licenseStatusMsg.classList.remove('hidden');
+    }
+    if (d.success) {
+      playPairingSuccessSound();
+      vibe(25);
+      setTimeout(closeLicenseModal, 1500);
+    } else {
+      vibe([40, 60, 40]);
+    }
+  } else if (d.type === 'license_update') {
+    if (d.license) updateLicenseDisplay(d.license);
+  }
+}
+
 function connect() {
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
   }
 
-  if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) {
-    return;
-  }
-
-  destroySocket();
-
+  const mode = getConnMode();
   const loc = window.location;
-  let targetHost = loc.host;
-  if (!targetHost || loc.protocol === 'file:') {
-    const savedHost = localStorage.getItem('digi_server_host') || (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getServerHost === 'function' ? window.DigiAndroidBridge.getServerHost() : '');
-    targetHost = savedHost ? (savedHost.includes(':') ? savedHost : savedHost + ':8080') : '';
-  }
 
-  if (!targetHost && loc.protocol === 'file:') {
+  let savedHost = localStorage.getItem('digi_server_host') || (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getServerHost === 'function' ? window.DigiAndroidBridge.getServerHost() : '');
+  if (savedHost && !savedHost.includes(':')) savedHost += ':8080';
+
+  let currentHost = loc.host || (savedHost || 'localhost:8080');
+  let usbHost = '127.0.0.1:8080';
+  let wifiHost = savedHost || (loc.hostname !== 'localhost' && loc.hostname !== '127.0.0.1' ? loc.host : '');
+
+  if (!currentHost && loc.protocol === 'file:') {
     if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.enableBluetoothHid === 'function') {
       window.isBluetoothActive = true;
       setStatus(false, 'Mode Bluetooth HID Siap');
@@ -12161,207 +12630,61 @@ function connect() {
     }
   }
 
-  const proto = loc.protocol === 'https:' ? 'wss:' : 'ws:';
-  const url = proto + '//' + (targetHost || 'localhost:8080') + '/ws';
-
-  setStatus(false, retryCount > 0 ? `Menghubungkan (${retryCount})...` : 'Menghubungkan...');
-
-  try {
-    ws = new WebSocket(url);
-  } catch(e) {
-    scheduleReconnect();
-    return;
+  if (mode === 'usb') {
+    if (wsWifi) { try { wsWifi.close(); } catch(e){} wsWifi = null; wifiConnected = false; }
+    if (!wsUsb || wsUsb.readyState > 1) {
+      wsUsb = createChannelSocket('usb', usbHost);
+      ws = wsUsb;
+    }
+  } else if (mode === 'wifi') {
+    if (wsUsb) { try { wsUsb.close(); } catch(e){} wsUsb = null; usbConnected = false; }
+    if (!wsWifi || wsWifi.readyState > 1) {
+      wsWifi = createChannelSocket('wifi', wifiHost || currentHost);
+      ws = wsWifi;
+    }
+  } else {
+    // Mode Hybrid
+    if (!wsUsb || wsUsb.readyState > 1) {
+      wsUsb = createChannelSocket('usb', usbHost);
+    }
+    const targetWifi = wifiHost || (currentHost !== usbHost && currentHost !== 'localhost:8080' ? currentHost : '');
+    if (targetWifi && (!wsWifi || wsWifi.readyState > 1)) {
+      wsWifi = createChannelSocket('wifi', targetWifi);
+    }
   }
 
-  ws.onopen = () => {
-    connected = true;
-    retryCount = 0;
-    lastPongTime = Date.now();
-    setStatus(true, 'Terhubung');
-    hideReconnectBanner();
-    startHeartbeatAndWatchdog();
-    const savedToken = localStorage.getItem('digi_device_token');
-    if (savedToken) {
-      send({
-        type: 'auth',
-        token: savedToken,
-        device_name: navigator.userAgent.includes('Android') ? 'Android Device' : 'Client'
-      });
-    }
-    // Selalu minta status jendela PC host terkini saat baru tersambung / reconnect
-    send({ type: 'get_active_window' });
-
-    if (localStorage.getItem('digi_ai_auto_enter') === 'true') {
-      send({ type: 'toggle_auto_enter', enabled: true });
-    }
-
-    // Otomatis periksa ketersediaan pembaruan di latar belakang saat berhasil terhubung
-    setTimeout(() => {
-      checkAutoUpdate(true);
-    }, 1200);
-  };
-
-  ws.onmessage = (e) => {
-    try {
-      const d = JSON.parse(e.data);
-      if (d.type === 'pong') {
-        lastPongTime = Date.now();
-        if (d.t) {
-          pingEl.textContent = Math.round(Date.now() - d.t) + ' ms';
-        } else {
-          pingEl.textContent = Math.round(performance.now() - pingT) + ' ms';
-        }
-        if (typeof d.caps_lock === 'boolean' && mods.caps_lock !== d.caps_lock) {
-          mods.caps_lock = d.caps_lock;
-          refreshMods();
-        }
-      } else if (d.type === 'init') {
-        if (d.license) updateLicenseDisplay(d.license);
-        if (d.pairing_required) {
-          const savedToken = localStorage.getItem('digi_device_token');
-          if (!savedToken) {
-            openPairingModal();
-          }
-        }
-        if (d.host_os && !localStorage.getItem('digi_os_manual')) {
-          applyOS(d.host_os);
-        }
-        if (d.host_name) {
-          const pHost = $('power-host-name');
-          if (pHost) pHost.textContent = d.host_name;
-        }
-        if (d.version) {
-          const vBadge = $('app-version-badge');
-          if (vBadge) vBadge.textContent = 'DigiSmartDeck v' + d.version;
-          const vAbout = $('about-app-version');
-          if (vAbout) vAbout.textContent = 'v' + d.version;
-
-          const clientInfo = getClientAppInfo();
-          if (clientInfo.verName && d.version !== clientInfo.verName && `v${d.version}` !== clientInfo.verName) {
-            checkAutoUpdate(true);
-          }
-        }
-        if (typeof d.caps_lock === 'boolean') {
-          mods.caps_lock = d.caps_lock;
-          refreshMods();
-        }
-        if (d.locked_win_id !== undefined) {
-          handleTargetLockUpdate(d.locked_win_id);
-        }
-      } else if (d.type === 'controller_status') {
-        if (d.role === 'active') {
-          document.body.classList.remove('controller-standby');
-        } else {
-          document.body.classList.add('controller-standby');
-        }
-      } else if (d.type === 'app_context') {
-        handleAppContextUpdate(d);
-      } else if (d.type === 'target_lock_update') {
-        handleTargetLockUpdate(d.locked_win_id);
-      } else if (d.type === 'window_list') {
-        renderWindowList(d.windows);
-      } else if (d.type === 'auto_enter_update') {
-        if (typeof updateAutoEnterUI === 'function') {
-          updateAutoEnterUI(d.enabled);
-        }
-      } else if (d.type === 'auto_enter_executed') {
-        if (typeof showSmartToast === 'function') {
-          showSmartToast(
-            (currentUiLang === 'id') ? `Auto-Enter: Menyetujui konfirmasi (${d.app || 'Terminal'})` : `Auto-Enter: Approved confirmation (${d.app || 'Terminal'})`,
-            'Auto-Enter'
-          );
-        }
-        vibe([20, 20]);
-      } else if (d.type === 'power_result') {
-        if (typeof showSmartToast === 'function') {
-          showSmartToast(d.message || (d.success ? 'Perintah daya berhasil dikirim.' : 'Gagal mengeksekusi perintah daya.'));
-        }
-      } else if (d.type === 'auth_status') {
-        if (d.license) updateLicenseDisplay(d.license);
-        if (d.authorized) {
-          isPairingSubmitting = false;
-          updatePairingStatusUI(true);
-          closePairingModal();
-          document.body.classList.remove('controller-standby');
-        } else if (d.pin_required) {
-          updatePairingStatusUI(false);
-          openPairingModal();
-        }
-      } else if (d.type === 'pairing_result') {
-        isPairingSubmitting = false;
-        if (d.success) {
-          if (d.token) localStorage.setItem('digi_device_token', d.token);
-          if (d.license) updateLicenseDisplay(d.license);
-          updatePairingStatusUI(true);
-          closePairingModal();
-          document.body.classList.remove('controller-standby');
-          playPairingSuccessSound();
-          vibe([30, 40]);
-          showSmartToast(currentUiLang === 'id' ? 'Status: Paired (Perangkat Terhubung)' : 'Status: Paired (Device Connected)', 'PC Host');
-        } else {
-          updatePairingStatusUI(false);
-          if (pairingStatusMsg) {
-            pairingStatusMsg.className = 'pairing-msg error';
-            pairingStatusMsg.textContent = d.message || (currentUiLang === 'id' ? 'PIN tidak sesuai. Periksa layar PC.' : 'Invalid PIN. Check your PC.');
-            pairingStatusMsg.classList.remove('hidden');
-          }
-          pinInputs.forEach(i => { if (i) i.value = ''; });
-          if (pinInputs[0]) pinInputs[0].focus();
-          vibe([40, 60, 40]);
-        }
-      } else if (d.type === 'license_activation_result') {
-        if (d.license) updateLicenseDisplay(d.license);
-        if (licenseStatusMsg) {
-          licenseStatusMsg.className = d.success ? 'pairing-msg success' : 'pairing-msg error';
-          licenseStatusMsg.textContent = d.message;
-          licenseStatusMsg.classList.remove('hidden');
-        }
-        if (d.success) {
-          playPairingSuccessSound();
-          vibe(25);
-          setTimeout(closeLicenseModal, 1500);
-        } else {
-          vibe([40, 60, 40]);
-        }
-      } else if (d.type === 'license_update') {
-        if (d.license) updateLicenseDisplay(d.license);
-      }
-    } catch(err) {}
-  };
-
-  ws.onclose = () => {
-    handleDisconnect('Terputus');
-  };
-
-  ws.onerror = () => {
-    handleDisconnect('Gagal terhubung');
-  };
+  if (!connected) {
+    setStatus(false, retryCount > 0 ? `Menghubungkan (${retryCount})...` : 'Menghubungkan...');
+  }
 }
 
 function startHeartbeatAndWatchdog() {
   if (pingTimer) clearInterval(pingTimer);
   if (watchdogTimer) clearInterval(watchdogTimer);
 
-  // Ping reguler setiap 2200ms
   pingTimer = setInterval(() => {
-    if (connected && ws && ws.readyState === WebSocket.OPEN) {
-      pingT = performance.now();
-      send({ type: 'ping', t: Date.now() });
+    const now = Date.now();
+    pingT = performance.now();
+    if (wsUsb && wsUsb.readyState === WebSocket.OPEN) {
+      try { wsUsb.send(JSON.stringify({ type: 'ping', t: now, ch: 'usb' })); } catch(e){}
+    }
+    if (wsWifi && wsWifi.readyState === WebSocket.OPEN) {
+      try { wsWifi.send(JSON.stringify({ type: 'ping', t: now, ch: 'wifi' })); } catch(e){}
+    }
+    if (!wsUsb && !wsWifi && ws && ws.readyState === WebSocket.OPEN) {
+      try { ws.send(JSON.stringify({ type: 'ping', t: now })); } catch(e){}
     }
   }, 2200);
 
-  // Watchdog setiap 1500ms
   watchdogTimer = setInterval(() => {
-    if (connected && ws) {
-      const elapsed = Date.now() - lastPongTime;
-      // Jika pong tidak diterima selama > 5500ms (misal router Wi-Fi reboot tanpa TCP RST),
-      // hancurkan zombie socket dan lakukan reconnect
-      if (elapsed > 5500) {
-        console.warn(`[DigiSmartDeck] Watchdog timeout: no pong for ${elapsed}ms. Reconnecting...`);
-        handleDisconnect('Timeout (Router restart?)');
-      }
+    const now = Date.now();
+    if (wsUsb && wsUsb.readyState === WebSocket.OPEN && (now - lastUsbPong > 6000)) {
+      try { wsUsb.close(); } catch(e){}
     }
-  }, 1500);
+    if (wsWifi && wsWifi.readyState === WebSocket.OPEN && (now - lastWifiPong > 6000)) {
+      try { wsWifi.close(); } catch(e){}
+    }
+  }, 1800);
 }
 
 function handleBluetoothSend(obj) {
@@ -12443,32 +12766,144 @@ function send(obj) {
     handleBluetoothSend(obj);
     return;
   }
-  if (connected && ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
+  obj.client_id = CLIENT_ID;
+  obj.seq = ++clientSeqCounter;
+  const jsonStr = JSON.stringify(obj);
+
+  const mode = getConnMode();
+  let sent = false;
+
+  if (mode === 'usb') {
+    if (wsUsb && wsUsb.readyState === 1) {
+      try { wsUsb.send(jsonStr); sent = true; } catch(e){}
+    }
+  } else if (mode === 'wifi') {
+    if (wsWifi && wsWifi.readyState === 1) {
+      try { wsWifi.send(jsonStr); sent = true; } catch(e){}
+    }
+  } else {
+    // Mode Hybrid (Active-Active Multipath): Kirim ke kedua socket secara paralel
+    if (wsUsb && wsUsb.readyState === 1) {
+      try { wsUsb.send(jsonStr); sent = true; } catch(e){}
+    }
+    if (wsWifi && wsWifi.readyState === 1) {
+      try { wsWifi.send(jsonStr); sent = true; } catch(e){}
+    }
+  }
+
+  if (!sent && ws && ws.readyState === 1) {
+    try { ws.send(jsonStr); } catch(e){}
+  }
 }
 
-function setStatus(ok, txt) {
-  badge.classList.toggle('connected', ok);
-  badge.classList.toggle('disconnected', !ok);
-  const isUsb = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.42.');
-  const isBt  = !!(window.isBluetoothActive || window.location.search.includes('mode=bt') || window.location.hash.includes('bt'));
-  badge.classList.toggle('usb-mode', ok && isUsb && !isBt);
-  badge.classList.toggle('bt-mode', ok && isBt);
+function updatePingDisplay() {
+  const mode = getConnMode();
+  let bestPing = null;
+  if (mode === 'usb' && usbPing !== null) bestPing = usbPing;
+  else if (mode === 'wifi' && wifiPing !== null) bestPing = wifiPing;
+  else {
+    if (usbPing !== null && wifiPing !== null) bestPing = Math.min(usbPing, wifiPing);
+    else if (usbPing !== null) bestPing = usbPing;
+    else if (wifiPing !== null) bestPing = wifiPing;
+  }
+  pingEl.textContent = (bestPing !== null ? Math.round(bestPing) + ' ms' : '-- ms');
+  updateConnModalRealtimeStats();
+}
+
+function updateConnStatusUI(okParam, txtParam) {
+  const mode = getConnMode();
+  const isBt = !!(window.isBluetoothActive || window.location.search.includes('mode=bt') || window.location.hash.includes('bt'));
+
+  const usbOk = wsUsb && wsUsb.readyState === WebSocket.OPEN;
+  const wifiOk = wsWifi && wsWifi.readyState === WebSocket.OPEN;
+  const isHybridActive = (mode === 'hybrid') && usbOk && wifiOk;
+  const anyOk = (typeof okParam === 'boolean') ? okParam : (isBt || usbOk || wifiOk || (ws && ws.readyState === WebSocket.OPEN));
+
+  badge.classList.toggle('connected', anyOk);
+  badge.classList.toggle('disconnected', !anyOk);
+  badge.classList.toggle('hybrid-mode', anyOk && isHybridActive && !isBt);
+  badge.classList.toggle('usb-mode', anyOk && usbOk && !wifiOk && !isBt);
+  badge.classList.toggle('bt-mode', anyOk && isBt);
 
   if (badgeIcon) {
     if (isBt) {
       badgeIcon.innerHTML = CONN_ICONS.bluetooth;
-    } else if (isUsb) {
+    } else if (isHybridActive) {
+      badgeIcon.innerHTML = CONN_ICONS.hybrid;
+    } else if (usbOk && !wifiOk) {
       badgeIcon.innerHTML = CONN_ICONS.usb;
     } else {
       badgeIcon.innerHTML = CONN_ICONS.wifi;
     }
   }
 
-  updatePairingStatusUI(ok);
+  updatePairingStatusUI(anyOk);
 
-  // Tooltip hover informatif untuk aksesibilitas
-  const modeName = isBt ? 'Bluetooth' : (isUsb ? 'USB' : 'Wi-Fi');
-  badge.title = ok ? `Koneksi ${modeName} Aktif` : (txt || `Menghubungkan ${modeName}...`);
+  let modeName = 'Wi-Fi';
+  if (isBt) modeName = 'Bluetooth';
+  else if (isHybridActive) modeName = 'Hybrid (USB + Wi-Fi)';
+  else if (usbOk && !wifiOk) modeName = 'USB Cable';
+
+  badge.title = anyOk ? `Koneksi ${modeName} Aktif (Ketuk untuk ganti jalur)` : (txtParam || 'Menghubungkan...');
+  updateConnModalRealtimeStats();
+}
+
+function setStatus(ok, txt) {
+  updateConnStatusUI(ok, txt);
+}
+
+function openConnModeModal() {
+  const m = $('modal-connection-mode');
+  if (!m) return;
+  updateConnModeCards();
+  updateConnModalRealtimeStats();
+  m.classList.remove('hidden');
+}
+
+function closeConnModeModal() {
+  const m = $('modal-connection-mode');
+  if (m) m.classList.add('hidden');
+}
+
+function updateConnModeCards() {
+  const current = getConnMode();
+  ['hybrid', 'usb', 'wifi'].forEach(mode => {
+    const card = $('conn-opt-' + mode);
+    if (card) card.classList.toggle('active', current === mode);
+  });
+}
+
+function updateConnModalRealtimeStats() {
+  const usbVal = $('conn-status-usb-val');
+  const wifiVal = $('conn-status-wifi-val');
+  const loc = window.location;
+  const savedHost = localStorage.getItem('digi_server_host') || (loc.hostname !== 'localhost' && loc.hostname !== '127.0.0.1' ? loc.host : '192.168.x.x');
+
+  if (usbVal) {
+    if (wsUsb && wsUsb.readyState === WebSocket.OPEN) {
+      usbVal.textContent = 'Terhubung (' + (usbPing !== null ? Math.round(usbPing) + ' ms' : '< 1 ms') + ')';
+      usbVal.style.color = '#38ef7d';
+    } else if (wsUsb && wsUsb.readyState === WebSocket.CONNECTING) {
+      usbVal.textContent = 'Menghubungkan...';
+      usbVal.style.color = '#f0883e';
+    } else {
+      usbVal.textContent = 'Tidak Terhubung';
+      usbVal.style.color = 'var(--text-dim)';
+    }
+  }
+
+  if (wifiVal) {
+    if (wsWifi && wsWifi.readyState === WebSocket.OPEN) {
+      wifiVal.textContent = 'Terhubung (' + savedHost + ', ' + (wifiPing !== null ? Math.round(wifiPing) + ' ms' : 'OK') + ')';
+      wifiVal.style.color = '#3fb950';
+    } else if (wsWifi && wsWifi.readyState === WebSocket.CONNECTING) {
+      wifiVal.textContent = 'Menghubungkan (' + savedHost + ')...';
+      wifiVal.style.color = '#f0883e';
+    } else {
+      wifiVal.textContent = 'Tidak Terhubung';
+      wifiVal.style.color = 'var(--text-dim)';
+    }
+  }
 }
 
 // ── Network Lifecycle & Screen Wake Listeners ──
@@ -12573,7 +13008,53 @@ function closeReconnectModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// Badge status koneksi bersifat murni informatif (koneksi berjalan otomatis di latar belakang)
+// ── Connection Mode Modal & Status Badge Interaction ──
+if (badge) {
+  badge.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(20);
+    openConnModeModal();
+  });
+}
+
+const btnCloseConnMode = $('btn-close-conn-mode');
+if (btnCloseConnMode) {
+  btnCloseConnMode.addEventListener('click', () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    closeConnModeModal();
+  });
+}
+
+const btnConnSaveClose = $('btn-conn-save-close');
+if (btnConnSaveClose) {
+  btnConnSaveClose.addEventListener('click', () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(20);
+    closeConnModeModal();
+  });
+}
+
+const btnConnScanner = $('btn-conn-open-scanner');
+if (btnConnScanner) {
+  btnConnScanner.addEventListener('click', () => {
+    if (typeof playClickSound === 'function') playClickSound();
+    if (typeof vibe === 'function') vibe(20);
+    closeConnModeModal();
+    openReconnectModal();
+  });
+}
+
+['hybrid', 'usb', 'wifi'].forEach(mode => {
+  const card = $('conn-opt-' + mode);
+  if (card) {
+    card.addEventListener('click', () => {
+      if (typeof playClickSound === 'function') playClickSound();
+      if (typeof vibe === 'function') vibe(25);
+      setConnMode(mode);
+    });
+  }
+});
 
 
 const btnRcUsb = $('btn-rc-usb');

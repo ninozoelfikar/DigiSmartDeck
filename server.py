@@ -15,6 +15,7 @@ import shutil
 import re
 import math
 import subprocess
+import collections
 from aiohttp import web
 
 from auth_manager import pairing_manager, license_manager
@@ -2305,6 +2306,23 @@ def release_all_client_keys(keys_set):
         ACTIVE_KEYS.discard(k)
     keys_set.clear()
 
+# Cache deduplikasi event client untuk Mode Hybrid (Active-Active Dual-Path)
+PROCESSED_ACTION_SEQS = collections.deque(maxlen=2000)
+PROCESSED_ACTION_SEQS_SET = set()
+
+def check_and_record_seq(client_id, seq):
+    if not seq:
+        return False
+    key = (str(client_id), str(seq))
+    if key in PROCESSED_ACTION_SEQS_SET:
+        return True
+    if len(PROCESSED_ACTION_SEQS) >= 2000:
+        old = PROCESSED_ACTION_SEQS.popleft()
+        PROCESSED_ACTION_SEQS_SET.discard(old)
+    PROCESSED_ACTION_SEQS.append(key)
+    PROCESSED_ACTION_SEQS_SET.add(key)
+    return False
+
 async def websocket_handler(request):
     global CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID, AUTO_ENTER_ENABLED
     ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0, max_msg_size=131072)
@@ -2332,7 +2350,8 @@ async def websocket_handler(request):
             'pairing_required': not is_client_authorized,
             'host_name': socket.gethostname(),
             'license': license_manager.get_info(),
-            'locked_win_id': LOCKED_TARGET_WIN_ID
+            'locked_win_id': LOCKED_TARGET_WIN_ID,
+            'lan_ips': get_local_ip_addresses()
         }))
         if is_client_authorized:
             await ws.send_str(json.dumps({
@@ -2388,6 +2407,16 @@ async def websocket_handler(request):
             if msg.type == web.WSMsgType.TEXT:
                 data = json.loads(msg.data)
                 msg_type = data.get('type')
+
+                # Filter deduplikasi aksi input untuk Mode Hybrid (Active-Active Dual-Path)
+                if data.get('seq') and msg_type in (
+                    'keydown', 'keyup', 'keypress', 'text', 'type_text', 'shortcut',
+                    'mouse_click', 'mouse_move', 'mouse_down', 'mouse_up', 'wheel',
+                    'gamepad_axis', 'gamepad_button'
+                ):
+                    c_id = data.get('client_id') or client_ip
+                    if check_and_record_seq(c_id, data.get('seq')):
+                        continue
 
                 # Update nama perangkat jika dikirim dari client
                 if data.get('device_name'):

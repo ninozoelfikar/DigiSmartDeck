@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.17] - 2026-10-18
+- Fitur Mode Hybrid Dual-Path (USB + Wi-Fi paralel) dan Modal Pemilih Jalur Koneksi
+
 ### [1.21.4.16] - 2026-10-18
 - Kunci eksekusi Auto-Enter murni hanya tombol Enter tanpa karakter lain dan pembersihan prompt saat Enter
 
@@ -415,6 +418,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.17] - 2026-10-18
+- Release v1.21.4.17 updates
 
 ### [1.21.4.16] - 2026-10-18
 - Release v1.21.4.16 updates
