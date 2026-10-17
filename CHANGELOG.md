@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.18] - 2026-10-18
+- Penyederhanaan modal lisensi khusus paket Lifetime aktif
+
 ### [1.21.4.17] - 2026-10-18
 - Fitur Mode Hybrid Dual-Path (USB + Wi-Fi paralel) dan Modal Pemilih Jalur Koneksi
 
@@ -418,6 +421,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.18] - 2026-10-18
+- Release v1.21.4.18 updates
 
 ### [1.21.4.17] - 2026-10-18
 - Release v1.21.4.17 updates

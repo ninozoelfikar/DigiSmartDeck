@@ -2197,3 +2197,16 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
 
+---
+
+## 122. CATATAN CHECKPOINT (v1.21.4.18 - Penyederhanaan Modal Lisensi Khusus Paket Lifetime Aktif)
+- **Eliminasi Kotak Tambahan pada Lisensi Seumur Hidup (#modal-license):**
+  - Khusus untuk perangkat dengan status lisensi Seumur Hidup (Lifetime) yang sudah aktif, modal lisensi kini murni hanya menampilkan satu kotak/kartu utama di bagian atas (Status Paket Aktif, Masa Aktif, Sisa Hari: Tanpa Batas, dan Kunci Lisensi).
+  - Kotak tengah (Form input kode aktivasi lisensi `#license-activation-card`) dan kotak bawah (Banner status seumur hidup `#license-lifetime-banner`) disembunyikan sepenuhnya karena perangkat sudah berstatus permanen tanpa batas dan tidak memerlukan input kode lisensi apa pun lagi.
+  - Untuk status non-lifetime (Trial atau Langganan Bulanan), kotak form aktivasi/upgrade tetap tersedia sebagaimana mestinya.
+  - Teks sisa masa aktif pada paket Lifetime diselaraskan menjadi "Tanpa Batas" (Bahasa Indonesia) / "Unlimited" (English).
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+

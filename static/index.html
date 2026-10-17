@@ -5178,6 +5178,9 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   padding: 12px;
   margin-bottom: 12px;
 }
+.license-card:last-child {
+  margin-bottom: 0;
+}
 .license-header-row {
   display: flex;
   justify-content: space-between;
@@ -9547,7 +9550,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.17</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.18</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -10804,7 +10807,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.17';
+const APP_CLIENT_VERSION = '1.21.4.18';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -11449,7 +11452,7 @@ function updateLicenseDisplay(lic) {
     }
   }
   if (expEl) expEl.textContent = lic.expires_at || (lic.tier === 'lifetime' ? (currentUiLang === 'id' ? 'Seumur Hidup (Permanen)' : 'Lifetime (Permanent)') : '-');
-  if (daysEl) daysEl.textContent = lic.tier === 'lifetime' ? '∞' : (lic.days_left !== null && lic.days_left !== undefined ? `${lic.days_left} ${currentUiLang === 'id' ? 'Hari' : 'Days'}` : '-');
+  if (daysEl) daysEl.textContent = lic.tier === 'lifetime' ? (currentUiLang === 'id' ? 'Tanpa Batas' : 'Unlimited') : (lic.days_left !== null && lic.days_left !== undefined ? `${lic.days_left} ${currentUiLang === 'id' ? 'Hari' : 'Days'}` : '-');
   if (keyEl) keyEl.textContent = lic.license_key || '-';
 
   // Logika tampilan form aktivasi & upgrade lisensi
@@ -11460,11 +11463,11 @@ function updateLicenseDisplay(lic) {
   const inpKey = $('inp-license-key');
 
   if (lic.tier === 'lifetime' && lic.status !== 'expired') {
-    // 1. TIER LIFETIME: Sembunyikan kolom isi lisensi karena sudah aktif permanen
+    // 1. TIER LIFETIME: Hanya pakai kotak atas. Kedua kotak di bawahnya tidak dibutuhkan dan disembunyikan.
     if (actCard) actCard.classList.add('hidden');
-    if (lifetimeBanner) lifetimeBanner.classList.remove('hidden');
+    if (lifetimeBanner) lifetimeBanner.classList.add('hidden');
   } else {
-    // 2. TIER BULANAN (MONTHLY) ATAU TRIAL: Tampilkan kolom lisensi
+    // 2. TIER BULANAN (MONTHLY) ATAU TRIAL: Tampilkan kotak form aktivasi / upgrade
     if (lifetimeBanner) lifetimeBanner.classList.add('hidden');
     if (actCard) actCard.classList.remove('hidden');
 
