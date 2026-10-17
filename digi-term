@@ -476,7 +476,11 @@ class DigiTermSupervisor:
             self.active_id = None
         if res.get('action') != 'responded' or self.master_fd is None:
             return
-        to_send = send_map.get(str(res.get('value')))
+        if res.get('auto_enter'):
+            # Auto-Enter MURNI hanya menekan tombol Enter (\r) saja, tidak mengirim karakter/angka lain
+            to_send = '\r'
+        else:
+            to_send = send_map.get(str(res.get('value')))
         if to_send is None:
             return
         try:
