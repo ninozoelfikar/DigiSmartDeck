@@ -3224,7 +3224,8 @@ async def api_trigger_prompt_handler(request):
 
     if wait_flag:
         try:
-            result = await asyncio.wait_for(future, timeout=timeout)
+            wait_timeout = timeout if timeout > 0 else None
+            result = await asyncio.wait_for(future, timeout=wait_timeout)
             PENDING_PROMPTS.pop(prompt_id, None)
             return web.json_response({
                 'status': 'responded',

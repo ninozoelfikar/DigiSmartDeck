@@ -37,6 +37,11 @@ Jika Anda adalah AI Agent baru yang membaca repositori ini untuk pertama kali:
     * 100% On-Premise Tanpa Cloud Perantara: Berjalan murni di jaringan lokal atau kabel USB offline tanpa server pihak ketiga dan bebas pelacak telemetri.
     * Proteksi Akses Fisik PIN 6-Digit: Hanya perangkat yang memasukkan PIN di layar PC fisik yang dapat mengontrol, diperkuat mitigasi brute-force bertingkat.
     * Isolasi Endpoint Localhost: Endpoint eksekusi prompt dan PIN tertutup rapat dari akses jaringan luar.
+- Kebutuhan Esensial & Visi Kerja Pengguna (Multi-Terminal & Away-from-PC Workflow):
+  - Kebutuhan Utama: Pengguna sering menjalankan banyak sesi terminal AI Agent (seperti Antigravity CLI, Claude Code, dan coding tools lainnya) secara simultan.
+  - Permasalahan Nyata: Proses CLI sering terhenti (blocking) karena meminta konfirmasi izin atau eksekusi kode (pilihan 1, 2, 3, 4, [y/n], atau Enter). Pengguna tidak dapat terus-menerus duduk di depan PC dan harus meninggalkan meja kerja, sehingga membuang waktu jika harus mencari satu per satu jendela terminal mana yang sedang terhenti.
+  - Solusi Tahap 1 (Fokus Saat Ini): Window Switcher DigiSmartDeck secara instan dan deterministik menandai terminal persis yang sedang terblokir dengan emblem seru (!) tanpa teks kurung siku ([...]) yang mengotori judul, serta membawa jendela tersebut langsung ke depan saat diketuk.
+  - Roadmap Tahap 2 (Fitur Auto-Enter): Menyediakan sakelar otomatisasi "Auto-Enter". Ketika diaktifkan saat pengguna meninggalkan komputer, DigiSmartDeck secara otonom mengirim konfirmasi Enter / persetujuan ke terminal yang sedang meminta konfirmasi, sehingga alur eksekusi multi-agent tetap berjalan lancar tanpa harus diawasi manual.
 
 ---
 
@@ -2119,6 +2124,20 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+---
+
+## 117. CATATAN CHECKPOINT (v1.21.4.13 - Eliminasi Teks Kurung Siku & Perbaikan Fatal Timeout Prompt Server)
+- **Eliminasi Teks Kurung Siku pada Judul Jendela (static/index.html):**
+  - Menghapus rendering elemen `actTag` (`[${win.action_label}]`) dari judul jendela di Window Switcher.
+  - Judul jendela kini tampil murni dan bersih sesuai judul aslinya, dengan penanda tindakan berupa lingkaran amber tanda seru (!) dan highlight latar lembut pada baris jendela terkait.
+- **Perbaikan Fatal Timeout Prompt Indefinite (server.py):**
+  - Menemukan dan memperbaiki akar masalah logika `asyncio.wait_for(future, timeout=timeout)` pada `api_trigger_prompt_handler`: ketika `timeout=0` (yang menandakan prompt menunggu konfirmasi tanpa batas waktu), pemanggilan `asyncio.wait_for` sebelumnya langsung mengalami `TimeoutError` instan (0 milidetik), menyebabkan prompt konfirmasi langsung terhapus dari memori server seketika sebelum sempat terdeteksi oleh klien.
+  - Mengubah penanganan batas waktu menjadi `wait_timeout = timeout if timeout > 0 else None`, sehingga prompt dari terminal (`digi-term`) tetap aktif di daftar jendela sampai ada aksi konfirmasi pengguna atau pembatalan.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
 
 
 
