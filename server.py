@@ -1311,7 +1311,14 @@ def get_open_windows_list():
                         p_cwd = payload.get('cwd') or ''
 
                         # Cocokkan window ID secara ketat
-                        if p_win and (str(p_win).lower() == str(win_id).lower()):
+                        win_matched = False
+                        if p_win and win_id:
+                            try:
+                                win_matched = (int(str(p_win), 16) == int(str(win_id), 16))
+                            except Exception:
+                                win_matched = (str(p_win).strip().lower() == str(win_id).strip().lower())
+
+                        if win_matched:
                             has_action = True
                             action_label = payload.get('title') or 'Tindakan Diperlukan'
                             break

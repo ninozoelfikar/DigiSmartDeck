@@ -56,6 +56,8 @@ def main():
     parser.add_argument("--no-pc-exec", action="store_true", help="Jangan simulasikan tombol ke PC (hanya kembalikan hasil ke CLI)")
     parser.add_argument("-q", "--value-only", action="store_true", help="Hanya cetak nilai opsi terpilih ke stdout")
     parser.add_argument("--json", action="store_true", help="Cetak respon lengkap dalam format JSON")
+    parser.add_argument("--win-id", default=None, help="Window ID X11 terminal pengirim (default: auto dari $WINDOWID)")
+    parser.add_argument("--nowait", action="store_true", help="Kirim notifikasi tanpa memblokir terminal (fire-and-forget)")
     args = parser.parse_args()
 
     # Baca pesan dari stdin jika '-'
@@ -69,16 +71,24 @@ def main():
             {"label": args.no, "value": "n", "key": "escape", "danger": True}
         ]
 
+    import os
+    caller_win_id = args.win_id or os.environ.get('WINDOWID')
+    if caller_win_id and str(caller_win_id).isdigit():
+        caller_win_id = hex(int(caller_win_id))
+
     payload = {
         "app": args.app,
         "title": args.title,
         "message": args.message,
         "options": options,
         "timeout": args.timeout,
-        "execute_on_pc": not args.no_pc_exec
+        "execute_on_pc": not args.no_pc_exec,
+        "pid": os.getpid(),
+        "win_id": caller_win_id
     }
 
-    url = f"http://127.0.0.1:{args.port}/api/prompt?wait=true"
+    wait_query = "" if args.nowait else "?wait=true"
+    url = f"http://127.0.0.1:{args.port}/api/prompt{wait_query}"
     req = urllib.request.Request(
         url,
         data=json.dumps(payload).encode("utf-8"),
@@ -90,6 +100,11 @@ def main():
             data = json.loads(resp.read().decode("utf-8"))
             if args.json:
                 print(json.dumps(data))
+                sys.exit(0)
+
+            if args.nowait:
+                if not args.value_only:
+                    print(f"[OK] Notifikasi terkirim ke DigiSmartDeck (id={data.get('prompt_id')})")
                 sys.exit(0)
 
             res = data.get("response", {})

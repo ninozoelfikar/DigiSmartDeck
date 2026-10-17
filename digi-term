@@ -34,6 +34,8 @@ import re
 import time
 import threading
 import urllib.request
+import subprocess
+import uuid
 
 SERVER_PORT = int(os.environ.get('DIGI_PORT', '8080'))
 PROMPT_URL = f"http://127.0.0.1:{SERVER_PORT}/api/prompt?wait=true"
@@ -41,7 +43,97 @@ DISMISS_URL = f"http://127.0.0.1:{SERVER_PORT}/api/prompt/dismiss"
 
 ANSI_RE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\))')
 IDLE_SECONDS = 0.22          # output harus diam selama ini sebelum dianggap menunggu input
-PROMPT_TIMEOUT = 120         # detik kartu tetap tampil di HP
+PROMPT_TIMEOUT = 0           # 0 = tanpa batas timeout, tanda tetap aktif sampai dikonfirmasi atau diabaikan
+
+
+CACHED_WIN_ID = None
+
+def get_current_window_id():
+    """Mendeteksi X11 Window ID terminal ini secara akurat."""
+    global CACHED_WIN_ID
+    if CACHED_WIN_ID:
+        return CACHED_WIN_ID
+
+    # 1. Cek environment WINDOWID
+    win_env = os.environ.get('WINDOWID')
+    if win_env and win_env.isdigit():
+        CACHED_WIN_ID = hex(int(win_env))
+        return CACHED_WIN_ID
+
+    # 2. Cek tag OSC pada devpts
+    if not sys.platform.startswith('linux'):
+        return None
+    try:
+        tty_nr = None
+        curr = os.getpid()
+        while curr and curr > 1:
+            try:
+                parts = open(f'/proc/{curr}/stat').read().split()
+                t = int(parts[6])
+                if t and os.major(t) == 136:
+                    tty_nr = os.minor(t)
+                    break
+                curr = int(parts[3])
+            except Exception:
+                break
+
+        if tty_nr is None:
+            return None
+        pts_dev = f'/dev/pts/{tty_nr}'
+        if not os.path.exists(pts_dev):
+            return None
+
+        res = subprocess.run(['wmctrl', '-l', '-x'], capture_output=True, text=True, timeout=0.8)
+        if res.returncode != 0:
+            return None
+
+        candidate_windows = []
+        for line in res.stdout.strip().splitlines():
+            parts = line.split(maxsplit=4)
+            if len(parts) >= 5:
+                w_id, _, wm_class, _, w_title = parts
+                if any(term in wm_class.lower() for term in ['terminal', 'konsole', 'alacritty', 'kitty', 'code', 'antigravity', 'cursor', 'wezterm', 'foot', 'terminator', 'tilix', 'xterm']):
+                    candidate_windows.append((w_id, w_title))
+
+        if not candidate_windows:
+            return None
+        if len(candidate_windows) == 1:
+            CACHED_WIN_ID = candidate_windows[0][0]
+            return CACHED_WIN_ID
+
+        tag = f'DIGI_PIN_{uuid.uuid4().hex[:8]}'
+        try:
+            with open(pts_dev, 'w') as f:
+                f.write(f'\033]2;{tag}\007')
+                f.flush()
+        except Exception:
+            return None
+
+        time.sleep(0.04)
+
+        matched_win_id = None
+        orig_title = None
+        for w_id, w_title in candidate_windows:
+            prop = subprocess.run(['xprop', '-id', w_id, 'WM_NAME'], capture_output=True, text=True, timeout=0.2).stdout
+            if tag in prop:
+                matched_win_id = w_id
+                orig_title = w_title
+                break
+
+        if orig_title:
+            try:
+                with open(pts_dev, 'w') as f:
+                    f.write(f'\033]2;{orig_title}\007')
+                    f.flush()
+            except Exception:
+                pass
+
+        if matched_win_id:
+            CACHED_WIN_ID = matched_win_id
+        return matched_win_id
+    except Exception:
+        return None
+
 
 
 def strip_ansi(text):
@@ -74,20 +166,23 @@ def clean_terminal_text(buffer_text):
 AI_PERMISSION_KW = re.compile(
     r'(?i)\b('
     r'requesting\s+permission\s+for|'
-    r'ask(?:ing)? for permission|'
-    r'run(?:ning)? (?:this|the following)?\s*command|'
-    r'execute(?:ing)? (?:this|the following)?\s*command|'
-    r'allow (?:tool|action|command|execution|access)|'
-    r'approve (?:tool|action|command|execution)|'
-    r'do you want to (?:run|execute|proceed|continue|install|apply|delete|remove|overwrite)|'
-    r'would you like to (?:run|execute|proceed|continue|install|apply)|'
-    r'are you sure you want to|apakah anda yakin|'
-    r'confirm execution|action required|approval required|'
-    r'tool confirmation|surfacing tool confirmation|'
-    r'allow tool call|deny tool call|allow calling this tool|'
-    r'allow access to|proposed command|allow execution'
+    r'ask(?:ing)?\s+for\s+permission|'
+    r'requires\s+permission|'
+    r'run(?:ning)?\s+(?:this|the\s+following)?\s*(?:command|comment)|'
+    r'execute(?:ing)?\s+(?:this|the\s+following)?\s*(?:command|comment)|'
+    r'allow\s+(?:tool|action|command|execution|access|calling)|'
+    r'approve\s+(?:tool|action|command|execution)|'
+    r'do\s+you\s+want\s+to\s+(?:run|execute|proceed|continue|install|apply|delete|remove|overwrite)|'
+    r'would\s+you\s+like\s+to\s+(?:run|execute|proceed|continue|install|apply)|'
+    r'are\s+you\s+sure\s+you\s+want\s+to|apakah\s+anda\s+yakin|'
+    r'confirm\s+execution|action\s+required|approval\s+required|'
+    r'tool\s+confirmation|surfacing\s+tool\s+confirmation|'
+    r'allow\s+tool\s+call|deny\s+tool\s+call|allow\s+calling\s+this\s+tool|'
+    r'allow\s+access\s+to|proposed\s+command|allow\s+execution|'
+    r'always\s+allow'
     r')\b'
 )
+
 
 
 def extract_prompt_details(lines, context, inspect_line):
@@ -178,7 +273,12 @@ def is_shell_prompt(s):
 
 
 def is_option_line(s):
-    return bool(re.match(r'^\s*[❯>]?\s*(?:[\[\(]?\d{1,2}[\]\).:]|[\[\(][ xX●•*]?[\]\)])\s+\w+', s))
+    if re.match(r'^\s*[❯>]?\s*(?:[\[\(]?\d{1,2}[\]\).:]|[\[\(][ xX●•*]?[\]\)])\s+\w+', s):
+        return True
+    if re.match(r'^\s*[❯>]\s+(?:Yes|No|Allow|Deny|Cancel|Always|Proceed|Continue|Skip)\b', s, re.IGNORECASE):
+        return True
+    return False
+
 
 
 def detect_prompt(buffer_text):
@@ -207,8 +307,9 @@ def detect_prompt(buffer_text):
     is_statement = (inspect_line.endswith('.') or bool(re.search(r'(?i)\b(denied|passed|failed|completed|success|error)\b', inspect_line)))
     is_kw_permission = bool(('?' in inspect_line or AI_PERMISSION_KW.search(inspect_line)) and not is_statement)
     is_menu_opt = bool(is_option_line(inspect_line))
+    is_pw_prompt = bool(re.search(r'(?i)(?:password|passphrase|kata\s*sandi)\s*(?:for\s+[\w\.\-]+)?\s*:\s*$', inspect_line))
 
-    if not (is_enter_prompt or is_yn or is_kw_permission or is_menu_opt):
+    if not (is_enter_prompt or is_yn or is_kw_permission or is_menu_opt or is_pw_prompt):
         return None
 
     context = '\n'.join(l for l in lines[-16:] if l.strip())
@@ -220,6 +321,15 @@ def detect_prompt(buffer_text):
             'title': 'Menunggu Enter',
             'message': context,
             'options': [_opt('Lanjut', 'enter', '\r', key='Enter', primary=True)],
+        }
+
+    # 2. Menunggu Input Password / Sudo
+    if is_pw_prompt:
+        return {
+            'app': 'Terminal',
+            'title': 'Input Password',
+            'message': inspect_line,
+            'options': [_opt('Buka Terminal', 'focus', '', key='Enter', primary=True)],
         }
 
     # 2. Deteksi pertanyaan CLI / AI Agent (kata kunci izin, biner [y/n], atau opsi menu)
@@ -342,14 +452,24 @@ class DigiTermSupervisor:
         send_map = {str(o['value']): o['send'] for o in payload['options']}
         body = dict(payload)
         body['options'] = [{k: v for k, v in o.items() if k != 'send'} for o in payload['options']]
-        body.update({'id': prompt_id, 'timeout': PROMPT_TIMEOUT, 'execute_on_pc': False})
+        body.update({
+            'id': prompt_id,
+            'timeout': PROMPT_TIMEOUT,
+            'execute_on_pc': False,
+            'pid': os.getpid(),
+            'cwd': os.getcwd(),
+            'win_id': get_current_window_id()
+        })
+
         try:
             req = urllib.request.Request(PROMPT_URL, data=json.dumps(body).encode(),
                                          headers={'Content-Type': 'application/json'})
-            with urllib.request.urlopen(req, timeout=PROMPT_TIMEOUT + 5) as resp:
+            http_timeout = (PROMPT_TIMEOUT + 5) if PROMPT_TIMEOUT > 0 else 300
+            with urllib.request.urlopen(req, timeout=http_timeout) as resp:
                 res = json.loads(resp.read().decode()).get('response', {})
         except Exception:
             res = {}
+
         with self.active_lock:
             if self.active_id != prompt_id:
                 return  # dibatalkan karena pengguna mengetik langsung di PC
@@ -413,6 +533,19 @@ class DigiTermSupervisor:
                     os.write(sys.stdout.fileno(), data)
                     with self.buf_lock:
                         decoded = data.decode('utf-8', errors='ignore')
+                        # Deteksi escape sequence notifikasi terminal OSC (OSC 777 / OSC 9)
+                        osc_match = re.search(r'\x1b\](?:777;notify;([^;\x07\x1b]*);([^\x07\x1b]*)|9;([^\x07\x1b]*))(?:\x07|\x1b\\)', decoded)
+                        if osc_match:
+                            n_title = (osc_match.group(1) or osc_match.group(3) or 'Notifikasi Terminal').strip()
+                            n_msg = (osc_match.group(2) if osc_match.group(1) else '').strip()
+                            osc_id = f"term_osc_{os.getpid()}_{int(time.time() * 1000)}"
+                            threading.Thread(target=self.dispatch, args=(osc_id, {
+                                'app': 'Terminal',
+                                'title': n_title,
+                                'message': n_msg or 'Pemberitahuan dari terminal',
+                                'options': [_opt('OK', 'ok', '\r', key='Enter', primary=True)]
+                            }), daemon=True).start()
+
                         self.buf = (self.buf + decoded)[-3072:]
                         stripped = strip_ansi(decoded).strip()
                         # Abaikan karakter spinner animasi (braille unicode dan simbol spinner) agar tidak mereset idle timer

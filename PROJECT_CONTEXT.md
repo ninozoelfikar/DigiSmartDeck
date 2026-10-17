@@ -2089,16 +2089,23 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 
 ---
 
-## 114. CATATAN CHECKPOINT (v1.21.2.5 - Glosarium Bahasa Indonesia Papan Sentuh & Alih Cerdas)
-- **Standardisasi Terminologi Bahasa Indonesia di Menu Control Deck:**
-  - Padanan 'Trackpad' disesuaikan menjadi 'Papan Sentuh' (KBBI/Glosarium TI).
-  - Padanan 'Smart Switch' disesuaikan menjadi 'Alih Cerdas' (pengalihan otomatis konteks aplikasi PC aktif).
-  - Diperbarui pada kamus `I18N.id` (`util_trackpad` dan `util_smart_switch`) di `static/index.html`.
-- **Sinkronisasi Versi & Kompilasi APK:**
-  - Versi aplikasi dinaikkan ke `v1.21.2.5`.
-  - Berkas APK baru terkompilasi di `dist/` dan `static/` (~5.6 MB).
-  - Layanan `digikeyboard.service` di-refresh.
+---
+
+## 115. CATATAN CHECKPOINT (v1.21.4.11 - Integrasi Notifikasi Terminal ke Window Switcher & Eliminasi Emblem Luar)
+- **Eliminasi Tanda Seru (!) pada Emblem Luar Window Switcher:**
+  - Menghapus elemen `#sc-action-badge` dari bilah kontrol atas (`#smart-context-chip`) di `static/index.html`.
+  - Membersihkan logika toggle badge dari `updateSmartContextUI` dan `renderWindowList` agar chip tombol utama di luar tetap tenang, bersih, dan bebas dari alarm visual.
+- **Isolasi Notifikasi Tanda Seru Khusus di Dalam Daftar Window Switcher:**
+  - Memastikan tanda seru peringatan (`.win-switcher-action-emblem`) hanya muncul di baris jendela spesifik di dalam modal Window Switcher yang membutuhkan tindakan atau konfirmasi.
+  - Jendela normal lainnya tetap tampil bersih tanpa emblem peringatan.
+- **Presisi Pencocokan Window ID X11 (server.py):**
+  - Memperbaiki pencocokan identitas jendela antara format hex heksadesimal X11 dan string integer (`int(str(p_win), 16) == int(str(win_id), 16)`), mencegah kegagalan deteksi akibat perbedaan zero-padding (`0x3800007` vs `0x03800007`).
+  - Terminal yang meminta konfirmasi (via `digi-term` atau endpoint `/api/prompt`) kini secara deterministik mengaktifkan status `has_action` pada baris terminal terkait.
+- **Dukungan Prompt Kata Sandi & Notifikasi OSC Terminal:**
+  - Memperluas deteksi `digi-term` untuk menangkap prompt kata sandi (`[sudo] password for:`) dan escape sequence notifikasi terminal (`OSC 777` dan `OSC 9`).
+  - Menambahkan opsi `--nowait` dan pengenalan `$WINDOWID` pada skrip utilitas `digi-prompt`.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
-  - Efek suara klik mekanikal (`playClickSound()`) dan respons getar haptik tetap aktif sempurna.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
 

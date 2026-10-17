@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.11] - 2026-10-18
+- Integrasi Notifikasi Terminal ke Window Switcher
+
 ### [1.21.4.10] - 2026-10-17
 - Refactor ALIDECK to Pure Voice Deck with Auto-Update and Adaptive Silence Buffer
 
@@ -397,6 +400,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.11] - 2026-10-18
+- Release v1.21.4.11 updates
 
 ### [1.21.4.10] - 2026-10-17
 - Release v1.21.4.10 updates
