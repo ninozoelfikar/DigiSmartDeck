@@ -2153,6 +2153,21 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
 
+---
+
+## 119. CATATAN CHECKPOINT (v1.21.4.15 - Diferensiasi Notifikasi: Tugas Selesai Hilang Saat Dibuka vs Prompt Hilang Saat Di-Enter)
+- **Perilaku Notifikasi Tugas Selesai (Completion Notification):**
+  - Notifikasi tugas selesai (dari `digi-prompt --completion`, perintah terawasi `digi-term` yang selesai eksekusi, notifikasi OSC 777/9, atau panggilan `/api/prompt` bermuatan kata kunci selesai/sukses) tetap ditampilkan di Window Switcher dengan emblem tanda seru (!) amber dan highlight lembut kartu jendela.
+  - Begitu jendela tersebut dibuka/diaktifkan (baik dengan mengetuk item jendela di Window Switcher ponsel via `activate_window` maupun berpindah jendela langsung di PC fisik via `smart_context_tracker_loop`), penanda notifikasi seketika dihapus bersih (`dismiss_completion_notifications_for_window`).
+- **Perilaku Notifikasi Prompt yang Memerlukan Respon (Interactive Confirmation):**
+  - Untuk jendela terminal atau aplikasi yang sedang meminta konfirmasi izin atau pilihan angka (1, 2, 3, 4, [y/n]), membuka jendela TIDAK MENGHAPUS notifikasi. Penanda tanda seru (!) tetap bertahan agar pengguna sadar bahwa terminal masih menunggu masukan.
+  - Notifikasi HANYA hilang ketika respon diberikan lalu tombol Enter ditekan (`resolve_prompt_on_enter`), baik dari tombol Enter raksasa AI Workstation (`#ai-btn-enter`), tombol prompt chip (`Lanjutkan`, dll.), mode Auto-Enter, maupun saat pengguna menekan tombol Enter secara fisik di terminal (`digi-term` stdin).
+  - Pada `digi-term`, penekanan karakter selain tombol navigasi dan tombol Enter tidak lagi menghapus prompt secara prematur sebelum Enter dikirim.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+
 
 
 
