@@ -1303,6 +1303,7 @@ def get_open_windows_list():
 
                     has_action = False
                     action_label = ''
+                    action_type = 'prompt'
                     # 1. Periksa apakah ada PENDING_PROMPTS untuk window ini
                     for pid, p_info in PENDING_PROMPTS.items():
                         payload = p_info.get('payload', {})
@@ -1321,6 +1322,7 @@ def get_open_windows_list():
                         if win_matched:
                             has_action = True
                             action_label = payload.get('title') or 'Tindakan Diperlukan'
+                            action_type = 'completion' if payload.get('is_completion') else 'prompt'
                             break
 
                         # Jika p_app terminal/CLI atau p_win tidak diketahui, cocokkan jendela terminal atau IDE
@@ -1329,10 +1331,12 @@ def get_open_windows_list():
                                 if any(k in wm_class_lower for k in ['terminal', 'code', 'antigravity', 'cursor', 'konsole', 'bash', 'pty']):
                                     has_action = True
                                     action_label = payload.get('title') or 'Konfirmasi Terminal'
+                                    action_type = 'completion' if payload.get('is_completion') else 'prompt'
                                     break
                             elif p_app in wm_class_lower or p_app == friendly_name.lower():
                                 has_action = True
                                 action_label = payload.get('title') or 'Tindakan Diperlukan'
+                                action_type = 'completion' if payload.get('is_completion') else 'prompt'
                                 break
 
 
@@ -1340,6 +1344,7 @@ def get_open_windows_list():
                     if not has_action and ACTIVE_WINDOW_DIALOG_ID and str(win_id) in str(ACTIVE_WINDOW_DIALOG_ID):
                         has_action = True
                         action_label = 'Dialog Konfirmasi'
+                        action_type = 'prompt'
 
                     if not has_action:
                         t_lower = title.lower()
@@ -1353,6 +1358,7 @@ def get_open_windows_list():
                         if any(kw in t_lower for kw in action_keywords) or 'dialog' in wm_class_lower:
                             has_action = True
                             action_label = 'Perhatian Diperlukan'
+                            action_type = 'prompt'
 
                     # 4. Periksa apakah jendela sedang meminta perhatian (demands_attention / dialog / urgent) di sistem X11
                     if not has_action and win_id:
@@ -1362,6 +1368,7 @@ def get_open_windows_list():
                             if 'DEMANDS_ATTENTION' in out_p or 'UrgencyHint' in out_p or '_NET_WM_WINDOW_TYPE_DIALOG' in out_p or 'WM_TRANSIENT_FOR(WINDOW): window id #' in out_p:
                                 has_action = True
                                 action_label = 'Dialog Konfirmasi' if ('_NET_WM_WINDOW_TYPE_DIALOG' in out_p or 'WM_TRANSIENT_FOR' in out_p) else 'Perhatian Diperlukan'
+                                action_type = 'prompt'
                         except Exception:
                             pass
 
@@ -1374,7 +1381,8 @@ def get_open_windows_list():
                         'is_active': is_active,
                         'is_locked': is_locked,
                         'has_action': has_action,
-                        'action_label': action_label
+                        'action_label': action_label,
+                        'action_type': action_type
                     })
         except Exception:
             pass
@@ -1400,6 +1408,7 @@ def get_open_windows_list():
 
                         has_action = False
                         action_label = ''
+                        action_type = 'prompt'
                         for pid, p_info in PENDING_PROMPTS.items():
                             payload = p_info.get('payload', {})
                             p_win = payload.get('win_id')
@@ -1407,10 +1416,12 @@ def get_open_windows_list():
                             if p_win and (str(p_win).lower() == str(hwnd).lower()):
                                 has_action = True
                                 action_label = payload.get('title') or 'Tindakan Diperlukan'
+                                action_type = 'completion' if payload.get('is_completion') else 'prompt'
                                 break
                             if not p_win and p_app and (p_app in class_name.lower() or p_app in friendly_name.lower()):
                                 has_action = True
                                 action_label = payload.get('title') or 'Tindakan Diperlukan'
+                                action_type = 'completion' if payload.get('is_completion') else 'prompt'
                                 break
 
                         if not has_action:
@@ -1419,6 +1430,7 @@ def get_open_windows_list():
                             if any(kw in t_lower for kw in action_keywords) or '#32770' in class_name:
                                 has_action = True
                                 action_label = 'Perhatian Diperlukan'
+                                action_type = 'prompt'
 
                         extra.append({
                             'win_id': str(hwnd),
@@ -1429,7 +1441,8 @@ def get_open_windows_list():
                             'is_active': is_active,
                             'is_locked': is_locked,
                             'has_action': has_action,
-                            'action_label': action_label
+                            'action_label': action_label,
+                            'action_type': action_type
                         })
             win32gui.EnumWindows(enum_cb, windows)
         except Exception:
@@ -2108,6 +2121,95 @@ async def broadcast_prompt_dismiss(prompt_id):
         except Exception:
             pass
 
+
+async def dismiss_completion_notifications_for_window(win_id):
+    """Menghapus notifikasi 'tugas selesai' (completion) begitu jendela dibuka/diaktifkan.
+    Notifikasi yang memerlukan respon konfirmasi TIDAK dihapus di sini."""
+    if not win_id:
+        return False
+    dismissed = []
+    for p_id, p_info in list(PENDING_PROMPTS.items()):
+        payload = p_info.get('payload', {})
+        if not payload.get('is_completion'):
+            continue
+        p_win = payload.get('win_id')
+        matched = False
+        if p_win and win_id:
+            try:
+                matched = (int(str(p_win), 16) == int(str(win_id), 16))
+            except Exception:
+                matched = (str(p_win).strip().lower() == str(win_id).strip().lower())
+        elif not p_win:
+            p_app = (payload.get('app') or '').lower()
+            if CURRENT_APP_CONTEXT:
+                cur_app = (CURRENT_APP_CONTEXT.get('app') or '').lower()
+                cur_class = (CURRENT_APP_CONTEXT.get('class_name') or '').lower()
+                if p_app and (p_app in cur_app or p_app in cur_class or p_app in ('terminal', 'cli')):
+                    matched = True
+
+        if matched:
+            fut = p_info.get('future')
+            if fut and not fut.done():
+                fut.set_result({'action': 'dismissed_on_open'})
+            PENDING_PROMPTS.pop(p_id, None)
+            dismissed.append(p_id)
+
+    if dismissed:
+        for pid in dismissed:
+            await broadcast_prompt_dismiss(pid)
+        return True
+    return False
+
+
+async def resolve_prompt_on_enter(win_id=None):
+    """Menyelesaikan prompt yang menunggu respon ketika respon telah dimasukkan dan tombol Enter ditekan."""
+    if not win_id and CURRENT_APP_CONTEXT:
+        win_id = CURRENT_APP_CONTEXT.get('win_id')
+    if not win_id and LOCKED_TARGET_WIN_ID:
+        win_id = LOCKED_TARGET_WIN_ID
+
+    resolved = []
+    for p_id, p_info in list(PENDING_PROMPTS.items()):
+        payload = p_info.get('payload', {})
+        # Hanya tangani prompt yang memerlukan respon konfirmasi
+        if payload.get('is_completion'):
+            continue
+        p_win = payload.get('win_id')
+        matched = False
+        if p_win and win_id:
+            try:
+                matched = (int(str(p_win), 16) == int(str(win_id), 16))
+            except Exception:
+                matched = (str(p_win).strip().lower() == str(win_id).strip().lower())
+        elif not p_win:
+            p_app = (payload.get('app') or '').lower()
+            if CURRENT_APP_CONTEXT:
+                cur_app = (CURRENT_APP_CONTEXT.get('app') or '').lower()
+                cur_class = (CURRENT_APP_CONTEXT.get('class_name') or '').lower()
+                if p_app and (p_app in cur_app or p_app in cur_class or p_app in ('terminal', 'cli')):
+                    matched = True
+
+        if matched:
+            fut = p_info.get('future')
+            opts = payload.get('options', [])
+            first_opt = opts[0] if opts else {'value': 'y', 'key': 'enter'}
+            if fut and not fut.done():
+                fut.set_result({
+                    'action': 'responded',
+                    'value': first_opt.get('value', 'y'),
+                    'key': first_opt.get('key', 'enter'),
+                    'enter_pressed': True
+                })
+            PENDING_PROMPTS.pop(p_id, None)
+            resolved.append(p_id)
+
+    if resolved:
+        for pid in resolved:
+            await broadcast_prompt_dismiss(pid)
+        return True
+    return False
+
+
 async def smart_context_tracker_loop():
     """Background task memeriksa jendela aktif PC setiap 350ms dan memancarkan perubahan serta dialog ke client."""
     global CURRENT_APP_CONTEXT, ACTIVE_WINDOW_DIALOG_ID
@@ -2116,6 +2218,12 @@ async def smart_context_tracker_loop():
             cleanup_pending_prompts()
             info = await asyncio.to_thread(get_active_window_info)
             if info:
+                old_win_id = CURRENT_APP_CONTEXT.get('win_id') if CURRENT_APP_CONTEXT else None
+                new_win_id = info.get('win_id')
+                if new_win_id and new_win_id != old_win_id:
+                    # Jendela baru telah dibuka/difokuskan di PC host -> bersihkan notifikasi 'tugas selesai'
+                    await dismiss_completion_notifications_for_window(new_win_id)
+
                 changed = (
                     info['suggested_mode'] != CURRENT_APP_CONTEXT['suggested_mode'] or
                     info['app'] != CURRENT_APP_CONTEXT['app'] or
@@ -2200,7 +2308,7 @@ def release_all_client_keys(keys_set):
     keys_set.clear()
 
 async def websocket_handler(request):
-    global CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID
+    global CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID, AUTO_ENTER_ENABLED
     ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0, max_msg_size=131072)
     await ws.prepare(request)
     CONNECTED_CLIENTS.add(ws)
@@ -2547,6 +2655,9 @@ async def websocket_handler(request):
                     # Kirim tombol utama
                     if target:
                         simulate_tap(target)
+                        if str(key_name or '').lower() in ('enter', 'return', '\n', '\r'):
+                            cur_win = CURRENT_APP_CONTEXT.get('win_id') if CURRENT_APP_CONTEXT else None
+                            await resolve_prompt_on_enter(cur_win)
                         if key_name == 'caps_lock':
                             await asyncio.sleep(0.05)
                             curr_caps = is_caps_lock_on()
@@ -2746,6 +2857,7 @@ async def websocket_handler(request):
                         elif action == 'activate':
                             maximize = data.get('maximize', False)
                             await asyncio.to_thread(activate_and_focus_window, win_id, maximize)
+                            await dismiss_completion_notifications_for_window(win_id)
 
                         # Jeda singkat agar OS Window Manager menyelesaikan perubahan state
                         await asyncio.sleep(0.18)
@@ -2782,6 +2894,7 @@ async def websocket_handler(request):
                     maximize = data.get('maximize', True)
                     if win_id:
                         await asyncio.to_thread(activate_and_focus_window, win_id, maximize)
+                        await dismiss_completion_notifications_for_window(win_id)
                         # Segera periksa dan siarkan konteks aplikasi aktif yang baru
                         new_info = await asyncio.to_thread(get_active_window_info)
                         if new_info:
@@ -2818,7 +2931,6 @@ async def websocket_handler(request):
                             pass
 
                 elif msg_type == 'toggle_auto_enter':
-                    global AUTO_ENTER_ENABLED
                     if 'enabled' in data:
                         AUTO_ENTER_ENABLED = bool(data['enabled'])
                     else:
@@ -3238,6 +3350,12 @@ async def api_trigger_prompt_handler(request):
             if 'terminal' in (CURRENT_APP_CONTEXT.get('app') or '').lower() or 'terminal' in (CURRENT_APP_CONTEXT.get('class_name') or '').lower():
                 win_id = CURRENT_APP_CONTEXT.get('win_id')
 
+    is_completion = bool(
+        data.get('is_completion') is True or
+        str(data.get('type', '')).lower() in ('completion', 'task_done', 'notification') or
+        (not wait_flag and any(w in str(title + ' ' + message).lower() for w in ('selesai', 'completed', 'finished', 'done', 'berhasil', 'sukses', 'success')))
+    )
+
     prompt_payload = {
         'type': 'remote_prompt',
         'prompt_id': prompt_id,
@@ -3249,11 +3367,12 @@ async def api_trigger_prompt_handler(request):
         'execute_on_pc': execute_on_pc,
         'win_id': win_id,
         'pid': caller_pid,
-        'cwd': caller_cwd
+        'cwd': caller_cwd,
+        'is_completion': is_completion,
+        'requires_response': not is_completion
     }
 
-
-    if AUTO_ENTER_ENABLED:
+    if AUTO_ENTER_ENABLED and not is_completion:
         first_opt = options[0] if options else {'value': 'y', 'key': 'enter'}
         auto_val = first_opt.get('value', 'y')
         auto_key = first_opt.get('key', 'enter')

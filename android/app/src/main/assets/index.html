@@ -9359,7 +9359,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.14</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.15</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -10593,7 +10593,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.14';
+const APP_CLIENT_VERSION = '1.21.4.15';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -11661,8 +11661,10 @@ function renderWindowList(windows) {
     appLine.appendChild(appName);
 
     const hasAction = Boolean(win.has_action);
+    const actionType = win.action_type || 'prompt';
     if (hasAction) {
       item.setAttribute('data-has-action', 'true');
+      item.setAttribute('data-action-type', actionType);
       item.classList.add('has-pending-action');
 
       // Tanda seru (!) statis bersih tanpa tooltip/teks pop-up apa pun
@@ -11788,6 +11790,14 @@ function renderWindowList(windows) {
       playClickSound();
       vibe(20);
       closeWindowSwitcherModal();
+
+      // Jika notifikasi adalah 'tugas selesai' (completion), hapus penanda notifikasi seketika begitu jendela dibuka
+      if (win.action_type === 'completion') {
+        win.has_action = false;
+        item.classList.remove('has-pending-action');
+        const emblem = item.querySelector('.win-switcher-action-emblem');
+        if (emblem) emblem.remove();
+      }
 
       // Aktifkan jendela dan bawa ke depan (tanpa memaksa maximize layar penuh)
       send({ type: 'activate_window', win_id: win.win_id, maximize: false });
