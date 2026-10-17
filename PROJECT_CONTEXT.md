@@ -164,7 +164,7 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 - **Transformasi Layer Shift Dinamis (Keyboard Utama):**
   - Saat tombol Shift aktif, seluruh karakter alternatif pada keyboard utama tampil secara eksklusif (hanya karakter alternatif saja yang aktif), persis seperti metode pergantian huruf besar dan huruf kecil.
   - Tombol angka (1-0) dan simbol tanda baca menyembunyikan elemen sub-label (`display: none`) dan menampilkan karakter alternatif (`!`, `@`, `#`, `~`, `{`, `:`, `<`, `?`, dsb.) secara penuh dan rata tengah.
-  - Tombol navigasi panah menyembunyikan simbol panah dan menampilkan teks navigasi alternatif (`PgUp`, `Home`, `PgDn`, `End`) tebal dan berwarna aksen.
+  - Tombol navigasi panah tetap menjadi tombol panah murni (▲, ◀, ▼, ▶) tanpa tumpang tindih navigasi PgUp/Home/PgDn/End, sehingga kombinasi seleksi teks Shift + Panah berfungsi normal.
   - Melepas Shift langsung mengembalikan seluruh tombol ke tampilan karakter dasar dan sub-label secara mulus.
 - **Jingle Ketukan Mekanikal 5-Tuts pada Splash Screen (Flash Screen):**
   - Memanfaatkan suara ketukan mekanikal asli keyboard utama (`playClickSound()`) dengan resonansi sasis bodi yang tergrounding mantap (`bodyPitch = 1 + (pitch - 1) * 0.35`).

@@ -4027,6 +4027,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     box-shadow: 0 0 0 0 transparent, 0 0 6px var(--accent);
   }
 }
+
 .ai-mic-status-label {
   font-size: 11px;
   font-weight: 600;
@@ -6966,6 +6967,25 @@ body.portrait-dismissed .orientation-guard {
   background: #f0883e !important;
   box-shadow: 0 0 6px #f0883e !important;
 }
+.sc-action-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #0b0f19;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 1;
+  margin-left: 3px;
+  margin-right: 1px;
+  flex-shrink: 0;
+}
+.sc-action-badge.hidden {
+  display: none !important;
+}
 .win-switcher-action-emblem {
 
 
@@ -7116,6 +7136,7 @@ body.portrait-dismissed .orientation-guard {
       <div id="smart-context-chip" class="smart-context-chip" data-i18n-title="smart_context_chip_title" title="Active Host Application">
         <span class="sc-dot"></span>
         <span id="smart-context-app">Desktop</span>
+        <span id="sc-action-badge" class="sc-action-badge hidden">!</span>
         <svg class="sc-chevron svg-icon" width="10" height="10" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
       </div>
     </div>
@@ -7457,7 +7478,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k" data-char="." data-shift=">"><span class="sub">&gt;</span><span class="lbl">.</span></button>
         <button class="k" data-char="/" data-shift="?"><span class="sub">?</span><span class="lbl">/</span></button>
         <button class="k sp w22" data-key="shift" id="key-shift-r">Shift</button>
-        <button class="k arr" data-key="up"><span class="sub">PgUp</span><span class="lbl">▲</span></button>
+        <button class="k arr" data-key="up">▲</button>
       </div>
 
       <!-- ROW 5: Bottom modifiers + Space + Arrows -->
@@ -7468,9 +7489,9 @@ body.portrait-dismissed .orientation-guard {
         <button class="k space" data-key="space">Space</button>
         <button class="k sp w13" data-key="alt" id="key-alt-r">Alt</button>
         <button class="k sp w13" data-key="ctrl" id="key-ctrl-r">Ctrl</button>
-        <button class="k arr" data-key="left"><span class="sub">Home</span><span class="lbl">◀</span></button>
-        <button class="k arr" data-key="down"><span class="sub">PgDn</span><span class="lbl">▼</span></button>
-        <button class="k arr" data-key="right"><span class="sub">End</span><span class="lbl">▶</span></button>
+        <button class="k arr" data-key="left">◀</button>
+        <button class="k arr" data-key="down">▼</button>
+        <button class="k arr" data-key="right">▶</button>
       </div>
 
     </section>
@@ -8065,7 +8086,7 @@ body.portrait-dismissed .orientation-guard {
         <div class="ai-transcript-box">
           <!-- Audio Dictation Language Bar -->
           <div class="ai-transcript-header">
-            <div class="ai-lang-toggle" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
+            <div class="ai-lang-toggle" id="ai-lang-toggle-box" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
               <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
               <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
             </div>
@@ -9260,7 +9281,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.4</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.10</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9564,6 +9585,7 @@ const I18N = {
     util_modlock_title: "Modifier Lock: Sticky Key Mode (Shift, Ctrl, Alt)",
     util_smart_switch: "Smart Switch",
     util_smart_switch_title: "Smart App-Context Auto-Switching",
+    ai_mic_mode_dictate: "Dictate",
     util_haptic: "Haptics",
     util_haptic_title: "Haptic Touch Feedback",
     util_sound: "Key Sound",
@@ -9891,6 +9913,7 @@ const I18N = {
     util_modlock_title: "Kunci Modifier: Mode Kunci Tuts (Shift, Ctrl, Alt)",
     util_smart_switch: "Alih Cerdas",
     util_smart_switch_title: "Pengalihan Konteks Aplikasi Otomatis",
+    ai_mic_mode_dictate: "Dikte Teks",
     util_haptic: "Getaran",
     util_haptic_title: "Umpan Balik Getaran Sentuh",
     util_sound: "Suara Tuts",
@@ -10488,7 +10511,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.4';
+const APP_CLIENT_VERSION = '1.21.4.10';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -11469,6 +11492,11 @@ function handleAppContextUpdate(data) {
     chip.title = (data.app ? data.app + ' - ' : '') + t(autoSwitchContextEnabled ? 'smart_context_auto_on' : 'smart_context_auto_off');
   }
 
+  const scBadge = $('sc-action-badge');
+  if (scBadge && data.has_action !== undefined) {
+    scBadge.classList.toggle('hidden', !data.has_action);
+  }
+
   // Jika Smart Switch dinonaktifkan, jangan ubah mode keyboard otomatis dan jangan munculkan toast
   if (!autoSwitchContextEnabled) return;
 
@@ -11527,6 +11555,12 @@ function closeWindowSwitcherModal() {
 }
 
 function renderWindowList(windows) {
+  const scBadge = $('sc-action-badge');
+  if (scBadge) {
+    const anyAction = Array.isArray(windows) && windows.some(w => Boolean(w.has_action));
+    scBadge.classList.toggle('hidden', !anyAction);
+  }
+
   const listEl = $('win-switcher-list');
 
   if (!listEl) return;
@@ -11563,6 +11597,7 @@ function renderWindowList(windows) {
       // Tanda seru (!) statis bersih tanpa tooltip/teks pop-up apa pun
       const emblem = document.createElement('span');
       emblem.className = 'win-switcher-action-emblem';
+      emblem.title = win.action_label || 'Konfirmasi Diperlukan';
       emblem.innerHTML = '<span class="emblem-mark">!</span>';
       appLine.appendChild(emblem);
     }
@@ -11583,7 +11618,18 @@ function renderWindowList(windows) {
 
     const winTitle = document.createElement('span');
     winTitle.className = 'win-switcher-win-title';
-    winTitle.textContent = win.title || win.class_name || '';
+    if (hasAction && win.action_label) {
+      const actTag = document.createElement('span');
+      actTag.style.color = '#f59e0b';
+      actTag.style.fontWeight = '700';
+      actTag.style.marginRight = '6px';
+      actTag.textContent = `[${win.action_label}]`;
+      winTitle.appendChild(actTag);
+      const titleText = document.createTextNode(win.title || win.class_name || '');
+      winTitle.appendChild(titleText);
+    } else {
+      winTitle.textContent = win.title || win.class_name || '';
+    }
 
     meta.appendChild(appLine);
     meta.appendChild(winTitle);
@@ -12744,32 +12790,6 @@ function refreshMods() {
       }
     }
   });
-
-  // Shift Layer on Arrow keys: up=PgUp, down=PgDn, left=Home, right=End (sub hidden when shift active)
-  const arrowShiftMap = { up: 'PgUp', down: 'PgDn', left: 'Home', right: 'End' };
-  const arrowBaseMap = { up: '▲', down: '▼', left: '◀', right: '▶' };
-  document.querySelectorAll('.k.arr[data-key]').forEach(el => {
-    const k = el.dataset.key;
-    if (arrowShiftMap[k]) {
-      const lbl = el.querySelector('.lbl');
-      const sub = el.querySelector('.sub');
-      if (lbl && sub) {
-        if (mods.shift) {
-          sub.style.display = 'none';
-          lbl.textContent = arrowShiftMap[k];
-          lbl.style.fontSize = '9.5px';
-          lbl.style.fontWeight = '800';
-          lbl.style.color = 'var(--accent)';
-        } else {
-          sub.style.display = '';
-          lbl.textContent = arrowBaseMap[k];
-          lbl.style.fontSize = '';
-          lbl.style.fontWeight = '';
-          lbl.style.color = '';
-        }
-      }
-    }
-  });
 }
 
 // ── Key Press & Auto-Repeat Logic ──
@@ -12798,15 +12818,8 @@ function startRepeat(btn, key, char, shiftChar) {
   if (!btn || (key && MOD_KEYS.has(key))) return;
   stopRepeat(btn);
 
-  // Shift navigation mapping: up=PgUp, down=PgDn, left=Home, right=End
   let targetKey = key;
   let effectiveShift = mods.shift;
-  if (mods.shift && key) {
-    if (key === 'up') { targetKey = 'page_up'; effectiveShift = false; }
-    else if (key === 'down') { targetKey = 'page_down'; effectiveShift = false; }
-    else if (key === 'left') { targetKey = 'home'; effectiveShift = false; }
-    else if (key === 'right') { targetKey = 'end'; effectiveShift = false; }
-  }
 
   function sendRepeat() {
     let sendChar = char;
@@ -12897,15 +12910,8 @@ function pressKey(el) {
     }
   }
 
-  // Shift navigation mapping: up=PgUp, down=PgDn, left=Home, right=End
   let targetKey = key;
   let effectiveShift = mods.shift;
-  if (mods.shift && key) {
-    if (key === 'up') { targetKey = 'page_up'; effectiveShift = false; }
-    else if (key === 'down') { targetKey = 'page_down'; effectiveShift = false; }
-    else if (key === 'left') { targetKey = 'home'; effectiveShift = false; }
-    else if (key === 'right') { targetKey = 'end'; effectiveShift = false; }
-  }
 
   send({
     type: 'keypress',
@@ -16345,6 +16351,7 @@ function startAiSpeechSession() {
   }
 }
 
+// ─── VIRTUAL MICROPHONE ENGINE (PHONE MIC -> PC PULSEAUDIO SOURCE) ───
 // ─── TOGGLE MIC UTAMA (GOOGLE WEB SPEECH API) ───
 function toggleAiSpeech() {
   playClickSound();

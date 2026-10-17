@@ -38,9 +38,13 @@ import android.speech.RecognitionListener;
 import android.speech.RecognitionService;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -633,6 +637,9 @@ public class MainActivity extends AppCompatActivity {
                     pendingPermissionRequest.deny();
                 }
                 pendingPermissionRequest = null;
+            }
+            if (webView != null) {
+                webView.evaluateJavascript("if (window.onAudioPermissionResult) window.onAudioPermissionResult(" + audioGranted + ");", null);
             }
         }
     }

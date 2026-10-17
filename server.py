@@ -1049,10 +1049,10 @@ def classify_app_context(wm_classes, title):
     return 'standard', friendly
 
 def _inspect_x11_window(win_id, env):
-    """Membaca metadata jendela X11 (class, title, mode, is_dialog). Return None jika gagal, 'skip' jika window internal."""
+    """Membaca metadata jendela X11 (class, title, mode, is_dialog, has_attention). Return None jika gagal, 'skip' jika window internal."""
     try:
         res = subprocess.run(
-            ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME', '_NET_WM_WINDOW_TYPE', 'WM_TRANSIENT_FOR'],
+            ['xprop', '-id', win_id, 'WM_CLASS', '_NET_WM_NAME', 'WM_NAME', '_NET_WM_WINDOW_TYPE', 'WM_TRANSIENT_FOR', '_NET_WM_STATE', 'WM_HINTS'],
             env=env,
             capture_output=True,
             text=True,
@@ -1074,6 +1074,7 @@ def _inspect_x11_window(win_id, env):
             return 'skip'
 
         is_dialog = ('_NET_WM_WINDOW_TYPE_DIALOG' in out) or ('WM_TRANSIENT_FOR(WINDOW): window id #' in out)
+        has_attention = ('DEMANDS_ATTENTION' in out) or ('UrgencyHint' in out)
 
         suggested_mode, friendly_name = classify_app_context(wm_classes, title)
         return {
@@ -1082,7 +1083,8 @@ def _inspect_x11_window(win_id, env):
             'suggested_mode': suggested_mode,
             'class_name': wm_classes[0] if wm_classes else '',
             'win_id': win_id,
-            'is_dialog': is_dialog
+            'is_dialog': is_dialog,
+            'has_attention': has_attention
         }
     except Exception:
         return None
@@ -1314,8 +1316,13 @@ def get_open_windows_list():
                             action_label = payload.get('title') or 'Tindakan Diperlukan'
                             break
 
-                        # Untuk aplikasi non-terminal dengan window tunggal, cocokkan nama aplikasi spesifik
-                        if p_app and p_app != 'terminal' and (p_app in wm_class_lower or p_app == friendly_name.lower()):
+                        # Jika p_app terminal/CLI atau p_win tidak diketahui, cocokkan jendela terminal atau IDE
+                        if not p_win or p_app in ('terminal', 'cli', 'bash', 'sh'):
+                            if any(k in wm_class_lower for k in ['terminal', 'code', 'antigravity', 'cursor', 'konsole', 'bash', 'pty']):
+                                has_action = True
+                                action_label = payload.get('title') or 'Konfirmasi Terminal'
+                                break
+                        elif p_app in wm_class_lower or p_app == friendly_name.lower():
                             has_action = True
                             action_label = payload.get('title') or 'Tindakan Diperlukan'
                             break
@@ -1339,13 +1346,14 @@ def get_open_windows_list():
                             has_action = True
                             action_label = 'Perhatian Diperlukan'
 
-                    # 4. Periksa apakah jendela sedang meminta perhatian (demands_attention) di sistem X11
+                    # 4. Periksa apakah jendela sedang meminta perhatian (demands_attention / dialog / urgent) di sistem X11
                     if not has_action and win_id:
                         try:
-                            p_prop = subprocess.run(['xprop', '-id', win_id, '_NET_WM_STATE'], env=env, capture_output=True, text=True, timeout=0.15)
-                            if 'DEMANDS_ATTENTION' in p_prop.stdout:
+                            p_prop = subprocess.run(['xprop', '-id', win_id, '_NET_WM_STATE', 'WM_HINTS', '_NET_WM_WINDOW_TYPE', 'WM_TRANSIENT_FOR'], env=env, capture_output=True, text=True, timeout=0.15)
+                            out_p = p_prop.stdout
+                            if 'DEMANDS_ATTENTION' in out_p or 'UrgencyHint' in out_p or '_NET_WM_WINDOW_TYPE_DIALOG' in out_p or 'WM_TRANSIENT_FOR(WINDOW): window id #' in out_p:
                                 has_action = True
-                                action_label = 'Dialog Aktif'
+                                action_label = 'Dialog Konfirmasi' if ('_NET_WM_WINDOW_TYPE_DIALOG' in out_p or 'WM_TRANSIENT_FOR' in out_p) else 'Perhatian Diperlukan'
                         except Exception:
                             pass
 
@@ -2104,26 +2112,36 @@ async def smart_context_tracker_loop():
                     info['app'] != CURRENT_APP_CONTEXT['app'] or
                     info['win_id'] != CURRENT_APP_CONTEXT.get('win_id')
                 )
-                if changed:
-                    CURRENT_APP_CONTEXT = info
+                # Deteksi status dialog internal PC untuk penandaan emblem (!) di Window Switcher tanpa pop-up
+                if info.get('is_dialog'):
+                    ACTIVE_WINDOW_DIALOG_ID = f"win_dialog_{info.get('win_id')}"
+                else:
+                    ACTIVE_WINDOW_DIALOG_ID = None
+
+                has_action_now = bool(
+                    info.get('is_dialog') or
+                    info.get('has_attention') or
+                    ACTIVE_WINDOW_DIALOG_ID or
+                    len(PENDING_PROMPTS) > 0
+                )
+                action_changed = (has_action_now != CURRENT_APP_CONTEXT.get('has_action'))
+
+                if changed or action_changed:
+                    CURRENT_APP_CONTEXT = dict(info)
+                    CURRENT_APP_CONTEXT['has_action'] = has_action_now
                     payload = json.dumps({
                         'type': 'app_context',
                         'app': info['app'],
                         'title': info['title'],
                         'suggested_mode': info['suggested_mode'],
-                        'class_name': info['class_name']
+                        'class_name': info['class_name'],
+                        'has_action': has_action_now
                     })
                     for client in list(CONNECTED_CLIENTS):
                         try:
                             await client.send_str(payload)
                         except Exception:
                             pass
-
-                # Deteksi status dialog internal PC untuk penandaan emblem (!) di Window Switcher tanpa pop-up
-                if info.get('is_dialog'):
-                    ACTIVE_WINDOW_DIALOG_ID = f"win_dialog_{info.get('win_id')}"
-                else:
-                    ACTIVE_WINDOW_DIALOG_ID = None
         except asyncio.CancelledError:
             break
         except Exception:
@@ -2222,12 +2240,20 @@ async def websocket_handler(request):
         except Exception:
             pass
 
+        has_action_init = bool(
+            CURRENT_APP_CONTEXT.get('has_action') or
+            CURRENT_APP_CONTEXT.get('is_dialog') or
+            CURRENT_APP_CONTEXT.get('has_attention') or
+            ACTIVE_WINDOW_DIALOG_ID or
+            len(PENDING_PROMPTS) > 0
+        )
         await ws.send_str(json.dumps({
             'type': 'app_context',
             'app': CURRENT_APP_CONTEXT['app'],
             'title': CURRENT_APP_CONTEXT['title'],
             'suggested_mode': CURRENT_APP_CONTEXT['suggested_mode'],
-            'class_name': CURRENT_APP_CONTEXT['class_name']
+            'class_name': CURRENT_APP_CONTEXT['class_name'],
+            'has_action': has_action_init
         }))
 
         # Kirim status inisialisasi selesai tanpa menyiarkan prompt

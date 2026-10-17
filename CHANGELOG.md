@@ -9,6 +9,30 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.10] - 2026-10-17
+- Refactor ALIDECK to Pure Voice Deck with Auto-Update and Adaptive Silence Buffer
+
+### [1.21.4.9] - 2026-10-12
+- Menghapus fitur Virtual Microphone (Mic HP ke PC) beserta seluruh komponennya pada server, Android client, dan UI web
+- Membersihkan modul PulseAudio/PipeWire virtual sink/source dari sistem host PC
+- Mengembalikan fokus antarmuka AI Workstation secara penuh untuk dikte suara langsung ke PC
+
+### [1.21.4.8] - 2026-10-12
+- Memperbaiki bug Live Virtual Mic yang otomatis mati saat diketuk aktif
+- Menambahkan fallback negosiasi sample rate audio native (48kHz, 44.1kHz, 16kHz) pada AudioRecord Android
+- Mengoptimalkan transmisi buffer audio PCM tanpa membebani thread WebView utama dan menambahkan perlindungan debouncing sentuhan
+
+### [1.21.4.7] - 2026-10-12
+- Menambahkan fitur Virtual Microphone untuk menghubungkan mikrofon HP ke PC sebagai input suara sistem (PipeWire/PulseAudio) tanpa software pihak ketiga
+- Menambahkan toggle mode mikrofon pada AI Workstation (Dikte Teks vs Mic PC) dan tombol cepat Virtual Mic pada Control Deck
+- Meningkatkan deteksi prompt konfirmasi CLI/IDE (termasuk Antigravity CLI) untuk memicu notifikasi tanda seru (!) di Window Switcher
+
+### [1.21.4.6] - 2026-10-12
+- Aktifkan emblem notifikasi tanda seru (!) pada chip header dan daftar Window Switcher untuk mendeteksi jendela PC yang meminta perhatian atau dialog konfirmasi
+
+### [1.21.4.5] - 2026-10-12
+- Menghilangkan navigasi Home, PgDn, End, dan PgUp pada tombol panah keyboard utama untuk menjaga fungsi tombol panah murni dan mendukung seleksi teks Shift + Panah
+
 ### [1.21.4.4] - 2026-10-12
 - Rilis versi 1.21.4.4
 
@@ -373,6 +397,30 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.10] - 2026-10-17
+- Release v1.21.4.10 updates
+
+### [1.21.4.9] - 2026-10-12
+- Remove Virtual Microphone feature across backend server, Android native client, and web UI
+- Unload and clean up PulseAudio/PipeWire virtual sink/source modules from PC host
+- Restore dedicated AI Workstation voice dictation interface
+
+### [1.21.4.8] - 2026-10-12
+- Fix Virtual Microphone live toggle bug automatically switching off when tapped
+- Add multi-tier audio sample rate fallback (48kHz, 44.1kHz, 16kHz) for native Android AudioRecord
+- Optimize PCM audio buffer transmission off the main thread looper and add touch debouncing protection
+
+### [1.21.4.7] - 2026-10-12
+- Add Virtual Microphone feature routing mobile device microphone to PC system audio input (PipeWire/PulseAudio) without third-party apps
+- Add AI Workstation microphone mode toggle (Speech Dictation vs PC Mic) and Control Deck Virtual Mic quick toggle
+- Improve CLI/IDE confirmation prompt detection (including Antigravity CLI) triggering exclamation mark (!) action alerts in Window Switcher
+
+### [1.21.4.6] - 2026-10-12
+- Enable exclamation mark (!) action emblem on header chip and Window Switcher list to indicate windows requesting attention or confirmation dialogs
+
+### [1.21.4.5] - 2026-10-12
+- Remove Home, PgDn, End, and PgUp navigation layer from main keyboard arrow keys to keep arrow keys clean and support Shift + Arrow text selection
 
 ### [1.21.4.4] - 2026-10-12
 - Release v1.21.4.4 updates
