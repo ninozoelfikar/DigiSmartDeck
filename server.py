@@ -1324,15 +1324,16 @@ def get_open_windows_list():
                             break
 
                         # Jika p_app terminal/CLI atau p_win tidak diketahui, cocokkan jendela terminal atau IDE
-                        if not p_win or p_app in ('terminal', 'cli', 'bash', 'sh'):
-                            if any(k in wm_class_lower for k in ['terminal', 'code', 'antigravity', 'cursor', 'konsole', 'bash', 'pty']):
+                        if not p_win:
+                            if p_app in ('terminal', 'cli', 'bash', 'sh'):
+                                if any(k in wm_class_lower for k in ['terminal', 'code', 'antigravity', 'cursor', 'konsole', 'bash', 'pty']):
+                                    has_action = True
+                                    action_label = payload.get('title') or 'Konfirmasi Terminal'
+                                    break
+                            elif p_app in wm_class_lower or p_app == friendly_name.lower():
                                 has_action = True
-                                action_label = payload.get('title') or 'Konfirmasi Terminal'
+                                action_label = payload.get('title') or 'Tindakan Diperlukan'
                                 break
-                        elif p_app in wm_class_lower or p_app == friendly_name.lower():
-                            has_action = True
-                            action_label = payload.get('title') or 'Tindakan Diperlukan'
-                            break
 
 
                     # 2. Periksa dialog modal atau kata kunci prompt konfirmasi di judul
@@ -1407,7 +1408,7 @@ def get_open_windows_list():
                                 has_action = True
                                 action_label = payload.get('title') or 'Tindakan Diperlukan'
                                 break
-                            if p_app and (p_app in class_name.lower() or p_app in friendly_name.lower()):
+                            if not p_win and p_app and (p_app in class_name.lower() or p_app in friendly_name.lower()):
                                 has_action = True
                                 action_label = payload.get('title') or 'Tindakan Diperlukan'
                                 break

@@ -2108,4 +2108,17 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
 
+---
+
+## 116. CATATAN CHECKPOINT (v1.21.4.12 - Presisi Isolasi Jendela pada Notifikasi Tindakan Window Switcher)
+- **Isolasi Eksklusif Jendela Target Notifikasi (server.py):**
+  - Memperbaiki pengecekan `p_win` (`if not p_win:`) pada pemetaan jendela Linux X11 dan Windows API di `server.py`.
+  - Ketika prompt/notifikasi menyertakan `win_id`, sistem hanya menandai jendela spesifik yang cocok dengan status `has_action = True` dan label tindakan di Window Switcher.
+  - Mencegah jendela terminal lain ikut memunculkan tanda seru (!) saat notifikasi ditujukan khusus untuk sesi terminal tertentu.
+  - Fallback pencocokan seluruh jendela terminal hanya berlaku jika notifikasi bersifat umum tanpa identitas jendela (`not p_win`).
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+
 

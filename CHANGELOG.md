@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.12] - 2026-10-18
+- Presisi Isolasi Jendela pada Notifikasi Tindakan Window Switcher
+
 ### [1.21.4.11] - 2026-10-18
 - Integrasi Notifikasi Terminal ke Window Switcher
 
@@ -400,6 +403,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.12] - 2026-10-18
+- Release v1.21.4.12 updates
 
 ### [1.21.4.11] - 2026-10-18
 - Release v1.21.4.11 updates
