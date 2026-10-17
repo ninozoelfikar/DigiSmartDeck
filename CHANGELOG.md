@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.16] - 2026-10-18
+- Kunci eksekusi Auto-Enter murni hanya tombol Enter tanpa karakter lain dan pembersihan prompt saat Enter
+
 ### [1.21.4.15] - 2026-10-18
 - Diferensiasi notifikasi tugas selesai (hilang saat dibuka) vs prompt konfirmasi respon (hilang saat respon di-enter)
 
@@ -412,6 +415,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.16] - 2026-10-18
+- Release v1.21.4.16 updates
 
 ### [1.21.4.15] - 2026-10-18
 - Release v1.21.4.15 updates

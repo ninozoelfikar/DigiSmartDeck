@@ -2191,13 +2191,11 @@ async def resolve_prompt_on_enter(win_id=None):
 
         if matched:
             fut = p_info.get('future')
-            opts = payload.get('options', [])
-            first_opt = opts[0] if opts else {'value': 'y', 'key': 'enter'}
             if fut and not fut.done():
                 fut.set_result({
                     'action': 'responded',
-                    'value': first_opt.get('value', 'y'),
-                    'key': first_opt.get('key', 'enter'),
+                    'value': 'enter',
+                    'key': 'enter',
                     'enter_pressed': True
                 })
             PENDING_PROMPTS.pop(p_id, None)
@@ -2950,16 +2948,26 @@ async def websocket_handler(request):
                     if AUTO_ENTER_ENABLED and PENDING_PROMPTS:
                         for p_id, p_info in list(PENDING_PROMPTS.items()):
                             p_payload = p_info.get('payload', {})
-                            p_opts = p_payload.get('options', [])
-                            first_opt = p_opts[0] if p_opts else {'value': 'y', 'key': 'enter'}
                             fut = p_info.get('future')
                             if fut and not fut.done():
                                 fut.set_result({
                                     'action': 'responded',
-                                    'value': first_opt.get('value', 'y'),
-                                    'key': first_opt.get('key', 'enter'),
+                                    'value': 'enter',
+                                    'key': 'enter',
                                     'auto_enter': True
                                 })
+                            if p_payload.get('execute_on_pc'):
+                                p_win = p_payload.get('win_id')
+                                if p_win:
+                                    try:
+                                        await asyncio.to_thread(activate_and_focus_window, p_win, False)
+                                        await asyncio.sleep(0.08)
+                                    except Exception:
+                                        pass
+                                try:
+                                    await asyncio.to_thread(simulate_tap, 'enter')
+                                except Exception:
+                                    pass
                             PENDING_PROMPTS.pop(p_id, None)
                             await broadcast_prompt_dismiss(p_id)
                     continue
@@ -3373,17 +3381,14 @@ async def api_trigger_prompt_handler(request):
     }
 
     if AUTO_ENTER_ENABLED and not is_completion:
-        first_opt = options[0] if options else {'value': 'y', 'key': 'enter'}
-        auto_val = first_opt.get('value', 'y')
-        auto_key = first_opt.get('key', 'enter')
         auto_res = {
             'action': 'responded',
-            'value': auto_val,
-            'key': auto_key,
+            'value': 'enter',
+            'key': 'enter',
             'auto_enter': True
         }
 
-        print(f"[Auto-Enter] Menyetujui konfirmasi otomatis untuk {app_name} (opsi={auto_val})")
+        print(f"[Auto-Enter] Menyetujui konfirmasi otomatis untuk {app_name} (hanya menekan Enter)")
 
         if execute_on_pc:
             try:
