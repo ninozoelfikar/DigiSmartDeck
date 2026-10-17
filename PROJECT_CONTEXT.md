@@ -2167,8 +2167,13 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
 
+---
 
-
-
-
-
+## 120. CATATAN CHECKPOINT (v1.21.4.16 - Pemurnian Auto-Enter Khusus Tombol Enter & Eliminasi Karakter Liar)
+- **Eksekusi Auto-Enter Murni Hanya Tombol Enter:**
+  - Memastikan Auto-Enter (baik saat menerima prompt baru di `/api/prompt` maupun saat mengosongkan antrean prompt tertunda) hanya mengirim kode tombol `enter` murni (`\r`).
+  - Menghilangkan mapping nilai opsi default (seperti `1\r` atau `y\r`) di `digi-term` dan `server.py` saat mode Auto-Enter aktif, sehingga tidak ada angka, huruf, atau karakter liar yang terketik ke sesi terminal atau aplikasi aktif.
+  - Menjamin hilangnya emblem notifikasi permintaan konfirmasi pada jendela target seketika saat tombol Enter ditekan.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
