@@ -1,4 +1,5 @@
 # DigiSmartDeck
+**Inovasi Perangkat Lunak & Kontroler Produktivitas dari King Ali Studio**
 
 Pernahkah Anda mengalami situasi menyebalkan ini saat menggunakan komputer atau laptop?
 
@@ -47,3 +48,8 @@ Aplikasi ini menghubungkan HP dan PC langsung melalui jaringan Wi-Fi rumah atau 
    Pastikan HP dan PC berada di Wi-Fi yang sama (atau colok kabel USB). Buka aplikasi di HP, masukkan 6 digit PIN yang muncul di layar komputer Anda, lalu klik Sambungkan.
 
 Komputer Anda kini siap dikendalikan langsung dari genggaman tangan.
+
+---
+
+*Dikembangkan dan didistribusikan oleh **King Ali Studio** (Bagian dari King Utsman Ecosystem).*  
+*Esensi Kami: "Menyediakan Jasa Kreativitas & Inovasi Teknologi".*

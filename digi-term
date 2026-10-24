@@ -47,6 +47,19 @@ PROMPT_TIMEOUT = 0           # 0 = tanpa batas timeout, tanda tetap aktif sampai
 
 
 CACHED_WIN_ID = None
+_win_id_lock = threading.Lock()
+
+def _safe_write_pts(pts_path, data_str):
+    """Menulis ke pts dev secara non-blocking untuk mencegah deadlock."""
+    try:
+        fd = os.open(pts_path, os.O_WRONLY | os.O_NOCTTY | os.O_NONBLOCK)
+        try:
+            os.write(fd, data_str.encode('utf-8', errors='ignore'))
+        finally:
+            os.close(fd)
+        return True
+    except Exception:
+        return False
 
 def get_current_window_id():
     """Mendeteksi X11 Window ID terminal ini secara akurat."""
@@ -54,85 +67,88 @@ def get_current_window_id():
     if CACHED_WIN_ID:
         return CACHED_WIN_ID
 
-    # 1. Cek environment WINDOWID
-    win_env = os.environ.get('WINDOWID')
-    if win_env and win_env.isdigit():
-        CACHED_WIN_ID = hex(int(win_env))
-        return CACHED_WIN_ID
-
-    # 2. Cek tag OSC pada devpts
-    if not sys.platform.startswith('linux'):
-        return None
-    try:
-        tty_nr = None
-        curr = os.getpid()
-        while curr and curr > 1:
-            try:
-                parts = open(f'/proc/{curr}/stat').read().split()
-                t = int(parts[6])
-                if t and os.major(t) == 136:
-                    tty_nr = os.minor(t)
-                    break
-                curr = int(parts[3])
-            except Exception:
-                break
-
-        if tty_nr is None:
-            return None
-        pts_dev = f'/dev/pts/{tty_nr}'
-        if not os.path.exists(pts_dev):
-            return None
-
-        res = subprocess.run(['wmctrl', '-l', '-x'], capture_output=True, text=True, timeout=0.8)
-        if res.returncode != 0:
-            return None
-
-        candidate_windows = []
-        for line in res.stdout.strip().splitlines():
-            parts = line.split(maxsplit=4)
-            if len(parts) >= 5:
-                w_id, _, wm_class, _, w_title = parts
-                if any(term in wm_class.lower() for term in ['terminal', 'konsole', 'alacritty', 'kitty', 'code', 'antigravity', 'cursor', 'wezterm', 'foot', 'terminator', 'tilix', 'xterm']):
-                    candidate_windows.append((w_id, w_title))
-
-        if not candidate_windows:
-            return None
-        if len(candidate_windows) == 1:
-            CACHED_WIN_ID = candidate_windows[0][0]
+    with _win_id_lock:
+        if CACHED_WIN_ID:
             return CACHED_WIN_ID
 
-        tag = f'DIGI_PIN_{uuid.uuid4().hex[:8]}'
-        try:
-            with open(pts_dev, 'w') as f:
-                f.write(f'\033]2;{tag}\007')
-                f.flush()
-        except Exception:
+        # 1. Cek environment WINDOWID
+        win_env = os.environ.get('WINDOWID')
+        if win_env and win_env.isdigit():
+            CACHED_WIN_ID = hex(int(win_env))
+            return CACHED_WIN_ID
+
+        # 2. Cek ketersediaan X11 / DISPLAY
+        if not sys.platform.startswith('linux') or not os.environ.get('DISPLAY'):
             return None
 
-        time.sleep(0.04)
+        # 3. Cek tag OSC pada devpts
+        try:
+            tty_nr = None
+            curr = os.getpid()
+            while curr and curr > 1:
+                try:
+                    parts = open(f'/proc/{curr}/stat').read().split()
+                    t = int(parts[6])
+                    if t and os.major(t) == 136:
+                        tty_nr = os.minor(t)
+                        break
+                    curr = int(parts[3])
+                except Exception:
+                    break
 
-        matched_win_id = None
-        orig_title = None
-        for w_id, w_title in candidate_windows:
-            prop = subprocess.run(['xprop', '-id', w_id, 'WM_NAME'], capture_output=True, text=True, timeout=0.2).stdout
-            if tag in prop:
-                matched_win_id = w_id
-                orig_title = w_title
-                break
+            if tty_nr is None:
+                return None
+            pts_dev = f'/dev/pts/{tty_nr}'
+            if not os.path.exists(pts_dev):
+                return None
 
-        if orig_title:
             try:
-                with open(pts_dev, 'w') as f:
-                    f.write(f'\033]2;{orig_title}\007')
-                    f.flush()
+                res = subprocess.run(['wmctrl', '-l', '-x'], capture_output=True, text=True, timeout=0.3)
+                if res.returncode != 0:
+                    return None
             except Exception:
-                pass
+                return None
 
-        if matched_win_id:
-            CACHED_WIN_ID = matched_win_id
-        return matched_win_id
-    except Exception:
-        return None
+            candidate_windows = []
+            for line in res.stdout.strip().splitlines():
+                parts = line.split(maxsplit=4)
+                if len(parts) >= 5:
+                    w_id, _, wm_class, _, w_title = parts
+                    if any(term in wm_class.lower() for term in ['terminal', 'konsole', 'alacritty', 'kitty', 'code', 'antigravity', 'cursor', 'wezterm', 'foot', 'terminator', 'tilix', 'xterm']):
+                        candidate_windows.append((w_id, w_title))
+
+            if not candidate_windows:
+                return None
+            if len(candidate_windows) == 1:
+                CACHED_WIN_ID = candidate_windows[0][0]
+                return CACHED_WIN_ID
+
+            tag = f'DIGI_PIN_{uuid.uuid4().hex[:8]}'
+            if not _safe_write_pts(pts_dev, f'\033]2;{tag}\007'):
+                return None
+
+            time.sleep(0.04)
+
+            matched_win_id = None
+            orig_title = None
+            for w_id, w_title in candidate_windows[:8]:
+                try:
+                    prop = subprocess.run(['xprop', '-id', w_id, 'WM_NAME'], capture_output=True, text=True, timeout=0.1).stdout
+                    if tag in prop:
+                        matched_win_id = w_id
+                        orig_title = w_title
+                        break
+                except Exception:
+                    continue
+
+            if orig_title:
+                _safe_write_pts(pts_dev, f'\033]2;{orig_title}\007')
+
+            if matched_win_id:
+                CACHED_WIN_ID = matched_win_id
+            return matched_win_id
+        except Exception:
+            return None
 
 
 
@@ -408,12 +424,20 @@ class DigiTermSupervisor:
             pid, self.active_id = self.active_id, None
         if not pid:
             return
-        try:
-            req = urllib.request.Request(DISMISS_URL, data=json.dumps({'prompt_id': pid}).encode(),
-                                         headers={'Content-Type': 'application/json'})
-            urllib.request.urlopen(req, timeout=1.5).close()
-        except Exception:
-            pass
+
+        def _do_dismiss(prompt_id):
+            try:
+                req = urllib.request.Request(
+                    DISMISS_URL,
+                    data=json.dumps({'prompt_id': prompt_id}).encode(),
+                    headers={'Content-Type': 'application/json'}
+                )
+                with urllib.request.urlopen(req, timeout=1.5) as resp:
+                    resp.read()
+            except Exception:
+                pass
+
+        threading.Thread(target=_do_dismiss, args=(pid,), daemon=True).start()
 
     # ── Watcher ──
     def watcher(self):
@@ -474,19 +498,53 @@ class DigiTermSupervisor:
             if self.active_id != prompt_id:
                 return  # dibatalkan karena pengguna mengetik langsung di PC
             self.active_id = None
-        if res.get('action') != 'responded' or self.master_fd is None:
+        if not self.running or res.get('action') != 'responded' or self.master_fd is None:
             return
-        if res.get('auto_enter'):
-            # Auto-Enter MURNI hanya menekan tombol Enter (\r) saja, tidak mengirim karakter/angka lain
-            to_send = '\r'
-        else:
-            to_send = send_map.get(str(res.get('value')))
+        to_send = send_map.get(str(res.get('value')))
         if to_send is None:
             return
         try:
             os.write(self.master_fd, to_send.encode())
         except OSError:
             pass
+
+    def notify_completion(self, exit_code):
+        """Kirim notifikasi tugas selesai ke DigiSmartDeck secara non-blocking."""
+        if not self.command or self.command == [os.environ.get('SHELL', '/bin/bash')]:
+            return
+
+        cmd_list = list(self.command)
+
+        def _do_send():
+            try:
+                cmd_label = os.path.basename(cmd_list[0])
+                status_text = "berhasil" if exit_code == 0 else f"gagal (kode {exit_code})"
+                comp_payload = {
+                    'app': 'Terminal',
+                    'title': f'Tugas Selesai: {cmd_label}',
+                    'message': f"Perintah '{' '.join(cmd_list)}' telah selesai ({status_text}).",
+                    'is_completion': True,
+                    'options': [{'label': 'OK', 'value': 'ok', 'key': 'enter', 'primary': True}],
+                    'timeout': 0,
+                    'execute_on_pc': False,
+                    'win_id': get_current_window_id(),
+                    'pid': os.getpid()
+                }
+                req = urllib.request.Request(
+                    f"http://127.0.0.1:{SERVER_PORT}/api/prompt",
+                    data=json.dumps(comp_payload).encode(),
+                    headers={'Content-Type': 'application/json'}
+                )
+                with urllib.request.urlopen(req, timeout=0.8) as resp:
+                    resp.read()
+            except Exception:
+                pass
+
+        t = threading.Thread(target=_do_send, daemon=True)
+        t.start()
+        # Beri toleransi waktu sangat singkat (maks 80ms) agar koneksi localhost sempat terkirim,
+        # tanpa memblokir shell exit jika server sedang lambat atau tidak aktif.
+        t.join(timeout=0.08)
 
     # ── Main loop ──
     def run(self):
@@ -509,6 +567,8 @@ class DigiTermSupervisor:
             old_attr = termios.tcgetattr(stdin_fd)
             tty.setraw(stdin_fd)
 
+        # Pre-warm window id detection in background so it never slows down prompts or exit
+        threading.Thread(target=get_current_window_id, daemon=True).start()
         threading.Thread(target=self.watcher, daemon=True).start()
         exit_code = 0
         try:
@@ -523,12 +583,13 @@ class DigiTermSupervisor:
                         break
                     # Abaikan tombol panah navigasi ANSI (Up/Down/Left/Right) agar pengguna dapat melihat menu di PC tanpa menutup kartu di HP
                     is_nav_key = data in (b'\x1b[A', b'\x1b[B', b'\x1b[C', b'\x1b[D', b'\x1bOA', b'\x1bOB', b'\x1bOC', b'\x1bOD')
-                    is_enter_key = (b'\r' in data or b'\n' in data)
-                    # Notifikasi prompt menunggu respon hanya ditutup ketika ada respon kemudian di-enter
-                    if is_enter_key:
+                    if not is_nav_key:
                         self.dismiss_active()
                         self.clear_buffer()
-                    os.write(self.master_fd, data)
+                    try:
+                        os.write(self.master_fd, data)
+                    except OSError:
+                        break
                 if self.master_fd in r:
                     try:
                         data = os.read(self.master_fd, 4096)
@@ -536,7 +597,10 @@ class DigiTermSupervisor:
                         break
                     if not data:
                         break
-                    os.write(sys.stdout.fileno(), data)
+                    try:
+                        os.write(sys.stdout.fileno(), data)
+                    except OSError:
+                        break
                     with self.buf_lock:
                         decoded = data.decode('utf-8', errors='ignore')
                         # Deteksi escape sequence notifikasi terminal OSC (OSC 777 / OSC 9)
@@ -576,28 +640,9 @@ class DigiTermSupervisor:
                 exit_code = 0
 
             # Jika menjalankan perintah spesifik (bukan sekadar shell interaktif kosong),
-            # kirim notifikasi tugas selesai ke DigiSmartDeck
+            # kirim notifikasi tugas selesai ke DigiSmartDeck secara non-blocking
             if self.command and self.command != [os.environ.get('SHELL', '/bin/bash')]:
-                try:
-                    cmd_label = os.path.basename(self.command[0])
-                    status_text = "berhasil" if exit_code == 0 else f"gagal (kode {exit_code})"
-                    comp_payload = {
-                        'app': 'Terminal',
-                        'title': f'Tugas Selesai: {cmd_label}',
-                        'message': f"Perintah '{' '.join(self.command)}' telah selesai ({status_text}).",
-                        'is_completion': True,
-                        'options': [{'label': 'OK', 'value': 'ok', 'key': 'enter', 'primary': True}],
-                        'timeout': 0,
-                        'execute_on_pc': False,
-                        'win_id': get_current_window_id(),
-                        'pid': os.getpid()
-                    }
-                    req = urllib.request.Request(f"http://127.0.0.1:{SERVER_PORT}/api/prompt",
-                                                 data=json.dumps(comp_payload).encode(),
-                                                 headers={'Content-Type': 'application/json'})
-                    urllib.request.urlopen(req, timeout=1.5).close()
-                except Exception:
-                    pass
+                self.notify_completion(exit_code)
         sys.exit(exit_code)
 
 
