@@ -9,6 +9,15 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.22] - 2026-10-24
+- Indikator Sinar Hijau Mic Ready dan Resolusi Balapan Koneksi Hybrid
+
+### [1.21.4.20] - 2026-10-21
+- Perbaikan rute IP Wi-Fi host (eliminasi IP virtual bridge virbr0/docker), perpanjangan masa aktif PIN pairing 7 hari, dan auto-pairing untuk perangkat di subnet Wi-Fi lokal
+
+### [1.21.4.19] - 2026-10-18
+- Eliminasi fitur Auto-Enter dan perbaikan penanganan input keyboard langsung pada terminal
+
 ### [1.21.4.18] - 2026-10-18
 - Penyederhanaan modal lisensi khusus paket Lifetime aktif
 
@@ -421,6 +430,12 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.22] - 2026-10-24
+- Release v1.21.4.22 updates
+
+### [1.21.4.19] - 2026-10-18
+- Release v1.21.4.19 updates
 
 ### [1.21.4.18] - 2026-10-18
 - Release v1.21.4.18 updates

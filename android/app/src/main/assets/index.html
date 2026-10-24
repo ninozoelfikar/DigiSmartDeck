@@ -4098,29 +4098,55 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   width: 43px;
   height: 43px;
 }
-.ai-btn-mic.recording {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent);
-  color: var(--accent);
-  animation: ai-pulse-theme 1.8s infinite ease-in-out;
+/* State 1: Mempersiapkan Mic (Belum Siap Menangkap Suara) */
+.ai-btn-mic.starting {
+  background: rgba(210, 153, 34, 0.14);
+  border-color: #d29922;
+  color: #d29922;
+  animation: ai-pulse-amber 1.2s infinite ease-in-out;
 }
-.ai-btn-mic.recording svg {
-  animation: ai-mic-breathe 1.8s infinite ease-in-out;
+.ai-btn-mic.starting svg {
+  animation: ai-mic-breathe 1.2s infinite ease-in-out;
+}
+@keyframes ai-pulse-amber {
+  0% {
+    box-shadow: 0 0 0 0 rgba(210, 153, 34, 0.5), 0 0 8px rgba(210, 153, 34, 0.4);
+  }
+  60% {
+    box-shadow: 0 0 0 10px transparent, 0 0 12px rgba(210, 153, 34, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent, 0 0 4px rgba(210, 153, 34, 0.1);
+  }
+}
+
+/* State 2: Mic READY (Sinar-sinar Berubah Hijau Terang - Siap Menangkap Suara) */
+.ai-btn-mic.ready,
+.ai-btn-mic.recording.ready {
+  background: rgba(46, 160, 67, 0.16);
+  border-color: #3fb950;
+  color: #3fb950;
+  animation: ai-pulse-green 1.6s infinite ease-in-out;
+}
+.ai-btn-mic.ready svg,
+.ai-btn-mic.recording.ready svg {
+  animation: ai-mic-breathe 1.6s infinite ease-in-out;
+  filter: drop-shadow(0 0 8px rgba(63, 185, 80, 0.75));
+}
+@keyframes ai-pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.75), 0 0 14px rgba(63, 185, 80, 0.85);
+  }
+  60% {
+    box-shadow: 0 0 0 18px transparent, 0 0 22px rgba(63, 185, 80, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent, 0 0 8px rgba(63, 185, 80, 0.3);
+  }
 }
 @keyframes ai-mic-breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
-}
-@keyframes ai-pulse-theme {
-  0% {
-    box-shadow: 0 0 0 0 var(--accent), 0 0 10px var(--accent);
-  }
-  60% {
-    box-shadow: 0 0 0 14px transparent, 0 0 16px var(--accent);
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent, 0 0 6px var(--accent);
-  }
 }
 
 .ai-mic-status-label {
@@ -4539,76 +4565,6 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   opacity: 0.9;
   font-weight: 600;
   margin-top: 1px;
-}
-
-/* Auto-Enter Toggle Button under Enter */
-.ai-btn-auto-enter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 28px;
-  flex: 0 0 28px;
-  background: var(--key-bg, #1e222b);
-  border: 1px solid var(--key-border, rgba(255, 255, 255, 0.1));
-  border-radius: 5px;
-  padding: 0 8px;
-  box-sizing: border-box;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  transition: all 0.15s ease;
-}
-.ai-btn-auto-enter:active {
-  transform: translateY(1px);
-}
-.ai-btn-auto-enter .auto-enter-left {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.ai-btn-auto-enter .auto-enter-led {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #6e7681;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-.ai-btn-auto-enter .auto-enter-txt {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  color: var(--text-dim, #8b949e);
-  transition: color 0.2s ease;
-}
-.ai-btn-auto-enter .auto-enter-badge {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: #6e7681;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1px 5px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.2s ease;
-}
-.ai-btn-auto-enter.active {
-  background: rgba(46, 160, 67, 0.15) !important;
-  border-color: #3fb950 !important;
-}
-.ai-btn-auto-enter.active .auto-enter-led {
-  background: #3fb950 !important;
-  box-shadow: 0 0 8px #3fb950 !important;
-}
-.ai-btn-auto-enter.active .auto-enter-txt {
-  color: #3fb950 !important;
-}
-.ai-btn-auto-enter.active .auto-enter-badge {
-  color: #3fb950 !important;
-  background: rgba(46, 160, 67, 0.25) !important;
-  border-color: rgba(63, 185, 80, 0.5) !important;
 }
 
 /* Trackpad Container & Buttons di Mode AI */
@@ -8255,8 +8211,8 @@ body.portrait-dismissed .orientation-guard {
           <!-- Audio Dictation Language Bar -->
           <div class="ai-transcript-header">
             <div class="ai-lang-toggle" id="ai-lang-toggle-box" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
-              <button type="button" class="ai-btn-lang" id="btn-ai-lang-id">ID</button>
-              <button type="button" class="ai-btn-lang active" id="btn-ai-lang-en">EN</button>
+              <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
+              <button type="button" class="ai-btn-lang" id="btn-ai-lang-en">EN</button>
             </div>
           </div>
 
@@ -8348,14 +8304,6 @@ body.portrait-dismissed .orientation-guard {
       <div class="ai-col-right">
         <button type="button" class="ai-btn-giant-enter" id="ai-btn-enter" title="Kirim Prompt / Eksekusi Perintah (Enter)">
           <span>Enter</span>
-        </button>
-
-        <button type="button" class="ai-btn-auto-enter" id="ai-btn-auto-enter" data-i18n-title="ai_auto_enter_title" title="Auto-Enter Mode: Otomatis setujui konfirmasi CLI saat ditinggal">
-          <div class="auto-enter-left">
-            <span class="auto-enter-led"></span>
-            <span class="auto-enter-txt" data-i18n="ai_auto_enter">Auto-Enter</span>
-          </div>
-          <span class="auto-enter-badge" id="ai-auto-enter-badge">OFF</span>
         </button>
 
         <div class="ai-nav-pad">
@@ -9550,7 +9498,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.18</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.22</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9939,8 +9887,6 @@ const I18N = {
     ai_always_on_title: "Continuous dictation without timeouts or start/stop sounds",
     ai_auto_send: "Auto-Send",
     ai_auto_send_title: "Automatically transmit text to host upon silence detection",
-    ai_auto_enter: "Auto-Enter",
-    ai_auto_enter_title: "Auto-Enter Mode: Automatically approve CLI/terminal confirmations",
     ai_undo: "Undo",
     ai_clear: "Clear",
     ai_send_host: "Send to Host",
@@ -10280,8 +10226,6 @@ const I18N = {
     ai_always_on_title: "Dikte terus menerus tanpa batas hening dan tanpa bunyi pemutus",
     ai_auto_send: "Auto-Kirim",
     ai_auto_send_title: "Kirim teks otomatis ke PC setiap selesai berbicara",
-    ai_auto_enter: "Auto-Enter",
-    ai_auto_enter_title: "Mode Auto-Enter: Otomatis setujui konfirmasi CLI/terminal saat ditinggal",
     ai_undo: "Undo",
     ai_clear: "Bersihkan",
     ai_send_host: "Kirim ke PC",
@@ -10807,13 +10751,14 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.18';
+const APP_CLIENT_VERSION = '1.21.4.22';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
 let isCheckingUpdate = false;
 let updateBannerDismissed = false;
+let isAutoUpdateTriggered = false;
 
 function getClientAppInfo() {
   let isNative = false;
@@ -10910,12 +10855,32 @@ function handleAutoUpdateResult(data, silent) {
     if (dot) dot.style.display = 'inline-block';
 
     const targetVer = (data.current_server_version || '').replace(/^v/, '');
-    if (!silent) {
-      showSmartToast(
-        (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia di About Application.` : `Update v${targetVer} available in About Application.`,
-        'DigiSmartDeck'
-      );
-      vibe([20, 30]);
+    const clientInfo = getClientAppInfo();
+
+    // ─── AUTO-TRIGGER OTA UPDATE PADA FILE APK NATIVE ANDROID ───
+    if (clientInfo.isNative && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.downloadAndInstallUpdate === 'function') {
+      if (!isAutoUpdateTriggered) {
+        isAutoUpdateTriggered = true;
+        showSmartToast(
+          (currentUiLang === 'id') ? `Pembaruan APK v${targetVer} ditemukan! Mengunduh & memasang otomatis...` : `APK update v${targetVer} found! Auto-downloading & installing...`,
+          'DigiSmartDeck'
+        );
+        vibe([30, 50, 30]);
+        if (typeof openAboutModal === 'function') {
+          openAboutModal();
+        }
+        setTimeout(() => {
+          executeAppUpdate();
+        }, 700);
+      }
+    } else {
+      if (!silent) {
+        showSmartToast(
+          (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia di About Application.` : `Update v${targetVer} available in About Application.`,
+          'DigiSmartDeck'
+        );
+        vibe([20, 30]);
+      }
     }
   } else {
     if (dot) dot.style.display = 'none';
@@ -11080,6 +11045,7 @@ window.onUpdateDownloadComplete = function() {
 };
 
 window.onUpdateDownloadError = function(errMsg) {
+  isAutoUpdateTriggered = false;
   const prgText = $('about-update-progress-text');
   const btnUpdate = $('btn-check-update');
   if (prgText) prgText.textContent = (currentUiLang === 'id') ? ('Gagal mengunduh: ' + errMsg) : ('Download failed: ' + errMsg);
@@ -12307,9 +12273,11 @@ let usbPing = null;
 let wifiPing = null;
 let lastUsbPong = Date.now();
 let lastWifiPong = Date.now();
-let clientSeqCounter = 0;
+let clientSeqCounter = Math.floor(Math.random() * 1000) + 1;
 const CLIENT_ID = localStorage.getItem('digi_client_id') || ('c_' + Math.random().toString(36).substring(2, 10));
 localStorage.setItem('digi_client_id', CLIENT_ID);
+// Instance run ID unik per inisialisasi sesi agar deduplikasi server tidak memblokir ketikan awal saat reload/buka ulang
+const SESSION_RUN_ID = 'r_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6);
 
 function getConnMode() {
   return localStorage.getItem('digi_conn_mode') || 'hybrid';
@@ -12350,6 +12318,9 @@ function handleDisconnect(reason = 'Terputus') {
 }
 
 function scheduleReconnect(immediate = false) {
+  if (connected && (usbConnected || wifiConnected)) {
+    return;
+  }
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
@@ -12362,11 +12333,20 @@ function scheduleReconnect(immediate = false) {
   }
 
   retryCount++;
-  const baseDelay = Math.min(600 * Math.pow(1.3, Math.min(retryCount, 8)), 4500);
-  const delay = Math.round(baseDelay + Math.random() * 250);
+  // Sambung ulang super cepat (150-250ms) pada percobaan awal agar bebas jeda terasa
+  let delay;
+  if (retryCount <= 2) {
+    delay = 150 + Math.round(Math.random() * 100);
+  } else {
+    const baseDelay = Math.min(500 * Math.pow(1.25, Math.min(retryCount, 8)), 4000);
+    delay = Math.round(baseDelay + Math.random() * 200);
+  }
 
   setStatus(false, 'Menghubungkan...');
-  showReconnectBanner();
+  // Tunda banner visual reconnect: jangan langsung muncul jika hanya glitch sekejap (<1.2s)
+  if (retryCount > 2) {
+    showReconnectBanner();
+  }
 
   reconnectTimer = setTimeout(() => {
     reconnectTimer = null;
@@ -12386,6 +12366,10 @@ function createChannelSocket(type, host) {
   }
 
   socket.onopen = () => {
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
     if (type === 'usb') {
       usbConnected = true;
       lastUsbPong = Date.now();
@@ -12399,6 +12383,7 @@ function createChannelSocket(type, host) {
     hideReconnectBanner();
     startHeartbeatAndWatchdog();
     updateConnStatusUI();
+    requestScreenWakeLock();
 
     const savedToken = localStorage.getItem('digi_device_token');
     if (savedToken) {
@@ -12413,9 +12398,6 @@ function createChannelSocket(type, host) {
     }
     try {
       socket.send(JSON.stringify({ type: 'get_active_window', channel: type }));
-      if (localStorage.getItem('digi_ai_auto_enter') === 'true') {
-        socket.send(JSON.stringify({ type: 'toggle_auto_enter', enabled: true, channel: type }));
-      }
     } catch(e){}
 
     setTimeout(() => { checkAutoUpdate(true); }, 1200);
@@ -12436,9 +12418,13 @@ function createChannelSocket(type, host) {
     updateConnStatusUI();
 
     const mode = getConnMode();
-    const stillAlive = (mode === 'hybrid' && (usbConnected || wifiConnected)) ||
-                       (mode === 'usb' && usbConnected) ||
-                       (mode === 'wifi' && wifiConnected);
+    const otherSocket = (type === 'usb') ? wsWifi : wsUsb;
+    const isOtherConnecting = Boolean(otherSocket && otherSocket.readyState === WebSocket.CONNECTING);
+    const isOtherOpen = Boolean(otherSocket && otherSocket.readyState === WebSocket.OPEN);
+
+    const stillAlive = (mode === 'hybrid' && (usbConnected || wifiConnected || isOtherConnecting || isOtherOpen)) ||
+                       (mode === 'usb' && (usbConnected || (wsUsb && wsUsb.readyState === WebSocket.CONNECTING))) ||
+                       (mode === 'wifi' && (wifiConnected || (wsWifi && wsWifi.readyState === WebSocket.CONNECTING)));
 
     if (!stillAlive) {
       connected = false;
@@ -12479,10 +12465,21 @@ function handleChannelMessage(e, sourceChannel) {
     }
 
     if (d.type === 'init') {
+      if (window.location.host && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.protocol.startsWith('file')) {
+        localStorage.setItem('digi_server_host', window.location.host);
+        if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.setServerHost === 'function') {
+          window.DigiAndroidBridge.setServerHost(window.location.host);
+        }
+      }
       if (d.lan_ips && Array.isArray(d.lan_ips) && d.lan_ips.length > 0) {
         const foundIp = d.lan_ips[0];
-        if (foundIp && !localStorage.getItem('digi_server_host')) {
+        const curSaved = localStorage.getItem('digi_server_host') || '';
+        const isStale = !curSaved || curSaved.includes('192.168.122.') || curSaved.includes('172.17.') || curSaved.includes('172.18.') || curSaved.startsWith('localhost') || curSaved.startsWith('127.0.0.1');
+        if (foundIp && (isStale || !d.lan_ips.some(ip => curSaved.startsWith(ip)))) {
           localStorage.setItem('digi_server_host', foundIp + ':8080');
+          if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.setServerHost === 'function') {
+            window.DigiAndroidBridge.setServerHost(foundIp + ':8080');
+          }
         }
         if (getConnMode() === 'hybrid' && (!wsWifi || wsWifi.readyState > 1)) {
           const wHost = localStorage.getItem('digi_server_host') || (foundIp + ':8080');
@@ -12529,6 +12526,9 @@ function processServerMessage(d) {
     if (d.locked_win_id !== undefined) {
       handleTargetLockUpdate(d.locked_win_id);
     }
+  } else if (d.type === 'trigger_update_check') {
+    isAutoUpdateTriggered = false;
+    checkAutoUpdate(false);
   } else if (d.type === 'controller_status') {
     if (d.role === 'active') {
       document.body.classList.remove('controller-standby');
@@ -12541,18 +12541,6 @@ function processServerMessage(d) {
     handleTargetLockUpdate(d.locked_win_id);
   } else if (d.type === 'window_list') {
     renderWindowList(d.windows);
-  } else if (d.type === 'auto_enter_update') {
-    if (typeof updateAutoEnterUI === 'function') {
-      updateAutoEnterUI(d.enabled);
-    }
-  } else if (d.type === 'auto_enter_executed') {
-    if (typeof showSmartToast === 'function') {
-      showSmartToast(
-        (currentUiLang === 'id') ? `Auto-Enter: Menyetujui konfirmasi (${d.app || 'Terminal'})` : `Auto-Enter: Approved confirmation (${d.app || 'Terminal'})`,
-        'Auto-Enter'
-      );
-    }
-    vibe([20, 20]);
   } else if (d.type === 'power_result') {
     if (typeof showSmartToast === 'function') {
       showSmartToast(d.message || (d.success ? 'Perintah daya berhasil dikirim.' : 'Gagal mengeksekusi perintah daya.'));
@@ -12618,12 +12606,24 @@ function connect() {
   const mode = getConnMode();
   const loc = window.location;
 
-  let savedHost = localStorage.getItem('digi_server_host') || (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getServerHost === 'function' ? window.DigiAndroidBridge.getServerHost() : '');
+  let bridgeHost = '';
+  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getServerHost === 'function') {
+    try {
+      bridgeHost = window.DigiAndroidBridge.getServerHost();
+      if (bridgeHost && !bridgeHost.includes(':')) bridgeHost += ':8080';
+    } catch(e){}
+  }
+  let savedHost = localStorage.getItem('digi_server_host') || bridgeHost || '192.168.8.102:8080';
   if (savedHost && !savedHost.includes(':')) savedHost += ':8080';
+  // Bersihkan IP bridge virtual usang (virbr0/docker) jika tersimpan
+  if (savedHost.includes('192.168.122.') || savedHost.includes('172.17.') || savedHost.includes('172.18.')) {
+    savedHost = bridgeHost || '192.168.8.102:8080';
+    localStorage.setItem('digi_server_host', savedHost);
+  }
 
-  let currentHost = loc.host || (savedHost || 'localhost:8080');
+  let currentHost = (loc.hostname && loc.hostname !== 'localhost' && loc.hostname !== '127.0.0.1') ? loc.host : (savedHost || '192.168.8.102:8080');
   let usbHost = '127.0.0.1:8080';
-  let wifiHost = savedHost || (loc.hostname !== 'localhost' && loc.hostname !== '127.0.0.1' ? loc.host : '');
+  let wifiHost = (loc.hostname && loc.hostname !== 'localhost' && loc.hostname !== '127.0.0.1') ? loc.host : savedHost;
 
   if (!currentHost && loc.protocol === 'file:') {
     if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.enableBluetoothHid === 'function') {
@@ -12646,11 +12646,11 @@ function connect() {
       ws = wsWifi;
     }
   } else {
-    // Mode Hybrid
-    if (!wsUsb || wsUsb.readyState > 1) {
+    // Mode Hybrid: Prioritaskan Wi-Fi stabil jika tidak ada kabel USB
+    if (!wifiConnected && (!wsUsb || wsUsb.readyState > 1)) {
       wsUsb = createChannelSocket('usb', usbHost);
     }
-    const targetWifi = wifiHost || (currentHost !== usbHost && currentHost !== 'localhost:8080' ? currentHost : '');
+    const targetWifi = wifiHost || (currentHost !== usbHost && currentHost !== 'localhost:8080' ? currentHost : '192.168.8.102:8080');
     if (targetWifi && (!wsWifi || wsWifi.readyState > 1)) {
       wsWifi = createChannelSocket('wifi', targetWifi);
     }
@@ -12677,17 +12677,28 @@ function startHeartbeatAndWatchdog() {
     if (!wsUsb && !wsWifi && ws && ws.readyState === WebSocket.OPEN) {
       try { ws.send(JSON.stringify({ type: 'ping', t: now })); } catch(e){}
     }
-  }, 2200);
+  }, 2500);
 
   watchdogTimer = setInterval(() => {
     const now = Date.now();
-    if (wsUsb && wsUsb.readyState === WebSocket.OPEN && (now - lastUsbPong > 6000)) {
+    // Probing darurat jika 7 detik belum ada pong (sebelum memvonis putus)
+    if (wsUsb && wsUsb.readyState === WebSocket.OPEN && (now - lastUsbPong > 7000)) {
+      try { wsUsb.send(JSON.stringify({ type: 'ping', t: now, ch: 'usb', probe: 1 })); } catch(e){}
+    }
+    if (wsWifi && wsWifi.readyState === WebSocket.OPEN && (now - lastWifiPong > 7000)) {
+      try { wsWifi.send(JSON.stringify({ type: 'ping', t: now, ch: 'wifi', probe: 1 })); } catch(e){}
+    }
+
+    // Vonis putus hanya jika hening total > 20 detik (toleransi delay & background sleep HP)
+    if (wsUsb && wsUsb.readyState === WebSocket.OPEN && (now - lastUsbPong > 20000)) {
+      console.warn('[DigiSmartDeck] USB channel timeout (>20s tanpa pong). Resetting socket...');
       try { wsUsb.close(); } catch(e){}
     }
-    if (wsWifi && wsWifi.readyState === WebSocket.OPEN && (now - lastWifiPong > 6000)) {
+    if (wsWifi && wsWifi.readyState === WebSocket.OPEN && (now - lastWifiPong > 20000)) {
+      console.warn('[DigiSmartDeck] Wi-Fi channel timeout (>20s tanpa pong). Resetting socket...');
       try { wsWifi.close(); } catch(e){}
     }
-  }, 1800);
+  }, 2000);
 }
 
 function handleBluetoothSend(obj) {
@@ -12769,7 +12780,7 @@ function send(obj) {
     handleBluetoothSend(obj);
     return;
   }
-  obj.client_id = CLIENT_ID;
+  obj.client_id = CLIENT_ID + '_' + SESSION_RUN_ID;
   obj.seq = ++clientSeqCounter;
   const jsonStr = JSON.stringify(obj);
 
@@ -12922,20 +12933,66 @@ window.addEventListener('offline', () => {
   showReconnectBanner();
 });
 
+// ── Screen WakeLock Helper (Mencegah Layar HP Mati / Redup Otomatis) ──
+let screenWakeLock = null;
+async function requestScreenWakeLock() {
+  if ('wakeLock' in navigator && document.visibilityState === 'visible') {
+    try {
+      if (!screenWakeLock) {
+        screenWakeLock = await navigator.wakeLock.request('screen');
+        screenWakeLock.addEventListener('release', () => {
+          screenWakeLock = null;
+        });
+      }
+    } catch(e) {}
+  }
+}
+
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    // Bangun dari layar mati / latar belakang: jika socket terputus, hubungkan segera
+    // Bangun dari layar mati / latar belakang:
+    // 1. Berikan grace period segera agar watchdog tidak membunuh socket yang baru bangun
+    const now = Date.now();
+    lastWifiPong = now;
+    lastUsbPong = now;
+    lastPongTime = now;
+
+    // 2. Minta Screen WakeLock jika browser mendukung
+    requestScreenWakeLock();
+
+    // 3. Jika socket terputus, segera sambung ulang tanpa jeda
     if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
-      console.log('[DigiSmartDeck] App kembali aktif. Menyambung ulang...');
+      console.log('[DigiSmartDeck] Layar kembali aktif & socket terputus. Menyambung ulang segera...');
       scheduleReconnect(true);
     } else {
-      // Jika socket terlihat aktif, kirim ping dan minta status jendela aktif terkini
+      // Jika socket masih terbuka, kirim ping bangun dan refresh status jendela aktif
       pingT = performance.now();
-      send({ type: 'ping', t: Date.now() });
-      send({ type: 'get_active_window' });
+      try {
+        if (wsWifi && wsWifi.readyState === WebSocket.OPEN) {
+          wsWifi.send(JSON.stringify({ type: 'ping', t: now, ch: 'wifi', wake: true }));
+        }
+        if (wsUsb && wsUsb.readyState === WebSocket.OPEN) {
+          wsUsb.send(JSON.stringify({ type: 'ping', t: now, ch: 'usb', wake: true }));
+        }
+        send({ type: 'get_active_window' });
+      } catch(e) {}
     }
   }
 });
+
+window.addEventListener('focus', () => {
+  const now = Date.now();
+  lastWifiPong = now;
+  lastUsbPong = now;
+  lastPongTime = now;
+  requestScreenWakeLock();
+  if (!connected || !ws || ws.readyState !== WebSocket.OPEN) {
+    scheduleReconnect(true);
+  }
+});
+
+document.addEventListener('touchstart', () => requestScreenWakeLock(), { once: true, passive: true });
+document.addEventListener('click', () => requestScreenWakeLock(), { once: true, passive: true });
 
 // ── Reconnection Assistant & Network Scanner UI ──
 let rcDotsTimer = null;
@@ -12996,11 +13053,15 @@ function openReconnectModal() {
     hostEl.style.color = connected ? '#3fb950' : 'var(--accent)';
   }
 
-  // Isi default subnet scanner berdasarkan hostname saat ini
+  // Isi default subnet scanner berdasarkan hostname saat ini atau server host
   const scanSubnetInput = $('input-scan-subnet');
   if (scanSubnetInput && !scanSubnetInput.value) {
-    const m = window.location.hostname.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/);
-    scanSubnetInput.value = m ? m[1] + '.' : '192.168.1.';
+    let baseHost = window.location.hostname;
+    if (!baseHost && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getServerHost === 'function') {
+      baseHost = window.DigiAndroidBridge.getServerHost();
+    }
+    const m = (baseHost || '').match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/);
+    scanSubnetInput.value = m ? m[1] + '.' : '192.168.8.';
   }
 
   modal.classList.remove('hidden');
@@ -13210,18 +13271,22 @@ async function scanSubnet(subnetBase = null) {
 
   let subnet = subnetBase || ($('input-scan-subnet') ? $('input-scan-subnet').value.trim() : '');
   if (!subnet) {
-    const ipMatch = window.location.hostname.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/);
-    subnet = ipMatch ? ipMatch[1] + '.' : '192.168.1.';
+    let baseHost = window.location.hostname;
+    if (!baseHost && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getServerHost === 'function') {
+      baseHost = window.DigiAndroidBridge.getServerHost();
+    }
+    const ipMatch = (baseHost || '').match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}$/);
+    subnet = ipMatch ? ipMatch[1] + '.' : '192.168.8.';
   }
   if (!subnet.endsWith('.')) subnet += '.';
 
   const port = window.location.port || '8080';
   const currentHost = window.location.hostname;
 
-  // 1. Cek mDNS candidates jika hostname PC adalah jarvis atau sistem lokal
-  const candidates = ['jarvis.local:' + port];
-  if (currentHost && currentHost !== 'localhost' && !currentHost.endsWith('.local')) {
-    candidates.push(currentHost + '.local:' + port);
+  // 1. Cek candidate prioritas (IP Wi-Fi Host PC & mDNS)
+  const candidates = ['192.168.8.102:' + port, 'jarvis.local:' + port];
+  if (currentHost && currentHost !== 'localhost' && !currentHost.endsWith('.local') && !candidates.includes(currentHost + ':' + port)) {
+    candidates.push(currentHost + ':' + port);
   }
 
   for (const cand of candidates) {
@@ -16463,11 +16528,17 @@ let currentAiMicState = null;
 let currentAiMicPhase = 1;
 
 function getAiMicStateConfig(state) {
-  if (state === 'recording') {
+  if (state === 'ready') {
     return {
       phase1: t('ai_mic_listen_1', currentUiLang === 'id' ? 'Mendengarkan...' : 'Listening...'),
       phase2: t('ai_mic_listen_2', currentUiLang === 'id' ? 'Ketuk untuk berhenti' : 'Tap to stop'),
-      color: 'var(--accent)'
+      color: '#3fb950'
+    };
+  } else if (state === 'starting') {
+    return {
+      phase1: t('ai_mic_starting_1', currentUiLang === 'id' ? 'Menyiapkan mic...' : 'Preparing mic...'),
+      phase2: t('ai_mic_starting_2', currentUiLang === 'id' ? 'Menyiapkan mic...' : 'Preparing mic...'),
+      color: '#d29922'
     };
   } else if (state === 'saved') {
     return {
@@ -16486,12 +16557,19 @@ function getAiMicStateConfig(state) {
 
 function updateAiMicUI(forceReset = false) {
   const micBtn = $('btn-ai-mic');
-  if (micBtn) micBtn.classList.toggle('recording', aiSpeechWanted);
+  const isReady = Boolean(aiSpeechWanted && isAiRecording);
+  const isStarting = Boolean(aiSpeechWanted && !isAiRecording);
+
+  if (micBtn) {
+    micBtn.classList.toggle('recording', aiSpeechWanted);
+    micBtn.classList.toggle('ready', isReady);
+    micBtn.classList.toggle('starting', isStarting);
+  }
 
   const statusEl = $('ai-mic-status');
   if (!statusEl) return;
 
-  const targetState = aiSpeechWanted ? 'recording' : (aiAccumulatedText.trim() ? 'saved' : 'idle');
+  const targetState = isReady ? 'ready' : (isStarting ? 'starting' : (aiAccumulatedText.trim() ? 'saved' : 'idle'));
 
   // If state hasn't changed and not forced, keep existing text in active language
   if (!forceReset && currentAiMicState === targetState) {
@@ -16657,7 +16735,7 @@ function promoteInterimToFinal() {
 window.onNativeSpeechStart = function() {
   isAiStarting = false;
   isAiRecording = true;
-  updateAiMicUI();
+  updateAiMicUI(true);
 };
 
 window.onNativeSpeechPartial = function(text) {
@@ -16678,7 +16756,7 @@ window.onNativeSpeechResult = function(text) {
     isAiStarting = false;
     aiSpeechWanted = false;
   }
-  updateAiMicUI();
+  updateAiMicUI(true);
 };
 
 // Dipanggil native saat segmen berakhir tanpa hasil final (timeout/error) dan mic di-restart.
@@ -16686,15 +16764,15 @@ window.onNativeSpeechRestart = function() {
   promoteInterimToFinal();
   commitCurrentSession();
   if (aiSpeechWanted) {
-    isAiRecording = true;
-    updateAiMicUI();
+    isAiStarting = true;
+    isAiRecording = false;
+    updateAiMicUI(true);
   }
 };
 
 window.onNativeSpeechEnd = function() {
   // Hasil final menyusul lewat onNativeSpeechResult; jangan buang interim di sini.
   if (aiSpeechAlwaysOn && aiSpeechWanted) {
-    isAiRecording = true;
     updateAiMicUI();
     return;
   }
@@ -16706,8 +16784,9 @@ window.onNativeSpeechError = function(code) {
   promoteInterimToFinal();
   commitCurrentSession();
   if (aiSpeechAlwaysOn && aiSpeechWanted && !fatal) {
-    isAiRecording = true;
-    updateAiMicUI();
+    isAiStarting = true;
+    isAiRecording = false;
+    updateAiMicUI(true);
     return;
   }
   isAiRecording = false;
@@ -16729,7 +16808,8 @@ window.onNativeSpeechError = function(code) {
       statusEl.style.color = 'var(--text-dim)';
     }
   }
-  updateAiMicUI();
+  updateAiMicUI(true);
+};
 };
 
 function stopAiSpeechRecognition() {
@@ -16755,7 +16835,7 @@ function stopAiSpeechRecognition() {
   isAiStarting = false;
   commitCurrentSession();
   try {
-    updateAiMicUI();
+    updateAiMicUI(true);
   } catch(e) {}
 }
 
@@ -16828,7 +16908,7 @@ function startAiSpeechSession() {
       isAiStarting = false;
       isAiRecording = true;
       aiWebSessionStartTs = Date.now();
-      updateAiMicUI();
+      updateAiMicUI(true);
     };
 
     recognition.onresult = (event) => {
@@ -16938,7 +17018,9 @@ function toggleAiSpeech() {
   }
 
   aiSpeechWanted = true;
-  updateAiMicUI();
+  isAiStarting = true;
+  isAiRecording = false;
+  updateAiMicUI(true);
   startAiSpeechSession();
 }
 
@@ -17215,43 +17297,6 @@ bindAiKey('ai-btn-enter', () => {
     send({ type: 'keypress', key: 'enter' });
   }
 });
-
-// Auto-Enter Toggle Mode (Dongle di bawah tombol Enter Mode AI)
-let aiAutoEnter = localStorage.getItem('digi_ai_auto_enter') === 'true';
-
-function updateAutoEnterUI(active) {
-  aiAutoEnter = Boolean(active);
-  localStorage.setItem('digi_ai_auto_enter', aiAutoEnter ? 'true' : 'false');
-  const btn = $('ai-btn-auto-enter');
-  const badge = $('ai-auto-enter-badge');
-  if (btn) {
-    btn.classList.toggle('active', aiAutoEnter);
-  }
-  if (badge) {
-    badge.textContent = aiAutoEnter ? 'ON' : 'OFF';
-  }
-}
-
-function toggleAutoEnter(forceVal) {
-  playClickSound();
-  vibe(20);
-  const nextVal = (typeof forceVal === 'boolean') ? forceVal : !aiAutoEnter;
-  updateAutoEnterUI(nextVal);
-  send({ type: 'toggle_auto_enter', enabled: nextVal });
-  if (typeof showSmartToast === 'function') {
-    const msg = nextVal
-      ? (currentUiLang === 'id' ? 'Auto-Enter: Aktif (Otomatis konfirmasi prompt)' : 'Auto-Enter: Enabled (Auto-confirm prompts)')
-      : (currentUiLang === 'id' ? 'Auto-Enter: Nonaktif' : 'Auto-Enter: Disabled');
-    showSmartToast(msg, 'Auto-Enter');
-  }
-}
-
-bindAiKey('ai-btn-auto-enter', () => {
-  toggleAutoEnter();
-});
-
-// Inisialisasi awal UI Auto-Enter
-updateAutoEnterUI(aiAutoEnter);
 
 bindAiKey('ai-btn-copy', () => {
   send({ type: 'combo', keys: ['ctrl', 'c'] });

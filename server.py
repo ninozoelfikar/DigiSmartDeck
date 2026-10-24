@@ -827,11 +827,22 @@ def set_anti_sleep(enable: bool):
 def get_local_ip_addresses():
     """Mengambil daftar IP lokal komputer di jaringan Wi-Fi/LAN"""
     ip_list = []
+    primary_ip = None
+
+    try:
+        # Hubungkan dummy socket untuk mengetahui IP rute utama yang aktif
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0.2)
+        s.connect(('8.8.8.8', 80))
+        primary_ip = s.getsockname()[0]
+        s.close()
+    except Exception:
+        pass
+
     try:
         import psutil
         usb_ips = []
         lan_ips = []
-        other_ips = []
         for iface, addrs in psutil.net_if_addrs().items():
             iface_lower = iface.lower()
             is_usb = any(k in iface_lower for k in ['usb', 'rndis'])
@@ -839,41 +850,41 @@ def get_local_ip_addresses():
                 'docker', 'br-', 'virbr', 'warp', 'tun', 'tap', 'veth',
                 'vethernet', 'hyper-v', 'vmware', 'virtualbox', 'wsl'
             ])
+            # Lewati antarmuka virtual agar tidak membingungkan client di HP
+            if is_virtual:
+                continue
             for addr in addrs:
                 if addr.family == socket.AF_INET and not addr.address.startswith('127.'):
+                    if addr.address.startswith('192.168.122.') or addr.address.startswith('172.17.') or addr.address.startswith('172.18.'):
+                        continue
                     if is_usb:
                         usb_ips.append(addr.address)
-                    elif not is_virtual and (addr.address.startswith('192.168.') or addr.address.startswith('10.')):
-                        lan_ips.append(addr.address)
-                    elif not is_virtual:
+                    elif addr.address.startswith('192.168.') or addr.address.startswith('10.') or addr.address.startswith('172.'):
                         lan_ips.append(addr.address)
                     else:
-                        other_ips.append(addr.address)
-        for ip in usb_ips + lan_ips + other_ips:
+                        lan_ips.append(addr.address)
+
+        # Prioritaskan primary_ip yang valid di urutan pertama
+        if primary_ip and not primary_ip.startswith('127.') and not primary_ip.startswith('192.168.122.'):
+            ip_list.append(primary_ip)
+
+        for ip in usb_ips + lan_ips:
             if ip not in ip_list:
                 ip_list.append(ip)
     except Exception:
         pass
 
-    try:
-        # Hubungkan dummy socket untuk mengetahui IP rute utama
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(0.1)
-        s.connect(('8.8.8.8', 80))
-        primary_ip = s.getsockname()[0]
-        s.close()
-        if primary_ip not in ip_list:
-            ip_list.append(primary_ip)
-    except Exception:
-        pass
+    if primary_ip and primary_ip not in ip_list and not primary_ip.startswith('127.') and not primary_ip.startswith('192.168.122.'):
+        ip_list.insert(0, primary_ip)
 
-    try:
-        hostname = socket.gethostname()
-        for ip in socket.gethostbyname_ex(hostname)[2]:
-            if ip not in ip_list and not ip.startswith('127.'):
-                ip_list.append(ip)
-    except Exception:
-        pass
+    if not ip_list:
+        try:
+            hostname = socket.gethostname()
+            for ip in socket.gethostbyname_ex(hostname)[2]:
+                if not ip.startswith('127.') and not ip.startswith('192.168.122.') and ip not in ip_list:
+                    ip_list.append(ip)
+        except Exception:
+            pass
 
     if not ip_list:
         ip_list.append('127.0.0.1')
@@ -2065,7 +2076,6 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
 ACTIVE_WINDOW_DIALOG_ID = None
 PENDING_PROMPTS = {}
 ENABLE_REMOTE_PROMPTS = True
-AUTO_ENTER_ENABLED = False
 
 def cleanup_pending_prompts():
     """Membersihkan prompt yang sudah selesai atau ditutup."""
@@ -2324,8 +2334,10 @@ def check_and_record_seq(client_id, seq):
     return False
 
 async def websocket_handler(request):
-    global CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID, AUTO_ENTER_ENABLED
-    ws = web.WebSocketResponse(heartbeat=10.0, receive_timeout=25.0, max_msg_size=131072)
+    global CURRENT_APP_CONTEXT, LOCKED_TARGET_WIN_ID
+    # Heartbeat 25.0s (pong window 12.5s) toleran terhadap power saving radio Wi-Fi HP Android
+    # receive_timeout=None mencegah koneksi putus otomatis saat HP idle tanpa input
+    ws = web.WebSocketResponse(heartbeat=25.0, receive_timeout=None, max_msg_size=131072)
     await ws.prepare(request)
     CONNECTED_CLIENTS.add(ws)
     client_ip = request.remote
@@ -2354,11 +2366,19 @@ async def websocket_handler(request):
             'lan_ips': get_local_ip_addresses()
         }))
         if is_client_authorized:
+            lan_token = pairing_manager.get_or_create_device_token(client_ip, device_label)
             await ws.send_str(json.dumps({
                 'type': 'controller_status',
                 'role': 'active',
                 'message': 'Perangkat terhubung sebagai Pengendali PC.'
             }))
+            if lan_token:
+                await ws.send_str(json.dumps({
+                    'type': 'auth_status',
+                    'authorized': True,
+                    'token': lan_token,
+                    'message': 'Terhubung otomatis di jaringan lokal.'
+                }))
         else:
             await ws.send_str(json.dumps({
                 'type': 'controller_status',
@@ -2388,11 +2408,6 @@ async def websocket_handler(request):
             'suggested_mode': CURRENT_APP_CONTEXT['suggested_mode'],
             'class_name': CURRENT_APP_CONTEXT['class_name'],
             'has_action': has_action_init
-        }))
-
-        await ws.send_str(json.dumps({
-            'type': 'auto_enter_update',
-            'enabled': AUTO_ENTER_ENABLED
         }))
 
         # Kirim status inisialisasi selesai tanpa menyiarkan prompt
@@ -2957,49 +2972,7 @@ async def websocket_handler(request):
                         except Exception:
                             pass
 
-                elif msg_type == 'toggle_auto_enter':
-                    if 'enabled' in data:
-                        AUTO_ENTER_ENABLED = bool(data['enabled'])
-                    else:
-                        AUTO_ENTER_ENABLED = not AUTO_ENTER_ENABLED
-                    print(f"[Auto-Enter] Mode diubah: {'AKTIF' if AUTO_ENTER_ENABLED else 'NONAKTIF'}")
-                    payload = json.dumps({
-                        'type': 'auto_enter_update',
-                        'enabled': AUTO_ENTER_ENABLED
-                    })
-                    for cws in list(CONNECTED_CLIENTS):
-                        try:
-                            await cws.send_str(payload)
-                        except Exception:
-                            pass
 
-                    # Jika diaktifkan dan ada PENDING_PROMPTS, otomatis eksekusi prompt yang sedang menunggu
-                    if AUTO_ENTER_ENABLED and PENDING_PROMPTS:
-                        for p_id, p_info in list(PENDING_PROMPTS.items()):
-                            p_payload = p_info.get('payload', {})
-                            fut = p_info.get('future')
-                            if fut and not fut.done():
-                                fut.set_result({
-                                    'action': 'responded',
-                                    'value': 'enter',
-                                    'key': 'enter',
-                                    'auto_enter': True
-                                })
-                            if p_payload.get('execute_on_pc'):
-                                p_win = p_payload.get('win_id')
-                                if p_win:
-                                    try:
-                                        await asyncio.to_thread(activate_and_focus_window, p_win, False)
-                                        await asyncio.sleep(0.08)
-                                    except Exception:
-                                        pass
-                                try:
-                                    await asyncio.to_thread(simulate_tap, 'enter')
-                                except Exception:
-                                    pass
-                            PENDING_PROMPTS.pop(p_id, None)
-                            await broadcast_prompt_dismiss(p_id)
-                    continue
 
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[!] WS Error: {ws.exception()}")
@@ -3272,6 +3245,19 @@ async def api_updater_check_handler(request):
     return web.json_response(response_data, headers={'Access-Control-Allow-Origin': '*'})
 
 
+async def api_updater_trigger_handler(request):
+    """Endpoint HTTP GET/POST /api/updater/trigger untuk menyiarkan instruksi periksa pembaruan ke seluruh client."""
+    broadcast_payload = json.dumps({'type': 'trigger_update_check'})
+    count = 0
+    for client in list(CONNECTED_CLIENTS):
+        try:
+            await client.send_str(broadcast_payload)
+            count += 1
+        except Exception:
+            pass
+    return web.json_response({'status': 'ok', 'broadcast_count': count}, headers={'Access-Control-Allow-Origin': '*'})
+
+
 async def download_apk_handler(request):
     """Endpoint HTTP GET /download/apk untuk mengunduh rilis APK Android terbaru secara dinamis."""
     apk_info = await asyncio.to_thread(get_latest_apk_info)
@@ -3409,50 +3395,6 @@ async def api_trigger_prompt_handler(request):
         'requires_response': not is_completion
     }
 
-    if AUTO_ENTER_ENABLED and not is_completion:
-        auto_res = {
-            'action': 'responded',
-            'value': 'enter',
-            'key': 'enter',
-            'auto_enter': True
-        }
-
-        print(f"[Auto-Enter] Menyetujui konfirmasi otomatis untuk {app_name} (hanya menekan Enter)")
-
-        if execute_on_pc:
-            try:
-                if win_id:
-                    await asyncio.to_thread(activate_and_focus_window, win_id, False)
-                    await asyncio.sleep(0.08)
-                await asyncio.to_thread(simulate_tap, 'enter')
-            except Exception as e_ae:
-                print(f"[Auto-Enter Error simulating enter]: {e_ae}")
-
-        toast_payload = json.dumps({
-            'type': 'auto_enter_executed',
-            'app': app_name,
-            'title': title
-        })
-        for cws in list(CONNECTED_CLIENTS):
-            try:
-                await cws.send_str(toast_payload)
-            except Exception:
-                pass
-
-        if wait_flag:
-            await asyncio.sleep(0.12)
-            return web.json_response({
-                'status': 'responded',
-                'prompt_id': prompt_id,
-                'response': auto_res
-            }, headers={'Access-Control-Allow-Origin': '*'})
-        else:
-            return web.json_response({
-                'status': 'auto_entered',
-                'prompt_id': prompt_id,
-                'response': auto_res
-            }, headers={'Access-Control-Allow-Origin': '*'})
-
     loop = asyncio.get_running_loop()
     future = loop.create_future() if wait_flag else None
     PENDING_PROMPTS[prompt_id] = {
@@ -3561,6 +3503,9 @@ def create_app(ports=[8080]):
     app.router.add_get('/api/license', lambda r: web.json_response(license_manager.get_info(), headers={'Access-Control-Allow-Origin': '*'}))
     app.router.add_get('/api/updater/check', api_updater_check_handler)
     app.router.add_options('/api/updater/check', options_handler)
+    app.router.add_get('/api/updater/trigger', api_updater_trigger_handler)
+    app.router.add_post('/api/updater/trigger', api_updater_trigger_handler)
+    app.router.add_options('/api/updater/trigger', options_handler)
     app.router.add_post('/api/pair', api_pair_handler)
     app.router.add_get('/api/pair', api_pair_handler)
     app.router.add_options('/api/pair', options_handler)
@@ -3605,7 +3550,7 @@ if __name__ == '__main__':
     app = create_app(ports)
 
     async def run_server():
-        runner = web.AppRunner(app)
+        runner = web.AppRunner(app, keepalive_timeout=75.0)
         await runner.setup()
         for p in ports:
             site = web.TCPSite(runner, '0.0.0.0', p)

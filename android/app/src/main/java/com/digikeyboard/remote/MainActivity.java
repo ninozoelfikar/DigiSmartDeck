@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private int speechQuickFailStreak = 0;
     private long speechSessionStartMs = 0L;
     private String currentSpeechLang = "id-ID";
+    private android.net.wifi.WifiManager.WifiLock wifiLock;
 
     private File pendingApkToInstall = null;
     private final ExecutorService downloadExecutor = Executors.newSingleThreadExecutor();
@@ -342,9 +343,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Kunci layar ke Landscape (Mendatar) & jaga layar tetap menyala
+        // 1. Kunci layar ke Landscape (Mendatar) & jaga layar tetap menyala & aktifkan WifiLock
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        acquireWifiLock();
 
         setContentView(R.layout.activity_main);
 
@@ -705,8 +707,13 @@ public class MainActivity extends AppCompatActivity {
                     speechHandler.postDelayed(() -> startListeningNow(0, true), 800);
                     return;
                 }
-                speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, currentSpeechLang);
-                speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, currentSpeechLang);
+                String reqLang = (currentSpeechLang != null && !currentSpeechLang.trim().isEmpty()) ? currentSpeechLang : "id-ID";
+                speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, reqLang);
+                speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, reqLang);
+                speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true);
+                if (reqLang.equalsIgnoreCase("id-ID") || reqLang.equalsIgnoreCase("id") || reqLang.equalsIgnoreCase("in-ID")) {
+                    speechRecognizerIntent.putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", new String[]{"id-ID", "in-ID", "id_ID"});
+                }
                 muteBeepStreams();
                 try {
                     speechRecognizer.cancel();
@@ -763,12 +770,11 @@ public class MainActivity extends AppCompatActivity {
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
         speechRecognizerIntent.putExtra("android.speech.extra.DICTATION_MODE", true);
-        // Jendela hening diperpanjang agar jeda berpikir tidak langsung memotong sesi.
-        // Sebagian versi layanan Google mengabaikan nilai ini; restart otomatis di bawah
-        // tetap menjaga mic terus aktif.
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 6000L);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 5000L);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 10000L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, false);
+        // Jendela hening diatur responsif: 2.2s untuk jeda akhir ucapan, 1.5s jeda kemungkinan selesai
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2200L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1500L);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 2000L);
 
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
@@ -831,9 +837,9 @@ public class MainActivity extends AppCompatActivity {
                     if (error == 10) {
                         delay = 2000L; // ERROR_TOO_MANY_REQUESTS
                     } else if (speechQuickFailStreak <= 2) {
-                        delay = 60L;
+                        delay = 250L;
                     } else {
-                        delay = Math.min(150L << Math.min(speechQuickFailStreak - 2, 4), 2400L);
+                        delay = Math.min(250L << Math.min(speechQuickFailStreak - 2, 4), 2500L);
                     }
 
                     muteBeepStreams();
@@ -871,7 +877,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (isListeningActive && isAlwaysOnSpeech) {
                     muteBeepStreams();
-                    scheduleSpeechRestart(40, false);
+                    scheduleSpeechRestart(200, false);
                 } else {
                     isListeningActive = false;
                     muteBeepStreams();
@@ -901,9 +907,43 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void acquireWifiLock() {
+        try {
+            if (wifiLock == null) {
+                android.net.wifi.WifiManager wm = (android.net.wifi.WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                if (wm != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        wifiLock = wm.createWifiLock(android.net.wifi.WifiManager.WIFI_MODE_FULL_LOW_LATENCY, "DigiSmartDeck:WifiLock");
+                    } else {
+                        wifiLock = wm.createWifiLock(android.net.wifi.WifiManager.WIFI_MODE_FULL_HIGH_PERF, "DigiSmartDeck:WifiLock");
+                    }
+                    wifiLock.setReferenceCounted(false);
+                }
+            }
+            if (wifiLock != null && !wifiLock.isHeld()) {
+                wifiLock.acquire();
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void releaseWifiLock() {
+        try {
+            if (wifiLock != null && wifiLock.isHeld()) {
+                wifiLock.release();
+            }
+        } catch (Exception ignored) {}
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        acquireWifiLock();
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
+        releaseWifiLock();
         if (isListeningActive) {
             isListeningActive = false;
             if (speechHandler != null) {
@@ -1090,6 +1130,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        releaseWifiLock();
         isListeningActive = false;
         if (speechHandler != null) {
             speechHandler.removeCallbacksAndMessages(null);

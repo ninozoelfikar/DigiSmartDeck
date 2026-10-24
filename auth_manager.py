@@ -99,7 +99,7 @@ class DevicePairingManager:
     def __init__(self):
         self.pin = ""
         self.pin_created_at = 0
-        self.pin_ttl_seconds = 900  # 15 menit
+        self.pin_ttl_seconds = 604800  # 7 hari agar stabil dan tidak expired saat PC menyala
         self.pairing_enabled = True
         self.paired_devices = {}
         self.failed_attempts = {}  # ip -> {'count': int, 'lockout_until': float}
@@ -234,14 +234,37 @@ class DevicePairingManager:
             return True
         if token and token.startswith("dev_rdc_"):
             return True
-        # Localhost (koneksi USB adb reverse atau browser di PC yang sama) otomatis diizinkan jika belum ada device
-        if ip in ("127.0.0.1", "localhost", "::1") and not self.paired_devices:
+        # Localhost (koneksi USB adb reverse atau browser di PC yang sama) SELALU diizinkan
+        if ip in ("127.0.0.1", "localhost", "::1"):
+            return True
+        # Perangkat di jaringan LAN lokal pribadi yang sama (192.168.8.x) otomatis diizinkan
+        if ip and (ip.startswith("192.168.8.") or ip.startswith("192.168.122.")):
             return True
         if not token or token not in self.paired_devices:
             return False
         # Update last seen
         self.paired_devices[token]['last_seen'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return True
+
+    def get_or_create_device_token(self, ip, device_name="Device"):
+        """Mengambil atau membuat token otentikasi untuk perangkat di jaringan lokal."""
+        self._load()
+        for token, info in self.paired_devices.items():
+            if info.get('ip') == ip:
+                info['last_seen'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._save()
+                return token
+        token = secrets.token_hex(24)
+        self.paired_devices[token] = {
+            'device_id': f"dev_{secrets.token_hex(4)}",
+            'name': device_name or f"Device ({ip})",
+            'ip': ip,
+            'user_agent': 'Auto-LAN-Paired',
+            'paired_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'last_seen': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        self._save()
+        return token
 
     def get_paired_list(self):
         """Ambil daftar perangkat terhubung tanpa membocorkan secret token."""

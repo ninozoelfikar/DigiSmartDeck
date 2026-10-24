@@ -2209,4 +2209,38 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
 
+---
+
+## 123. CATATAN CHECKPOINT (v1.21.4.19 - Eliminasi Fitur Auto-Enter & Proteksi Input Keyboard Fisik pada Terminal)
+- **Penghapusan Fitur Auto-Enter Secara Menyeluruh:**
+  - Menghapus tombol toggle `#ai-btn-auto-enter` dari antarmuka AI Workstation (`static/index.html` dan `android/app/src/main/assets/index.html`) beserta seluruh gaya CSS terkait.
+  - Menghapus variabel `aiAutoEnter`, helper `updateAutoEnterUI()`, `toggleAutoEnter()`, dan pendengar event WebSocket (`auto_enter_update`, `auto_enter_executed`, `toggle_auto_enter`).
+  - Menghapus logika `AUTO_ENTER_ENABLED` dan auto-approval eksekusi dari backend `server.py` (`websocket_handler` dan `api_trigger_prompt_handler`), memastikan server tidak pernah mengeksekusi enter secara otonom tanpa izin pengguna.
+- **Proteksi Input Keyboard Fisik pada Terminal (digi-term):**
+  - Menghilangkan cabang logika `auto_enter` pada `digi-term`.
+  - Mengembalikan pembatalan prompt aktif secara instan (`self.dismiss_active()`) saat pengguna mengetik tombol apa pun dari keyboard fisik selain tombol navigasi panah (`not is_nav_key`).
+  - Menjamin pengetikan langsung di terminal oleh pengguna tidak pernah bertabrakan dengan injeksi background prompt, mencegah terjadinya error terminal.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+---
+
+## 124. CATATAN CHECKPOINT (v1.21.4.20 - Resolusi Konektivitas Wi-Fi Host, Eliminasi Bridge Virtual & Auto-Pairing LAN)
+- **Resolusi Masalah Koneksi Nirkabel & Eliminasi IP Bridge Virtual (`server.py`):**
+  - Memperbaiki fungsi `get_local_ip_addresses()` dengan mengeliminasi total alamat antarmuka virtual bridge (virbr0, docker0, br-*, veth*) yang sebelumnya menyebabkan client Android tersesat ke IP virtual internal (`192.168.122.1`).
+  - Mengunci pendeteksian rute IP utama (`primary_ip` dari koneksi dummy UDP socket) di posisi indeks 0 (`192.168.8.102`), sehingga URL banner dan QR Code selalu memuat alamat Wi-Fi yang benar dan dapat dijangkau oleh perangkat mobile.
+- **Otomatisasi Otorisasi Jaringan Lokal & Stabilitas PIN (`auth_manager.py`):**
+  - Menghilangkan batasan `not self.paired_devices` pada localhost/USB, menjamin koneksi USB `localhost:8080` selalu terhubung instan tanpa PIN.
+  - Mengaktifkan auto-authorizing dan auto-tokening untuk perangkat di subnet Wi-Fi lokal pribadi (`192.168.8.x`), sehingga Founder dapat langsung tersambung tanpa terhalang pop-up modal PIN.
+  - Memperpanjang masa aktif PIN pairing (`pin_ttl_seconds`) dari 15 menit menjadi 7 hari agar tidak sering kedaluwarsa pada server headless beroperasi lama.
+- **Penyelarasan Host Dinamis pada Klien Web & Android (`static/index.html` & `assets/index.html`):**
+  - Memperbaiki parser handshake `init` agar otomatis memperbarui `localStorage.setItem('digi_server_host')` jika host yang tersimpan sudah usang atau mengarah ke IP virtual.
+  - Menyelaraskan Subnet Scanner di antarmuka Reconnect Modal agar menggunakan basis subnet Wi-Fi aktif (`192.168.8.`) saat dibuka dalam mode offline APK.
+- **Kepatuhan Aturan Mutlak:**
+  - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
+  - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
+
+
 
