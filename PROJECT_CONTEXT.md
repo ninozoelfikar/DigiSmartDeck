@@ -2226,15 +2226,15 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 
 ---
 
-## 126. CATATAN CHECKPOINT (v1.21.4.23 - Resolusi SyntaxError Token Kurung Kurawal Ganda pada Skrip Klien)
-- **Eliminasi SyntaxError pada static/index.html & assets/index.html:**
-  - Menghapus karakter ekstra penutup kurung kurawal ganda (`};};`) pada akhir fungsi `window.onNativeSpeechError` di baris 16813.
-  - Kesalahan token tersebut sebelumnya menyebabkan parser JavaScript pada browser/WebView melempar `SyntaxError: Unexpected token ';'`, sehingga proses evaluasi skrip terhenti dan pendaftaran pendengar event (event listener) seluruh tombol keyboard/deck gagal terpasang.
-  - Memverifikasi integritas sintaks secara deterministik menggunakan Node.js Abstract Syntax Tree (`new Function()` / `node --check`), menjamin **0 Syntax Errors** di seluruh skrip klien.
-  - Mengompilasi ulang paket APK `DigiSmartDeck-v1.21.4.23.apk` dan memicu broadcast update otomatis ke seluruh klien aktif.
+## 127. CATATAN CHECKPOINT (v1.21.4.24 - Eliminasi Re-entrancy Lockout pada Pemanggilan startAiSpeechSession)
+- **Resolusi Masalah Mic Stuck di "Preparing Mic":**
+  - Menemukan akar masalah re-entrancy guard: sebelumnya fungsi `toggleAiSpeech` menandai `isAiStarting = true` sesaat sebelum memanggil `startAiSpeechSession()`. Namun pada baris pertama `startAiSpeechSession()`, terdapat pengecekan `if (isAiStarting) return null;` yang menyebabkan fungsi langsung keluar (exit prematur) tanpa pernah mengeksekusi `window.DigiAndroidBridge.startNativeSpeechWithOptions()` atau Web Speech API `recognition.start()`.
+  - Memindahkan pengelolaan flag `isAiStarting = true` murni ke dalam `startAiSpeechSession()`, menjamin engine audio speech recognizer selalu dipicu secara nyata begitu tombol mic ditekan.
+  - Sinar-sinar pendaran hijau (`@keyframes ai-pulse-green`) kini langsung aktif seketika saat event `onReadyForSpeech` diterima dari sistem Android/browser.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
 
 
 
