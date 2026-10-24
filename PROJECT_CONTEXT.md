@@ -2226,20 +2226,16 @@ Berdasarkan uji coba langsung dan instruksi pengguna:
 
 ---
 
-## 125. CATATAN CHECKPOINT (v1.21.4.22 - Indikator Sinar Hijau Mic Ready & Resolusi Balapan Koneksi Hybrid)
-- **Indikator Sinar Hijau Mic Ready (#btn-ai-mic):**
-  - Mengubah logika visual tombol mic agar hanya memancarkan pendaran sinar-sinar gelombang (`@keyframes ai-pulse-green`) berwarna hijau zamrud (`#3fb950`, `rgba(63, 185, 80, 0.75)`) ketika engine pengenal suara benar-benar telah berstatus READY (`onReadyForSpeech` / `onNativeSpeechStart` / `recognition.onstart`).
-  - Saat mic baru saja ditekan dan sedang mempersiapkan engine audio (`isAiStarting = true`, belum ready), tombol menampilkan warna amber halus dengan label status "Menyiapkan mic...".
-  - Begitu audio hardware/Google Speech Recognizer aktif menangkap suara, tombol seketika beralih ke mode `.ready` dengan sinar hijau melingkar dan teks "Mendengarkan...", memberikan kepastian visual mutlak kepada Founder bahwa ucapannya sedang ditangkap dan ditulis ke PC.
-- **Resolusi Masalah Koneksi Sulit Berfungsi (Instant Functionality Fix):**
-  - Mengatasi akar masalah *sequence lockout* pada deduplikasi server (`server.py`): sebelumnya `CLIENT_ID` disimpan persisten di `localStorage` sedangkan `clientSeqCounter` selalu reset ke 0 saat halaman dimuat ulang. Hal ini menyebabkan puluhan hingga ratusan aksi ketukan awal dibuang oleh server karena dianggap duplikat dari sesi sebelumnya (`key in PROCESSED_ACTION_SEQS_SET`).
-  - Menyuntikkan `SESSION_RUN_ID` dinamis unik per instance sesi (`CLIENT_ID + '_' + SESSION_RUN_ID`), menjamin seluruh perintah tombol, touchpad, dan gesture langsung berfungsi 100% pada sentuhan pertama.
-  - Memperbaiki *race condition* penutupan soket pada Mode Hybrid (`createChannelSocket`): kegagalan kanal USB (127.0.0.1:8080) pada perangkat yang terhubung murni via Wi-Fi tidak lagi memicu status 'Terputus' prematur atau membunuh soket Wi-Fi yang sedang dalam proses jabat tangan TCP (`WebSocket.CONNECTING`).
-  - Membatalkan timer `reconnectTimer` seketika saat salah satu soket berhasil `onopen` dan mencegah penumpukan soket zombie.
-  - Menyegarkan layanan systemd `digikeyboard.service` sehingga backend `server.py` berjalan dengan konfigurasi timeout nirkabel yang longgar (`receive_timeout=None`, `keepalive_timeout=75.0`).
+## 126. CATATAN CHECKPOINT (v1.21.4.23 - Resolusi SyntaxError Token Kurung Kurawal Ganda pada Skrip Klien)
+- **Eliminasi SyntaxError pada static/index.html & assets/index.html:**
+  - Menghapus karakter ekstra penutup kurung kurawal ganda (`};};`) pada akhir fungsi `window.onNativeSpeechError` di baris 16813.
+  - Kesalahan token tersebut sebelumnya menyebabkan parser JavaScript pada browser/WebView melempar `SyntaxError: Unexpected token ';'`, sehingga proses evaluasi skrip terhenti dan pendaftaran pendengar event (event listener) seluruh tombol keyboard/deck gagal terpasang.
+  - Memverifikasi integritas sintaks secara deterministik menggunakan Node.js Abstract Syntax Tree (`new Function()` / `node --check`), menjamin **0 Syntax Errors** di seluruh skrip klien.
+  - Mengompilasi ulang paket APK `DigiSmartDeck-v1.21.4.23.apk` dan memicu broadcast update otomatis ke seluruh klien aktif.
 - **Kepatuhan Aturan Mutlak:**
   - STRICT ZERO EMOJIS / ZERO EMOTICONS across all code, logs, UI, dan teks respons asisten.
   - Efek suara klik mekanikal (`playClickSound()`) dan getaran haptik tetap aktif sempurna.
+
 
 
 
