@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.24] - 2026-10-24
+- Perbaikan guard startAiSpeechSession agar mic langsung aktif tanpa stuck di preparing
+
 ### [1.21.4.23] - 2026-10-24
 - Perbaikan sintaks JavaScript pada penutup event handler mic
 
@@ -433,6 +436,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.24] - 2026-10-24
+- Release v1.21.4.24 updates
 
 ### [1.21.4.23] - 2026-10-24
 - Release v1.21.4.23 updates
