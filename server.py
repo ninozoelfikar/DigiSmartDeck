@@ -3322,6 +3322,121 @@ async def api_pairing_pin_handler(request):
     return web.json_response({'pin': pairing_manager.get_or_create_pin()}, headers={'Access-Control-Allow-Origin': '*'})
 
 
+async def api_pairing_pin_regenerate_handler(request):
+    """Endpoint HTTP POST /api/pairing/pin/regenerate untuk mengacak ulang PIN."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden'}, status=403)
+    new_pin = pairing_manager.generate_pin()
+    return web.json_response({'pin': new_pin}, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_devices_handler(request):
+    """Endpoint HTTP GET /api/devices untuk daftar perangkat terhubung."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden'}, status=403)
+    return web.json_response({'devices': pairing_manager.get_paired_list()}, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_devices_unpair_handler(request):
+    """Endpoint HTTP POST /api/devices/unpair untuk memutuskan perangkat."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden'}, status=403)
+    try:
+        data = await request.json()
+        dev_id = data.get('id')
+        if dev_id == 'all':
+            pairing_manager.unpair_all()
+        elif dev_id:
+            pairing_manager.unpair_device(dev_id)
+        return web.json_response({'success': True, 'devices': pairing_manager.get_paired_list()}, headers={'Access-Control-Allow-Origin': '*'})
+    except Exception as e:
+        return web.json_response({'error': str(e)}, status=400)
+
+
+async def api_system_diagnostics_handler(request):
+    """Endpoint HTTP GET /api/system/diagnostics untuk status kernel & smart terminal."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden'}, status=403)
+    uinput_ok = os.access('/dev/uinput', os.W_OK)
+    flag_file = os.path.expanduser('~/.config/digismartdeck/smart_terminal_enabled')
+    smart_term_active = os.path.exists(flag_file)
+    return web.json_response({
+        'uinput_ok': uinput_ok,
+        'smart_term_active': smart_term_active,
+        'version': __version__,
+        'ip': request.host
+    }, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_smart_terminal_toggle_handler(request):
+    """Endpoint HTTP POST /api/smart-terminal/toggle untuk mengaktifkan/menonaktifkan smart terminal."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden'}, status=403)
+    flag_file = os.path.expanduser('~/.config/digismartdeck/smart_terminal_enabled')
+    os.makedirs(os.path.dirname(flag_file), exist_ok=True)
+    if os.path.exists(flag_file):
+        try:
+            os.remove(flag_file)
+        except Exception:
+            pass
+        active = False
+    else:
+        try:
+            with open(flag_file, 'w', encoding='utf-8') as f:
+                f.write('1\n')
+        except Exception:
+            pass
+        active = True
+    return web.json_response({'smart_term_active': active}, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_system_restart_handler(request):
+    """Endpoint HTTP POST /api/system/restart untuk restart daemon secara graceful."""
+    if not is_localhost(request):
+        return web.json_response({'error': 'Forbidden'}, status=403)
+    
+    async def _graceful_exit():
+        await asyncio.sleep(0.5)
+        os._exit(0)
+
+    asyncio.create_task(_graceful_exit())
+    return web.json_response({'status': 'restarting'}, headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_qrcode_handler(request):
+    """Endpoint HTTP GET /api/qrcode untuk menyajikan barcode gambar PNG."""
+    import io
+    import qrcode
+    data = request.query.get('data', '')
+    if not data:
+        ips = get_local_ip_addresses()
+        ip = ips[0] if ips else '127.0.0.1'
+        data = f"http://{ip}:8080"
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=6,
+        border=2,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return web.Response(body=buf.getvalue(), content_type="image/png", headers={'Access-Control-Allow-Origin': '*'})
+
+
+async def api_system_network_handler(request):
+    """Endpoint HTTP GET /api/system/network untuk IP LAN & port."""
+    ips = get_local_ip_addresses()
+    ip = ips[0] if ips else '127.0.0.1'
+    return web.json_response({
+        'lan_ip': ip,
+        'port': 8080,
+        'ips': ips
+    }, headers={'Access-Control-Allow-Origin': '*'})
+
+
 async def api_trigger_prompt_handler(request):
     """Endpoint HTTP POST /api/prompt untuk memicu prompt konfirmasi tindakan dari CLI/skrip (Hanya Localhost)."""
     if not is_localhost(request):
@@ -3510,6 +3625,14 @@ def create_app(ports=[8080]):
     app.router.add_get('/api/pair', api_pair_handler)
     app.router.add_options('/api/pair', options_handler)
     app.router.add_get('/api/pairing/pin', api_pairing_pin_handler)
+    app.router.add_post('/api/pairing/pin/regenerate', api_pairing_pin_regenerate_handler)
+    app.router.add_get('/api/devices', api_devices_handler)
+    app.router.add_post('/api/devices/unpair', api_devices_unpair_handler)
+    app.router.add_get('/api/system/diagnostics', api_system_diagnostics_handler)
+    app.router.add_post('/api/smart-terminal/toggle', api_smart_terminal_toggle_handler)
+    app.router.add_post('/api/system/restart', api_system_restart_handler)
+    app.router.add_get('/api/qrcode', api_qrcode_handler)
+    app.router.add_get('/api/system/network', api_system_network_handler)
     app.router.add_options('/api/pairing/pin', options_handler)
     app.router.add_post('/api/prompt', api_trigger_prompt_handler)
     app.router.add_get('/api/prompt', api_trigger_prompt_handler)
