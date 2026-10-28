@@ -9716,7 +9716,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.27</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.28</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9868,6 +9868,71 @@ body.portrait-dismissed .orientation-guard {
 <script>
 (function() {
 'use strict';
+
+// ─── DUAL-LAYER STORAGE PERSISTENCE (LocalStorage <-> Android SharedPreferences) ───
+(function installPersistentStorageBridge() {
+  try {
+    // 1. Pulihkan data dari Android SharedPreferences native jika tersedia
+    if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.getAllStorageItemsJson === 'function') {
+      const nativeJson = window.DigiAndroidBridge.getAllStorageItemsJson();
+      if (nativeJson && nativeJson !== '{}') {
+        const nativeData = JSON.parse(nativeJson);
+        for (const [k, v] of Object.entries(nativeData)) {
+          if (v !== undefined && v !== null) {
+            const localVal = localStorage.getItem(k);
+            if (localVal === null || localVal === '') {
+              localStorage.setItem(k, v);
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[StorageBridge] Error restoring from native:', e);
+  }
+
+  // 2. Transparan Mirroring: setiap setItem/removeItem di localStorage langsung disinkronkan ke native Android
+  try {
+    const origSetItem = Storage.prototype.setItem;
+    const origRemoveItem = Storage.prototype.removeItem;
+
+    Storage.prototype.setItem = function(key, val) {
+      origSetItem.apply(this, arguments);
+      if (this === window.localStorage && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.setStorageItem === 'function') {
+        try {
+          window.DigiAndroidBridge.setStorageItem(String(key), String(val));
+        } catch (e) {}
+      }
+    };
+
+    Storage.prototype.removeItem = function(key) {
+      origRemoveItem.apply(this, arguments);
+      if (this === window.localStorage && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.removeStorageItem === 'function') {
+        try {
+          window.DigiAndroidBridge.removeStorageItem(String(key));
+        } catch (e) {}
+      }
+    };
+  } catch (e) {
+    console.warn('[StorageBridge] Error wrapping Storage prototype:', e);
+  }
+
+  // 3. Cadangkan snapshot seluruh data berawalan digi_ ke native jika native belum lengkap
+  try {
+    if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.saveStorageBatch === 'function') {
+      const snapshot = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('digi_')) {
+          snapshot[k] = localStorage.getItem(k);
+        }
+      }
+      if (Object.keys(snapshot).length > 0) {
+        window.DigiAndroidBridge.saveStorageBatch(JSON.stringify(snapshot));
+      }
+    }
+  } catch (e) {}
+})();
 
 // ── State ──
 let ws = null, connected = false;
@@ -11022,8 +11087,8 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.27';
-const APP_CLIENT_VERSION_CODE = 12104;
+const APP_CLIENT_VERSION = '1.21.4.28';
+const APP_CLIENT_VERSION_CODE = 1210428;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -16764,11 +16829,18 @@ let aiWebQuickFails = 0;
 let aiSpeechLang = localStorage.getItem('digi_ai_lang') || 'id-ID';
 let aiAutoSend = localStorage.getItem('digi_ai_autosend') === 'true';
 let aiKbTarget = localStorage.getItem('digi_ai_kb_target') || 'device'; // 'device' | 'pc'
-let aiAccumulatedText = '';
+let aiAccumulatedText = localStorage.getItem('digi_ai_transcript') || '';
 let currentSessionFinal = '';
 let currentSessionInterim = '';
 let lastSentLength = 0;
-let aiCursorPos = 0;
+let aiCursorPos = aiAccumulatedText.length;
+
+function persistAiTranscript() {
+  try {
+    localStorage.setItem('digi_ai_transcript', aiAccumulatedText || '');
+    localStorage.setItem('digi_ai_undo_history', JSON.stringify(aiUndoHistory || []));
+  } catch (e) {}
+}
 
 function escapeAiHtml(str) {
   return (str || '')
@@ -17057,9 +17129,16 @@ function commitCurrentSession() {
     lastSentLength = aiAccumulatedText.length;
   }
   aiCursorPos = aiAccumulatedText.length;
+  persistAiTranscript();
 }
 
 let aiUndoHistory = [];
+try {
+  const savedUndo = localStorage.getItem('digi_ai_undo_history');
+  if (savedUndo) aiUndoHistory = JSON.parse(savedUndo);
+} catch (e) {
+  aiUndoHistory = [];
+}
 
 function pushAiUndoState(customText, customPos) {
   const currentText = (customText !== undefined && customText !== null ? customText : aiAccumulatedText || '').trim();
@@ -17069,7 +17148,8 @@ function pushAiUndoState(customText, customPos) {
         text: currentText,
         cursorPos: (customPos !== undefined && customPos !== null) ? customPos : (aiCursorPos || currentText.length)
       });
-      if (aiUndoHistory.length > 15) aiUndoHistory.shift();
+      if (aiUndoHistory.length > 25) aiUndoHistory.shift();
+      persistAiTranscript();
     }
   }
 }
@@ -17083,6 +17163,7 @@ function clearTranscriptUI(saveHistory = true) {
   currentSessionFinal = '';
   currentSessionInterim = '';
   lastSentLength = 0;
+  persistAiTranscript();
   const previewEl = $('ai-transcript-preview');
   if (previewEl) {
     previewEl.textContent = t('ai_transcript_empty');
@@ -17105,6 +17186,7 @@ function undoAiTranscript() {
     currentSessionFinal = '';
     currentSessionInterim = '';
     lastSentLength = aiAutoSend ? aiAccumulatedText.length : 0;
+    persistAiTranscript();
     renderTranscriptPreview(aiAccumulatedText);
     updateAiMicUI();
     showSmartToast(currentUiLang === 'id' ? 'Kotak teks berhasil dikembalikan' : 'Text restored to box', 'AI Workstation');
@@ -17825,6 +17907,7 @@ bindAiRepeatKey('ai-btn-delete', () => {
   } else {
     if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos < aiAccumulatedText.length) {
       aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + aiAccumulatedText.slice(aiCursorPos + 1);
+      persistAiTranscript();
       renderTranscriptPreview(aiAccumulatedText);
       if (aiAutoSend) {
         send({ type: 'keypress', key: 'delete' });
@@ -18133,6 +18216,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
       }
       aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos) + char + aiAccumulatedText.slice(aiCursorPos);
       aiCursorPos += char.length;
+      persistAiTranscript();
       renderTranscriptPreview(aiAccumulatedText);
 
       if (aiAutoSend) {
@@ -18196,6 +18280,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
 
     aiCursorPos = before.length;
     aiAccumulatedText = before + after;
+    persistAiTranscript();
     renderTranscriptPreview(aiAccumulatedText);
   }
 
@@ -18214,6 +18299,7 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
         if (aiAccumulatedText && aiAccumulatedText.length > 0 && aiCursorPos > 0) {
           aiAccumulatedText = aiAccumulatedText.slice(0, aiCursorPos - 1) + aiAccumulatedText.slice(aiCursorPos);
           aiCursorPos--;
+          persistAiTranscript();
           renderTranscriptPreview(aiAccumulatedText);
           if (aiAutoSend) {
             send({ type: 'keypress', key: 'backspace' });
@@ -19874,6 +19960,9 @@ if (layoutProfilesList) {
 // Initialize UI language on application load
 setUiLanguage(currentUiLang);
 updateSmartContextUI();
+if (typeof renderTranscriptPreview === 'function' && aiAccumulatedText) {
+  renderTranscriptPreview(aiAccumulatedText);
+}
 
 connect();
 

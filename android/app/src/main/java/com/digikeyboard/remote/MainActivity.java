@@ -336,6 +336,72 @@ public class MainActivity extends AppCompatActivity {
             final String finalUrl = resolveFullUrl(rawUrl);
             downloadExecutor.execute(() -> startApkDownload(finalUrl, targetVersion));
         }
+
+        @android.webkit.JavascriptInterface
+        public void setStorageItem(String key, String value) {
+            if (key == null) return;
+            try {
+                SharedPreferences storePrefs = getSharedPreferences("digi_persistent_storage", Context.MODE_PRIVATE);
+                if (value == null) {
+                    storePrefs.edit().remove(key).apply();
+                } else {
+                    storePrefs.edit().putString(key, value).apply();
+                }
+            } catch (Exception ignored) {}
+        }
+
+        @android.webkit.JavascriptInterface
+        public String getStorageItem(String key, String defaultValue) {
+            if (key == null) return defaultValue;
+            try {
+                SharedPreferences storePrefs = getSharedPreferences("digi_persistent_storage", Context.MODE_PRIVATE);
+                return storePrefs.getString(key, defaultValue);
+            } catch (Exception e) {
+                return defaultValue;
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void removeStorageItem(String key) {
+            if (key == null) return;
+            try {
+                SharedPreferences storePrefs = getSharedPreferences("digi_persistent_storage", Context.MODE_PRIVATE);
+                storePrefs.edit().remove(key).apply();
+            } catch (Exception ignored) {}
+        }
+
+        @android.webkit.JavascriptInterface
+        public String getAllStorageItemsJson() {
+            try {
+                SharedPreferences storePrefs = getSharedPreferences("digi_persistent_storage", Context.MODE_PRIVATE);
+                org.json.JSONObject obj = new org.json.JSONObject();
+                java.util.Map<String, ?> all = storePrefs.getAll();
+                for (java.util.Map.Entry<String, ?> entry : all.entrySet()) {
+                    if (entry.getValue() != null) {
+                        obj.put(entry.getKey(), entry.getValue().toString());
+                    }
+                }
+                return obj.toString();
+            } catch (Exception e) {
+                return "{}";
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void saveStorageBatch(String jsonString) {
+            if (jsonString == null || jsonString.trim().isEmpty()) return;
+            try {
+                org.json.JSONObject obj = new org.json.JSONObject(jsonString);
+                SharedPreferences storePrefs = getSharedPreferences("digi_persistent_storage", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = storePrefs.edit();
+                java.util.Iterator<String> keys = obj.keys();
+                while (keys.hasNext()) {
+                    String k = keys.next();
+                    editor.putString(k, obj.optString(k, ""));
+                }
+                editor.apply();
+            } catch (Exception ignored) {}
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -441,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setSupportZoom(false);
@@ -546,7 +612,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         prefs.edit().putString(KEY_SERVER_URL, cleanUrl).apply();
-        webView.clearCache(true);
         webView.loadUrl(cleanUrl);
     }
 
@@ -595,7 +660,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadLocalApp() {
         runOnUiThread(() -> {
-            webView.clearCache(true);
             webView.loadUrl("file:///android_asset/index.html");
         });
     }

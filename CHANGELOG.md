@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.28] - 2026-10-28
+- Perbaikan persistensi data pengguna dan obrolan saat update APK (dual-layer storage bridge)
+
 ### [1.21.4.27] - 2026-10-28
 - Proteksi keamanan anti-reverse engineering cross-platform (HWID Windows/macOS/Linux, binary stripping, asset hardening APK, anti-tampering)
 
@@ -445,6 +448,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.28] - 2026-10-28
+- Release v1.21.4.28 updates
 
 ### [1.21.4.27] - 2026-10-28
 - Release v1.21.4.27 updates
