@@ -42,7 +42,7 @@
   --key-letter-spacing: normal;
 }
 
-/* ─── THEMES / SKINS (DILENGKAPI FONT KHUSUS) ─── */
+
 body.theme-win {
   --bg: #202020;
   --header-bg: #2b2b2b;
@@ -196,9 +196,9 @@ body.theme-nord {
   --key-letter-spacing: 0px;
 }
 
-/* ─── TEMA WARNA SOLID (CLEAN SOLID COLOR PALETTES, ZERO BACKGROUND DISTRACTION) ─── */
 
-/* 1. Racing Supercar: Deep obsidian chassis, carbon panels, vivid racing red */
+
+
 body.theme-racing {
   --bg: #0e1015;
   --header-bg: #161822;
@@ -222,7 +222,7 @@ body.theme-racing .k {
   border-bottom: 2px solid #e63946;
 }
 
-/* 2. Anime Mecha: Midnight space, mecha cockpit deep blue, electric cyber cyan */
+
 body.theme-anime {
   --bg: #0a0b14;
   --header-bg: #121424;
@@ -246,7 +246,7 @@ body.theme-anime .k {
   border-bottom: 2px solid #00e5ff;
 }
 
-/* 3. Sakura Floral: Deep plum night, blossom panel, elegant cherry blossom pink */
+
 body.theme-sakura {
   --bg: #170f19;
   --header-bg: #231426;
@@ -270,7 +270,7 @@ body.theme-sakura .k {
   border-bottom: 2px solid #ff80bf;
 }
 
-/* 4. Pastel Chic: Soft, elegant, feminine pastel palette (lavender, peach, mint, rose) */
+
 body.theme-pastel {
   --bg: #1b1622;
   --header-bg: #241d2e;
@@ -332,7 +332,7 @@ html, body {
   margin: 0;
 }
 
-/* ─── TOP BAR ─── */
+
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -479,7 +479,7 @@ html, body {
   color: #fff;
 }
 
-/* ─── FLOATING CONTROL DECK (PILIHAN A) ─── */
+
 .deck-trigger-btn {
   display: inline-flex;
   align-items: center;
@@ -676,7 +676,7 @@ html, body {
   display: block;
 }
 
-/* Banner Penawaran Akun Pro di Menu Pilihan Mode Kerja */
+
 .deck-pro-banner {
   display: flex;
   align-items: center;
@@ -798,7 +798,7 @@ html, body {
 }
 
 
-/* ─── COLLAPSIBLE PANELS ─── */
+
 .panel {
   display: flex;
   background: var(--panel-bg);
@@ -812,7 +812,7 @@ html, body {
 .panel::-webkit-scrollbar { display: none; }
 .panel.hidden { display: none !important; }
 
-/* ─── SHORTCUT BAR ─── */
+
 .sc-btn {
   background: #252c37;
   border: 1px solid var(--key-border);
@@ -827,14 +827,14 @@ html, body {
 .sc-btn:active { background: var(--key-active-bg); color: #fff; }
 .sc-btn.danger { color: #ff7b72; }
 
-/* ─── FN / NAV ROW (SELALU DI ATAS NUMBER ROW) ─── */
+
 .panel-fn, .panel-nav {
   display: flex;
   gap: 3px;
   width: 100%;
 }
 .panel-fn {
-  flex: 0.52; /* Tinggi tuts fungsi ramping ~setengah dari tuts utama */
+  flex: 0.52; 
   min-height: 0;
 }
 .panel-nav {
@@ -863,7 +863,7 @@ html, body {
   font-size: calc(var(--key-font-size, 11px) - 1px);
 }
 
-/* ─── KEYBOARD CONTAINER ─── */
+
 .kb-wrap {
   flex: 1;
   min-height: 0;
@@ -899,7 +899,7 @@ html, body {
   align-items: stretch;
 }
 
-/* ─── KEY BUTTON ─── */
+
 .k {
   position: relative;
   flex: 1;
@@ -929,10 +929,10 @@ html, body {
   line-height: 1;
 }
 .k .lbl { line-height: 1; }
-/* Special key backgrounds */
+
 .k.sp  { background: var(--key-special); font-size: clamp(9px,1.3vw,12px); }
 .k.ent { background: var(--enter-bg); border-color: var(--enter-border); }
-/* Width variants */
+
 .k.w15 { flex: 1.5; }
 .k.w18 { flex: 1.8; }
 .k.w2  { flex: 2; }
@@ -942,7 +942,7 @@ html, body {
 .k.w12 { flex: 1.2; }
 .k.space { flex: 6; background: #2a313c; font-size: 11px; color: var(--text-dim); }
 .k.arr { background: #1c222b; color: var(--accent); font-size: 14px; }
-/* Press state */
+
 .k.pressed, .k:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 var(--key-shadow);
@@ -950,7 +950,7 @@ html, body {
   border-color: var(--key-active-border) !important;
   color: #fff !important;
 }
-/* Latched modifier */
+
 .k.latched {
   background: var(--key-mod-active) !important;
   border-color: #3fb950 !important;
@@ -958,7 +958,7 @@ html, body {
   box-shadow: 0 0 8px rgba(63,185,80,.5) !important;
 }
 
-/* ─── NUMPAD ─── */
+
 .kb-numpad {
   background: var(--panel-bg);
   border-radius: 8px;
@@ -975,7 +975,7 @@ html, body {
 .np-tall { grid-row: span 2; }
 .np-wide { grid-column: span 2; }
 
-/* Mode Fullscreen CSS Immersive (Menghilangkan gangguan pergeseran layar & toolbar) */
+
 body.is-fullscreen {
   position: fixed !important;
   top: 0 !important;
@@ -988,11 +988,11 @@ body.is-fullscreen {
   box-sizing: border-box !important;
 }
 
-/* ─── LAPTOP TRACKPAD DECK ─── */
+
 .top-bar { order: 1; }
 .panel { order: 3; }
 .laptop-deck {
-  order: 4; /* Default: ATAS (Top) */
+  order: 4; 
   display: flex;
   align-items: stretch;
   justify-content: space-between;
@@ -1007,7 +1007,7 @@ body.is-fullscreen {
   max-height: calc(180px * var(--tp-scale, 1));
 }
 .laptop-deck.pos-bottom {
-  order: 6; /* Posisi Bawah */
+  order: 6; 
   border-top: 1px solid #283140;
   border-bottom: none;
   box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
@@ -1076,7 +1076,7 @@ body.is-fullscreen {
   cursor: pointer;
 }
 
-/* Trackpad Center Box */
+
 .trackpad-container {
   flex: 0 1 440px;
   width: min(440px, 55vw);
@@ -1120,7 +1120,7 @@ body.is-fullscreen {
   font-weight: 600;
 }
 
-/* Gear Button on Trackpad: Ghost icon, no box, no background, rotation motion only */
+
 .tp-gear-btn {
   position: absolute;
   top: 6px;
@@ -1156,7 +1156,7 @@ body.is-fullscreen {
   transform: rotate(60deg);
 }
 
-/* Real-Time Trackpad Editor Overlay: Centered Across Trackpad Area */
+
 .tp-editor-overlay {
   position: absolute;
   inset: 0;
@@ -1217,7 +1217,7 @@ body.is-fullscreen {
   font-weight: 700;
 }
 
-/* Segmented Pill Toggles */
+
 .tp-toggle-group {
   display: inline-flex;
   background: rgba(33, 38, 45, 0.9);
@@ -1291,7 +1291,7 @@ body.is-fullscreen {
   transition: opacity 0.15s;
 }
 
-/* Trackpad Physical Buttons */
+
 .trackpad-buttons {
   display: flex;
   height: 34px;
@@ -1333,7 +1333,7 @@ body.is-fullscreen {
   .trackpad-container { flex: 1; width: 100%; }
 }
 
-/* ─── Tablet Specific Layout (iPad / Android Tablet) ─── */
+
 @media (min-width: 768px) and (min-height: 500px) {
   .laptop-deck {
     min-height: calc(90px * var(--tp-scale, 1));
@@ -1379,7 +1379,7 @@ body.is-fullscreen {
   }
 }
 
-/* ─── Large Tablet & Desktop View (iPad Pro 11"/12.9", 1080p+ Tablet) ─── */
+
 @media (min-width: 960px) and (min-height: 680px) {
   .laptop-deck {
     min-height: calc(110px * var(--tp-scale, 1));
@@ -1418,7 +1418,7 @@ body.is-fullscreen {
     overflow: hidden;
   }
 
-  /* Laptop Trackpad Deck di Mode Potret: Melebar penuh & luas */
+  
   .laptop-deck {
     height: 36vh !important;
     min-height: 180px !important;
@@ -1450,7 +1450,7 @@ body.is-fullscreen {
     font-weight: 700 !important;
   }
 
-  /* Keyboard di Mode Potret: Memenuhi sisa 100% tinggi layar tanpa ruang kosong */
+  
   .kb-wrap:not(.hidden) {
     flex: 1 !important;
     height: 100% !important;
@@ -1499,7 +1499,7 @@ body.is-fullscreen {
   }
 }
 
-/* ─── SETTINGS MODAL ─── */
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1517,7 +1517,7 @@ body.is-fullscreen {
 .modal-backdrop.hidden {
   display: none !important;
 }
-/* Layout Profiles */
+
 .lp-save-row { display: flex; gap: 8px; }
 .lp-name-input {
   flex: 1; min-width: 0; background: var(--panel-bg); border: 1px solid var(--key-border);
@@ -1605,7 +1605,7 @@ body.is-fullscreen {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Remote Action Prompt / Smart Confirmation Card */
+
 .remote-action-card {
   width: min(640px, 94vw);
   max-width: 640px;
@@ -1691,7 +1691,7 @@ body.is-fullscreen {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   white-space: pre-wrap;
 }
-/* Tata letak tombol: selalu satu baris saja dan 100% simetris merata */
+
 .rap-options-container {
   display: grid;
   grid-auto-flow: column;
@@ -1760,7 +1760,7 @@ body.is-fullscreen {
   color: rgba(255, 123, 114, 0.8);
 }
 
-/* Tampilan HP Landscape / Layar Compact: Fullscreen pop-up nyaman dan ergonomis */
+
 @media screen and (max-height: 480px) {
   #modal-remote-prompt {
     padding: 0 !important;
@@ -2051,7 +2051,7 @@ body.is-fullscreen {
   cursor: pointer;
 }
 
-/* ─── FULLSCREEN RECONNECT DIM OVERLAY & CENTER MODAL ─── */
+
 .reconnect-banner {
   position: fixed !important;
   inset: 0 !important;
@@ -2258,7 +2258,7 @@ body.is-fullscreen {
   50% { opacity: 1; transform: scale(1.15); }
 }
 
-/* Connection Mode Modal & Cards */
+
 .conn-mode-list {
   display: flex;
   flex-direction: column;
@@ -2336,7 +2336,7 @@ body.is-fullscreen {
   line-height: 1.35;
 }
 
-/* Host IP History in Connection & Routes */
+
 .conn-history-box {
   background: var(--panel-bg);
   border: 1px solid var(--key-border);
@@ -2476,7 +2476,7 @@ body.is-fullscreen {
   background: rgba(248, 81, 73, 0.12);
 }
 
-/* Quick Mode Switcher in Header */
+
 .header-modes {
   display: flex;
   align-items: center;
@@ -2547,7 +2547,7 @@ body.is-fullscreen {
   justify-content: center !important;
   opacity: 0.8;
 }
-/* Startup Splash / Flash Screen */
+
 @keyframes splash-fade-auto {
   0%, 75% { opacity: 1; pointer-events: auto; }
   100% { opacity: 0; pointer-events: none; visibility: hidden; }
@@ -2571,7 +2571,7 @@ body.is-fullscreen {
   visibility: hidden;
   pointer-events: none;
 }
-/* Pastikan tidak ada pop-up, banner, atau modal yang muncul saat flash screen aktif */
+
 body:has(#splash-screen:not(.fade-out)) .orientation-guard,
 body:has(#splash-screen:not(.fade-out)) .reconnect-banner,
 body:has(#splash-screen:not(.fade-out)) .smart-context-toast,
@@ -2580,7 +2580,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* ─── AUTO-UPDATER NOTIFICATION BADGE (STANDAR IT) ─── */
+
 @keyframes pulse-update {
   0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(240, 136, 62, 0.7); }
   70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(240, 136, 62, 0); }
@@ -2709,7 +2709,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   }
 }
 
-/* Subnet Scanner Progress & Found Card */
+
 .scan-progress-bar {
   width: 100%;
   height: 6px;
@@ -2740,7 +2740,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* ─── GAMEPAD VIEW (MODE GAME CONSOLE) ─── */
+
 .gamepad-view {
   order: 5;
   flex: 1;
@@ -2763,7 +2763,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* Top Gamepad Row (Bahu L1/L2, Emblem Tengah, Bahu R1/R2) */
+
 .gp-top-row {
   position: absolute;
   top: 10px;
@@ -2813,7 +2813,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   background: var(--key-special);
   border-color: rgba(255,255,255,0.15);
 }
-/* Gamepad Bottom Center Emblem (antara Select/Start dan border bawah) */
+
 .gp-bottom-emblem {
   position: absolute;
   top: calc(75% + 10px);
@@ -2848,7 +2848,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-shadow: 0 1px 0 var(--key-shadow);
 }
 
-/* Main Controller Deck (Rata Tengah Secara Vertikal dan Horizontal) */
+
 .gp-main-deck {
   width: 100%;
   height: 100%;
@@ -2861,7 +2861,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   z-index: 5;
 }
 
-/* D-PAD (8-Way Directional Pad) */
+
 .gp-deck-left {
   flex: 1;
   display: flex;
@@ -2939,7 +2939,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-shadow: 0 1px 0 var(--key-shadow), 0 0 12px var(--accent);
 }
 
-/* Analog Thumbstick */
+
 .gp-stick-container {
   width: 196px;
   height: 196px;
@@ -2978,7 +2978,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   transition: transform 0.05s ease-out;
 }
 
-/* Center Deck: Select & Start Group (Dead Center) */
+
 .gp-deck-center {
   flex: 0 0 auto;
   display: flex;
@@ -3015,7 +3015,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-shadow: 0 0 8px var(--accent);
 }
 
-/* Gear Button: Bottom Right of Gamepad View */
+
 .gp-gear-btn {
   position: absolute;
   bottom: 12px;
@@ -3046,7 +3046,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   transform: rotate(60deg);
 }
 
-/* Gamepad Settings Overlay */
+
 .gp-settings-overlay {
   position: absolute;
   inset: 0;
@@ -3158,7 +3158,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 }
 
 
-/* Right Deck: Diamond Action Buttons */
+
 .gp-deck-right {
   flex: 1;
   display: flex;
@@ -3188,7 +3188,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   transition: transform 0.05s;
   color: #fff;
 }
-/* Action Button Colors (Retro / SNES / Arcade) */
+
 .gp-act-btn.btn-x {
   top: 0;
   left: 67px;
@@ -3220,7 +3220,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 }
 
 
-/* Remap Modal Styling */
+
 .gp-remap-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3291,7 +3291,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   .gp-bottom-emblem svg { width: 12px; height: 12px; }
 }
 
-/* PlayStation 1 Authentic Button Styling */
+
 .gamepad-view.preset-psx .gp-act-btn {
   background: linear-gradient(145deg, #272c36, #161a20) !important;
   border: 2px solid #38404d !important;
@@ -3334,7 +3334,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   filter: drop-shadow(0 0 4px rgba(255, 64, 129, 0.6));
 }
 
-/* Tablet / Wide Display Ergonomic Scaling */
+
 @media (min-width: 768px) and (min-height: 480px) {
   .gamepad-view {
     padding: 14px 32px 20px;
@@ -3441,7 +3441,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   }
 }
 
-/* ─── PRESENTATION & MEETING REMOTE VIEW ─── */
+
 .present-view {
   order: 5;
   flex: 1;
@@ -3463,7 +3463,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* Presenter Top Bar */
+
 .pr-top-bar {
   display: flex;
   justify-content: space-between;
@@ -3507,7 +3507,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   border-color: #3fb950;
 }
 
-/* Meeting Shortcuts Bar */
+
 .pr-meeting-bar {
   display: flex;
   align-items: center;
@@ -3570,7 +3570,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   white-space: nowrap;
 }
 
-/* Presenter HUD Bar */
+
 .pr-hud-bar {
   display: flex;
   justify-content: space-between;
@@ -3711,7 +3711,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   color: #ff7b72;
 }
 
-/* Main Presentation Navigation Deck */
+
 .pr-main-deck {
   display: flex;
   gap: 12px;
@@ -3801,7 +3801,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   color: #fff;
 }
 
-/* Center Annotation & Screen Tools */
+
 .pr-screen-tools {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3840,7 +3840,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   white-space: nowrap;
 }
 
-/* Laser Trackpad Deck */
+
 .pr-laser-deck {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--key-border);
@@ -3922,7 +3922,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   .pr-btn-prev .pr-nav-arrow { font-size: 22px; }
 }
 
-/* ─── AI WORKSTATION VIEW (PROMPT ENGINEERING & VOICE DECK) ─── */
+
 .ai-workstation-view {
   order: 5;
   flex: 1;
@@ -3945,7 +3945,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* AI Top Bar */
+
 .ai-top-bar {
   display: flex;
   justify-content: space-between;
@@ -3981,7 +3981,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* Language and Keyboard Target switches */
+
 .ai-lang-toggle, .ai-target-toggle {
   display: inline-flex;
   background: var(--panel-bg);
@@ -4071,7 +4071,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   color: var(--accent);
 }
 
-/* Main Grid Layout */
+
 .ai-main-grid {
   flex: 1;
   min-height: 0;
@@ -4092,7 +4092,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   }
 }
 
-/* Left Column: AI Shortcuts */
+
 .ai-col-left {
   display: flex;
   flex-direction: column;
@@ -4219,7 +4219,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   line-height: 1.12;
 }
 
-/* Center Column: Voice Typing / STT */
+
 .ai-col-center {
   display: flex;
   flex-direction: column;
@@ -4261,7 +4261,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   width: 43px;
   height: 43px;
 }
-/* State 1: Mempersiapkan Mic (Belum Siap Menangkap Suara) */
+
 .ai-btn-mic.starting {
   background: rgba(210, 153, 34, 0.14);
   border-color: #d29922;
@@ -4283,7 +4283,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   }
 }
 
-/* State 2: Mic READY (Sinar-sinar Berubah Hijau Terang - Siap Menangkap Suara) */
+
 .ai-btn-mic.ready,
 .ai-btn-mic.recording.ready {
   background: rgba(46, 160, 67, 0.16);
@@ -4336,7 +4336,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: none !important;
 }
 
-/* Transcript preview box */
+
 .ai-transcript-header {
   display: flex;
   align-items: center;
@@ -4423,7 +4423,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   filter: brightness(1.2);
 }
 
-/* ─── Android-style Soft QWERTY Keyboard (Tablet Exclusive) ─── */
+
 .ai-tablet-keyboard {
   display: none;
   flex-direction: column;
@@ -4626,7 +4626,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   50% { opacity: 0; }
 }
 
-/* Modal Kustomisasi Prompt AI */
+
 .ai-prompt-edit-item {
   display: flex;
   flex-direction: column;
@@ -4675,7 +4675,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   border-color: var(--accent);
 }
 
-/* Right Column: Giant Enter & Navigation */
+
 .ai-col-right {
   display: flex;
   flex-direction: column;
@@ -4730,7 +4730,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   margin-top: 1px;
 }
 
-/* Trackpad Container & Buttons di Mode AI */
+
 .ai-trackpad-wrap {
   flex: 1;
   min-height: 0;
@@ -4807,7 +4807,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   margin: auto 0;
 }
 
-/* Navigation D-pad */
+
 .ai-nav-pad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -4856,7 +4856,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   grid-row: 2;
 }
 
-/* Extra media query for ultra-compact vertical screens (<420px height) */
+
 @media (max-height: 420px) {
   .ai-workstation-view {
     padding: 3px 6px;
@@ -4906,7 +4906,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 
 
 
-/* ─── MODE KUSTOM (CUSTOM PAD VIEW) ─── */
+
 .custom-pad-view {
   flex: 1;
   display: flex;
@@ -4996,7 +4996,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   color: #fff;
 }
 
-/* Canvas Mode Aktif (100% Layar Otomatis Mengisi Space) */
+
 .custom-active-canvas {
   flex: 1;
   width: 100%;
@@ -5065,7 +5065,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   margin-top: 2px;
 }
 
-/* Empty State Canvas */
+
 .cp-empty-state {
   grid-column: 1 / -1;
   grid-row: 1 / -1;
@@ -5092,7 +5092,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   line-height: 1.4;
 }
 
-/* Canvas Mode Edit / Picker */
+
 .custom-picker-canvas {
   flex: 1;
   width: 100%;
@@ -5176,7 +5176,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   gap: 4px;
 }
 
-/* Key Tuts di Picker (Dim vs Active) */
+
 .pick-key {
   background: var(--key-bg);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -5195,7 +5195,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-sizing: border-box;
   text-align: center;
 }
-/* DIM: Awalnya redup / tidak aktif */
+
 .pick-key.dim {
   opacity: 0.32;
   filter: grayscale(100%);
@@ -5206,7 +5206,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .pick-key.dim:hover {
   opacity: 0.58;
 }
-/* AKTIF: Terang & Highlight */
+
 .pick-key.active {
   opacity: 1;
   filter: none;
@@ -5218,7 +5218,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-shadow: 0 0 10px rgba(88, 166, 255, 0.35);
 }
 
-/* Sticky Bottom Action Bar di Picker */
+
 .cp-picker-footer {
   position: absolute;
   bottom: 0;
@@ -5246,7 +5246,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 }
 
 
-/* ── PAIRING & SAAS LICENSE STYLES ── */
+
 .pin-box-group {
   display: flex;
   gap: 8px;
@@ -5402,7 +5402,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .btn-activate-lic:active {
   filter: brightness(0.9);
 }
-/* ── STORE / MARKETPLACE MODAL STYLES ── */
+
 .store-tab-bar {
   display: flex;
   gap: 6px;
@@ -5531,7 +5531,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   background: #c69900;
 }
 
-/* ─── MEDIA CONTROLLER VIEW ─── */
+
 .media-view {
   order: 5;
   flex: 1;
@@ -5914,7 +5914,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 .media-dp-btn.dp-right { grid-column: 3; grid-row: 2; }
 .media-dp-btn.dp-down { grid-column: 2; grid-row: 3; }
 
-/* ─── CANVAS VIEW (DIGITAL DRAWING TABLET) ─── */
+
 .canvas-view {
   order: 5;
   flex: 1;
@@ -6109,7 +6109,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   opacity: 0;
 }
 
-/* ─── POWER VIEW (REMOTE SYSTEM & POWER DECK) ─── */
+
 .power-view {
   order: 5;
   flex: 1;
@@ -6482,7 +6482,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   }
 }
 
-/* ─── Compact Phone Landscape Optimization (Height <= 520px) ─── */
+
 @media (max-height: 520px) and (orientation: landscape) {
   .power-view {
     padding: 4px 8px 6px;
@@ -6679,7 +6679,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   text-overflow: ellipsis;
 }
 
-/* Card Themes */
+
 .card-shutdown {
   border-color: rgba(248, 81, 73, 0.35);
 }
@@ -6887,7 +6887,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     grid-template-rows: repeat(3, 32px);
   }
 }
-/* Orientation Landscape Guard (Mencegah tampilan potret yang kacau) */
+
 .orientation-guard {
   display: none;
 }
@@ -6977,7 +6977,7 @@ body.portrait-dismissed .orientation-guard {
   display: none !important;
 }
 
-/* SMART APP CONTEXT BADGE & TOAST */
+
 .smart-context-chip {
   display: inline-flex;
   align-items: center;
@@ -7054,7 +7054,7 @@ body.portrait-dismissed .orientation-guard {
   transform: rotate(180deg);
 }
 
-/* WINDOW SWITCHER MODAL & LIST */
+
 .win-switcher-list {
   display: flex;
   flex-direction: column;
@@ -7373,7 +7373,7 @@ body.portrait-dismissed .orientation-guard {
   </script>
 </head>
 <body class="theme-os-native theme-win os-win">
-<!-- LANDSCAPE ENFORCEMENT GUARD -->
+
 <div id="orientation-landscape-guard" class="orientation-guard">
   <div class="orientation-guard-card">
     <div class="orientation-guard-icon">
@@ -7392,7 +7392,7 @@ body.portrait-dismissed .orientation-guard {
 </div>
 <div id="app">
 
-  <!-- STARTUP FLASH / SPLASH SCREEN (0.8s) -->
+  
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-title">DigiSmartDeck</div>
@@ -7400,7 +7400,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- TOP BAR (MINIMALIS) -->
+  
   <header class="top-bar">
     <div class="left-controls">
       <div id="btn-brand-toggle" style="cursor:pointer; display:inline-flex; align-items:center; position:relative;" data-i18n-title="brand_title" title="About DigiSmartDeck - King Ali Studiō">
@@ -7431,7 +7431,7 @@ body.portrait-dismissed .orientation-guard {
 
 
     <div class="right-controls">
-      <!-- Quick Mode Switcher (Beside Menu Sandwich Button) -->
+      
       <div class="header-modes" id="header-modes">
         <button type="button" class="header-mode-btn" id="quick-mode-standard" data-i18n-title="quick_keyboard" title="PC Keyboard">
           <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/><line x1="6" x2="6.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="13" y2="13"/><line x1="10" x2="14" y1="13" y2="13"/></svg>
@@ -7465,7 +7465,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </header>
 
-  <!-- FLOATING CONTROL DECK (PILIHAN A) -->
+  
   <div id="control-deck-backdrop" class="control-deck-backdrop"></div>
   <div id="control-deck" class="control-deck">
     <div class="deck-header">
@@ -7479,7 +7479,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
 
     <div class="deck-body">
-      <!-- SECTION 1: KEYBOARD LAYERS -->
+      
       <div class="deck-section">
         <div class="deck-section-title">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
@@ -7496,7 +7496,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SECTION 2: UTILITIES & CONTROLS -->
+      
       <div class="deck-section">
         <div class="deck-section-title">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -7553,7 +7553,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- FULLSCREEN RECONNECT POPUP MODAL & DIM OVERLAY -->
+  
   <div id="reconnect-banner" class="reconnect-banner hidden">
     <div class="reconnect-modal">
       <div class="rc-modal-pulse">
@@ -7590,7 +7590,7 @@ body.portrait-dismissed .orientation-guard {
 
 
 
-  <!-- SHORTCUT BAR -->
+  
   <div class="panel hidden" id="sc-bar">
     <button class="sc-btn" data-combo="ctrl,c">Ctrl+C</button>
     <button class="sc-btn" data-combo="ctrl,v">Ctrl+V</button>
@@ -7605,7 +7605,7 @@ body.portrait-dismissed .orientation-guard {
     <button class="sc-btn danger" data-combo="ctrl,alt,delete">Ctrl+Alt+Del</button>
   </div>
 
-  <!-- LAPTOP TRACKPAD DECK (ATAS / TOP POSITION) -->
+  
   <section class="laptop-deck" id="laptop-deck">
     <div class="palm-rest palm-left"></div>
 
@@ -7613,10 +7613,10 @@ body.portrait-dismissed .orientation-guard {
       <div class="trackpad-surface" id="trackpad-surface">
         <div class="tp-pointer-glow" id="tp-glow"></div>
 
-        <!-- Real-Time Trackpad Editor Overlay -->
+        
         <div class="tp-editor-overlay hidden" id="tp-editor-overlay">
           <div class="tp-editor-center-deck">
-            <!-- Line 1: Trackpad State & Position Alignment -->
+            
             <div class="tp-editor-row">
               <div class="tp-editor-item">
                 <span class="tp-editor-lbl" data-i18n="tp_editor_trackpad">Trackpad:</span>
@@ -7635,7 +7635,7 @@ body.portrait-dismissed .orientation-guard {
               </div>
             </div>
 
-            <!-- Line 2: Trackpad Surface Height -->
+            
             <div class="tp-editor-row tp-editor-row-slider">
               <div class="tp-editor-item tp-editor-slider-item">
                 <span class="tp-editor-lbl"><span data-i18n="tp_editor_height">Height:</span> <b id="tp-editor-scale-val">100%</b></span>
@@ -7643,7 +7643,7 @@ body.portrait-dismissed .orientation-guard {
               </div>
             </div>
 
-            <!-- Line 3: Trackpad Pointer Sensitivity -->
+            
             <div class="tp-editor-row tp-editor-row-slider">
               <div class="tp-editor-item tp-editor-slider-item">
                 <span class="tp-editor-lbl"><span data-i18n="tp_editor_speed">Sensitivity:</span> <b id="tp-editor-speed-val">1.2x</b></span>
@@ -7653,7 +7653,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- Trackpad Configuration Gear Button -->
+        
         <button type="button" class="tp-gear-btn" id="tp-gear-btn" data-i18n-title="tp_gear_title" title="Trackpad Configuration">
           <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
@@ -7668,11 +7668,11 @@ body.portrait-dismissed .orientation-guard {
     <div class="palm-rest palm-right"></div>
   </section>
 
-  <!-- KEYBOARD + NUMPAD -->
+  
   <main class="kb-wrap">
     <section class="kb-main">
 
-      <!-- FN ROW: SELALU TEPAT DI ATAS NUMBER ROW (WALAUPUN TRACKPAD DI ATAS) -->
+      
       <div class="kb-row panel-fn hidden" id="fn-row">
         <button class="k fn-key sp" data-key="esc">Esc</button>
         <button class="k fn-key sp" data-key="f1">F1</button>
@@ -7689,7 +7689,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k fn-key sp" data-key="f12">F12</button>
       </div>
 
-      <!-- NAV ROW -->
+      
       <div class="kb-row panel-nav hidden" id="nav-row">
         <button class="k nav-key sp" data-key="print_screen">PrtSc</button>
         <button class="k nav-key sp" data-key="scroll_lock">ScrLk</button>
@@ -7702,7 +7702,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k nav-key sp" data-key="page_down">PgDn</button>
       </div>
 
-      <!-- ROW 1: Number row -->
+      
       <div class="kb-row" id="kb-row-1">
         <button class="k" data-char="`" data-shift="~"><span class="sub">~</span><span class="lbl">`</span></button>
         <button class="k" data-char="1" data-shift="!"><span class="sub">!</span><span class="lbl">1</span></button>
@@ -7720,7 +7720,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k sp w15" data-key="backspace">⌫</button>
       </div>
 
-      <!-- ROW 2: Tab + QWERTY -->
+      
       <div class="kb-row" id="kb-row-2">
         <button class="k sp w15" data-key="tab">Tab</button>
         <button class="k" data-char="q" data-shift="Q">Q</button>
@@ -7738,7 +7738,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k w12" data-char="\" data-shift="|"><span class="sub">|</span><span class="lbl">\</span></button>
       </div>
 
-      <!-- ROW 3: Caps + ASDF + Enter -->
+      
       <div class="kb-row" id="kb-row-3">
         <button class="k sp w18" data-key="caps_lock" id="key-caps">Caps</button>
         <button class="k" data-char="a" data-shift="A">A</button>
@@ -7755,7 +7755,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k ent w22" data-key="enter">Enter</button>
       </div>
 
-      <!-- ROW 4: Shift + ZXCV + Up -->
+      
       <div class="kb-row" id="kb-row-4">
         <button class="k sp w24" data-key="shift" id="key-shift-l">Shift</button>
         <button class="k" data-char="z" data-shift="Z">Z</button>
@@ -7772,7 +7772,7 @@ body.portrait-dismissed .orientation-guard {
         <button class="k arr" data-key="up">▲</button>
       </div>
 
-      <!-- ROW 5: Bottom modifiers + Space + Arrows -->
+      
       <div class="kb-row" id="kb-row-5">
         <button class="k sp w13" data-key="ctrl" id="key-ctrl-l">Ctrl</button>
         <button class="k sp w13" data-key="cmd" id="key-win">⊞ Win</button>
@@ -7787,7 +7787,7 @@ body.portrait-dismissed .orientation-guard {
 
     </section>
 
-    <!-- NUMPAD -->
+    
     <section class="kb-numpad panel hidden" id="numpad">
       <div class="numpad-grid">
         <button class="k sp" data-key="num_lock">Num</button>
@@ -7815,9 +7815,9 @@ body.portrait-dismissed .orientation-guard {
     </section>
   </main>
 
-  <!-- GAMEPAD VIEW (VIRTUAL GAMEPAD UNTUK EMULATOR) -->
+  
   <section id="gamepad-view" class="gamepad-view preset-psx hidden">
-    <!-- Top Gamepad Row: Shoulders L1/L2 with Emblem on Left, and Shoulders R1/R2 on Right -->
+    
     <div class="gp-top-row">
       <div class="gp-sh-group left">
         <button class="gp-sh-btn" data-gp="l1" id="gp-btn-l1">L1</button>
@@ -7830,17 +7830,17 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Main Controller Deck (Rata Tengah: D-Pad / Stick, Select/Start, Action Diamond) -->
+    
     <div class="gp-main-deck">
-      <!-- Left Side: Analog Stick (Default) / D-Pad (Alternative) -->
+      
       <div class="gp-deck-left">
-        <!-- Analog Stick (Default) -->
+        
         <div class="gp-stick-container" id="gp-stick-container">
           <div class="gp-stick-base" id="gp-stick-base">
             <div class="gp-stick-thumb" id="gp-stick-thumb"></div>
           </div>
         </div>
-        <!-- D-Pad (Alternative) -->
+        
         <div class="gp-dpad hidden" id="gp-dpad">
           <button class="gp-dp-btn dp-up" data-gp="up" id="gp-btn-up">▲</button>
           <button class="gp-dp-btn dp-left" data-gp="left" id="gp-btn-left">◀</button>
@@ -7850,7 +7850,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Center: Standard (Select & Start Dead Center) -->
+      
       <div class="gp-deck-center" id="gp-deck-center-std">
         <div class="gp-center-buttons">
           <button class="gp-pill-btn" data-gp="select" id="gp-btn-select">SELECT</button>
@@ -7858,7 +7858,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Right Side: Standard Action Diamond -->
+      
       <div class="gp-deck-right" id="gp-deck-right-std">
         <div class="gp-action-diamond">
           <button class="gp-act-btn btn-x" data-gp="x" id="gp-btn-x">X</button>
@@ -7869,7 +7869,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Gamepad Bottom Center Emblem (antara Select/Start dan border bawah) -->
+    
     <div class="gp-bottom-emblem" title="DigiGamepad">
       <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/>
@@ -7879,7 +7879,7 @@ body.portrait-dismissed .orientation-guard {
       <span class="gp-emblem-text">GAMEPAD</span>
     </div>
 
-    <!-- Gear Button (Settings: Stick/Dpad toggle & Button Remap) -->
+    
     <button class="gp-gear-btn" id="gp-gear-btn" data-i18n-title="gp_gear_title" title="Gamepad Settings" type="button" aria-label="Gamepad Settings">
       <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
@@ -7887,7 +7887,7 @@ body.portrait-dismissed .orientation-guard {
       </svg>
     </button>
 
-    <!-- Gamepad Settings Overlay -->
+    
     <div class="gp-settings-overlay hidden" id="gamepad-settings-overlay">
       <div class="gp-settings-dialog">
         <div class="gp-settings-header">
@@ -7917,7 +7917,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </section>
 
-  <!-- GAMEPAD REMAP MODAL -->
+  
   <div class="modal-backdrop hidden" id="gamepad-remap-modal">
     <div class="modal-dialog" style="max-width:540px;">
       <div class="modal-header">
@@ -7932,7 +7932,7 @@ body.portrait-dismissed .orientation-guard {
           Assign a target PC keyboard key for each gamepad button:
         </p>
         <div class="gp-remap-grid" id="gp-remap-container">
-          <!-- Dynamically populated via JS -->
+          
         </div>
       </div>
       <div class="modal-footer" style="display:flex;justify-content:space-between;padding:12px;border-top:1px solid var(--key-border);">
@@ -7942,9 +7942,9 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- PRESENTATION & MEETING REMOTE VIEW -->
+  
   <section id="present-view" class="present-view hidden">
-    <!-- Presenter Top Bar -->
+    
     <div class="pr-top-bar">
       <div class="pr-left-meta">
         <span class="pr-badge"><svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="12" x2="12" y1="17" y2="21"/></svg> PRESENTASI</span>
@@ -7956,7 +7956,7 @@ body.portrait-dismissed .orientation-guard {
         </select>
       </div>
 
-      <!-- Quick Meeting Shortcuts -->
+      
       <div class="pr-meeting-bar">
         <button class="pr-btn-meeting" id="pr-btn-mic" title="Toggle Mute Mikrofon (Zoom Alt+A / Meet Ctrl+D)">
           <span class="pr-m-icon"><svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg></span><span class="pr-m-txt">Mic</span>
@@ -7978,7 +7978,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Presenter HUD (Timer & Counter) -->
+    
     <div class="pr-hud-bar">
       <div class="pr-timer-box">
         <div class="pr-timer-display" id="pr-timer-display">15:00</div>
@@ -8012,9 +8012,9 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Main Deck: Navigation & Center Screen Tools -->
+    
     <div class="pr-main-deck">
-      <!-- Left Controls: Prev & First/Last -->
+      
       <div class="pr-deck-left">
         <button class="pr-btn-nav pr-btn-prev" id="pr-btn-prev" title="Slide Sebelumnya (Panah Kiri)">
           <span class="pr-nav-arrow"><svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>
@@ -8026,7 +8026,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Center Controls: Screen Blanking & Annotation Tools -->
+      
       <div class="pr-deck-center">
         <div class="pr-screen-tools">
           <button class="pr-tool-btn" id="pr-btn-black" title="Layar Hitam / Blank Screen (B)">
@@ -8056,7 +8056,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Right Controls: Giant NEXT Slide Button -->
+      
       <div class="pr-deck-right">
         <button class="pr-btn-nav pr-btn-next" id="pr-btn-next" title="Slide Berikutnya (Panah Kanan)">
           <span class="pr-nav-label">NEXT SLIDE</span>
@@ -8065,7 +8065,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Mini Laser Trackpad / Gyro Pointer Area -->
+    
     <div class="pr-laser-deck">
       <div class="pr-laser-header">
         <span class="pr-laser-title"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> Laser &amp; Pointer Trackpad (Geser untuk sorot di layar)</span>
@@ -8078,10 +8078,10 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </section>
 
-  <!-- Mode Kustom View Template -->
+  
   <template id="custom-pad-view-template" style="display:none;">
   <section id="custom-pad-view" class="custom-pad-view hidden">
-    <!-- Top Utility Bar: Mode Kustom Header -->
+    
     <div class="cp-top-bar">
       <div class="cp-left-meta">
         <span class="cp-badge">
@@ -8106,12 +8106,12 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Active Canvas: Mengisi 100% Layar di bawah Head Bar Secara Otomatis -->
+    
     <div class="custom-active-canvas" id="custom-active-canvas">
-      <!-- Tombol-tombol aktif akan diisi otomatis secara dinamis oleh JavaScript -->
+      
     </div>
 
-    <!-- Edit / Picker Canvas: Pilihan Semua Tuts (Std + Fn + Navigasi + Numpad) -->
+    
     <div class="custom-picker-canvas hidden" id="custom-picker-canvas">
       <div class="cp-picker-header-banner">
         <span>
@@ -8121,7 +8121,7 @@ body.portrait-dismissed .orientation-guard {
         <span id="cp-picker-counter" style="font-weight:700; color:var(--accent);">0 Dipilih</span>
       </div>
 
-      <!-- SEKSI 1: ROW FN (FUNCTION KEYS) -->
+      
       <div class="cp-picker-section">
         <div class="cp-section-title">
           <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
@@ -8144,7 +8144,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SEKSI 2: NAVIGASI & KONTROL DOKUMEN -->
+      
       <div class="cp-picker-section">
         <div class="cp-section-title">
           <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -8165,7 +8165,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SEKSI 3: NUMPAD & ANGKA -->
+      
       <div class="cp-picker-section">
         <div class="cp-section-title">
           <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
@@ -8194,13 +8194,13 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SEKSI 4: ALFANUMERIK STANDAR (QWERTY) -->
+      
       <div class="cp-picker-section">
         <div class="cp-section-title">
           <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="6" x2="6.01" y1="9" y2="9"/><line x1="10" x2="10.01" y1="9" y2="9"/><line x1="14" x2="14.01" y1="9" y2="9"/><line x1="18" x2="18.01" y1="9" y2="9"/></svg>
           <span>TOMBOL STANDAR &amp; KETIK (QWERTY)</span>
         </div>
-        <!-- Baris Angka -->
+        
         <div class="cp-picker-row">
           <div class="pick-key dim" data-cp-id="std_tilde" data-char="`" data-label="`">`</div>
           <div class="pick-key dim" data-cp-id="std_1" data-char="1" data-label="1">1</div>
@@ -8217,7 +8217,7 @@ body.portrait-dismissed .orientation-guard {
           <div class="pick-key dim" data-cp-id="std_equal" data-char="=" data-label="=">=</div>
           <div class="pick-key dim" data-cp-id="std_backspace" data-key="backspace" data-label="Backspace" style="min-width:64px;">Backspace</div>
         </div>
-        <!-- Baris Q-P -->
+        
         <div class="cp-picker-row">
           <div class="pick-key dim" data-cp-id="std_tab" data-key="tab" data-label="Tab" style="min-width:50px;">Tab</div>
           <div class="pick-key dim" data-cp-id="std_q" data-char="q" data-label="Q">Q</div>
@@ -8234,7 +8234,7 @@ body.portrait-dismissed .orientation-guard {
           <div class="pick-key dim" data-cp-id="std_bracket_r" data-char="]" data-label="]">]</div>
           <div class="pick-key dim" data-cp-id="std_backslash" data-char="\" data-label="\">\\</div>
         </div>
-        <!-- Baris A-L -->
+        
         <div class="cp-picker-row">
           <div class="pick-key dim" data-cp-id="std_caps" data-key="capslock" data-label="Caps" style="min-width:54px;">Caps</div>
           <div class="pick-key dim" data-cp-id="std_a" data-char="a" data-label="A">A</div>
@@ -8250,7 +8250,7 @@ body.portrait-dismissed .orientation-guard {
           <div class="pick-key dim" data-cp-id="std_quote" data-char="'" data-label="'">'</div>
           <div class="pick-key dim" data-cp-id="std_enter" data-key="enter" data-label="Enter" style="min-width:64px; color:var(--accent); font-weight:700;">Enter</div>
         </div>
-        <!-- Baris Z-M -->
+        
         <div class="cp-picker-row">
           <div class="pick-key dim" data-cp-id="std_shift" data-key="shift" data-label="Shift" style="min-width:60px;">Shift</div>
           <div class="pick-key dim" data-cp-id="std_z" data-char="z" data-label="Z">Z</div>
@@ -8265,7 +8265,7 @@ body.portrait-dismissed .orientation-guard {
           <div class="pick-key dim" data-cp-id="std_slash" data-char="/" data-label="/">/</div>
           <div class="pick-key dim" data-cp-id="std_shift_r" data-key="shift" data-label="Shift" style="min-width:60px;">Shift</div>
         </div>
-        <!-- Baris Bawah (Modifier & Space) -->
+        
         <div class="cp-picker-row">
           <div class="pick-key dim" data-cp-id="std_ctrl" data-key="ctrl" data-label="Ctrl">Ctrl</div>
           <div class="pick-key dim" data-cp-id="std_win" data-key="meta" data-label="Win">Win</div>
@@ -8276,7 +8276,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SEKSI 5: SHORTCUT PINTASAN POPULER -->
+      
       <div class="cp-picker-section">
         <div class="cp-section-title">
           <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -8292,7 +8292,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Sticky Footer Actions di Picker -->
+      
       <div class="cp-picker-footer">
         <div class="cp-picker-footer-left">
           <button type="button" class="cp-btn-aux" id="btn-cp-preset-ai" title="Preset Tombol AI & Angka">Preset AI</button>
@@ -8310,11 +8310,11 @@ body.portrait-dismissed .orientation-guard {
   </section>
   </template>
 
-  <!-- AI WORKSTATION VIEW (PROMPT ENGINEERING & VOICE DECK) -->
+  
   <section id="ai-workstation-view" class="ai-workstation-view hidden">
-    <!-- Main Grid: 3 Ergonomic Functional Columns -->
+    
     <div class="ai-main-grid">
-      <!-- Kolom 1: Pintasan Prompt & Kontrol Edit -->
+      
       <div class="ai-col-left">
         <div class="ai-shortcuts-grid">
           <button type="button" class="ai-btn-sh tool ai-btn-custom-tool" id="ai-btn-custom-prompt" data-i18n-title="ai_custom_prompts_title" title="Kustomisasi Shortcut Prompt AI">
@@ -8361,7 +8361,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Column 2: Real-time Audio Dictation Deck -->
+      
       <div class="ai-col-center">
         <div class="ai-mic-section">
           <button type="button" class="ai-btn-mic" id="btn-ai-mic" data-i18n-title="ai_mic_title" title="Toggle real-time audio dictation">
@@ -8370,12 +8370,12 @@ body.portrait-dismissed .orientation-guard {
           <div class="ai-mic-status-label" id="ai-mic-status">Tap Mic to speak</div>
         </div>
 
-        <!-- Hidden input element for speech synthesis bridge -->
+        
         <input type="hidden" id="ai-voice-input">
 
-        <!-- Continuous Speech Transcription Stream Container (Unified Box) -->
+        
         <div class="ai-transcript-box">
-          <!-- Audio Dictation Language Bar -->
+          
           <div class="ai-transcript-header">
             <div class="ai-lang-toggle" id="ai-lang-toggle-box" data-i18n-title="ai_dictation_lang" title="Audio Dictation Language">
               <button type="button" class="ai-btn-lang active" id="btn-ai-lang-id">ID</button>
@@ -8397,7 +8397,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- Android-Style Soft QWERTY Keyboard (Tablet Only) -->
+        
         <div class="ai-tablet-keyboard" id="ai-tablet-keyboard">
           <div class="ai-tk-control-bar">
             <div class="ai-tk-target-cluster">
@@ -8467,7 +8467,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Kolom 3: Enter Ekstra Besar & Navigasi Arah -->
+      
       <div class="ai-col-right">
         <button type="button" class="ai-btn-giant-enter" id="ai-btn-enter" title="Kirim Prompt / Eksekusi Perintah (Enter)">
           <span>Enter</span>
@@ -8496,9 +8496,9 @@ body.portrait-dismissed .orientation-guard {
 
   </section>
 
-  <!-- MEDIA CONTROLLER VIEW (REMOTE ENTERTAINMENT & PLAYBACK) -->
+  
   <section id="media-view" class="media-view hidden">
-    <!-- Media Top Bar -->
+    
     <div class="media-top-bar">
       <div class="media-left-meta">
         <span class="media-badge">
@@ -8526,17 +8526,17 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Media Deck Main Layout -->
+    
     <div class="media-main-deck">
-      <!-- Left Column: Playback Controls & Status Card -->
+      
       <div class="media-col-player">
-        <!-- Now Playing / Status Banner -->
+        
         <div class="media-status-card">
           <div class="media-status-info">
             <span class="media-status-tag" id="media-status-tag">TERHUBUNG KE PC</span>
             <span class="media-status-title" id="media-status-title">Remote Multimedia PC</span>
           </div>
-          <!-- Equalizer bar visualizer -->
+          
           <div class="media-visualizer" id="media-visualizer">
             <span class="eq-bar eq-1"></span>
             <span class="eq-bar eq-2"></span>
@@ -8546,7 +8546,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- Primary Hero Transport Controls -->
+        
         <div class="media-transport-deck">
           <button type="button" class="media-ctrl-btn sec" id="media-btn-prev" title="Lagu / Video Sebelumnya">
             <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" x2="5" y1="19" y2="5"/></svg>
@@ -8572,7 +8572,7 @@ body.portrait-dismissed .orientation-guard {
           </button>
         </div>
 
-        <!-- Secondary Media Shortcuts Row -->
+        
         <div class="media-extra-controls">
           <button type="button" class="media-extra-btn" id="media-btn-stop" title="Stop Playback">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="2"/></svg>
@@ -8595,9 +8595,9 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Right Column: Master Volume Slider & Navigation Pad -->
+      
       <div class="media-col-volume">
-        <!-- Master System Volume Card -->
+        
         <div class="media-volume-card">
           <div class="media-vol-header">
             <div class="media-vol-title">
@@ -8617,7 +8617,7 @@ body.portrait-dismissed .orientation-guard {
             </button>
           </div>
 
-          <!-- Quick Volume Presets -->
+          
           <div class="media-vol-presets">
             <button type="button" class="media-vol-pill" data-vol="0">0%</button>
             <button type="button" class="media-vol-pill" data-vol="25">25%</button>
@@ -8627,7 +8627,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- Browsing & TV Remote D-Pad for Smart Streaming -->
+        
         <div class="media-nav-card">
           <div class="media-nav-header">
             <span>Navigasi Menu &amp; Daftar Putar</span>
@@ -8644,9 +8644,9 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </section>
 
-  <!-- CANVAS VIEW (DIGITAL DRAWING TABLET & DIGITIZER PAD) -->
+  
   <section id="canvas-view" class="canvas-view hidden">
-    <!-- Canvas Top Bar / Drawing Toolbar -->
+    
     <div class="canvas-top-bar">
       <div class="canvas-left-tools">
         <span class="canvas-badge">
@@ -8654,7 +8654,7 @@ body.portrait-dismissed .orientation-guard {
           CANVAS TABLET
         </span>
 
-        <!-- Tool Selection: Pen, Marker, Eraser -->
+        
         <div class="canvas-tool-group">
           <button type="button" class="canvas-tool-btn active" id="canvas-tool-pen" data-tool="pen" title="Pena / Kuas Halus">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
@@ -8670,7 +8670,7 @@ body.portrait-dismissed .orientation-guard {
           </button>
         </div>
 
-        <!-- Brush Sizes -->
+        
         <div class="canvas-size-group">
           <button type="button" class="canvas-size-btn" data-size="2" title="Garis Sangat Tipis (2px)"><span class="dot size-s"></span></button>
           <button type="button" class="canvas-size-btn active" data-size="5" title="Garis Sedang (5px)"><span class="dot size-m"></span></button>
@@ -8678,7 +8678,7 @@ body.portrait-dismissed .orientation-guard {
           <button type="button" class="canvas-size-btn" data-size="24" title="Marker Lebar (24px)"><span class="dot size-xl"></span></button>
         </div>
 
-        <!-- Color Palette -->
+        
         <div class="canvas-color-group">
           <button type="button" class="canvas-color-btn active" data-color="#58a6ff" style="--c:#58a6ff;" title="Biru Aksen"></button>
           <button type="button" class="canvas-color-btn" data-color="#ffffff" style="--c:#ffffff;" title="Putih"></button>
@@ -8690,7 +8690,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="canvas-right-tools">
-        <!-- PC Sync Toggle -->
+        
         <button type="button" class="canvas-btn-aux active" id="btn-canvas-sync-pc" title="Sinkronisasi Kursor PC">
           <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
           <span id="txt-canvas-sync">Kursor PC: On</span>
@@ -8713,7 +8713,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Active Drawing Canvas Surface -->
+    
     <div class="canvas-container" id="canvas-container">
       <canvas id="drawing-canvas" class="drawing-canvas"></canvas>
       <div class="canvas-watermark" id="canvas-watermark">
@@ -8722,9 +8722,9 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </section>
 
-  <!-- POWER & SESSION CONTROLLER VIEW -->
+  
   <section id="power-view" class="power-view hidden">
-    <!-- Header: Title on Left, OS Name & Host Badge on Far Right -->
+    
     <div class="power-header">
       <div class="power-header-left">
         <div class="power-title-wrap">
@@ -8740,9 +8740,9 @@ body.portrait-dismissed .orientation-guard {
       </div>
     </div>
 
-    <!-- Power Grid of Action Tiles -->
+    
     <div class="power-grid" id="power-grid">
-      <!-- 1. Shutdown Tile -->
+      
       <button type="button" class="power-card card-shutdown" data-action="shutdown" id="power-btn-shutdown">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
@@ -8753,7 +8753,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 2. Restart Tile -->
+      
       <button type="button" class="power-card card-restart" data-action="restart" id="power-btn-restart">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
@@ -8764,7 +8764,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 3. Sleep / Suspend Tile (Label & action varies by OS) -->
+      
       <button type="button" class="power-card card-sleep" data-action="sleep" id="power-btn-sleep">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -8775,7 +8775,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 4. Lock Screen Tile (Label & action varies by OS) -->
+      
       <button type="button" class="power-card card-lock" data-action="lock" id="power-btn-lock">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -8786,7 +8786,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 5. Turn Off Display Tile -->
+      
       <button type="button" class="power-card card-screen-off" data-action="screen_off" id="power-btn-screen-off">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -8797,7 +8797,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 6. Wake Up Tile -->
+      
       <button type="button" class="power-card card-wake" data-action="wake_up" id="power-btn-wake">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -8808,7 +8808,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 7. Brightness Tile (Opens popup slider) -->
+      
       <button type="button" class="power-card card-brightness" id="power-btn-brightness">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -8819,7 +8819,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 8. Volume Tile (Opens popup slider) -->
+      
       <button type="button" class="power-card card-volume" id="power-btn-volume">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
@@ -8830,7 +8830,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 9. Anti-Sleep Tile -->
+      
       <button type="button" class="power-card card-anti-sleep" id="power-btn-anti-sleep">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
@@ -8841,7 +8841,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 10. Switch User Tile (Label & action varies by OS) -->
+      
       <button type="button" class="power-card card-switch-user" data-action="switch_user" id="power-btn-switch-user">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -8852,7 +8852,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 11. Log Out / Sign Out Tile -->
+      
       <button type="button" class="power-card card-logout" data-action="logout" id="power-btn-logout">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
@@ -8863,7 +8863,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </button>
 
-      <!-- 12. Hibernate Tile -->
+      
       <button type="button" class="power-card card-hibernate" data-action="hibernate" id="power-btn-hibernate">
         <div class="power-card-icon-wrap">
           <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -8876,7 +8876,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </section>
 
-  <!-- POWER ACTION CONFIRMATION MODAL -->
+  
   <div class="modal-backdrop hidden" id="modal-power-confirm">
     <div class="modal-dialog power-confirm-dialog" style="max-width:380px;text-align:center;padding:26px 20px;border-radius:16px;">
       <div class="power-confirm-icon-wrap" id="power-confirm-icon-wrap" style="width:52px;height:52px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;">
@@ -8891,7 +8891,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- POWER BRIGHTNESS POPUP MODAL -->
+  
   <div class="modal-backdrop hidden" id="modal-power-brightness">
     <div class="modal-dialog power-slider-dialog" style="max-width:380px;text-align:center;padding:22px 20px;border-radius:16px;">
       <div class="power-popup-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -8910,7 +8910,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- POWER VOLUME POPUP MODAL -->
+  
   <div class="modal-backdrop hidden" id="modal-power-volume">
     <div class="modal-dialog power-slider-dialog" style="max-width:380px;text-align:center;padding:22px 20px;border-radius:16px;">
       <div class="power-popup-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -8929,7 +8929,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- AI PROMPT SHORTCUT EDIT MODAL -->
+  
   <div class="modal-backdrop hidden" id="ai-prompt-edit-modal">
     <div class="modal-dialog" style="max-width: 480px;">
       <div class="modal-header">
@@ -8945,7 +8945,7 @@ body.portrait-dismissed .orientation-guard {
           Configure button labels and automated command prompts for your development workflow:
         </p>
         <div id="ai-prompt-edit-list" style="display: flex; flex-direction: column; gap: 8px;">
-          <!-- Populated dynamically via JS -->
+          
         </div>
       </div>
 
@@ -8956,8 +8956,8 @@ body.portrait-dismissed .orientation-guard {
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
-  <!-- KEYBOARD LAYOUT PROFILES MODAL -->
+  
+  
   <div class="modal-backdrop hidden" id="layout-profiles-modal">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -8995,7 +8995,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <div class="modal-body">
-        <!-- INTERFACE LANGUAGE SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -9007,7 +9007,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- TARGET OS SELECTION SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
@@ -9044,7 +9044,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- THEME / SKIN SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
@@ -9100,7 +9100,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- FONT / TYPOGRAPHY SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
@@ -9160,7 +9160,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- KEYBOARD SIZE SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M21.3 8.7 8.7 21.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15.3 2.7c1-1 2.5-1 3.4 0l2.6 2.6c1 1 1 2.5 0 3.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/></svg>
@@ -9178,7 +9178,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- TRACKPAD POSITION & SIZE -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="14" x="3" y="5" rx="3"/><line x1="12" x2="12" y1="14" y2="19"/><line x1="3" x2="21" y1="14" y2="14"/></svg>
@@ -9213,7 +9213,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- MODIFIER LOCK BEHAVIOR -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -9229,7 +9229,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- SMART APP CONTEXT AUTO-SWITCH SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
@@ -9247,7 +9247,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- HAPTIC / VIBRATION SECTION -->
+        
         <div class="setting-group">
           <div class="setting-title">
             <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/><path d="M2 8v8"/><path d="M22 8v8"/></svg>
@@ -9300,7 +9300,7 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
-<!-- CONNECTION ROUTE & HYBRID MODE MODAL -->
+
 <div class="modal-backdrop hidden" id="modal-connection-mode">
   <div class="modal-dialog" style="max-width: 440px;">
     <div class="modal-header">
@@ -9315,9 +9315,9 @@ body.portrait-dismissed .orientation-guard {
         Pilih jalur transmisi data antara HP dan PC host. Mode Hybrid menggabungkan koneksi USB dan Wi-Fi secara paralel untuk zero-lag dan anti-putus.
       </div>
 
-      <!-- MODE OPTIONS -->
+      
       <div class="conn-mode-list">
-        <!-- HYBRID OPTION -->
+        
         <div class="conn-mode-card active" id="conn-opt-hybrid" data-mode="hybrid">
           <div class="conn-mode-radio"><span class="radio-dot"></span></div>
           <div class="conn-mode-info">
@@ -9331,7 +9331,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- USB ONLY OPTION -->
+        
         <div class="conn-mode-card" id="conn-opt-usb" data-mode="usb">
           <div class="conn-mode-radio"><span class="radio-dot"></span></div>
           <div class="conn-mode-info">
@@ -9345,7 +9345,7 @@ body.portrait-dismissed .orientation-guard {
           </div>
         </div>
 
-        <!-- WIFI ONLY OPTION -->
+        
         <div class="conn-mode-card" id="conn-opt-wifi" data-mode="wifi">
           <div class="conn-mode-radio"><span class="radio-dot"></span></div>
           <div class="conn-mode-info">
@@ -9360,7 +9360,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- REALTIME CHANNEL STATUS CARD -->
+      
       <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:8px;padding:10px 12px;margin-top:12px;display:flex;flex-direction:column;gap:6px;">
         <div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Status Jalur Realtime</div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;">
@@ -9379,7 +9379,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- HOST IP HISTORY CARD -->
+      
       <div class="conn-history-box">
         <div class="conn-history-header">
           <div class="conn-history-title">
@@ -9391,7 +9391,7 @@ body.portrait-dismissed .orientation-guard {
         <div id="conn-ip-history-list" class="conn-ip-history-list"></div>
       </div>
 
-      <!-- FOOTER ACTIONS -->
+      
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;">
         <button type="button" class="btn-secondary" id="btn-conn-open-scanner" style="font-size:11px;padding:6px 10px;display:inline-flex;align-items:center;gap:5px;">
           <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
@@ -9405,7 +9405,7 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
-<!-- RECONNECTION & IP DISCOVERY MODAL -->
+
 <div class="modal-backdrop hidden" id="modal-reconnect">
   <div class="modal-dialog">
     <div class="modal-header">
@@ -9420,7 +9420,7 @@ body.portrait-dismissed .orientation-guard {
         When the local network changes or DHCP assigns a new IP address to the PC host, use the automatic subnet scanner below to rediscover the server.
       </div>
 
-      <!-- CURRENT CONNECTION STATUS CARD -->
+      
       <div style="background:var(--panel-bg);border:1px solid var(--key-border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
         <div style="font-size:11px;color:var(--text-dim);" data-i18n="rc_current_host">Current Host Endpoint:</div>
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
@@ -9429,7 +9429,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- AUTO SUBNET SCANNER -->
+      
       <div class="setting-group" style="margin-top:4px;">
         <div class="setting-title">
           <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
@@ -9447,7 +9447,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
         <div id="scan-status" style="font-size:11px;color:var(--text-dim);font-style:italic;" data-i18n="rc_scanner_ready">Ready to scan local subnet.</div>
 
-        <!-- FOUND PC CARD -->
+        
         <div id="scan-found-box" class="scan-found-card hidden">
           <div>
             <div style="font-size:12px;font-weight:700;color:#3fb950;display:inline-flex;align-items:center;gap:6px;"><svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" style="color:#3fb950;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> <span data-i18n="rc_found_title">DigiSmartDeck Server Located!</span></div>
@@ -9457,7 +9457,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- MANUAL IP / HOSTNAME -->
+      
       <div class="setting-group" style="margin-top:4px;">
         <div class="setting-title">
           <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
@@ -9471,7 +9471,7 @@ body.portrait-dismissed .orientation-guard {
           <i>If your network supports mDNS, you can enter hostnames such as <b>jarvis.local:8080</b> directly without static IP configuration.</i>
         </div>
 
-        <!-- RECONNECT IP HISTORY -->
+        
         <div class="conn-history-box" style="margin-top:8px;">
           <div class="conn-history-header">
             <div class="conn-history-title">
@@ -9491,7 +9491,7 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
-<!-- STORE & AFFILIATE MARKETPLACE MODAL -->
+
 <div class="modal-backdrop hidden" id="modal-store">
   <div class="modal-dialog" style="max-width:580px;">
     <div class="modal-header">
@@ -9502,7 +9502,7 @@ body.portrait-dismissed .orientation-guard {
       <button class="modal-close" id="btn-close-store" type="button">✕</button>
     </div>
 
-    <!-- Store Navigation Tabs -->
+    
     <div class="store-tab-bar">
       <button type="button" class="store-tab-btn active" data-store-tab="all">
         <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
@@ -9523,7 +9523,7 @@ body.portrait-dismissed .orientation-guard {
     </div>
 
     <div class="modal-body" style="max-height:65vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:14px;">
-      <!-- SECTION: ALL ACCESS LIFETIME PASS (FEATURED) -->
+      
       <div class="store-card featured store-item-all" id="store-item-pro-bundle">
         <div class="store-card-header">
           <div class="store-card-title" style="color:#f1e05a;">
@@ -9542,7 +9542,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Trust Badge: Zero-Telemetry & Localhost Privacy -->
+      
       <div style="background:rgba(56,139,253,0.08);border:1px solid rgba(56,139,253,0.25);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
         <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24" style="color:#58a6ff;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <div style="font-size:11.5px;color:var(--text);line-height:1.4;" data-i18n="store_privacy_badge">
@@ -9550,11 +9550,11 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SECTION: PRO PLUGINS -->
+      
       <div class="store-item-plugins" style="display:flex;flex-direction:column;gap:8px;">
         <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;" data-i18n="store_catalog_plugins">Professional Plugin Catalog</div>
         <div class="store-grid">
-          <!-- Plugin 1: Voice Typing -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9569,7 +9569,7 @@ body.portrait-dismissed .orientation-guard {
             <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-voice" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
 
-          <!-- Plugin 2: Advanced AutoText -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9584,7 +9584,7 @@ body.portrait-dismissed .orientation-guard {
             <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-autotext" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
 
-          <!-- Plugin 3: AI Prompt Assistant -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9599,7 +9599,7 @@ body.portrait-dismissed .orientation-guard {
             <button type="button" class="store-card-btn primary btn-buy-item" data-item="plugin-ai" data-i18n="store_btn_buy">Unlock Feature</button>
           </div>
 
-          <!-- Plugin 4: Macro Chaining -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9616,11 +9616,11 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SECTION: SKINS & THEMES -->
+      
       <div class="store-item-skins" style="display:flex;flex-direction:column;gap:8px;">
         <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;" data-i18n="store_skins_title">Theme Skins &amp; Acoustic Profiles</div>
         <div class="store-grid">
-          <!-- Skin 1 -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9633,7 +9633,7 @@ body.portrait-dismissed .orientation-guard {
             <button type="button" class="store-card-btn btn-buy-item" data-item="skin-retromac" data-i18n="store_btn_buy_skin">Get Theme</button>
           </div>
 
-          <!-- Skin 2 -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9646,7 +9646,7 @@ body.portrait-dismissed .orientation-guard {
             <button type="button" class="store-card-btn btn-buy-item" data-item="skin-cyberpunk" data-i18n="store_btn_buy_skin">Get Theme</button>
           </div>
 
-          <!-- Switch Audio Pack -->
+          
           <div class="store-card">
             <div class="store-card-header">
               <div class="store-card-title">
@@ -9661,7 +9661,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- SECTION: PARTNER AFFILIATE PROGRAM -->
+      
       <div class="store-item-affiliate" style="display:flex;flex-direction:column;gap:10px;">
         <div style="background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;align-items:center;gap:8px;color:#3fb950;font-weight:700;font-size:13px;">
@@ -9703,26 +9703,26 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
-<!-- ABOUT / APP INFO MODAL (KING ALI STUDIO) -->
+
 <div class="modal-backdrop hidden" id="modal-about">
   <div class="modal-dialog" style="max-width:400px;width:min(400px, 90vw);border:none;box-shadow:0 16px 40px rgba(0,0,0,0.65);position:relative;padding:32px 24px 28px;text-align:center;background:var(--header-bg);border-radius:16px;">
     <button class="modal-close" id="btn-close-about" type="button" title="Tutup" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:6px;line-height:1;border-radius:6px;">✕</button>
 
-    <!-- Line 1: Nama Aplikasi (Typographic Logo) -->
+    
     <div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:0.4px;margin-bottom:4px;margin-top:6px;">DigiSmartDeck</div>
 
-    <!-- Line 2: Deskripsi Aplikasi (AI Workstation & Vibe Coding Companion) -->
+    
     <div style="font-size:12.5px;color:var(--text-dim);line-height:1.55;max-width:320px;margin:0 auto 10px;" data-i18n="about_desc">AI Workstation & Vibe Coding Companion.</div>
 
-    <!-- Line 3: Badge Versi Aplikasi -->
+    
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.26</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.27</span>
     </div>
 
-    <!-- Line 4: By Nama Studio -->
+    
     <div style="font-size:12px;font-weight:600;color:var(--text-dim);letter-spacing:0.2px;margin-bottom:14px;">by King Ali Studiō</div>
 
-    <!-- Informasi Status Versi Aplikasi (Langsung tampil jika sudah versi terbaru) -->
+    
     <div style="margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px;" id="about-update-container">
       <div id="about-update-status" class="about-update-status-badge" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:rgba(63, 185, 80, 0.12);border:1px solid rgba(63, 185, 80, 0.35);border-radius:20px;font-size:11.5px;font-weight:600;color:#3fb950;user-select:none;cursor:pointer;" title="Klik untuk periksa ulang pembaruan">
         <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" style="stroke:#3fb950;stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
@@ -9747,7 +9747,7 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
-<!-- WINDOW SWITCHER MODAL (ACTIVE PC APPS DROPDOWN) -->
+
 <div class="modal-backdrop hidden" id="modal-window-switcher">
   <div class="modal-dialog" style="max-width:460px;">
     <div class="modal-header">
@@ -9764,15 +9764,15 @@ body.portrait-dismissed .orientation-guard {
     </div>
     <div class="modal-body" style="padding:10px;max-height:min(60vh, 380px);overflow-y:auto;">
       <div id="win-switcher-list" class="win-switcher-list">
-        <!-- Diisi secara dinamis oleh JavaScript -->
+        
       </div>
     </div>
   </div>
 </div>
 
-<!-- SMART CONTEXT TOAST HUD -->
 
-<!-- DEVICE PAIRING MODAL -->
+
+
 <div class="modal-backdrop hidden" id="modal-pairing">
   <div class="modal-dialog" style="max-width:440px;">
     <div class="modal-header">
@@ -9807,7 +9807,7 @@ body.portrait-dismissed .orientation-guard {
   </div>
 </div>
 
-<!-- SAAS LICENSE & ACCOUNT MODAL -->
+
 <div class="modal-backdrop hidden" id="modal-license">
   <div class="modal-dialog" style="max-width:480px;">
     <div class="modal-header">
@@ -9818,7 +9818,7 @@ body.portrait-dismissed .orientation-guard {
       <button class="modal-close" id="btn-close-license" type="button" title="Tutup">✕</button>
     </div>
     <div class="modal-body" style="padding:14px;max-height:min(70vh, 460px);overflow-y:auto;">
-      <!-- Current Plan Card -->
+      
       <div class="license-card">
         <div class="license-header-row">
           <div>
@@ -9834,7 +9834,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Activation Form (Hidden if already on Lifetime) -->
+      
       <div class="license-card" id="license-activation-card">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;" id="license-act-title-text" data-i18n="license_act_title">Aktivasi Kunci Lisensi</div>
         <div class="pairing-msg hidden" id="license-status-msg"></div>
@@ -9845,7 +9845,7 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Lifetime Active Status Banner (Only displayed when tier is Lifetime) -->
+      
       <div class="license-card hidden" id="license-lifetime-banner" style="background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);text-align:center;padding:16px 12px;">
         <div style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(63,185,80,0.18);color:#3fb950;margin-bottom:8px;">
           <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -11022,7 +11022,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.26';
+const APP_CLIENT_VERSION = '1.21.4.27';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -16439,318 +16439,7 @@ if (btnPrGyro) {
   });
 }
 
-/* [MUTED SEMENTARA - DIKERJAKAN BELAKANGAN] Mode Kustom JavaScript
-// ─── MODE KUSTOM (CUSTOM KEYPAD WORKSPACE) ───
-const customPadView = $('custom-pad-view');
-const customActiveCanvas = $('custom-active-canvas');
-const customPickerCanvas = $('custom-picker-canvas');
-const customStatusInfo = $('custom-status-info');
-const cpPickerCounter = $('cp-picker-counter');
 
-const btnCustomMode = $('btn-custom-mode');
-const btnCustomEdit = $('btn-custom-edit');
-const lblCustomEdit = $('lbl-custom-edit');
-const btnCustomSave = $('btn-custom-save');
-const btnExitCustom = $('btn-exit-custom');
-
-const btnCpPresetAi = $('btn-cp-preset-ai');
-const btnCpSelectAll = $('btn-cp-select-all');
-const btnCpClear = $('btn-cp-clear');
-const btnCpSavePicker = $('btn-cp-save-picker');
-
-let isCustomModeActive = false;
-let isCustomEditMode = false;
-
-// Default preset tuts kustom yang sering dibutuhkan (Enter, Numpad 0-9, Backspace, Panah Navigasi)
-const DEFAULT_CUSTOM_KEYS = [
-  'std_enter',
-  'num_7', 'num_8', 'num_9',
-  'num_4', 'num_5', 'num_6',
-  'num_1', 'num_2', 'num_3',
-  'num_0', 'num_dot', 'std_backspace',
-  'up', 'left', 'down', 'right'
-];
-
-let selectedCustomKeys = [];
-try {
-  const savedKeys = localStorage.getItem('digi_custom_user_keys');
-  if (savedKeys) {
-    selectedCustomKeys = JSON.parse(savedKeys);
-  } else {
-    selectedCustomKeys = [...DEFAULT_CUSTOM_KEYS];
-  }
-} catch(e) {
-  selectedCustomKeys = [...DEFAULT_CUSTOM_KEYS];
-}
-
-// Mengambil metadata tombol dari elemen picker
-function getKeyMeta(cpId) {
-  const el = document.querySelector(`.pick-key[data-cp-id="${cpId}"]`);
-  if (!el) return null;
-  return {
-    id: cpId,
-    key: el.dataset.key || '',
-    char: el.dataset.char || '',
-    combo: el.dataset.combo || '',
-    label: el.dataset.label || el.textContent.trim(),
-    sub: el.dataset.sub || ''
-  };
-}
-
-// Menghitung jumlah kolom dan baris yang optimal untuk mengisi 100% layar di bawah head bar
-function calculateOptimalGrid(count) {
-  if (count <= 0) return { cols: 1, rows: 1 };
-  if (!customActiveCanvas) return { cols: 3, rows: Math.ceil(count / 3) };
-
-  const rect = customActiveCanvas.getBoundingClientRect();
-  const width = rect.width || window.innerWidth || 800;
-  const height = rect.height || (window.innerHeight - 90) || 400;
-
-  let bestCols = 1;
-  let bestScore = Infinity;
-  const targetAspect = 1.45; // Rasio lebar:tinggi tombol keyboard yang ergonomis
-
-  for (let c = 1; c <= count; c++) {
-    const r = Math.ceil(count / c);
-    const cellW = width / c;
-    const cellH = height / r;
-    const aspect = cellW / cellH;
-    const score = Math.abs(Math.log(aspect / targetAspect));
-    if (score < bestScore) {
-      bestScore = score;
-      bestCols = c;
-    }
-  }
-
-  const bestRows = Math.ceil(count / bestCols);
-  return { cols: bestCols, rows: bestRows };
-}
-
-// Render seluruh tuts yang dipilih ke dalam Active Canvas (100% Auto Fill Layar)
-function renderCustomActiveCanvas() {
-  if (!customActiveCanvas) return;
-  customActiveCanvas.innerHTML = '';
-
-  const count = selectedCustomKeys.length;
-  if (customStatusInfo) {
-    customStatusInfo.textContent = `${count} Tombol Aktif`;
-  }
-
-  if (count === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'cp-empty-state';
-    empty.innerHTML = `
-      <div class="cp-empty-title">Belum Ada Tombol Dipilih</div>
-      <div class="cp-empty-desc">Pilih tombol yang Anda butuhkan (misal Enter dan tombol angka untuk AI) agar memenuhi seluruh layar.</div>
-      <button type="button" class="btn-primary" id="btn-empty-start-edit" style="font-size:12px;padding:8px 18px;">
-        Pilih Tombol Sekarang
-      </button>
-    `;
-    customActiveCanvas.appendChild(empty);
-    const btnStart = empty.querySelector('#btn-empty-start-edit');
-    if (btnStart) btnStart.addEventListener('click', () => setCustomEditMode(true));
-    return;
-  }
-
-  const { cols, rows } = calculateOptimalGrid(count);
-  customActiveCanvas.style.setProperty('--cp-cols', cols.toString());
-  customActiveCanvas.style.setProperty('--cp-rows', rows.toString());
-
-  const totalSlots = cols * rows;
-  const remaining = totalSlots - count;
-
-  selectedCustomKeys.forEach((cpId, idx) => {
-    const meta = getKeyMeta(cpId);
-    if (!meta) return;
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'k cp-custom-key';
-
-    if (meta.key === 'enter') btn.classList.add('cp-key-enter');
-    if (meta.combo && (meta.combo.includes('c') || meta.key === 'esc')) btn.classList.add('cp-key-danger');
-
-    if (meta.key) btn.dataset.key = meta.key;
-    if (meta.char) btn.dataset.char = meta.char;
-    if (meta.combo) btn.dataset.combo = meta.combo;
-    btn.dataset.cpId = cpId;
-
-    // Jika ada slot sisa di baris terakhir, rentangkan tombol terakhir agar pas 100% tanpa celah kosong
-    if (idx === count - 1 && remaining > 0) {
-      btn.style.gridColumn = `span ${remaining + 1}`;
-    }
-
-    let inner = `<span>${meta.label}</span>`;
-    if (meta.sub) {
-      inner += `<span class="cp-key-sublabel">${meta.sub}</span>`;
-    }
-    btn.innerHTML = inner;
-    customActiveCanvas.appendChild(btn);
-  });
-}
-
-// Update tampilan tombol di Picker Canvas (Dim vs Active)
-function updateCustomPickerUI() {
-  const allPickKeys = document.querySelectorAll('.pick-key');
-  allPickKeys.forEach(el => {
-    const cpId = el.dataset.cpId;
-    const isSelected = selectedCustomKeys.includes(cpId);
-    el.classList.toggle('active', isSelected);
-    el.classList.toggle('dim', !isSelected);
-  });
-
-  if (cpPickerCounter) {
-    cpPickerCounter.textContent = `${selectedCustomKeys.length} Dipilih`;
-  }
-}
-
-// Toggle status tombol di Mode Edit (Picker)
-function toggleCustomKey(cpId) {
-  if (!cpId) return;
-  const index = selectedCustomKeys.indexOf(cpId);
-  if (index >= 0) {
-    selectedCustomKeys.splice(index, 1);
-  } else {
-    selectedCustomKeys.push(cpId);
-  }
-  updateCustomPickerUI();
-  vibe(10);
-}
-
-// Menyimpan tuts kustom ke localStorage dan merender canvas 100% layar
-function saveCustomKeys() {
-  try {
-    localStorage.setItem('digi_custom_user_keys', JSON.stringify(selectedCustomKeys));
-  } catch(e) {}
-  setCustomEditMode(false);
-  renderCustomActiveCanvas();
-  vibe(25);
-}
-
-// Mengatur perpindahan antara Active Canvas dan Picker Canvas (Edit Mode)
-function setCustomEditMode(inEdit) {
-  isCustomEditMode = !!inEdit;
-
-  if (customActiveCanvas) customActiveCanvas.classList.toggle('hidden', isCustomEditMode);
-  if (customPickerCanvas) customPickerCanvas.classList.toggle('hidden', !isCustomEditMode);
-
-  if (btnCustomEdit) {
-    btnCustomEdit.classList.toggle('active', isCustomEditMode);
-  }
-  if (lblCustomEdit) {
-    lblCustomEdit.textContent = isCustomEditMode ? 'Batal' : 'Edit';
-  }
-
-  if (isCustomEditMode) {
-    updateCustomPickerUI();
-  } else {
-    renderCustomActiveCanvas();
-  }
-  vibe(15);
-}
-
-// Mengaktifkan / Menonaktifkan Mode Kustom
-function setCustomMode(enabled) {
-  switchAppMode(enabled ? 'custom' : 'standard');
-}
-
-// Event Listeners Header Bar Mode Kustom
-if (btnCustomMode) {
-  btnCustomMode.addEventListener('click', () => {
-    switchAppMode(isCustomModeActive ? 'standard' : 'custom');
-  });
-}
-if (btnExitCustom) {
-  btnExitCustom.addEventListener('click', () => switchAppMode('standard'));
-}
-if (btnCustomEdit) {
-  btnCustomEdit.addEventListener('click', () => {
-    setCustomEditMode(!isCustomEditMode);
-  });
-}
-if (btnCustomSave) {
-  btnCustomSave.addEventListener('click', () => {
-    saveCustomKeys();
-  });
-}
-
-// Event Listeners di Picker Canvas (Footer Actions)
-if (btnCpSavePicker) {
-  btnCpSavePicker.addEventListener('click', () => saveCustomKeys());
-}
-if (btnCpPresetAi) {
-  btnCpPresetAi.addEventListener('click', () => {
-    selectedCustomKeys = [...DEFAULT_CUSTOM_KEYS];
-    updateCustomPickerUI();
-    vibe(15);
-  });
-}
-if (btnCpSelectAll) {
-  btnCpSelectAll.addEventListener('click', () => {
-    const all = [];
-    document.querySelectorAll('.pick-key').forEach(el => {
-      const id = el.dataset.cpId;
-      if (id && !all.includes(id)) all.push(id);
-    });
-    selectedCustomKeys = all;
-    updateCustomPickerUI();
-    vibe(15);
-  });
-}
-if (btnCpClear) {
-  btnCpClear.addEventListener('click', () => {
-    selectedCustomKeys = [];
-    updateCustomPickerUI();
-    vibe(15);
-  });
-}
-
-// Ketuk tuts pada Picker Canvas untuk toggle Dim/Aktif
-if (customPickerCanvas) {
-  customPickerCanvas.addEventListener('click', (e) => {
-    const pickEl = e.target.closest('.pick-key');
-    if (!pickEl) return;
-    toggleCustomKey(pickEl.dataset.cpId);
-  });
-}
-
-// Touch & Click Delegation untuk Tombol Aktif di Active Canvas
-if (customActiveCanvas) {
-  customActiveCanvas.addEventListener('touchstart', (e) => {
-    const btn = e.target.closest('.cp-custom-key');
-    if (!btn) return;
-    e.preventDefault();
-    pressKey(btn);
-  }, { passive: false });
-
-  customActiveCanvas.addEventListener('touchend', (e) => {
-    const btn = e.target.closest('.cp-custom-key');
-    if (btn) releaseKey(btn);
-  });
-  customActiveCanvas.addEventListener('touchcancel', (e) => {
-    const btn = e.target.closest('.cp-custom-key');
-    if (btn) releaseKey(btn);
-  });
-
-  // Desktop click fallback
-  customActiveCanvas.addEventListener('mousedown', (e) => {
-    const btn = e.target.closest('.cp-custom-key');
-    if (!btn) return;
-    pressKey(btn);
-  });
-  customActiveCanvas.addEventListener('mouseup', (e) => {
-    const btn = e.target.closest('.cp-custom-key');
-    if (btn) releaseKey(btn);
-  });
-}
-
-// Responsif otomatis saat rotasi atau perubahan ukuran jendela
-window.addEventListener('resize', () => {
-  if (isCustomModeActive && !isCustomEditMode) {
-    renderCustomActiveCanvas();
-  }
-});
-*/
 
 // ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & DUAL-ENGINE VOICE DECK) ───
 // ─── AI WORKSTATION CONTROLLER (PROMPT ENGINEERING & VOICE DECK) ───

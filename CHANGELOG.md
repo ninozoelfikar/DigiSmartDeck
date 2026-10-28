@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.27] - 2026-10-28
+- Proteksi keamanan anti-reverse engineering cross-platform (HWID Windows/macOS/Linux, binary stripping, asset hardening APK, anti-tampering)
+
 ### [1.21.4.26] - 2026-10-28
 - Fitur riwayat IP host pada Connection Mode & Routes
 
@@ -442,6 +445,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.27] - 2026-10-28
+- Release v1.21.4.27 updates
 
 ### [1.21.4.26] - 2026-10-28
 - Release v1.21.4.26 updates

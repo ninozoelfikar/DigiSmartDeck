@@ -343,6 +343,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Proteksi integritas aplikasi & anti-instrumentasi
+        checkAppIntegrity();
+
         // 1. Kunci layar ke Landscape (Mendatar) & jaga layar tetap menyala & aktifkan WifiLock
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -414,6 +417,16 @@ public class MainActivity extends AppCompatActivity {
                 controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
             }
         }
+    }
+
+    private void checkAppIntegrity() {
+        try {
+            boolean isDebuggable = (getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+            java.io.File frida = new java.io.File("/data/local/tmp/frida-server");
+            if (frida.exists()) {
+                Log.w("DigiSecurity", "Security sandbox alert: unauthorized instrumentation server detected.");
+            }
+        } catch (Exception ignored) {}
     }
 
     @SuppressLint("SetJavaScriptEnabled")

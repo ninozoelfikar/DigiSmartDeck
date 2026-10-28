@@ -25,29 +25,65 @@ HARDWARE_LOCK_FILE = os.path.join(DATA_DIR, 'hardware_lock.json')
 
 
 def get_machine_hardware_id():
-    """Menghasilkan Hardware ID unik dan konsisten dari PC host untuk mengunci lisensi 1 PC/laptop."""
-    identifiers = []
-    # 1. Linux machine-id
-    for path in ['/etc/machine-id', '/var/lib/dbus/machine-id']:
-        if os.path.exists(path):
+    """Menghasilkan Hardware ID unik dan konsisten dari PC host untuk mengunci lisensi 1 PC/laptop (Windows, macOS, Linux)."""
+    sys_name = platform.system().lower()
+    identifiers = [sys_name]
+
+    # 1. Windows: Registry MachineGuid & WMI UUID
+    if sys_name == 'windows':
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Cryptography") as key:
+                val, _ = winreg.QueryValueEx(key, "MachineGuid")
+                if val:
+                    identifiers.append(f"win_guid:{val.strip()}")
+        except Exception:
+            pass
+        if len(identifiers) == 1:
             try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    val = f.read().strip()
-                    if val:
-                        identifiers.append(val)
-                        break
+                import subprocess
+                out = subprocess.check_output(["wmic", "csproduct", "get", "uuid"], timeout=3).decode('utf-8', 'ignore')
+                lines = [l.strip() for l in out.splitlines() if l.strip() and 'uuid' not in l.lower()]
+                if lines:
+                    identifiers.append(f"wmi_uuid:{lines[0]}")
             except Exception:
                 pass
 
-    # 2. MAC address node
+    # 2. macOS: Apple IOPlatformUUID via IORegistry
+    elif sys_name == 'darwin':
+        try:
+            import subprocess
+            out = subprocess.check_output(["ioreg", "-rd1", "-c", "IOPlatformExpertDevice"], timeout=3).decode('utf-8', 'ignore')
+            for line in out.splitlines():
+                if "IOPlatformUUID" in line:
+                    val = line.split("=")[-1].replace('"', '').strip()
+                    if val:
+                        identifiers.append(f"mac_uuid:{val}")
+                        break
+        except Exception:
+            pass
+
+    # 3. Linux: /etc/machine-id & DMI product_uuid
+    elif sys_name == 'linux':
+        for path in ['/etc/machine-id', '/var/lib/dbus/machine-id', '/sys/class/dmi/id/product_uuid']:
+            if os.path.exists(path):
+                try:
+                    with open(path, 'r', encoding='utf-8') as f:
+                        val = f.read().strip()
+                        if val:
+                            identifiers.append(f"lin_id:{val}")
+                            break
+                except Exception:
+                    pass
+
+    # Fallback node MAC address & platform hardware architecture
     try:
         node = uuid.getnode()
         if (node >> 40) % 2 == 0:
-            identifiers.append(str(node))
+            identifiers.append(f"mac:{node}")
     except Exception:
         pass
 
-    # 3. Hostname & platform machine
     try:
         identifiers.append(socket.gethostname())
     except Exception:
