@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.35] - 2026-10-29
+- Tablet: simetri geometris 1:1:1 jarak Bar Atas -> Mic -> Tulisan -> Text Box
+
 ### [1.21.4.34] - 2026-10-29
 - Tablet: reduksi 50% padding antara mic dan text box
 
@@ -466,6 +469,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.35] - 2026-10-29
+- Release v1.21.4.35 updates
 
 ### [1.21.4.34] - 2026-10-29
 - Release v1.21.4.34 updates
