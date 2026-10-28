@@ -4455,7 +4455,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   
   .ai-mic-section {
     flex: 1 !important;
-    min-height: 90px !important;
+    min-height: 75px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -4465,8 +4465,8 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     margin: 0 !important;
   }
   .ai-btn-mic {
-    width: clamp(80px, 14vh, 115px) !important;
-    height: clamp(80px, 14vh, 115px) !important;
+    width: clamp(72px, 12vh, 105px) !important;
+    height: clamp(72px, 12vh, 105px) !important;
     border-width: 2.5px !important;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3) !important;
   }
@@ -4479,7 +4479,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     top: auto !important;
     left: auto !important;
     transform: none !important;
-    margin-top: 5px !important;
+    margin-top: 4px !important;
     font-size: 11px !important;
     min-height: 15px !important;
     line-height: 15px !important;
@@ -4491,8 +4491,8 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   
   .ai-transcript-box {
     flex: 0 0 auto !important;
-    min-height: 96px !important;
-    max-height: 128px !important;
+    min-height: 144px !important;
+    max-height: 192px !important;
     padding: 6px 10px 8px !important;
     gap: 4px !important;
   }
@@ -4501,11 +4501,11 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     margin-bottom: 2px !important;
   }
   .ai-transcript-text {
-    line-height: 1.45 !important;
-    font-size: 12px !important;
-    min-height: 44px !important;
-    max-height: 64px !important;
-    padding: 2px 0 !important;
+    line-height: 1.5 !important;
+    font-size: 13px !important;
+    min-height: 66px !important;
+    max-height: 96px !important;
+    padding: 3px 0 !important;
   }
   .ai-transcript-actions {
     padding-top: 3px !important;
@@ -4519,16 +4519,16 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 
 @media (min-width: 960px) and (min-height: 600px) {
   .ai-btn-mic {
-    width: clamp(96px, 16vh, 130px) !important;
-    height: clamp(96px, 16vh, 130px) !important;
+    width: clamp(84px, 14vh, 120px) !important;
+    height: clamp(84px, 14vh, 120px) !important;
   }
   .ai-transcript-box {
-    min-height: 108px !important;
-    max-height: 140px !important;
+    min-height: 160px !important;
+    max-height: 210px !important;
   }
   .ai-transcript-text {
-    min-height: 52px !important;
-    max-height: 72px !important;
+    min-height: 80px !important;
+    max-height: 115px !important;
   }
 }
 
@@ -9783,7 +9783,7 @@ body.portrait-dismissed .orientation-guard {
 
     
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.32</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.33</span>
     </div>
 
     
@@ -11156,8 +11156,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.32';
-const APP_CLIENT_VERSION_CODE = 1210432;
+const APP_CLIENT_VERSION = '1.21.4.33';
+const APP_CLIENT_VERSION_CODE = 1210433;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11260,32 +11260,17 @@ function handleAutoUpdateResult(data, silent) {
     if (dot) dot.style.display = 'inline-block';
 
     const targetVer = (data.current_server_version || '').replace(/^v/, '');
-    const clientInfo = getClientAppInfo();
 
-    // ─── AUTO-TRIGGER OTA UPDATE PADA FILE APK NATIVE ANDROID ───
-    if (clientInfo.isNative && window.DigiAndroidBridge && typeof window.DigiAndroidBridge.downloadAndInstallUpdate === 'function') {
-      if (!isAutoUpdateTriggered) {
-        isAutoUpdateTriggered = true;
-        showSmartToast(
-          (currentUiLang === 'id') ? `Pembaruan APK v${targetVer} ditemukan! Mengunduh & memasang otomatis...` : `APK update v${targetVer} found! Auto-downloading & installing...`,
-          'DigiSmartDeck'
-        );
-        vibe([30, 50, 30]);
-        if (typeof openAboutModal === 'function') {
-          openAboutModal();
-        }
-        setTimeout(() => {
-          executeAppUpdate();
-        }, 700);
-      }
-    } else {
-      if (!silent) {
-        showSmartToast(
-          (currentUiLang === 'id') ? `Pembaruan v${targetVer} tersedia di About Application.` : `Update v${targetVer} available in About Application.`,
-          'DigiSmartDeck'
-        );
-        vibe([20, 30]);
-      }
+    // Nyalakan notifikasi saja tanpa auto-trigger pasang update (sesuai instruksi Pak Nino)
+    if (!isAutoUpdateTriggered) {
+      isAutoUpdateTriggered = true;
+      showSmartToast(
+        (currentUiLang === 'id')
+          ? `Pembaruan v${targetVer} tersedia. Ketuk logo/menu Tentang untuk memperbarui.`
+          : `Update v${targetVer} available. Tap logo/About Application to update.`,
+        'DigiSmartDeck'
+      );
+      vibe([20, 30]);
     }
   } else {
     if (dot) dot.style.display = 'none';

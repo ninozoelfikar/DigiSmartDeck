@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.33] - 2026-10-29
+- Tablet: text box +50% dan mekanisme update hanya menyalakan notifikasi tanpa auto-install
+
 ### [1.21.4.32] - 2026-10-29
 - Penyesuaian: text box tablet 2x lipat dan ukuran keyboard HP dikembalikan ke awal
 
@@ -460,6 +463,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.33] - 2026-10-29
+- Release v1.21.4.33 updates
 
 ### [1.21.4.32] - 2026-10-29
 - Release v1.21.4.32 updates
