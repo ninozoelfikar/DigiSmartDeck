@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.34] - 2026-10-29
+- Tablet: reduksi 50% padding antara mic dan text box
+
 ### [1.21.4.33] - 2026-10-29
 - Tablet: text box +50% dan mekanisme update hanya menyalakan notifikasi tanpa auto-install
 
@@ -463,6 +466,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.34] - 2026-10-29
+- Release v1.21.4.34 updates
 
 ### [1.21.4.33] - 2026-10-29
 - Release v1.21.4.33 updates

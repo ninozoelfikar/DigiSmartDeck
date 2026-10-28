@@ -4443,7 +4443,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 @media (min-height: 440px) {
   .ai-col-center {
     padding: 0;
-    gap: 6px;
+    gap: 3px;
   }
   .ai-tablet-keyboard {
     display: flex;
@@ -4452,16 +4452,16 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     height: 52px !important;
     font-size: 19px !important;
   }
-  /* Khusus Tablet: Area Mic menyesuaikan ruang vertikal */
+  /* Khusus Tablet: Area Mic merapat ke text box (padding dikurangi 50%) */
   .ai-mic-section {
     flex: 1 !important;
-    min-height: 75px !important;
+    min-height: 70px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-end !important;
     position: relative !important;
-    padding: 2px 0 !important;
+    padding: 2px 0 8px 0 !important;
     margin: 0 !important;
   }
   .ai-btn-mic {
@@ -4479,25 +4479,25 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     top: auto !important;
     left: auto !important;
     transform: none !important;
-    margin-top: 4px !important;
+    margin-top: 2px !important;
     font-size: 11px !important;
-    min-height: 15px !important;
-    line-height: 15px !important;
+    min-height: 14px !important;
+    line-height: 14px !important;
   }
   .ai-mic-status-label.anim-fade {
     opacity: 0 !important;
     transform: translateY(-2px) !important;
   }
-  /* Khusus Tablet: Kotak box teks diperbesar lagi 50% dari ukuran sebelumnya */
+  /* Khusus Tablet: Kotak box teks */
   .ai-transcript-box {
     flex: 0 0 auto !important;
     min-height: 144px !important;
     max-height: 192px !important;
-    padding: 6px 10px 8px !important;
-    gap: 4px !important;
+    padding: 4px 10px 8px !important;
+    gap: 3px !important;
   }
   .ai-transcript-header {
-    padding-bottom: 3px !important;
+    padding-bottom: 2px !important;
     margin-bottom: 2px !important;
   }
   .ai-transcript-text {
@@ -4505,10 +4505,10 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     font-size: 13px !important;
     min-height: 66px !important;
     max-height: 96px !important;
-    padding: 3px 0 !important;
+    padding: 2px 0 !important;
   }
   .ai-transcript-actions {
-    padding-top: 3px !important;
+    padding-top: 2px !important;
     gap: 6px !important;
   }
   .ai-btn-tr-act {
@@ -4518,6 +4518,12 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 }
 
 @media (min-width: 960px) and (min-height: 600px) {
+  .ai-col-center {
+    gap: 4px;
+  }
+  .ai-mic-section {
+    padding: 4px 0 10px 0 !important;
+  }
   .ai-btn-mic {
     width: clamp(84px, 14vh, 120px) !important;
     height: clamp(84px, 14vh, 120px) !important;
@@ -4525,6 +4531,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   .ai-transcript-box {
     min-height: 160px !important;
     max-height: 210px !important;
+    padding: 5px 12px 8px !important;
   }
   .ai-transcript-text {
     min-height: 80px !important;
@@ -9783,7 +9790,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.33</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.34</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11156,8 +11163,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.33';
-const APP_CLIENT_VERSION_CODE = 1210433;
+const APP_CLIENT_VERSION = '1.21.4.34';
+const APP_CLIENT_VERSION_CODE = 1210434;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
