@@ -82,6 +82,13 @@ python3 -m PyInstaller \
     server.py
 
 chmod +x dist/DigiSmartDeck
+if command -v strip &> /dev/null; then
+    echo -e "${YELLOW}[Proteksi] Melakukan stripping simbol Mach-O anti-reverse engineering...${NC}"
+    strip -x dist/DigiSmartDeck 2>/dev/null || true
+    if [ -d "dist/DigiSmartDeckApp.app/Contents/MacOS" ]; then
+        strip -x dist/DigiSmartDeckApp.app/Contents/MacOS/* 2>/dev/null || true
+    fi
+fi
 
 echo ""
 echo -e "${GREEN}============================================================${NC}"

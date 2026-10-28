@@ -36,9 +36,20 @@ if [ -z "$ANDROID_HOME" ] && [ -d "$HOME/Android/sdk" ]; then
     export ANDROID_HOME="$HOME/Android/sdk"
 fi
 
-# Sinkronkan aset antarmuka web offline ke dalam folder assets Android
+# Sinkronkan dan amankan aset antarmuka web offline ke dalam folder assets Android (Anti-Reverse Engineering)
 mkdir -p "$SCRIPT_DIR/android/app/src/main/assets"
-cp -f "$SCRIPT_DIR/static/index.html" "$SCRIPT_DIR/android/app/src/main/assets/index.html"
+python3 -c "
+import re
+with open('$SCRIPT_DIR/static/index.html', 'r', encoding='utf-8') as f:
+    content = f.read()
+# Hapus komentar HTML
+content = re.sub(r'<!--(?!\[if).*?-->', '', content, flags=re.DOTALL)
+# Hapus komentar blok JavaScript yang tidak esensial
+content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+with open('$SCRIPT_DIR/android/app/src/main/assets/index.html', 'w', encoding='utf-8') as f:
+    f.write(content)
+print('[OK] Aset HTML/JS telah di-strip dan diamankan ke dalam folder assets APK.')
+"
 if [ -f "$SCRIPT_DIR/static/icon-192.png" ]; then
     cp -f "$SCRIPT_DIR/static/icon-192.png" "$SCRIPT_DIR/android/app/src/main/assets/"
 fi

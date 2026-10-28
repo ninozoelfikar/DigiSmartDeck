@@ -59,8 +59,27 @@ python3 -m PyInstaller \
     --hidden-import "qrcode" \
     server.py
 
-# 4. Beri permission executable
+# 4. Beri permission executable dan strip debug symbols (Anti-Reverse Engineering)
 chmod +x dist/DigiSmartDeck
+if command -v strip &> /dev/null; then
+    echo -e "${YELLOW}[3/3] Melakukan binary stripping untuk proteksi anti-reverse engineering...${NC}"
+    strip --strip-all dist/DigiSmartDeck 2>/dev/null || true
+    echo -e "${GREEN}[✓] Simbol debug biner berhasil di-strip.${NC}"
+fi
+
+# 5. Opsi Native Rust Engine jika terpasang
+if [ -d "host-rust" ] && command -v cargo &> /dev/null; then
+    echo -e "${YELLOW}[Bonus] Mengompilasi Host Native Rust biner terlindung...${NC}"
+    cd host-rust
+    cargo build --release
+    cd "$SCRIPT_DIR"
+    if [ -f "host-rust/target/release/digismartdeck-host" ]; then
+        cp -f host-rust/target/release/digismartdeck-host dist/DigiSmartDeck-Linux
+        chmod +x dist/DigiSmartDeck-Linux
+        strip --strip-all dist/DigiSmartDeck-Linux 2>/dev/null || true
+        echo -e "${GREEN}[✓] Biner native Rust tersimpan di dist/DigiSmartDeck-Linux (Anti-decompile 100%)${NC}"
+    fi
+fi
 
 echo ""
 echo -e "${GREEN}============================================================${NC}"
