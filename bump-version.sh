@@ -115,8 +115,8 @@ try:
     html = re.sub(r"DigiSmartDeck v[0-9.]+", "DigiSmartDeck v" + new_ver, html)
     html = re.sub(r"<span id=[^>]*about-app-version[^>]*>v[0-9.]+<", "<span id=\"about-app-version\" style=\"display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;\">v" + new_ver + "<", html)
     parts = [int(p) for p in re.findall(r"\d+", new_ver)]
-    while len(parts) < 3: parts.append(0)
-    new_code = parts[0] * 10000 + parts[1] * 100 + parts[2]
+    while len(parts) < 4: parts.append(0)
+    new_code = parts[0] * 1000000 + parts[1] * 10000 + parts[2] * 100 + parts[3]
     html = re.sub(r"const APP_CLIENT_VERSION = '\''[0-9.]+'\'';", f"const APP_CLIENT_VERSION = '\''{new_ver}'\'';", html)
     html = re.sub(r"const APP_CLIENT_VERSION_CODE = [0-9]+;", f"const APP_CLIENT_VERSION_CODE = {new_code};", html)
     with open("static/index.html", "w", encoding="utf-8") as f:
@@ -160,7 +160,10 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 # 6. Restart server PC
-pkill -f "/home/nino/digikeyboard/server.py" 2>/dev/null || true
+pkill -9 -f "/home/nino/digikeyboard/server.py" 2>/dev/null || true
+sleep 1
+nohup /usr/bin/python3 /home/nino/digikeyboard/server.py > /tmp/server.log 2>&1 &
+sleep 1
 echo "[OK] Layanan server PC disegarkan"
 
 echo "============================================================"
