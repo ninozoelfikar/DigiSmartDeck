@@ -2336,6 +2336,146 @@ body.is-fullscreen {
   line-height: 1.35;
 }
 
+/* Host IP History in Connection & Routes */
+.conn-history-box {
+  background: var(--panel-bg);
+  border: 1px solid var(--key-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.conn-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.conn-history-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.conn-history-clear-btn {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--danger);
+  background: rgba(248, 81, 73, 0.08);
+  border: 1px solid rgba(248, 81, 73, 0.25);
+  border-radius: 4px;
+  padding: 2px 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+}
+.conn-history-clear-btn:hover {
+  background: rgba(248, 81, 73, 0.2);
+  border-color: var(--danger);
+}
+.conn-ip-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.conn-history-empty {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 4px 0;
+}
+.conn-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--key-border);
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.conn-history-item:hover {
+  border-color: rgba(88, 166, 255, 0.35);
+  background: rgba(88, 166, 255, 0.04);
+}
+.conn-history-item.active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.08);
+}
+.conn-history-item-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+.conn-history-ip {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conn-history-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(56, 239, 125, 0.15);
+  color: #38ef7d;
+  border: 1px solid rgba(56, 239, 125, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+.conn-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.conn-history-btn-pick {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.conn-history-btn-del {
+  font-size: 11px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: none;
+  border: 1px solid var(--key-border);
+  color: var(--text-dim);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.conn-history-btn-del:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(248, 81, 73, 0.12);
+}
+
 /* Quick Mode Switcher in Header */
 .header-modes {
   display: flex;
@@ -9239,6 +9379,18 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
+      <!-- HOST IP HISTORY CARD -->
+      <div class="conn-history-box">
+        <div class="conn-history-header">
+          <div class="conn-history-title">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span data-i18n="conn_history_title">Riwayat IP Host</span>
+          </div>
+          <button type="button" class="conn-history-clear-btn" id="btn-clear-ip-history" data-i18n="conn_history_clear_all">Hapus Semua</button>
+        </div>
+        <div id="conn-ip-history-list" class="conn-ip-history-list"></div>
+      </div>
+
       <!-- FOOTER ACTIONS -->
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;">
         <button type="button" class="btn-secondary" id="btn-conn-open-scanner" style="font-size:11px;padding:6px 10px;display:inline-flex;align-items:center;gap:5px;">
@@ -9317,6 +9469,18 @@ body.portrait-dismissed .orientation-guard {
         </div>
         <div style="font-size:10px;color:var(--text-dim);margin-top:2px;" data-i18n="rc_manual_hint">
           <i>If your network supports mDNS, you can enter hostnames such as <b>jarvis.local:8080</b> directly without static IP configuration.</i>
+        </div>
+
+        <!-- RECONNECT IP HISTORY -->
+        <div class="conn-history-box" style="margin-top:8px;">
+          <div class="conn-history-header">
+            <div class="conn-history-title">
+              <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span data-i18n="conn_history_title">Riwayat IP Host</span>
+            </div>
+            <button type="button" class="conn-history-clear-btn" id="btn-clear-rc-ip-history" data-i18n="conn_history_clear_all">Hapus Semua</button>
+          </div>
+          <div id="rc-ip-history-list" class="conn-ip-history-list"></div>
         </div>
       </div>
     </div>
@@ -9792,6 +9956,13 @@ const I18N = {
     conn_sub_wifi: "Connect strictly via local Wi-Fi network. Completely wireless.",
     conn_btn_scanner: "Host IP Scanner",
     conn_btn_done: "Done",
+    conn_history_title: "Host IP History",
+    conn_history_clear_all: "Clear All",
+    conn_history_empty: "No saved IP history yet.",
+    conn_btn_connect: "Connect",
+    conn_btn_delete_ip: "Delete IP",
+    conn_badge_active: "Active",
+    conn_history_confirm_clear: "Are you sure you want to clear all IP history?",
     guard_continue_portrait: "Continue in Portrait Mode",
     smart_context_chip_title: "Active Host Application",
     deck_smart_context_title: "SMART APP CONTEXT",
@@ -10148,6 +10319,13 @@ const I18N = {
     conn_sub_wifi: "Hanya melalui jaringan Wi-Fi lokal. Bebas kabel dan fleksibel di ruangan.",
     conn_btn_scanner: "Pemindai IP Host",
     conn_btn_done: "Selesai",
+    conn_history_title: "Riwayat IP Host",
+    conn_history_clear_all: "Hapus Semua",
+    conn_history_empty: "Belum ada riwayat IP tersimpan.",
+    conn_btn_connect: "Pilih",
+    conn_btn_delete_ip: "Hapus IP",
+    conn_badge_active: "Aktif",
+    conn_history_confirm_clear: "Yakin ingin menghapus semua riwayat IP?",
     guard_continue_portrait: "Lanjutkan dalam Mode Vertikal",
     smart_context_chip_title: "Aplikasi PC Aktif",
     deck_smart_context_title: "KONTEKS APLIKASI CERDAS",
@@ -10519,6 +10697,11 @@ function setUiLanguage(lang) {
   // Update Connection Status badge title if function exists
   if (typeof setStatus === 'function') {
     setStatus(connected);
+  }
+
+  // Update Host IP History list translation
+  if (typeof renderIpHistory === 'function') {
+    renderIpHistory();
   }
 }
 
@@ -12959,6 +13142,7 @@ function openConnModeModal() {
   if (!m) return;
   updateConnModeCards();
   updateConnModalRealtimeStats();
+  if (typeof renderIpHistory === 'function') renderIpHistory();
   m.classList.remove('hidden');
 }
 
@@ -13152,6 +13336,7 @@ function openReconnectModal() {
     scanSubnetInput.value = m ? m[1] + '.' : '192.168.8.';
   }
 
+  if (typeof renderIpHistory === 'function') renderIpHistory();
   modal.classList.remove('hidden');
 }
 
@@ -13207,6 +13392,170 @@ if (btnConnScanner) {
     });
   }
 });
+
+// ── Host IP History Controller (Pilih & Hapus History IP Satu Persatu / Sekaligus) ──
+const IP_HISTORY_STORAGE_KEY = 'digi_ip_history';
+
+function getIpHistory() {
+  try {
+    const raw = localStorage.getItem(IP_HISTORY_STORAGE_KEY);
+    let arr = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(arr)) arr = [];
+    if (arr.length === 0) {
+      const cur = getEffectiveServerHost();
+      if (cur && !cur.startsWith('localhost') && !cur.startsWith('127.0.0.1')) {
+        const item = cur.includes(':') ? cur : (cur + ':8080');
+        arr.push(item);
+        localStorage.setItem(IP_HISTORY_STORAGE_KEY, JSON.stringify(arr));
+      }
+    }
+    return arr;
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveIpHistory(list) {
+  try {
+    localStorage.setItem(IP_HISTORY_STORAGE_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function addIpToHistory(ip) {
+  if (!ip) return;
+  let clean = String(ip).trim().replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+  if (!clean) return;
+  if (!clean.includes(':')) clean += ':8080';
+  if (clean.includes('192.168.x.x') || clean.includes('192.168.122.') || clean.includes('172.17.') || clean.includes('172.18.')) {
+    return;
+  }
+  let list = getIpHistory();
+  list = list.filter(item => item.toLowerCase() !== clean.toLowerCase());
+  list.unshift(clean);
+  if (list.length > 12) list = list.slice(0, 12);
+  saveIpHistory(list);
+  renderIpHistory();
+}
+
+function deleteIpFromHistory(targetIp) {
+  if (typeof playClickSound === 'function') playClickSound();
+  let list = getIpHistory();
+  list = list.filter(item => item !== targetIp);
+  saveIpHistory(list);
+  renderIpHistory();
+  if (typeof vibe === 'function') vibe(15);
+}
+
+function clearAllIpHistory() {
+  if (typeof playClickSound === 'function') playClickSound();
+  if (!confirm(t('conn_history_confirm_clear', 'Hapus semua riwayat IP?'))) return;
+  saveIpHistory([]);
+  renderIpHistory();
+  if (typeof vibe === 'function') vibe(20);
+}
+
+function selectIpFromHistory(targetIp) {
+  if (!targetIp) return;
+  let clean = targetIp.trim().replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+  if (!clean.includes(':')) clean += ':8080';
+  if (typeof playClickSound === 'function') playClickSound();
+  if (typeof vibe === 'function') vibe(20);
+  addIpToHistory(clean);
+  localStorage.setItem('digi_server_host', clean);
+  if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.setServerHost === 'function') {
+    try { window.DigiAndroidBridge.setServerHost(clean); } catch (e) {}
+  }
+  closeConnModeModal();
+  closeReconnectModal();
+  if (window.location.protocol.startsWith('http')) {
+    if (window.location.host !== clean) {
+      window.location.href = 'http://' + clean + '/';
+      return;
+    }
+  }
+  if (typeof connect === 'function') {
+    connect();
+  }
+}
+
+function renderIpHistory() {
+  const containers = [$('conn-ip-history-list'), $('rc-ip-history-list')].filter(Boolean);
+  const clearBtns = [$('btn-clear-ip-history'), $('btn-clear-rc-ip-history')].filter(Boolean);
+  if (containers.length === 0) return;
+
+  const list = getIpHistory();
+  const currentHost = getEffectiveServerHost();
+  const cleanCur = currentHost ? currentHost.toLowerCase() : '';
+
+  clearBtns.forEach(btn => {
+    btn.style.display = list.length > 0 ? 'inline-block' : 'none';
+  });
+
+  const emptyHtml = `<div class="conn-history-empty">${t('conn_history_empty', 'Belum ada riwayat IP tersimpan.')}</div>`;
+
+  containers.forEach(container => {
+    if (list.length === 0) {
+      container.innerHTML = emptyHtml;
+      return;
+    }
+    container.innerHTML = list.map(ip => {
+      const isActive = (ip.toLowerCase() === cleanCur || (cleanCur && ip.toLowerCase().startsWith(cleanCur)));
+      const escIp = String(ip).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      return `
+        <div class="conn-history-item${isActive ? ' active' : ''}" data-ip="${escIp}">
+          <div class="conn-history-item-info" data-act="pick" title="${t('conn_btn_connect', 'Pilih')}">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            <span class="conn-history-ip">${escIp}</span>
+            ${isActive ? `<span class="conn-history-badge">${t('conn_badge_active', 'Aktif')}</span>` : ''}
+          </div>
+          <div class="conn-history-actions">
+            <button type="button" class="conn-history-btn-pick" data-act="pick" title="${t('conn_btn_connect', 'Pilih')}">
+              ${t('conn_btn_connect', 'Pilih')}
+            </button>
+            <button type="button" class="conn-history-btn-del" data-act="delete" title="${t('conn_btn_delete_ip', 'Hapus IP')}">
+              ✕
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  });
+}
+
+function initIpHistoryListeners() {
+  const containers = [$('conn-ip-history-list'), $('rc-ip-history-list')].filter(Boolean);
+  containers.forEach(cont => {
+    cont.addEventListener('click', (e) => {
+      const delBtn = e.target.closest('[data-act="delete"]');
+      if (delBtn) {
+        e.stopPropagation();
+        const item = delBtn.closest('.conn-history-item');
+        if (item && item.dataset.ip) {
+          deleteIpFromHistory(item.dataset.ip);
+        }
+        return;
+      }
+      const pickEl = e.target.closest('[data-act="pick"]') || e.target.closest('.conn-history-item');
+      if (pickEl) {
+        const item = pickEl.closest('.conn-history-item');
+        if (item && item.dataset.ip) {
+          selectIpFromHistory(item.dataset.ip);
+        }
+      }
+    });
+  });
+
+  const clearBtns = [$('btn-clear-ip-history'), $('btn-clear-rc-ip-history')].filter(Boolean);
+  clearBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearAllIpHistory();
+    });
+  });
+}
+
+initIpHistoryListeners();
+renderIpHistory();
 
 
 const btnRcUsb = $('btn-rc-usb');
@@ -13460,6 +13809,7 @@ function showFoundHost(targetHost, version) {
   const jumpBtn = $('btn-jump-found');
   if (jumpBtn) {
     jumpBtn.onclick = () => {
+      if (typeof addIpToHistory === 'function') addIpToHistory(targetHost);
       window.location.href = `http://${targetHost}/`;
     };
   }
@@ -13473,6 +13823,7 @@ function applyManualHost() {
   if (!val.includes(':')) {
     val += ':8080';
   }
+  if (typeof addIpToHistory === 'function') addIpToHistory(val);
   window.location.href = `http://${val}/`;
 }
 
