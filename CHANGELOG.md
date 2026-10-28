@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.32] - 2026-10-29
+- Penyesuaian: text box tablet 2x lipat dan ukuran keyboard HP dikembalikan ke awal
+
 ### [1.21.4.31] - 2026-10-29
 - Khusus tablet: Pengecilan kotak teks AI 50-70% dan pembesaran tombol mic proporsional
 
@@ -457,6 +460,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.32] - 2026-10-29
+- Release v1.21.4.32 updates
 
 ### [1.21.4.31] - 2026-10-29
 - Release v1.21.4.31 updates
