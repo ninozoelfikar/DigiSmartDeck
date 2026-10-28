@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.25] - 2026-10-28
+- Fitur profil tata letak keyboard di Menu Utilitas
+
 ### [1.21.4.24] - 2026-10-24
 - Perbaikan guard startAiSpeechSession agar mic langsung aktif tanpa stuck di preparing
 
@@ -436,6 +439,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.25] - 2026-10-28
+- Release v1.21.4.25 updates
 
 ### [1.21.4.24] - 2026-10-24
 - Release v1.21.4.24 updates

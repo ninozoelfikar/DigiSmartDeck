@@ -1517,6 +1517,29 @@ body.is-fullscreen {
 .modal-backdrop.hidden {
   display: none !important;
 }
+/* Layout Profiles */
+.lp-save-row { display: flex; gap: 8px; }
+.lp-name-input {
+  flex: 1; min-width: 0; background: var(--panel-bg); border: 1px solid var(--key-border);
+  border-radius: 6px; padding: 8px 10px; font-size: 13px; color: var(--text);
+}
+.lp-name-input:focus { outline: none; border-color: var(--accent); }
+.lp-hint { font-size: 11px; color: var(--text-dim); line-height: 1.45; }
+.lp-list { display: flex; flex-direction: column; gap: 6px; }
+.lp-empty { font-size: 12px; color: var(--text-dim); padding: 10px 0; }
+.lp-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  border: 1px solid var(--key-border); border-radius: 8px; background: var(--panel-bg);
+}
+.lp-item.active { border-color: var(--accent); }
+.lp-item-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-badge { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; }
+.lp-act {
+  background: transparent; border: 1px solid var(--key-border); color: var(--text);
+  border-radius: 6px; padding: 6px 10px; font-size: 12px; cursor: pointer; touch-action: manipulation;
+}
+.lp-act.primary { border-color: var(--accent); color: var(--accent); }
+.lp-act.danger { color: var(--danger); }
 .modal-dialog {
   background: var(--header-bg);
   border: 1px solid var(--key-border);
@@ -7373,6 +7396,10 @@ body.portrait-dismissed .orientation-guard {
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             <span data-i18n="util_settings">Settings</span>
           </button>
+          <button type="button" class="tbtn deck-chip" id="btn-layout-profiles" data-i18n-title="util_profiles_title" title="Saved Keyboard Layout Profiles">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>
+            <span data-i18n="util_profiles">Profiles</span>
+          </button>
           <button type="button" class="tbtn deck-chip" id="btn-store" data-i18n-title="util_store_title" title="Store: Skins, Plugins &amp; Licenses" style="display:none;">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span data-i18n="util_store">Store</span>
@@ -8790,6 +8817,33 @@ body.portrait-dismissed .orientation-guard {
   </div>
 
   <!-- SETTINGS MODAL -->
+  <!-- KEYBOARD LAYOUT PROFILES MODAL -->
+  <div class="modal-backdrop hidden" id="layout-profiles-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>
+          <span data-i18n="lp_title">Layout Profiles</span>
+        </div>
+        <button class="modal-close" id="btn-close-layout-profiles" type="button">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <div class="setting-title"><span data-i18n="lp_save_title">Save Current Layout</span></div>
+          <div class="lp-save-row">
+            <input type="text" id="inp-layout-profile-name" class="lp-name-input" maxlength="32" autocomplete="off" spellcheck="false" data-i18n-placeholder="lp_name_placeholder" placeholder="Profile name, e.g. Coding">
+            <button type="button" class="btn-primary" id="btn-save-layout-profile" data-i18n="lp_btn_save">Save</button>
+          </div>
+          <div class="lp-hint" data-i18n="lp_hint">Stores panel visibility (Fn, Nav, Numpad, Shortcuts), key size, trackpad on/off, position, size and speed, modifier mode, and custom keys.</div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-title"><span data-i18n="lp_list_title">Saved Profiles</span></div>
+          <div id="layout-profiles-list" class="lp-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop hidden" id="settings-modal">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -9498,7 +9552,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.24</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.25</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9820,6 +9874,23 @@ const I18N = {
     util_sound_title: "Mechanical Key Audio",
     util_settings: "Settings",
     util_settings_title: "Appearance & Preferences",
+    util_profiles: "Profiles",
+    util_profiles_title: "Saved Keyboard Layout Profiles",
+    lp_title: "Layout Profiles",
+    lp_save_title: "Save Current Layout",
+    lp_name_placeholder: "Profile name, e.g. Coding",
+    lp_btn_save: "Save",
+    lp_hint: "Stores panel visibility (Fn, Nav, Numpad, Shortcuts), key size, trackpad on/off, position, size and speed, and modifier mode.",
+    lp_list_title: "Saved Profiles",
+    lp_empty: "No profiles yet. Arrange the keyboard, then save it here.",
+    lp_apply: "Apply",
+    lp_update: "Update",
+    lp_delete: "Delete",
+    lp_active: "Active",
+    lp_name_required: "Enter a profile name first.",
+    lp_confirm_overwrite: "A profile with this name already exists. Overwrite it?",
+    lp_confirm_update: "Replace this profile with the current layout?",
+    lp_confirm_delete: "Delete this profile?",
     util_store: "Store",
     util_store_title: "Store: Skins, Plugins & Licenses",
 
@@ -10159,6 +10230,23 @@ const I18N = {
     util_sound_title: "Suara Klik Mekanikal",
     util_settings: "Pengaturan",
     util_settings_title: "Tampilan & Preferensi",
+    util_profiles: "Profil",
+    util_profiles_title: "Profil Tata Letak Keyboard Tersimpan",
+    lp_title: "Profil Tata Letak",
+    lp_save_title: "Simpan Tata Letak Saat Ini",
+    lp_name_placeholder: "Nama profil, misal Koding",
+    lp_btn_save: "Simpan",
+    lp_hint: "Menyimpan panel yang tampil (Fn, Nav, Numpad, Pintasan), ukuran tombol, trackpad aktif/nonaktif, posisi, ukuran dan kecepatan, serta mode modifier.",
+    lp_list_title: "Profil Tersimpan",
+    lp_empty: "Belum ada profil. Atur keyboard, lalu simpan di sini.",
+    lp_apply: "Terapkan",
+    lp_update: "Perbarui",
+    lp_delete: "Hapus",
+    lp_active: "Aktif",
+    lp_name_required: "Isi nama profil terlebih dahulu.",
+    lp_confirm_overwrite: "Profil dengan nama ini sudah ada. Timpa?",
+    lp_confirm_update: "Ganti isi profil ini dengan tata letak saat ini?",
+    lp_confirm_delete: "Hapus profil ini?",
     util_store: "Toko",
     util_store_title: "Toko: Skin, Plugin & Lisensi",
 
@@ -10751,7 +10839,7 @@ if (btnControlDeck) {
   btnControlDeck.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.24';
+const APP_CLIENT_VERSION = '1.21.4.25';
 const APP_CLIENT_VERSION_CODE = 12104;
 
 let updateResetTimeout = null;
@@ -19257,6 +19345,178 @@ if (btnStSmartOff) {
     autoSwitchContextEnabled = false;
     localStorage.setItem('digi_smart_context_auto', 'false');
     updateSmartContextUI();
+  });
+}
+
+// ── Keyboard Layout Profiles (Simpan & Terapkan Tata Letak) ──
+const LP_STORAGE_KEY = 'digi_layout_profiles';
+const LP_ACTIVE_KEY = 'digi_layout_profile_active';
+const LP_LAYOUT_KEYS = [
+  'digi_panel_fn', 'digi_panel_nav', 'digi_panel_num', 'digi_panel_sc',
+  'digi_key_h', 'digi_tp_enabled', 'digi_tp_pos', 'digi_tp_scale', 'digi_tp_speed',
+  'digi_mod_mode'
+];
+const layoutProfilesModal = $('layout-profiles-modal');
+const layoutProfilesList = $('layout-profiles-list');
+const inpLayoutProfileName = $('inp-layout-profile-name');
+
+function lpLoadAll() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LP_STORAGE_KEY) || '[]');
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function lpSaveAll(list) {
+  try { localStorage.setItem(LP_STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function lpSnapshot() {
+  const data = {};
+  LP_LAYOUT_KEYS.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v !== null) data[k] = v;
+  });
+  return data;
+}
+
+function lpApplyData(data) {
+  if (!data) return;
+  LP_LAYOUT_KEYS.forEach(k => {
+    if (data[k] !== undefined) localStorage.setItem(k, data[k]);
+  });
+
+  restoreKeyboardPanels();
+  applyKeyHeight(parseInt(localStorage.getItem('digi_key_h'), 10) || 38);
+  setTpEnabled(localStorage.getItem('digi_tp_enabled') !== 'false');
+  applyTpPosition(localStorage.getItem('digi_tp_pos') || 'top');
+  applyTpScale(parseInt(localStorage.getItem('digi_tp_scale'), 10) || 100);
+
+  tpSpeed = parseFloat(localStorage.getItem('digi_tp_speed')) || 1.2;
+  if (tpSpeedSlider) tpSpeedSlider.value = tpSpeed;
+  if (tpSpeedVal) tpSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+  if (tpEditorSpeedSlider) tpEditorSpeedSlider.value = tpSpeed;
+  if (tpEditorSpeedVal) tpEditorSpeedVal.textContent = tpSpeed.toFixed(1) + 'x';
+
+  modLockMode = localStorage.getItem('digi_mod_mode') || 'lock';
+  latch = modLockMode !== 'hold';
+  updateModModeUI();
+}
+
+function lpEscape(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function renderLayoutProfiles() {
+  if (!layoutProfilesList) return;
+  const list = lpLoadAll();
+  const activeId = localStorage.getItem(LP_ACTIVE_KEY);
+  if (!list.length) {
+    layoutProfilesList.innerHTML = `<div class="lp-empty">${lpEscape(t('lp_empty'))}</div>`;
+    return;
+  }
+  layoutProfilesList.innerHTML = list.map(p => `
+    <div class="lp-item${p.id === activeId ? ' active' : ''}" data-id="${lpEscape(p.id)}">
+      <span class="lp-item-name">${lpEscape(p.name)}</span>
+      ${p.id === activeId ? `<span class="lp-badge">${lpEscape(t('lp_active'))}</span>` : ''}
+      <button type="button" class="lp-act primary" data-act="apply">${lpEscape(t('lp_apply'))}</button>
+      <button type="button" class="lp-act" data-act="update">${lpEscape(t('lp_update'))}</button>
+      <button type="button" class="lp-act danger" data-act="delete">${lpEscape(t('lp_delete'))}</button>
+    </div>`).join('');
+}
+
+function saveCurrentLayoutProfile() {
+  playClickSound();
+  const name = (inpLayoutProfileName ? inpLayoutProfileName.value : '').trim();
+  if (!name) {
+    alert(t('lp_name_required'));
+    if (inpLayoutProfileName) inpLayoutProfileName.focus();
+    return;
+  }
+  const list = lpLoadAll();
+  const existing = list.find(p => p.name.toLowerCase() === name.toLowerCase());
+  if (existing) {
+    if (!confirm(t('lp_confirm_overwrite'))) return;
+    existing.data = lpSnapshot();
+    existing.updated = Date.now();
+    localStorage.setItem(LP_ACTIVE_KEY, existing.id);
+  } else {
+    const id = 'lp_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    list.push({ id, name, data: lpSnapshot(), created: Date.now(), updated: Date.now() });
+    localStorage.setItem(LP_ACTIVE_KEY, id);
+  }
+  lpSaveAll(list);
+  if (inpLayoutProfileName) inpLayoutProfileName.value = '';
+  renderLayoutProfiles();
+  vibe(25);
+}
+
+function openLayoutProfiles() {
+  if (!layoutProfilesModal) return;
+  playClickSound();
+  closeControlDeck();
+  renderLayoutProfiles();
+  layoutProfilesModal.classList.remove('hidden');
+  vibe(15);
+}
+
+function closeLayoutProfiles() {
+  if (!layoutProfilesModal) return;
+  playClickSound();
+  layoutProfilesModal.classList.add('hidden');
+  vibe(10);
+}
+
+if ($('btn-layout-profiles')) $('btn-layout-profiles').onclick = openLayoutProfiles;
+if ($('btn-close-layout-profiles')) $('btn-close-layout-profiles').onclick = closeLayoutProfiles;
+if ($('btn-save-layout-profile')) $('btn-save-layout-profile').onclick = saveCurrentLayoutProfile;
+if (inpLayoutProfileName) {
+  inpLayoutProfileName.addEventListener('keydown', (e) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') { e.preventDefault(); saveCurrentLayoutProfile(); }
+  });
+}
+if (layoutProfilesModal) {
+  layoutProfilesModal.addEventListener('click', (e) => {
+    if (e.target === layoutProfilesModal) closeLayoutProfiles();
+  });
+}
+if (layoutProfilesList) {
+  layoutProfilesList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.lp-act');
+    if (!btn) return;
+    const item = btn.closest('.lp-item');
+    if (!item) return;
+    playClickSound();
+    const id = item.dataset.id;
+    let list = lpLoadAll();
+    const prof = list.find(p => p.id === id);
+    if (!prof) return;
+    const act = btn.dataset.act;
+    if (act === 'apply') {
+      lpApplyData(prof.data);
+      localStorage.setItem(LP_ACTIVE_KEY, id);
+      renderLayoutProfiles();
+      vibe(25);
+      closeLayoutProfiles();
+    } else if (act === 'update') {
+      if (!confirm(t('lp_confirm_update'))) return;
+      prof.data = lpSnapshot();
+      prof.updated = Date.now();
+      lpSaveAll(list);
+      localStorage.setItem(LP_ACTIVE_KEY, id);
+      renderLayoutProfiles();
+      vibe(25);
+    } else if (act === 'delete') {
+      if (!confirm(t('lp_confirm_delete'))) return;
+      list = list.filter(p => p.id !== id);
+      lpSaveAll(list);
+      if (localStorage.getItem(LP_ACTIVE_KEY) === id) localStorage.removeItem(LP_ACTIVE_KEY);
+      renderLayoutProfiles();
+      vibe(15);
+    }
   });
 }
 
