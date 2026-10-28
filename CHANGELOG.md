@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.31] - 2026-10-29
+- Khusus tablet: Pengecilan kotak teks AI 50-70% dan pembesaran tombol mic proporsional
+
 ### [1.21.4.30] - 2026-10-28
 - Penyesuaian posisi chip Settings kanan bawah deretan menu dan perbesaran keyboard AI
 
@@ -454,6 +457,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.31] - 2026-10-29
+- Release v1.21.4.31 updates
 
 ### [1.21.4.30] - 2026-10-28
 - Release v1.21.4.30 updates
