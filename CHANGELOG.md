@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.30] - 2026-10-28
+- Penyesuaian posisi chip Settings kanan bawah deretan menu dan perbesaran keyboard AI
+
 ### [1.21.4.29] - 2026-10-28
 - Menyimpan tema/skin pada layout profile dan memindahkan menu setting ke kanan bawah
 
@@ -451,6 +454,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.30] - 2026-10-28
+- Release v1.21.4.30 updates
 
 ### [1.21.4.29] - 2026-10-28
 - Release v1.21.4.29 updates
