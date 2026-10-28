@@ -5380,6 +5380,9 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   padding: 12px;
   margin-bottom: 12px;
 }
+.license-card.hidden {
+  display: none !important;
+}
 .license-card:last-child {
   margin-bottom: 0;
 }
@@ -9787,7 +9790,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.36</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.37</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -9906,7 +9909,7 @@ body.portrait-dismissed .orientation-guard {
       </div>
 
       <!-- Activation Form (Hidden if already on Lifetime) -->
-      <div class="license-card" id="license-activation-card">
+      <div class="license-card hidden" id="license-activation-card" style="display:none;">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;" id="license-act-title-text" data-i18n="license_act_title">Aktivasi Kunci Lisensi</div>
         <div class="pairing-msg hidden" id="license-status-msg"></div>
         <div class="license-form">
@@ -9916,8 +9919,8 @@ body.portrait-dismissed .orientation-guard {
         </div>
       </div>
 
-      <!-- Lifetime Active Status Banner (Only displayed when tier is Lifetime) -->
-      <div class="license-card hidden" id="license-lifetime-banner" style="background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);text-align:center;padding:16px 12px;">
+      <!-- Lifetime Active Status Banner (Hidden for Lifetime tier: only top card shown) -->
+      <div class="license-card hidden" id="license-lifetime-banner" style="display:none;background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.3);text-align:center;padding:16px 12px;">
         <div style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:rgba(63,185,80,0.18);color:#3fb950;margin-bottom:8px;">
           <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
@@ -11160,8 +11163,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.36';
-const APP_CLIENT_VERSION_CODE = 1210436;
+const APP_CLIENT_VERSION = '1.21.4.37';
+const APP_CLIENT_VERSION_CODE = 1210437;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11759,7 +11762,14 @@ const licenseStatusMsg = $('license-status-msg');
 function openLicenseModal() {
   if (modalLicense) {
     modalLicense.classList.remove('hidden');
-    if (currentLicenseInfo) updateLicenseDisplay(currentLicenseInfo);
+    if (currentLicenseInfo) {
+      updateLicenseDisplay(currentLicenseInfo);
+    } else {
+      fetch('/api/license')
+        .then(r => r.json())
+        .then(lic => { if (lic && lic.status) updateLicenseDisplay(lic); })
+        .catch(e => console.error('Error fetching license:', e));
+    }
   }
 }
 
@@ -11822,14 +11832,28 @@ function updateLicenseDisplay(lic) {
   const btnActivate = $('btn-activate-lic');
   const inpKey = $('inp-license-key');
 
-  if (lic.tier === 'lifetime' && lic.status !== 'expired') {
-    // 1. TIER LIFETIME: Hanya pakai kotak atas. Kedua kotak di bawahnya tidak dibutuhkan dan disembunyikan.
-    if (actCard) actCard.classList.add('hidden');
-    if (lifetimeBanner) lifetimeBanner.classList.add('hidden');
+  const isLifetime = (lic.tier === 'lifetime' || (lic.plan_name && lic.plan_name.toLowerCase().includes('lifetime')));
+
+  if (isLifetime && lic.status !== 'expired') {
+    // 1. TIER LIFETIME: Hanya kolom paling atas saja yang ada. Form input aktivasi dan banner disembunyikan.
+    if (actCard) {
+      actCard.classList.add('hidden');
+      actCard.style.display = 'none';
+    }
+    if (lifetimeBanner) {
+      lifetimeBanner.classList.add('hidden');
+      lifetimeBanner.style.display = 'none';
+    }
   } else {
-    // 2. TIER BULANAN (MONTHLY) ATAU TRIAL: Tampilkan kotak form aktivasi / upgrade
-    if (lifetimeBanner) lifetimeBanner.classList.add('hidden');
-    if (actCard) actCard.classList.remove('hidden');
+    // 2. TIER BULANAN (MONTHLY) ATAU TRIAL: Tampilkan form aktivasi / upgrade
+    if (lifetimeBanner) {
+      lifetimeBanner.classList.add('hidden');
+      lifetimeBanner.style.display = 'none';
+    }
+    if (actCard) {
+      actCard.classList.remove('hidden');
+      actCard.style.display = '';
+    }
 
     if (lic.tier === 'monthly' && lic.status !== 'expired') {
       // Khusus pengguna bulanan: sesuaikan judul untuk upgrade ke Lifetime
@@ -15265,6 +15289,14 @@ try {
         const vAbout = document.getElementById('about-app-version');
         if (vAbout) vAbout.textContent = `v${d.version}`;
       }
+    })
+    .catch(() => {});
+} catch(e) {}
+try {
+  fetch('/api/license')
+    .then(r => r.json())
+    .then(lic => {
+      if (lic && lic.status) updateLicenseDisplay(lic);
     })
     .catch(() => {});
 } catch(e) {}
