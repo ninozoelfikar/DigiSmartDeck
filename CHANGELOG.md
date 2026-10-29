@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.39] - 2026-10-29
+- Tampilan HP: kecilkan ukuran keyboard 40% di mode AI
+
 ### [1.21.4.38] - 2026-10-29
 - Modal lisensi: kunci arsitektur maksimal 2 kolom (1 kolom jika Lifetime, 2 kolom jika selain Lifetime)
 
@@ -478,6 +481,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.39] - 2026-10-29
+- Release v1.21.4.39 updates
 
 ### [1.21.4.38] - 2026-10-29
 - Release v1.21.4.38 updates
