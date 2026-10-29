@@ -3658,6 +3658,27 @@ def create_app(ports=[8080]):
     return app
 
 
+class DigiDiscoveryProtocol(asyncio.DatagramProtocol):
+    """Protokol UDP Auto-Discovery Beacon untuk deteksi instan PC Host oleh client HP/Tablet."""
+    def __init__(self, http_port, version):
+        self.http_port = http_port
+        self.version = version
+        self.transport = None
+
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        try:
+            msg = data.decode('utf-8', errors='ignore').strip()
+            if msg == 'DIGI_DISCOVER' or msg.startswith('DIGI_DISCOVER'):
+                h_name = socket.gethostname()
+                reply = f"DIGI_OFFER:{self.http_port}:{self.version}:{h_name}".encode('utf-8')
+                self.transport.sendto(reply, addr)
+        except Exception:
+            pass
+
+
 if __name__ == '__main__':
     ports = [8080]
     env_port = os.environ.get('PORT')
@@ -3679,6 +3700,20 @@ if __name__ == '__main__':
             site = web.TCPSite(runner, '0.0.0.0', p)
             await site.start()
         print(f"[OK] Server aktif di port {', '.join(str(p) for p in ports)}.")
+
+        # UDP Auto-Discovery Beacon (Zero-Click Auto Connection)
+        udp_transport = None
+        try:
+            loop = asyncio.get_running_loop()
+            transport, _ = await loop.create_datagram_endpoint(
+                lambda: DigiDiscoveryProtocol(ports[0], __version__),
+                local_addr=('0.0.0.0', 8089),
+                allow_broadcast=True
+            )
+            udp_transport = transport
+            print("[OK] UDP Auto-Discovery Beacon aktif di port 8089.")
+        except Exception as e:
+            print(f"[WARN] UDP Auto-Discovery Beacon dilewati: {e}")
 
         # Inisialisasi jendela aktif pertama kali saat startup
         try:
@@ -3706,6 +3741,8 @@ if __name__ == '__main__':
             await context_task
         except asyncio.CancelledError:
             pass
+        if udp_transport:
+            udp_transport.close()
         await runner.cleanup()
 
     try:

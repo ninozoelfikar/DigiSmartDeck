@@ -57,13 +57,20 @@ import android.provider.Settings;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private long speechSessionStartMs = 0L;
     private String currentSpeechLang = "id-ID";
     private android.net.wifi.WifiManager.WifiLock wifiLock;
+    private android.net.wifi.WifiManager.MulticastLock multicastLock;
 
     private File pendingApkToInstall = null;
     private final ExecutorService downloadExecutor = Executors.newSingleThreadExecutor();
@@ -402,6 +410,21 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
             } catch (Exception ignored) {}
         }
+
+        @android.webkit.JavascriptInterface
+        public String getDeviceWifiIp() {
+            return MainActivity.this.getDeviceWifiIp();
+        }
+
+        @android.webkit.JavascriptInterface
+        public String getDeviceSubnet() {
+            return MainActivity.this.getDeviceSubnet();
+        }
+
+        @android.webkit.JavascriptInterface
+        public String discoverHostUdp(int timeoutMs) {
+            return MainActivity.this.discoverHostSync(timeoutMs);
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -443,6 +466,22 @@ public class MainActivity extends AppCompatActivity {
 
         // 4. Muat aplikasi mandiri offline lokal (Zero-Wait, Zero-Error, 100% Siap Pakai)
         loadLocalApp();
+
+        // 5. Jalankan background auto-discovery UDP instan (<600ms) tanpa memblokir UI
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                Thread.sleep(300);
+                String foundHost = discoverHostSync(600);
+                if (foundHost != null && !foundHost.trim().isEmpty()) {
+                    final String target = foundHost.trim();
+                    runOnUiThread(() -> {
+                        if (webView != null) {
+                            webView.evaluateJavascript("if (typeof window.onHostAutoDiscovered === 'function') { window.onHostAutoDiscovered('" + target + "'); }", null);
+                        }
+                    });
+                }
+            } catch (Exception ignored) {}
+        });
     }
 
     @Override
@@ -673,13 +712,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Tampilkan konfirmasi keluar atau ganti server
+        // Konfirmasi keluar aplikasi yang bersih tanpa membebani user dengan input manual
         new AlertDialog.Builder(this)
             .setTitle("DigiSmartDeck")
-            .setMessage("Apakah Anda ingin keluar dari aplikasi atau mengganti alamat server PC?")
-            .setPositiveButton("Ganti Server", (d, w) -> showServerConfigDialog())
-            .setNegativeButton("Keluar", (d, w) -> finish())
-            .setNeutralButton("Tetap Pakai", null)
+            .setMessage("Keluar dari aplikasi DigiSmartDeck?")
+            .setPositiveButton("Keluar", (d, w) -> finish())
+            .setNegativeButton("Batal", null)
+            .setNeutralButton("Pengaturan Server", (d, w) -> showServerConfigDialog())
             .show();
     }
 
@@ -986,19 +1025,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void acquireWifiLock() {
         try {
-            if (wifiLock == null) {
-                android.net.wifi.WifiManager wm = (android.net.wifi.WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                if (wm != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        wifiLock = wm.createWifiLock(android.net.wifi.WifiManager.WIFI_MODE_FULL_LOW_LATENCY, "DigiSmartDeck:WifiLock");
-                    } else {
-                        wifiLock = wm.createWifiLock(android.net.wifi.WifiManager.WIFI_MODE_FULL_HIGH_PERF, "DigiSmartDeck:WifiLock");
-                    }
-                    wifiLock.setReferenceCounted(false);
+            android.net.wifi.WifiManager wm = (android.net.wifi.WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wifiLock == null && wm != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    wifiLock = wm.createWifiLock(android.net.wifi.WifiManager.WIFI_MODE_FULL_LOW_LATENCY, "DigiSmartDeck:WifiLock");
+                } else {
+                    wifiLock = wm.createWifiLock(android.net.wifi.WifiManager.WIFI_MODE_FULL_HIGH_PERF, "DigiSmartDeck:WifiLock");
                 }
+                wifiLock.setReferenceCounted(false);
             }
             if (wifiLock != null && !wifiLock.isHeld()) {
                 wifiLock.acquire();
+            }
+
+            if (multicastLock == null && wm != null) {
+                multicastLock = wm.createMulticastLock("DigiSmartDeck:MulticastLock");
+                multicastLock.setReferenceCounted(false);
+            }
+            if (multicastLock != null && !multicastLock.isHeld()) {
+                multicastLock.acquire();
             }
         } catch (Exception ignored) {}
     }
@@ -1008,7 +1053,87 @@ public class MainActivity extends AppCompatActivity {
             if (wifiLock != null && wifiLock.isHeld()) {
                 wifiLock.release();
             }
+            if (multicastLock != null && multicastLock.isHeld()) {
+                multicastLock.release();
+            }
         } catch (Exception ignored) {}
+    }
+
+    public String getDeviceWifiIp() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces != null && interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                if (iface.isLoopback() || !iface.isUp()) continue;
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    if (!addr.isLoopbackAddress() && addr instanceof Inet4Address) {
+                        return addr.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return "";
+    }
+
+    public String getDeviceSubnet() {
+        String ip = getDeviceWifiIp();
+        if (ip != null && !ip.isEmpty()) {
+            int lastDot = ip.lastIndexOf('.');
+            if (lastDot > 0) {
+                return ip.substring(0, lastDot + 1);
+            }
+        }
+        return "10.14.16.";
+    }
+
+    public String discoverHostSync(int timeoutMs) {
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket();
+            socket.setBroadcast(true);
+            socket.setSoTimeout(timeoutMs > 0 ? timeoutMs : 500);
+
+            byte[] sendData = "DIGI_DISCOVER".getBytes(StandardCharsets.UTF_8);
+
+            // 1. Broadcast global
+            try {
+                DatagramPacket globalPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 8089);
+                socket.send(globalPacket);
+            } catch (Exception ignored) {}
+
+            // 2. Broadcast subnet lokal
+            String subnet = getDeviceSubnet();
+            if (subnet != null && !subnet.isEmpty()) {
+                try {
+                    DatagramPacket subPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(subnet + "255"), 8089);
+                    socket.send(subPacket);
+                } catch (Exception ignored) {}
+            }
+
+            // 3. Terima penawaran host
+            byte[] recvBuf = new byte[512];
+            DatagramPacket recvPacket = new DatagramPacket(recvBuf, recvBuf.length);
+            socket.receive(recvPacket);
+
+            String response = new String(recvPacket.getData(), 0, recvPacket.getLength(), StandardCharsets.UTF_8).trim();
+            String senderIp = recvPacket.getAddress().getHostAddress();
+
+            if (response.startsWith("DIGI_OFFER:")) {
+                String[] parts = response.split(":");
+                String port = parts.length > 1 ? parts[1] : "8080";
+                return senderIp + ":" + port;
+            } else if (!response.isEmpty()) {
+                return senderIp + ":8080";
+            }
+        } catch (Exception ignored) {
+        } finally {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        }
+        return "";
     }
 
     @Override
