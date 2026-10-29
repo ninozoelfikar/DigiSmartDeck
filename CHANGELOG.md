@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.43] - 2026-10-29
+- Tampilan HP: perbesar mic 15% (102px) dengan mempertahankan simetri geometris 1:1:1
+
 ### [1.21.4.42] - 2026-10-29
 - Tampilan HP: simetri geometris 1:1:1 jarak Bar Atas -> Mic -> Tulisan -> Text Box
 
@@ -490,6 +493,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.43] - 2026-10-29
+- Release v1.21.4.43 updates
 
 ### [1.21.4.42] - 2026-10-29
 - Release v1.21.4.42 updates
