@@ -7554,7 +7554,6 @@ body.portrait-dismissed .orientation-guard {
         <div class="deck-chips deck-chips-layers">
           <button type="button" class="tbtn deck-chip" id="btn-fn">Fn (F1-F12)</button>
           <button type="button" class="tbtn deck-chip" id="btn-nav" data-i18n="layer_nav">Navigation</button>
-          <button type="button" class="tbtn deck-chip" id="btn-num">123 (Numpad)</button>
           <button type="button" class="tbtn deck-chip" id="btn-sc">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             <span data-i18n="layer_shortcuts">Shortcuts</span>
@@ -7854,7 +7853,7 @@ body.portrait-dismissed .orientation-guard {
     </section>
 
     
-    <section class="kb-numpad panel hidden" id="numpad">
+    <section class="kb-numpad panel hidden" id="numpad" style="display: none !important;">
       <div class="numpad-grid">
         <button class="k sp" data-key="num_lock">Num</button>
         <button class="k" data-char="/">/</button>
@@ -9770,7 +9769,7 @@ body.portrait-dismissed .orientation-guard {
 
     
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.44</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.45</span>
     </div>
 
     
@@ -10914,19 +10913,16 @@ function togglePanel(panelId, btnId, storageKey) {
 function restoreKeyboardPanels() {
   const fnVisible = localStorage.getItem('digi_panel_fn') === 'true';
   const navVisible = localStorage.getItem('digi_panel_nav') === 'true';
-  const numVisible = localStorage.getItem('digi_panel_num') === 'true';
   const scVisible = localStorage.getItem('digi_panel_sc') === 'true';
 
   setPanelState('fn-row', 'btn-fn', 'digi_panel_fn', fnVisible);
   setPanelState('nav-row', 'btn-nav', 'digi_panel_nav', navVisible);
-  setPanelState('numpad', 'btn-num', 'digi_panel_num', numVisible);
   setPanelState('sc-bar', 'btn-sc', 'digi_panel_sc', scVisible);
 }
 
-$('btn-fn').onclick    = () => togglePanel('fn-row', 'btn-fn', 'digi_panel_fn');
-$('btn-nav').onclick   = () => togglePanel('nav-row', 'btn-nav', 'digi_panel_nav');
-$('btn-num').onclick   = () => togglePanel('numpad', 'btn-num', 'digi_panel_num');
-$('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc', 'digi_panel_sc');
+if ($('btn-fn')) $('btn-fn').onclick    = () => togglePanel('fn-row', 'btn-fn', 'digi_panel_fn');
+if ($('btn-nav')) $('btn-nav').onclick   = () => togglePanel('nav-row', 'btn-nav', 'digi_panel_nav');
+if ($('btn-sc')) $('btn-sc').onclick    = () => togglePanel('sc-bar', 'btn-sc', 'digi_panel_sc');
 
 // Pulihkan status settingan panel keyboard utama saat start
 restoreKeyboardPanels();
@@ -11134,8 +11130,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.44';
-const APP_CLIENT_VERSION_CODE = 1210444;
+const APP_CLIENT_VERSION = '1.21.4.45';
+const APP_CLIENT_VERSION_CODE = 1210445;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -11872,7 +11868,7 @@ if (btnActivateLic) {
   };
 }
 
-['btn-fn', 'btn-nav', 'btn-num', 'btn-sc', 'btn-settings', 'btn-store'].forEach(id => {
+['btn-fn', 'btn-nav', 'btn-sc', 'btn-settings', 'btn-store'].forEach(id => {
   const el = $(id);
   if (el) {
     el.addEventListener('click', () => {

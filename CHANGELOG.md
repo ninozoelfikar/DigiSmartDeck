@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.45] - 2026-10-29
+- Eliminasi opsi Numpad dari keyboard layers deck chips
+
 ### [1.21.4.44] - 2026-10-29
 - Auto-Discovery Zero-Click: UDP Beacon & Subnet Probe otomatis
 
@@ -496,6 +499,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.45] - 2026-10-29
+- Release v1.21.4.45 updates
 
 ### [1.21.4.44] - 2026-10-29
 - Release v1.21.4.44 updates
