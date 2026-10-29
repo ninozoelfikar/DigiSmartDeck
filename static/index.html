@@ -4539,17 +4539,17 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 @media (max-height: 439px) {
   .ai-col-center {
     padding: 0;
-    gap: 3px;
+    gap: 0 !important;
   }
   .ai-mic-section {
     flex: 1 !important;
     min-height: 0 !important;
-    padding: 6px 0 2px 0 !important;
+    padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: space-evenly !important;
     position: relative !important;
   }
   .ai-btn-mic {
@@ -4557,6 +4557,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     height: 88px !important;
     border-width: 2.5px !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    margin: 0 !important;
   }
   .ai-btn-mic svg {
     width: 42px !important;
@@ -4567,10 +4568,10 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     top: auto !important;
     left: auto !important;
     transform: none !important;
-    margin-top: 4px !important;
+    margin: 0 !important;
     font-size: 10px !important;
-    min-height: 14px !important;
-    line-height: 14px !important;
+    min-height: 13px !important;
+    line-height: 13px !important;
   }
   .ai-mic-status-label.anim-fade {
     opacity: 0 !important;
@@ -4585,6 +4586,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     max-height: none !important;
     padding: 6px 8px !important;
     gap: 4px !important;
+    margin: 0 !important;
   }
   .ai-transcript-text {
     font-size: 12px !important;
@@ -9768,7 +9770,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.41</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.42</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11132,8 +11134,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.41';
-const APP_CLIENT_VERSION_CODE = 1210441;
+const APP_CLIENT_VERSION = '1.21.4.42';
+const APP_CLIENT_VERSION_CODE = 1210442;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
