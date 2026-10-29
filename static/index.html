@@ -4426,7 +4426,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 
 /* ─── Android-style Soft QWERTY Keyboard (Tablet Exclusive) ─── */
 .ai-tablet-keyboard {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 5px;
   background: rgba(22, 27, 34, 0.7);
@@ -4542,8 +4542,8 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     gap: 3px;
   }
   .ai-mic-section {
-    flex: 0 0 62px !important;
-    min-height: 56px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
@@ -4553,71 +4553,38 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
     position: relative !important;
   }
   .ai-btn-mic {
-    width: 52px !important;
-    height: 52px !important;
+    width: 68px !important;
+    height: 68px !important;
   }
   .ai-btn-mic svg {
-    width: 25px !important;
-    height: 25px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
   .ai-mic-status-label {
-    font-size: 9px !important;
-    min-height: 12px !important;
-    line-height: 12px !important;
-    top: calc(50% + 29px) !important;
+    font-size: 10px !important;
+    min-height: 14px !important;
+    line-height: 14px !important;
+    top: calc(50% + 38px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
   .ai-tablet-keyboard {
-    display: flex !important;
-    gap: 2px !important;
-    padding: 3px !important;
-    border-radius: 6px !important;
-  }
-  .ai-tk-control-bar {
-    padding: 0 2px 1px 2px !important;
-    margin-bottom: 2px !important;
-  }
-  .ai-tk-ctrl-title {
-    font-size: 8px !important;
-  }
-  .ai-btn-target {
-    font-size: 8px !important;
-    padding: 1px 4px !important;
-    height: 16px !important;
-  }
-  .ai-tk-row {
-    gap: 2.5px !important;
-  }
-  .ai-tk-key {
-    height: 24px !important;
-    font-size: 11px !important;
-    border-radius: 4px !important;
-  }
-  .ai-tk-key svg {
-    width: 12px !important;
-    height: 12px !important;
-  }
-  .ai-tk-key.ai-tk-fn {
-    font-size: 9.5px !important;
-  }
-  .ai-tk-key.ai-tk-space {
-    font-size: 10px !important;
+    display: none !important;
   }
   .ai-transcript-box {
     flex: 1;
-    min-height: 48px !important;
+    min-height: 80px !important;
     max-height: none !important;
-    padding: 4px 6px !important;
-    gap: 3px !important;
+    padding: 6px 8px !important;
+    gap: 4px !important;
   }
   .ai-transcript-text {
-    font-size: 11px !important;
-    line-height: 1.35 !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
   }
   .ai-btn-tr-act {
-    font-size: 10px !important;
-    padding: 2px 6px !important;
+    font-size: 10.5px !important;
+    padding: 3px 8px !important;
   }
 }
 
@@ -9817,7 +9784,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.39</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.40</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11181,8 +11148,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.39';
-const APP_CLIENT_VERSION_CODE = 1210439;
+const APP_CLIENT_VERSION = '1.21.4.40';
+const APP_CLIENT_VERSION_CODE = 1210440;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;

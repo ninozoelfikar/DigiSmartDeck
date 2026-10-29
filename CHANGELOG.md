@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.40] - 2026-10-29
+- Mode AI HP: sembunyikan soft keyboard (eksklusif tablet), kembalikan area mic & transkrip lega
+
 ### [1.21.4.39] - 2026-10-29
 - Tampilan HP: kecilkan ukuran keyboard 40% di mode AI
 
@@ -481,6 +484,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.40] - 2026-10-29
+- Release v1.21.4.40 updates
 
 ### [1.21.4.39] - 2026-10-29
 - Release v1.21.4.39 updates
