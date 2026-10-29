@@ -425,6 +425,11 @@ public class MainActivity extends AppCompatActivity {
         public String discoverHostUdp(int timeoutMs) {
             return MainActivity.this.discoverHostSync(timeoutMs);
         }
+
+        @android.webkit.JavascriptInterface
+        public void closeApp() {
+            runOnUiThread(() -> finish());
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -712,14 +717,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Konfirmasi keluar aplikasi yang bersih tanpa membebani user dengan input manual
-        new AlertDialog.Builder(this)
-            .setTitle("DigiSmartDeck")
-            .setMessage("Keluar dari aplikasi DigiSmartDeck?")
-            .setPositiveButton("Keluar", (d, w) -> finish())
-            .setNegativeButton("Batal", null)
-            .setNeutralButton("Pengaturan Server", (d, w) -> showServerConfigDialog())
-            .show();
+        // Picu modal konfirmasi keluar kustom (Opsi 1: Web UI terpadu yang selaras dengan tema)
+        runOnUiThread(() -> {
+            if (webView != null) {
+                webView.evaluateJavascript(
+                    "if (typeof window.handleNativeBackPressed === 'function') { window.handleNativeBackPressed(); } else if (typeof window.showExitConfirmModal === 'function') { window.showExitConfirmModal(); } else { if (window.DigiAndroidBridge) window.DigiAndroidBridge.closeApp(); else finish(); }",
+                    null
+                );
+            } else {
+                finish();
+            }
+        });
     }
 
     private void checkAndRequestPermissions() {
