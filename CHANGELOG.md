@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.41] - 2026-10-29
+- Tampilan HP: perbesar tombol mic 30% (88px) dan tata padding simetris status label
+
 ### [1.21.4.40] - 2026-10-29
 - Mode AI HP: sembunyikan soft keyboard (eksklusif tablet), kembalikan area mic & transkrip lega
 
@@ -484,6 +487,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.41] - 2026-10-29
+- Release v1.21.4.41 updates
 
 ### [1.21.4.40] - 2026-10-29
 - Release v1.21.4.40 updates
