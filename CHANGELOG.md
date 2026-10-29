@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.50] - 2026-10-29
+- Sinkronisasi Custom Menu untuk mengatur seluruh tombol Mode AI & Keyboard Utama
+
 ### [1.21.4.49] - 2026-10-29
 - Ubah label tombol To PC menjadi Send to PC
 
@@ -511,6 +514,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.50] - 2026-10-29
+- Release v1.21.4.50 updates
 
 ### [1.21.4.49] - 2026-10-29
 - Release v1.21.4.49 updates

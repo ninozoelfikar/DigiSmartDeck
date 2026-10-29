@@ -8396,40 +8396,8 @@ body.portrait-dismissed .orientation-guard {
     <div class="ai-main-grid">
       
       <div class="ai-col-left">
-        <div class="ai-shortcuts-grid">
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-select-all" title="Ctrl+A">
-            <span>Select All</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-cut" title="Ctrl+X">
-            <span>Cut</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-copy" title="Ctrl+C">
-            <span>Copy</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool" id="ai-btn-paste" title="Ctrl+V">
-            <span>Paste</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-shift-tab" title="Shift+Tab (Ubah Mode Acc/Edit/Plan)">
-            <span>Shift + Tab</span>
-          </button>
-          <button type="button" class="ai-btn-sh tool span-2" id="ai-btn-stop" title="Esc">
-            <span>Esc</span>
-          </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="0" data-prompt="lanjutkan" title="Ketik prompt: lanjutkan">
-            <span>Lanjutkan</span>
-          </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="1" data-prompt="proceed" title="Ketik prompt: proceed">
-            <span>Proceed</span>
-          </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="2" data-prompt="perbaiki bug" title="Ketik prompt: perbaiki bug">
-            <span>Perbaiki<br>Bug</span>
-          </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip" data-prompt-idx="3" data-prompt="buat dokumentasi" title="Ketik prompt: buat dokumentasi">
-            <span>Buat<br>Dokumen</span>
-          </button>
-          <button type="button" class="ai-btn-sh ai-prompt-chip span-2" data-prompt-idx="4" data-prompt="jadikan check point" title="Ketik prompt: jadikan check point">
-            <span>Jadikan Check Point</span>
-          </button>
+        <div class="ai-shortcuts-grid" id="ai-shortcuts-grid">
+          
         </div>
         <div class="ai-col-left-footer">
           <span class="ai-badge" id="ai-main-badge">
@@ -9025,25 +8993,37 @@ body.portrait-dismissed .orientation-guard {
 
   
   <div class="modal-backdrop hidden" id="custom-shortcuts-modal" style="z-index: 99999;">
-    <div class="modal-dialog" style="max-width: 520px; border-radius: 16px; background: var(--panel-bg); border: 1px solid var(--key-border);">
-      <div class="modal-header">
+    <div class="modal-dialog" style="max-width: 530px; border-radius: 16px; background: var(--panel-bg); border: 1px solid var(--key-border);">
+      <div class="modal-header" style="padding: 14px 16px 8px;">
         <div class="modal-title" style="display:flex;align-items:center;gap:8px;">
           <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          <span style="font-weight:700;">Pengaturan Shortcut &amp; Prompt Custom</span>
+          <span style="font-weight:700;">Pengaturan Shortcut Kustom</span>
         </div>
         <button class="modal-close" id="btn-close-custom-shortcuts" type="button">✕</button>
       </div>
 
-      <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding: 14px 16px;">
-        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.45;">
-          Atur tombol shortcut kustom. Tipe <b>Kombinasi Tombol</b> akan tampil di Keyboard Utama (posisi tengah). Tipe <b>Kata-kata / Prompt</b> akan tampil di Mode AI.
+      
+      <div style="display:flex; gap:8px; padding: 0 16px 10px; border-bottom: 1px solid var(--key-border);">
+        <button type="button" class="tbtn active" id="tab-btn-sc-ai" style="flex:1; padding:7px 10px; font-size:12px; font-weight:700; border-radius:8px; background:var(--accent); color:#fff; border:none; cursor:pointer;">
+          Tombol Mode AI
+        </button>
+        <button type="button" class="tbtn" id="tab-btn-sc-kb" style="flex:1; padding:7px 10px; font-size:12px; font-weight:600; border-radius:8px; background:rgba(255,255,255,0.05); color:var(--text-dim); border:1px solid var(--key-border); cursor:pointer;">
+          Shortcut Keyboard Utama
+        </button>
+      </div>
+
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding: 14px 16px;">
+        
+        <p id="custom-sc-desc" style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.45;">
+          Atur seluruh tombol shortcut di kolom kiri Mode AI. Anda bebas memilih apakah tombol berfungsi sebagai <b>Kombinasi Tombol</b> atau <b>Kata-kata / Prompt</b>.
         </p>
+        
         <div id="custom-shortcuts-edit-list" style="display: flex; flex-direction: column; gap: 10px;">
           
         </div>
 
         <button type="button" class="cp-btn-aux" id="btn-add-custom-shortcut" style="margin-top: 12px; width: 100%; padding: 8px; font-weight: 600; border-radius: 8px; border: 1px dashed var(--key-border); background: rgba(255,255,255,0.03); color: var(--accent);">
-          + Tambah Shortcut / Prompt Baru
+          + Tambah Tombol Baru
         </button>
       </div>
 
@@ -9814,7 +9794,7 @@ body.portrait-dismissed .orientation-guard {
 
     
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.49</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.50</span>
     </div>
 
     
@@ -11181,8 +11161,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.49';
-const APP_CLIENT_VERSION_CODE = 1210449;
+const APP_CLIENT_VERSION = '1.21.4.50';
+const APP_CLIENT_VERSION_CODE = 1210450;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -18275,9 +18255,22 @@ document.querySelectorAll('.ai-prompt-chip').forEach(chip => {
   }
 })();
 
-// ─── SISTEM SHORTCUT & PROMPT KUSTOM TERPADU (PENGGANTI NUMPAD) ───
-const DEFAULT_UNIFIED_SHORTCUTS = [
-  // ── Kombinasi Tombol (Hanya tampil di Keyboard Utama, posisi tengah) ──
+// ─── SISTEM SHORTCUT & PROMPT KUSTOM TERPADU (MENGATUR MODE AI & KEYBOARD UTAMA) ───
+const DEFAULT_AI_SHORTCUTS = [
+  { label: 'Select All', type: 'combo', value: 'ctrl,a', span: 1 },
+  { label: 'Cut', type: 'combo', value: 'ctrl,x', span: 1 },
+  { label: 'Copy', type: 'combo', value: 'ctrl,c', span: 1 },
+  { label: 'Paste', type: 'combo', value: 'ctrl,v', span: 1 },
+  { label: 'Shift + Tab', type: 'combo', value: 'shift,tab', span: 2 },
+  { label: 'Esc', type: 'combo', value: 'esc', span: 2 },
+  { label: 'Lanjutkan', type: 'prompt', value: 'lanjutkan', span: 1 },
+  { label: 'Proceed', type: 'prompt', value: 'proceed', span: 1 },
+  { label: 'Perbaiki Bug', type: 'prompt', value: 'perbaiki bug', span: 1 },
+  { label: 'Buat Dokumen', type: 'prompt', value: 'buat dokumentasi', span: 1 },
+  { label: 'Jadikan Check Point', type: 'prompt', value: 'jadikan check point', span: 2 }
+];
+
+const DEFAULT_KB_SHORTCUTS = [
   { label: 'Ctrl+C', type: 'combo', value: 'ctrl,c' },
   { label: 'Ctrl+V', type: 'combo', value: 'ctrl,v' },
   { label: 'Ctrl+X', type: 'combo', value: 'ctrl,x' },
@@ -18288,34 +18281,103 @@ const DEFAULT_UNIFIED_SHORTCUTS = [
   { label: 'Ctrl+F', type: 'combo', value: 'ctrl,f' },
   { label: 'Alt+Tab', type: 'combo', value: 'alt,tab' },
   { label: 'Win+D', type: 'combo', value: 'cmd,d' },
-  { label: 'Ctrl+Alt+Del', type: 'combo', value: 'ctrl,alt,delete' },
-
-  // ── Kata-kata / Prompt (Tampil di Mode AI) ──
-  { label: 'Lanjutkan', type: 'prompt', value: 'lanjutkan' },
-  { label: 'Proceed', type: 'prompt', value: 'proceed' },
-  { label: 'Perbaiki Bug', type: 'prompt', value: 'perbaiki bug' },
-  { label: 'Buat Dokumen', type: 'prompt', value: 'buat dokumentasi' },
-  { label: 'Jadikan Check Point', type: 'prompt', value: 'jadikan check point' }
+  { label: 'Ctrl+Alt+Del', type: 'combo', value: 'ctrl,alt,delete' }
 ];
 
-function getCustomShortcuts() {
+function getAiShortcuts() {
   try {
-    const raw = localStorage.getItem('digi_unified_shortcuts');
+    const raw = localStorage.getItem('digi_ai_custom_shortcuts');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
   } catch(e) {}
-  return JSON.parse(JSON.stringify(DEFAULT_UNIFIED_SHORTCUTS));
+  return JSON.parse(JSON.stringify(DEFAULT_AI_SHORTCUTS));
 }
 
-// 1. Render Shortcut Bar di Keyboard Utama (HANYA KOMBO TOMBOL & RATA TENGAH)
+function getKbShortcuts() {
+  try {
+    const raw = localStorage.getItem('digi_kb_custom_shortcuts');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_KB_SHORTCUTS));
+}
+
+// 1. Render Tombol-Tombol di Mode AI (Dinamis Sesuai Pengaturan Custom Menu)
+function renderAiShortcutsGrid() {
+  const grid = $('ai-shortcuts-grid');
+  if (!grid) return;
+  const list = getAiShortcuts();
+  grid.innerHTML = '';
+
+  list.forEach((sc, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    const isSpan2 = sc.span === 2;
+    const isPrompt = sc.type === 'prompt';
+    btn.className = 'ai-btn-sh ' + (isPrompt ? 'ai-prompt-chip ' : 'tool ') + (isSpan2 ? 'span-2' : '');
+    btn.setAttribute('data-idx', idx);
+    btn.setAttribute('data-type', sc.type || 'combo');
+    btn.setAttribute('data-value', sc.value || '');
+    btn.setAttribute('title', isPrompt ? `Ketik prompt: ${sc.value}` : `Shortcut: ${sc.value}`);
+
+    const span = document.createElement('span');
+    const rawLabel = (sc.label || '').trim();
+    if (!isSpan2) {
+      const words = rawLabel.split(/\s+/).filter(Boolean);
+      if (words.length === 2) {
+        span.innerHTML = escapeAiHtml(words[0]) + '<br>' + escapeAiHtml(words[1]);
+      } else if (words.length > 2) {
+        const mid = Math.ceil(words.length / 2);
+        span.innerHTML = escapeAiHtml(words.slice(0, mid).join(' ')) + '<br>' + escapeAiHtml(words.slice(mid).join(' '));
+      } else {
+        span.textContent = rawLabel;
+      }
+    } else {
+      span.textContent = rawLabel;
+    }
+    btn.appendChild(span);
+    grid.appendChild(btn);
+  });
+}
+
+// Delegasi Klik Tombol Mode AI
+const aiGridEl = $('ai-shortcuts-grid');
+if (aiGridEl) {
+  aiGridEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ai-btn-sh');
+    if (!btn) return;
+    playClickSound();
+    vibe(20);
+    const type = btn.getAttribute('data-type');
+    const val = btn.getAttribute('data-value');
+    if (type === 'combo') {
+      const keys = (val || '').split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+      if (keys.length === 1 && (keys[0] === 'esc' || keys[0] === 'enter')) {
+        send({ type: 'keypress', key: keys[0] });
+      } else if (keys.length) {
+        send({ type: 'combo', keys });
+      }
+    } else if (type === 'prompt') {
+      if (val) {
+        sendAiText(val);
+        setTimeout(() => {
+          send({ type: 'keypress', key: 'enter' });
+        }, 50);
+        if (typeof clearTranscriptUI === 'function') clearTranscriptUI();
+      }
+    }
+  });
+}
+
+// 2. Render Shortcut Bar di Keyboard Utama (HANYA KOMBO TOMBOL & RATA TENGAH)
 function renderKeyboardShortcutBar() {
   const bar = $('sc-bar');
   if (!bar) return;
-  const list = getCustomShortcuts();
+  const list = getKbShortcuts();
   // Hanya ambil yang bertipe combo tombol, tidak ada kata-kata/prompt
   const combos = list.filter(s => s && s.type === 'combo');
 
@@ -18330,57 +18392,27 @@ function renderKeyboardShortcutBar() {
   });
 }
 
-// 2. Render Prompt Chips di Mode AI (HANYA KATA-KATA / PROMPT)
-function renderAiPromptChips() {
-  const list = getCustomShortcuts();
-  const prompts = list.filter(s => s && s.type === 'prompt');
-  
-  prompts.forEach((p, idx) => {
-    const btn = document.querySelector(`.ai-prompt-chip[data-prompt-idx="${idx}"]`);
-    if (btn) {
-      btn.setAttribute('data-prompt', p.value || '');
-      btn.setAttribute('title', `Ketik: ${p.value || ''}`);
-      const span = btn.querySelector('span');
-      if (span) {
-        const rawLabel = (p.label || '').trim();
-        if (!btn.classList.contains('span-2')) {
-          const words = rawLabel.split(/\s+/).filter(Boolean);
-          if (words.length === 2) {
-            span.innerHTML = escapeAiHtml(words[0]) + '<br>' + escapeAiHtml(words[1]);
-          } else if (words.length > 2) {
-            const mid = Math.ceil(words.length / 2);
-            span.innerHTML = escapeAiHtml(words.slice(0, mid).join(' ')) + '<br>' + escapeAiHtml(words.slice(mid).join(' '));
-          } else {
-            span.textContent = rawLabel;
-          }
-        } else {
-          span.textContent = rawLabel;
-        }
-      }
-    }
-  });
-}
-
 function renderAllShortcutsUI() {
+  renderAiShortcutsGrid();
   renderKeyboardShortcutBar();
-  renderAiPromptChips();
 }
 
-// Inisialisasi awal UI Shortcut
+// Inisialisasi awal UI
 renderAllShortcutsUI();
 
-// 3. Modal Editor Shortcut Kustom Terpadu
-let activeEditingShortcuts = [];
+// 3. Modal Editor Custom Shortcuts Terpadu dengan Tab
+let currentCustomScTab = 'ai'; // 'ai' atau 'kb'
+let activeAiEditing = [];
+let activeKbEditing = [];
 
 function openCustomShortcutsModal() {
   lastModalOpenTime = Date.now();
   playClickSound();
   vibe(15);
-  const container = $('custom-shortcuts-edit-list');
-  if (!container) return;
 
-  activeEditingShortcuts = getCustomShortcuts();
-  renderCustomShortcutsEditList();
+  activeAiEditing = getAiShortcuts();
+  activeKbEditing = getKbShortcuts();
+  switchCustomScTab(currentCustomScTab);
 
   const modal = $('custom-shortcuts-modal') || $('ai-prompt-edit-modal');
   if (modal) modal.classList.remove('hidden');
@@ -18393,50 +18425,140 @@ function closeCustomShortcutsModal() {
   if (modal) modal.classList.add('hidden');
 }
 
+function switchCustomScTab(tab) {
+  currentCustomScTab = tab;
+  const btnAi = $('tab-btn-sc-ai');
+  const btnKb = $('tab-btn-sc-kb');
+  const descEl = $('custom-sc-desc');
+  const addBtn = $('btn-add-custom-shortcut');
+
+  if (tab === 'ai') {
+    if (btnAi) {
+      btnAi.style.background = 'var(--accent)';
+      btnAi.style.color = '#fff';
+      btnAi.style.fontWeight = '700';
+    }
+    if (btnKb) {
+      btnKb.style.background = 'rgba(255,255,255,0.05)';
+      btnKb.style.color = 'var(--text-dim)';
+      btnKb.style.fontWeight = '600';
+    }
+    if (descEl) {
+      descEl.innerHTML = 'Atur seluruh tombol shortcut di kolom kiri <b>Mode AI</b>. Anda bebas menentukan apakah tombol berupa <b>Kombinasi Tombol</b> atau <b>Kata-kata / Prompt</b>.';
+    }
+    if (addBtn) addBtn.textContent = '+ Tambah Tombol di Mode AI';
+  } else {
+    if (btnKb) {
+      btnKb.style.background = 'var(--accent)';
+      btnKb.style.color = '#fff';
+      btnKb.style.fontWeight = '700';
+    }
+    if (btnAi) {
+      btnAi.style.background = 'rgba(255,255,255,0.05)';
+      btnAi.style.color = 'var(--text-dim)';
+      btnAi.style.fontWeight = '600';
+    }
+    if (descEl) {
+      descEl.innerHTML = 'Atur baris shortcut di atas <b>Keyboard Utama</b> (posisi rata tengah). Hanya kombinasi tombol yang ditampilkan di sini.';
+    }
+    if (addBtn) addBtn.textContent = '+ Tambah Shortcut di Keyboard Utama';
+  }
+
+  renderCustomShortcutsEditList();
+}
+
+const tabBtnAi = $('tab-btn-sc-ai');
+if (tabBtnAi) {
+  tabBtnAi.addEventListener('click', () => {
+    playClickSound();
+    switchCustomScTab('ai');
+  });
+}
+
+const tabBtnKb = $('tab-btn-sc-kb');
+if (tabBtnKb) {
+  tabBtnKb.addEventListener('click', () => {
+    playClickSound();
+    switchCustomScTab('kb');
+  });
+}
+
 function renderCustomShortcutsEditList() {
   const container = $('custom-shortcuts-edit-list');
   if (!container) return;
   container.innerHTML = '';
 
-  activeEditingShortcuts.forEach((sc, i) => {
+  const isAi = (currentCustomScTab === 'ai');
+  const list = isAi ? activeAiEditing : activeKbEditing;
+
+  list.forEach((sc, i) => {
     const item = document.createElement('div');
     item.style.cssText = 'background: rgba(0,0,0,0.25); border: 1px solid var(--key-border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;';
-    item.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:12px; font-weight:700; color:var(--text);">Slot #${i + 1}</span>
-        <button type="button" class="btn-del-sc" data-idx="${i}" style="background:none; border:none; color:var(--danger, #ff7b72); font-size:11px; cursor:pointer; font-weight:600; padding:2px 6px;">Hapus</button>
-      </div>
-      <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px;">
-        <input type="text" class="sc-input-label" data-idx="${i}" value="${escapeAiHtml(sc.label || '')}" placeholder="Nama Tombol" style="padding:7px 10px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:12px;">
-        <select class="sc-select-type" data-idx="${i}" style="padding:7px 8px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--accent); font-size:11px; font-weight:600;">
-          <option value="combo" ${sc.type === 'combo' ? 'selected' : ''}>Tombol (Combo)</option>
-          <option value="prompt" ${sc.type === 'prompt' ? 'selected' : ''}>Kata-kata / Prompt</option>
-        </select>
-      </div>
-      <div>
-        <input type="text" class="sc-input-value" data-idx="${i}" value="${escapeAiHtml(sc.value || '')}" placeholder="${sc.type === 'combo' ? 'Contoh: ctrl,v atau alt,tab atau cmd,d' : 'Teks kata-kata atau prompt yang akan diketik'}" style="width:100%; padding:7px 10px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:12px; font-family:monospace;">
-      </div>
-    `;
+    
+    if (isAi) {
+      item.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:12px; font-weight:700; color:var(--text);">Tombol AI #${i + 1}</span>
+          <button type="button" class="btn-del-sc" data-idx="${i}" style="background:none; border:none; color:var(--danger, #ff7b72); font-size:11px; cursor:pointer; font-weight:600; padding:2px 6px;">Hapus</button>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 130px 100px; gap:6px;">
+          <input type="text" class="sc-input-label" data-idx="${i}" value="${escapeAiHtml(sc.label || '')}" placeholder="Label Tombol" style="padding:7px 10px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:12px;">
+          <select class="sc-select-type" data-idx="${i}" style="padding:7px 6px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--accent); font-size:11px; font-weight:600;">
+            <option value="combo" ${sc.type === 'combo' ? 'selected' : ''}>Tombol (Combo)</option>
+            <option value="prompt" ${sc.type === 'prompt' ? 'selected' : ''}>Kata / Prompt</option>
+          </select>
+          <select class="sc-select-span" data-idx="${i}" style="padding:7px 6px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:11px;">
+            <option value="1" ${sc.span !== 2 ? 'selected' : ''}>1 Kolom</option>
+            <option value="2" ${sc.span === 2 ? 'selected' : ''}>2 Kolom</option>
+          </select>
+        </div>
+        <div>
+          <input type="text" class="sc-input-value" data-idx="${i}" value="${escapeAiHtml(sc.value || '')}" placeholder="${sc.type === 'combo' ? 'Contoh: ctrl,c atau shift,tab atau esc' : 'Teks perintah / prompt yang akan diketik'}" style="width:100%; padding:7px 10px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:12px; font-family:monospace;">
+        </div>
+      `;
+    } else {
+      item.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:12px; font-weight:700; color:var(--text);">Shortcut #${i + 1}</span>
+          <button type="button" class="btn-del-sc" data-idx="${i}" style="background:none; border:none; color:var(--danger, #ff7b72); font-size:11px; cursor:pointer; font-weight:600; padding:2px 6px;">Hapus</button>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+          <input type="text" class="sc-input-label" data-idx="${i}" value="${escapeAiHtml(sc.label || '')}" placeholder="Label Tombol (misal: Ctrl+C)" style="padding:7px 10px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:12px;">
+          <input type="text" class="sc-input-value" data-idx="${i}" value="${escapeAiHtml(sc.value || '')}" placeholder="Kombinasi Key (misal: ctrl,c)" style="padding:7px 10px; border-radius:6px; background:var(--key-bg); border:1px solid var(--key-border); color:var(--text); font-size:12px; font-family:monospace;">
+        </div>
+      `;
+    }
+
     container.appendChild(item);
   });
 
-  // Event handlers for inputs in modal
+  // Bind input changes
   container.querySelectorAll('.sc-input-label').forEach(inp => {
     inp.addEventListener('input', (e) => {
       const idx = parseInt(e.target.dataset.idx, 10);
-      if (activeEditingShortcuts[idx]) activeEditingShortcuts[idx].label = e.target.value;
+      const targetList = (currentCustomScTab === 'ai') ? activeAiEditing : activeKbEditing;
+      if (targetList[idx]) targetList[idx].label = e.target.value;
     });
   });
 
   container.querySelectorAll('.sc-select-type').forEach(sel => {
     sel.addEventListener('change', (e) => {
       const idx = parseInt(e.target.dataset.idx, 10);
-      if (activeEditingShortcuts[idx]) {
-        activeEditingShortcuts[idx].type = e.target.value;
+      if (activeAiEditing[idx]) {
+        activeAiEditing[idx].type = e.target.value;
         const valInput = container.querySelector(`.sc-input-value[data-idx="${idx}"]`);
         if (valInput) {
-          valInput.placeholder = (e.target.value === 'combo') ? 'Contoh: ctrl,v atau alt,tab atau cmd,d' : 'Teks kata-kata atau prompt yang akan diketik';
+          valInput.placeholder = (e.target.value === 'combo') ? 'Contoh: ctrl,c atau shift,tab atau esc' : 'Teks perintah / prompt yang akan diketik';
         }
+      }
+    });
+  });
+
+  container.querySelectorAll('.sc-select-span').forEach(sel => {
+    sel.addEventListener('change', (e) => {
+      const idx = parseInt(e.target.dataset.idx, 10);
+      if (activeAiEditing[idx]) {
+        activeAiEditing[idx].span = parseInt(e.target.value, 10);
       }
     });
   });
@@ -18444,25 +18566,28 @@ function renderCustomShortcutsEditList() {
   container.querySelectorAll('.sc-input-value').forEach(inp => {
     inp.addEventListener('input', (e) => {
       const idx = parseInt(e.target.dataset.idx, 10);
-      if (activeEditingShortcuts[idx]) activeEditingShortcuts[idx].value = e.target.value;
+      const targetList = (currentCustomScTab === 'ai') ? activeAiEditing : activeKbEditing;
+      if (targetList[idx]) targetList[idx].value = e.target.value;
     });
   });
 
   container.querySelectorAll('.btn-del-sc').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const idx = parseInt(e.target.dataset.idx, 10);
-      if (activeEditingShortcuts.length <= 1) {
-        alert('Minimal harus ada 1 slot shortcut.');
+      const targetList = (currentCustomScTab === 'ai') ? activeAiEditing : activeKbEditing;
+      if (targetList.length <= 1) {
+        alert('Minimal harus ada 1 item.');
         return;
       }
-      activeEditingShortcuts.splice(idx, 1);
+      targetList.splice(idx, 1);
       renderCustomShortcutsEditList();
     });
   });
 }
 
 function saveCustomShortcuts() {
-  localStorage.setItem('digi_unified_shortcuts', JSON.stringify(activeEditingShortcuts));
+  localStorage.setItem('digi_ai_custom_shortcuts', JSON.stringify(activeAiEditing));
+  localStorage.setItem('digi_kb_custom_shortcuts', JSON.stringify(activeKbEditing));
   renderAllShortcutsUI();
   closeCustomShortcutsModal();
   playClickSound();
@@ -18470,8 +18595,10 @@ function saveCustomShortcuts() {
 }
 
 function resetCustomShortcuts() {
-  localStorage.removeItem('digi_unified_shortcuts');
-  activeEditingShortcuts = JSON.parse(JSON.stringify(DEFAULT_UNIFIED_SHORTCUTS));
+  localStorage.removeItem('digi_ai_custom_shortcuts');
+  localStorage.removeItem('digi_kb_custom_shortcuts');
+  activeAiEditing = JSON.parse(JSON.stringify(DEFAULT_AI_SHORTCUTS));
+  activeKbEditing = JSON.parse(JSON.stringify(DEFAULT_KB_SHORTCUTS));
   renderCustomShortcutsEditList();
   renderAllShortcutsUI();
   playClickSound();
@@ -18483,11 +18610,20 @@ if (btnAddCustomShortcut) {
   btnAddCustomShortcut.addEventListener('click', () => {
     playClickSound();
     vibe(10);
-    activeEditingShortcuts.push({
-      label: 'Shortcut Baru',
-      type: 'combo',
-      value: 'ctrl,space'
-    });
+    if (currentCustomScTab === 'ai') {
+      activeAiEditing.push({
+        label: 'Tombol Baru',
+        type: 'prompt',
+        value: 'prompt baru',
+        span: 1
+      });
+    } else {
+      activeKbEditing.push({
+        label: 'Shortcut Baru',
+        type: 'combo',
+        value: 'ctrl,space'
+      });
+    }
     renderCustomShortcutsEditList();
   });
 }
@@ -18507,20 +18643,11 @@ if (btnResetCustomShortcuts) {
   btnResetCustomShortcuts.addEventListener('click', resetCustomShortcuts);
 }
 
-const btnSelectAllAi = $('ai-btn-select-all');
-if (btnSelectAllAi) {
-  bindAiKey(btnSelectAllAi, () => {
-    playClickSound();
-    vibe(20);
-    send({ type: 'combo', keys: ['ctrl', 'a'] });
-  });
-}
-
 // Global Aliases untuk kompatibilitas
 window.openCustomShortcutsModal = openCustomShortcutsModal;
 window.openAiPromptEditModal = openCustomShortcutsModal;
 window.closeAiPromptEditModal = closeCustomShortcutsModal;
-window.getCustomAiPrompts = getCustomShortcuts;
+window.getCustomAiPrompts = getAiShortcuts;
 window.applyAiPrompts = renderAllShortcutsUI;
 
 // ─── MODE MEDIA CONTROLLER (REMOTE MULTIMEDIA & ENTERTAINMENT) ───
