@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.51] - 2026-10-30
+- Zero-Manual IP Auto-Discovery and Autonomous Reconnect
+
 ### [1.21.4.50] - 2026-10-29
 - Sinkronisasi Custom Menu untuk mengatur seluruh tombol Mode AI & Keyboard Utama
 
@@ -514,6 +517,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.51] - 2026-10-30
+- Release v1.21.4.51 updates
 
 ### [1.21.4.50] - 2026-10-29
 - Release v1.21.4.50 updates

@@ -3112,9 +3112,33 @@ async def adb_reverse_watcher(ports):
         await asyncio.sleep(4.0)
 
 
+async def periodic_udp_beacon_broadcaster(http_port):
+    """Secara proaktif menyiarkan beacon UDP keberadaan host ke jaringan LAN setiap 4 detik."""
+    await asyncio.sleep(1.0)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        sock.setblocking(False)
+    except Exception:
+        pass
+    payload = f"DIGI_OFFER:{http_port}:{__version__}:{socket.gethostname()}".encode('utf-8')
+    while True:
+        try:
+            sock.sendto(payload, ('255.255.255.255', 8089))
+            for ip in get_local_ip_addresses():
+                parts = ip.split('.')
+                if len(parts) == 4:
+                    sub_bcast = f"{parts[0]}.{parts[1]}.{parts[2]}.255"
+                    sock.sendto(payload, (sub_bcast, 8089))
+        except Exception:
+            pass
+        await asyncio.sleep(4.0)
+
+
 async def start_background_tasks(app):
     ports = app.get('server_ports', [8080])
     app['adb_watcher_task'] = asyncio.create_task(adb_reverse_watcher(ports))
+    app['udp_broadcaster_task'] = asyncio.create_task(periodic_udp_beacon_broadcaster(ports[0]))
 
 
 async def cleanup_background_tasks(app):
@@ -3122,6 +3146,12 @@ async def cleanup_background_tasks(app):
         app['adb_watcher_task'].cancel()
         try:
             await app['adb_watcher_task']
+        except asyncio.CancelledError:
+            pass
+    if 'udp_broadcaster_task' in app:
+        app['udp_broadcaster_task'].cancel()
+        try:
+            await app['udp_broadcaster_task']
         except asyncio.CancelledError:
             pass
 

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "DigiKeyboardPrefs";
     private static final String KEY_SERVER_URL = "server_url";
-    private static final String DEFAULT_URL = "http://192.168.8.102:8080";
+    private static final String DEFAULT_URL = "http://127.0.0.1:8080";
     private static final int REQUEST_CODE_PERMISSIONS = 2001;
     private static final int REQUEST_CODE_INSTALL_PERMISSION = 3001;
 
@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentSpeechLang = "id-ID";
     private android.net.wifi.WifiManager.WifiLock wifiLock;
     private android.net.wifi.WifiManager.MulticastLock multicastLock;
+    private final java.util.concurrent.atomic.AtomicBoolean isDiscoveryRunning = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     private File pendingApkToInstall = null;
     private final ExecutorService downloadExecutor = Executors.newSingleThreadExecutor();
@@ -472,21 +473,8 @@ public class MainActivity extends AppCompatActivity {
         // 4. Muat aplikasi mandiri offline lokal (Zero-Wait, Zero-Error, 100% Siap Pakai)
         loadLocalApp();
 
-        // 5. Jalankan background auto-discovery UDP instan (<600ms) tanpa memblokir UI
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                Thread.sleep(300);
-                String foundHost = discoverHostSync(600);
-                if (foundHost != null && !foundHost.trim().isEmpty()) {
-                    final String target = foundHost.trim();
-                    runOnUiThread(() -> {
-                        if (webView != null) {
-                            webView.evaluateJavascript("if (typeof window.onHostAutoDiscovered === 'function') { window.onHostAutoDiscovered('" + target + "'); }", null);
-                        }
-                    });
-                }
-            } catch (Exception ignored) {}
-        });
+        // 5. Jalankan background auto-discovery UDP instan & berkelanjutan
+        startAutoDiscoveryLoop();
     }
 
     @Override
@@ -708,10 +696,38 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void startAutoDiscoveryLoop() {
+        if (isDiscoveryRunning.getAndSet(true)) return;
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                int attempts = 0;
+                while (isDiscoveryRunning.get() && attempts < 60) {
+                    attempts++;
+                    String foundHost = discoverHostSync(800);
+                    if (foundHost != null && !foundHost.trim().isEmpty()) {
+                        final String target = foundHost.trim();
+                        isDiscoveryRunning.set(false);
+                        runOnUiThread(() -> {
+                            if (webView != null) {
+                                webView.evaluateJavascript("if (typeof window.onHostAutoDiscovered === 'function') { window.onHostAutoDiscovered('" + target + "'); }", null);
+                            }
+                        });
+                        break;
+                    }
+                    Thread.sleep(1500);
+                }
+            } catch (Exception ignored) {
+            } finally {
+                isDiscoveryRunning.set(false);
+            }
+        });
+    }
+
     private void showConnectionErrorPage() {
         runOnUiThread(() -> {
-            Toast.makeText(MainActivity.this, "Server Wi-Fi tidak terjangkau. Menggunakan mode mandiri/Bluetooth.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Server Wi-Fi terputus. Mencari host otomatis...", Toast.LENGTH_SHORT).show();
             loadLocalApp();
+            startAutoDiscoveryLoop();
         });
     }
 
@@ -1148,6 +1164,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         acquireWifiLock();
+        startAutoDiscoveryLoop();
     }
 
     @Override
