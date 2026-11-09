@@ -24,6 +24,9 @@
         </intent>
         <package android:name="com.google.android.googlequicksearchbox" />
         <package android:name="com.google.android.tts" />
+        <package android:name="com.hihonor.vassistant" />
+        <package android:name="com.huawei.vassistant" />
+        <package android:name="com.samsung.android.bixby.agent" />
     </queries>
 
     <application

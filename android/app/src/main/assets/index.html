@@ -9794,7 +9794,7 @@ body.portrait-dismissed .orientation-guard {
 
     
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.51</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.52</span>
     </div>
 
     
@@ -11161,8 +11161,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.51';
-const APP_CLIENT_VERSION_CODE = 1210451;
+const APP_CLIENT_VERSION = '1.21.4.52';
+const APP_CLIENT_VERSION_CODE = 1210452;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -17220,6 +17220,18 @@ window.onNativeSpeechStart = function() {
   isAiStarting = false;
   isAiRecording = true;
   updateAiMicUI(true);
+  try { send({ type: 'client_speech_event', event: 'ready_green', detail: 'Native Speech Started' }); } catch(e) {}
+};
+
+window.onAudioPermissionResult = function(granted) {
+  if (granted && aiSpeechWanted) {
+    startAiSpeechSession();
+  } else if (!granted) {
+    isAiRecording = false;
+    isAiStarting = false;
+    aiSpeechWanted = false;
+    updateAiMicUI(true);
+  }
 };
 
 window.onNativeSpeechPartial = function(text) {
@@ -17247,7 +17259,7 @@ window.onNativeSpeechResult = function(text) {
 window.onNativeSpeechRestart = function() {
   promoteInterimToFinal();
   commitCurrentSession();
-  if (aiSpeechWanted) {
+  if (aiSpeechWanted && !aiSpeechAlwaysOn) {
     isAiStarting = true;
     isAiRecording = false;
     updateAiMicUI(true);
@@ -17263,14 +17275,12 @@ window.onNativeSpeechEnd = function() {
 };
 
 window.onNativeSpeechError = function(code) {
+  try { send({ type: 'client_speech_event', event: 'error', detail: 'Code: ' + code }); } catch(e) {}
   console.warn('[Native Speech Error Code]:', code);
   const fatal = (code === 9 || code === 12 || code === 13 || code === -1);
   promoteInterimToFinal();
   commitCurrentSession();
   if (aiSpeechAlwaysOn && aiSpeechWanted && !fatal) {
-    isAiStarting = true;
-    isAiRecording = false;
-    updateAiMicUI(true);
     return;
   }
   isAiRecording = false;
@@ -17492,7 +17502,14 @@ function toggleAiSpeech() {
 
   if (window.DigiAndroidBridge && typeof window.DigiAndroidBridge.hasAudioPermission === 'function') {
     if (!window.DigiAndroidBridge.hasAudioPermission()) {
-      window.DigiAndroidBridge.requestAudioPermission();
+      if (typeof window.DigiAndroidBridge.requestAudioPermission === 'function') {
+        window.DigiAndroidBridge.requestAudioPermission();
+      }
+      aiSpeechWanted = true;
+      isAiStarting = true;
+      isAiRecording = false;
+      updateAiMicUI(true);
+      return;
     }
   }
 

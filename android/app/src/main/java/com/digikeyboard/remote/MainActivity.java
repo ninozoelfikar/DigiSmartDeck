@@ -147,14 +147,15 @@ public class MainActivity extends AppCompatActivity {
         @android.webkit.JavascriptInterface
         public void startNativeSpeechWithOptions(String lang, boolean alwaysOn) {
             runOnUiThread(() -> {
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_PERMISSIONS);
-                    return;
-                }
                 isAlwaysOnSpeech = alwaysOn;
                 isListeningActive = true;
                 speechQuickFailStreak = 0;
                 currentSpeechLang = (lang != null && !lang.isEmpty()) ? lang : "id-ID";
+
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_PERMISSIONS);
+                    return;
+                }
                 startListeningNow(150, false);
             });
         }
@@ -780,6 +781,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 pendingPermissionRequest = null;
             }
+            if (audioGranted && isListeningActive) {
+                startListeningNow(150, true);
+            }
             if (webView != null) {
                 webView.evaluateJavascript("if (window.onAudioPermissionResult) window.onAudioPermissionResult(" + audioGranted + ");", null);
             }
@@ -855,9 +859,8 @@ public class MainActivity extends AppCompatActivity {
                     speechRecognizerIntent.putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", new String[]{"id-ID", "in-ID", "id_ID"});
                 }
                 muteBeepStreams();
-                try {
-                    speechRecognizer.cancel();
-                } catch (Exception ignored) {}
+                // CATATAN MUTLAK: DILARANG memanggil cancel() tepat sebelum startListening()
+                // karena cancel() berjalan asinkron di framework Android dan memicu ERROR_CLIENT (5) seketika.
                 speechRecognizer.startListening(speechRecognizerIntent);
             } catch (Exception e) {
                 if (isListeningActive) {
@@ -872,6 +875,37 @@ public class MainActivity extends AppCompatActivity {
         startListeningNow(delayMs, recreate);
     }
 
+    private ComponentName getBestRecognitionService() {
+        try {
+            PackageManager pm = getPackageManager();
+            List<ResolveInfo> services = pm.queryIntentServices(
+                new Intent(RecognitionService.SERVICE_INTERFACE), 0
+            );
+            if (services == null || services.isEmpty()) {
+                return null;
+            }
+            // 1. Prioritaskan Google QuickSearchBox (Google Voice Search resmi)
+            for (ResolveInfo ri : services) {
+                if (ri.serviceInfo != null && "com.google.android.googlequicksearchbox".equals(ri.serviceInfo.packageName)) {
+                    return new ComponentName(ri.serviceInfo.packageName, ri.serviceInfo.name);
+                }
+            }
+            // 2. Prioritaskan Google TTS / Speech Services by Google
+            for (ResolveInfo ri : services) {
+                if (ri.serviceInfo != null && "com.google.android.tts".equals(ri.serviceInfo.packageName)) {
+                    return new ComponentName(ri.serviceInfo.packageName, ri.serviceInfo.name);
+                }
+            }
+            // 3. Fallback ke recognition service yang tersedia di perangkat
+            for (ResolveInfo ri : services) {
+                if (ri.serviceInfo != null) {
+                    return new ComponentName(ri.serviceInfo.packageName, ri.serviceInfo.name);
+                }
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
     private void initSpeechRecognizer() {
         if (speechRecognizer != null) {
             try {
@@ -881,23 +915,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
-            if (SpeechRecognizer.isRecognitionAvailable(this)) {
-                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            ComponentName bestService = getBestRecognitionService();
+            if (bestService != null) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this, bestService);
             }
-            if (speechRecognizer == null) {
-                PackageManager pm = getPackageManager();
-                List<ResolveInfo> services = pm.queryIntentServices(
-                    new Intent(RecognitionService.SERVICE_INTERFACE), 0
-                );
-                if (services != null && !services.isEmpty()) {
-                    ServiceInfo serviceInfo = services.get(0).serviceInfo;
-                    ComponentName componentName = new ComponentName(serviceInfo.packageName, serviceInfo.name);
-                    speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this, componentName);
-                }
+            if (speechRecognizer == null && SpeechRecognizer.isRecognitionAvailable(this)) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            speechRecognizer = null;
+            try {
+                if (SpeechRecognizer.isRecognitionAvailable(this)) {
+                    speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+                }
+            } catch (Exception ex) {
+                speechRecognizer = null;
+            }
         }
 
         if (speechRecognizer == null) {
@@ -920,6 +953,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReadyForSpeech(Bundle params) {
                 speechSessionStartMs = System.currentTimeMillis();
+                speechQuickFailStreak = 0;
                 runOnUiThread(() -> {
                     if (webView != null) {
                         webView.evaluateJavascript("if (window.onNativeSpeechStart) window.onNativeSpeechStart();", null);
@@ -930,6 +964,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onBeginningOfSpeech() {
                 speechQuickFailStreak = 0;
+                runOnUiThread(() -> {
+                    if (webView != null) {
+                        webView.evaluateJavascript("if (window.onNativeSpeechStart) window.onNativeSpeechStart();", null);
+                    }
+                });
             }
 
             @Override
@@ -950,9 +989,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(int error) {
-                // 9 = izin ditolak, 12/13 = bahasa tidak didukung/tidak tersedia.
+                // 9 = izin ditolak, 12/13 = bahasa tidak didukung/tidak tersedia, streak beruntun >= 4
                 boolean fatal = error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS
-                    || error == 12 || error == 13;
+                    || error == 12 || error == 13 || speechQuickFailStreak >= 4;
 
                 if (isListeningActive && isAlwaysOnSpeech && !fatal) {
                     long sessionAge = System.currentTimeMillis() - speechSessionStartMs;
@@ -971,7 +1010,7 @@ public class MainActivity extends AppCompatActivity {
                         || error == SpeechRecognizer.ERROR_SERVER
                         || error == SpeechRecognizer.ERROR_AUDIO
                         || error == 11
-                        || speechQuickFailStreak >= 3;
+                        || speechQuickFailStreak >= 2;
 
                     long delay;
                     if (error == 10) {

@@ -2447,6 +2447,12 @@ async def websocket_handler(request):
                 elif msg_type == 'takeover':
                     continue
 
+                elif msg_type == 'client_speech_event':
+                    evt = data.get('event', '')
+                    detail = data.get('detail', '')
+                    print(f"[*] Mic Event [{client_ip}]: {evt} - {detail}")
+                    continue
+
                 # ── Handler Otentikasi & Pairing Perangkat ──
                 elif msg_type == 'auth':
                     token = data.get('token', '')
