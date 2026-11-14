@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.53] - 2026-11-15
+- Menambahkan Mode Power dan notifikasi pembaruan otomatis
+
 ### [1.21.4.52] - 2026-11-09
 - Perbaikan mic tablet Honor: speech recognizer selector, eliminasi race condition cancel, dan kestabilan UI hijau
 
@@ -520,6 +523,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.53] - 2026-11-15
+- Release v1.21.4.53 updates
 
 ### [1.21.4.52] - 2026-11-09
 - Release v1.21.4.52 updates
