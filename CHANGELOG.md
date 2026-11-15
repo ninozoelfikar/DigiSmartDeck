@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.59] - 2026-11-15
+- feat: add Wake Up circular button to Mode Power with instant screen wakeup and WOL support
+
 ### [1.21.4.58] - 2026-11-15
 - fix: expose window.updateVolumeUI globally for real-time PC to client volume sync
 
@@ -538,6 +541,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.59] - 2026-11-15
+- Release v1.21.4.59 updates
 
 ### [1.21.4.58] - 2026-11-15
 - Release v1.21.4.58 updates

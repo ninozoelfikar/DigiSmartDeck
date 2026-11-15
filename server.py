@@ -894,6 +894,13 @@ def set_anti_sleep(enable: bool):
     return ANTI_SLEEP_ACTIVE
 
 
+def get_host_mac_address():
+    """Mengambil alamat MAC primer host untuk dukungan Wake-on-LAN."""
+    try:
+        import uuid
+        return ':'.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff) for ele in range(0, 8*6, 8)][::-1])
+    except Exception:
+        return ''
 
 
 def get_local_ip_addresses():
@@ -2440,6 +2447,7 @@ async def websocket_handler(request):
             'license': license_manager.get_info(),
             'locked_win_id': LOCKED_TARGET_WIN_ID,
             'lan_ips': get_local_ip_addresses(),
+            'mac_address': get_host_mac_address(),
             'volume': get_system_volume()
         }))
         if is_client_authorized:

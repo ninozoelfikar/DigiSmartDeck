@@ -6215,9 +6215,9 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 22px;
   width: 100%;
-  max-width: 620px;
+  max-width: 680px;
   margin: auto;
 }
 
@@ -6225,7 +6225,7 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(24px, 7vw, 56px);
+  gap: clamp(14px, 4.5vw, 40px);
   width: 100%;
 }
 
@@ -6233,12 +6233,12 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .power-circle-btn {
-  width: clamp(80px, 15vw, 110px);
-  height: clamp(80px, 15vw, 110px);
+  width: clamp(66px, 12vw, 96px);
+  height: clamp(66px, 12vw, 96px);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -6285,7 +6285,20 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   box-shadow: 0 10px 32px rgba(168, 85, 247, 0.4), inset 0 0 16px rgba(168, 85, 247, 0.25);
 }
 
-/* 3. Restart (Emerald Cyan) */
+/* 3. Wake Up (Amber Gold) */
+.power-circle-btn.btn-wake {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: radial-gradient(circle at 35% 35%, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.08) 65%, rgba(22, 22, 26, 0.95));
+  color: #fbbf24;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 18px rgba(245, 158, 11, 0.2);
+}
+.power-circle-btn.btn-wake:hover,
+.power-circle-btn.btn-wake:active {
+  border-color: #f59e0b;
+  box-shadow: 0 10px 32px rgba(245, 158, 11, 0.4), inset 0 0 16px rgba(245, 158, 11, 0.25);
+}
+
+/* 4. Restart (Emerald Cyan) */
 .power-circle-btn.btn-restart {
   border-color: rgba(16, 185, 129, 0.5);
   background: radial-gradient(circle at 35% 35%, rgba(16, 185, 129, 0.22), rgba(5, 150, 105, 0.08) 65%, rgba(22, 22, 26, 0.95));
@@ -6398,6 +6411,20 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
+  .power-buttons-row {
+    gap: clamp(8px, 2.5vw, 18px);
+  }
+  .power-circle-btn {
+    width: clamp(50px, 9.5vw, 68px);
+    height: clamp(50px, 9.5vw, 68px);
+  }
+  .power-circle-icon {
+    width: clamp(20px, 3.8vw, 26px);
+    height: clamp(20px, 3.8vw, 26px);
+  }
+  .power-btn-label {
+    font-size: 9.5px;
+  }
   .power-volume-bar {
     max-width: 320px;
     padding: 4px 12px;
@@ -8989,7 +9016,25 @@ body.portrait-dismissed .orientation-guard {
           <span class="power-btn-label" id="lbl-power-sleep">Sleep</span>
         </div>
 
-        <!-- 3. Tombol Bulat: Restart -->
+        <!-- 3. Tombol Bulat: Wake Up -->
+        <div class="power-btn-item">
+          <button type="button" class="power-circle-btn btn-wake" id="power-btn-wake" data-action="wake_up" title="Wake Up PC">
+            <svg class="svg-icon power-circle-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+          <span class="power-btn-label">Wake Up</span>
+        </div>
+
+        <!-- 4. Tombol Bulat: Restart -->
         <div class="power-btn-item">
           <button type="button" class="power-circle-btn btn-restart" id="power-btn-restart" data-action="restart" title="Restart PC">
             <svg class="svg-icon power-circle-icon" viewBox="0 0 24 24">
@@ -9900,7 +9945,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.58</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.59</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11267,8 +11312,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.58';
-const APP_CLIENT_VERSION_CODE = 1210458;
+const APP_CLIENT_VERSION = '1.21.4.59';
+const APP_CLIENT_VERSION_CODE = 1210459;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -13037,6 +13082,9 @@ function processServerMessage(d) {
     if (d.host_name) {
       const pHost = $('power-host-name');
       if (pHost) pHost.textContent = d.host_name;
+    }
+    if (d.mac_address) {
+      localStorage.setItem('digi_host_mac', d.mac_address);
     }
     if (d.version) {
       const vBadge = $('app-version-badge');
