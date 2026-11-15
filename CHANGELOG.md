@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.55] - 2026-11-15
+- feat: add sleek horizontal volume control to power mode deck
+
 ### [1.21.4.54] - 2026-11-15
 - Perbaikan icon restart proper, eliminasi emblem OS/Jarvis, dan pertukaran urutan Shortcut & Custom
 
@@ -526,6 +529,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.55] - 2026-11-15
+- Release v1.21.4.55 updates
 
 ### [1.21.4.54] - 2026-11-15
 - Release v1.21.4.54 updates
