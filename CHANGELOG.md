@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.58] - 2026-11-15
+- fix: expose window.updateVolumeUI globally for real-time PC to client volume sync
+
 ### [1.21.4.57] - 2026-11-15
 - feat: bidirectional 2-way real-time volume synchronization across devices and host
 
@@ -535,6 +538,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.58] - 2026-11-15
+- Release v1.21.4.58 updates
 
 ### [1.21.4.57] - 2026-11-15
 - Release v1.21.4.57 updates

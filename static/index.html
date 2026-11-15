@@ -9900,7 +9900,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.57</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.58</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11267,8 +11267,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.57';
-const APP_CLIENT_VERSION_CODE = 1210457;
+const APP_CLIENT_VERSION = '1.21.4.58';
+const APP_CLIENT_VERSION_CODE = 1210458;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -13056,8 +13056,11 @@ function processServerMessage(d) {
     if (d.locked_win_id !== undefined) {
       handleTargetLockUpdate(d.locked_win_id);
     }
-    if (typeof d.volume === 'number' && typeof updateVolumeUI === 'function') {
-      updateVolumeUI(d.volume, true);
+    if (typeof d.volume === 'number') {
+      window.currentServerVolume = d.volume;
+      if (typeof window.updateVolumeUI === 'function') {
+        window.updateVolumeUI(d.volume, true);
+      }
     }
   } else if (d.type === 'trigger_update_check') {
     isAutoUpdateTriggered = false;
@@ -13075,14 +13078,20 @@ function processServerMessage(d) {
   } else if (d.type === 'window_list') {
     renderWindowList(d.windows);
   } else if (d.type === 'power_result') {
-    if (d.action === 'volume_set' && typeof d.value === 'number' && typeof updateVolumeUI === 'function') {
-      updateVolumeUI(d.value, true);
+    if (d.action === 'volume_set' && typeof d.value === 'number') {
+      window.currentServerVolume = d.value;
+      if (typeof window.updateVolumeUI === 'function') {
+        window.updateVolumeUI(d.value, true);
+      }
     } else if (typeof showSmartToast === 'function') {
       showSmartToast(d.message || (d.success ? 'Perintah daya berhasil dikirim.' : 'Gagal mengeksekusi perintah daya.'));
     }
   } else if (d.type === 'volume_sync') {
-    if (typeof d.value === 'number' && typeof updateVolumeUI === 'function') {
-      updateVolumeUI(d.value, true);
+    if (typeof d.value === 'number') {
+      window.currentServerVolume = d.value;
+      if (typeof window.updateVolumeUI === 'function') {
+        window.updateVolumeUI(d.value, true);
+      }
     }
   } else if (d.type === 'auth_status') {
     if (d.license) updateLicenseDisplay(d.license);
@@ -20177,6 +20186,11 @@ function initPowerControls() {
         if (powerVolMuteBtn) powerVolMuteBtn.style.color = 'var(--accent)';
       }
     }
+  }
+
+  window.updateVolumeUI = updateVolumeUI;
+  if (typeof window.currentServerVolume === 'number') {
+    updateVolumeUI(window.currentServerVolume, true);
   }
 
   function sendVolumeCommand(val) {
