@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.61] - 2026-11-15
+- refactor: remove ineffective wake up button from power deck
+
 ### [1.21.4.60] - 2026-11-15
 - fix: use systemd-run user unit for non-blocking suspend
 
@@ -544,6 +547,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.61] - 2026-11-15
+- Release v1.21.4.61 updates
 
 ### [1.21.4.60] - 2026-11-15
 - Release v1.21.4.60 updates
