@@ -1884,7 +1884,7 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
             if action in ('shutdown', 'poweroff'):
                 done = False
                 try:
-                    p = subprocess.run(['systemctl', 'poweroff', '-i'], env=env, capture_output=True, timeout=2)
+                    p = subprocess.run(['systemd-run', '--user', '--no-block', 'systemctl', 'poweroff', '-i', '--no-block'], env=env, capture_output=True, timeout=2)
                     if p.returncode == 0:
                         done = True
                 except Exception:
@@ -1900,16 +1900,16 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
                         pass
                 if not done:
                     try:
-                        p = subprocess.run(['loginctl', 'poweroff', '-i'], env=env, capture_output=True, timeout=2)
+                        p = subprocess.run(['systemctl', 'poweroff', '--no-block', '-i'], env=env, capture_output=True, timeout=2)
                         if p.returncode == 0:
                             done = True
                     except Exception:
                         pass
                 if not done:
                     try:
-                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
-                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
-                                          'org.freedesktop.login1.Manager.PowerOff', 'boolean:true'], env=env)
+                        p = subprocess.run(['loginctl', 'poweroff', '-i'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
                     except Exception:
                         pass
                 result['success'] = True
@@ -1917,7 +1917,7 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
             elif action in ('restart', 'reboot'):
                 done = False
                 try:
-                    p = subprocess.run(['systemctl', 'reboot', '-i'], env=env, capture_output=True, timeout=2)
+                    p = subprocess.run(['systemd-run', '--user', '--no-block', 'systemctl', 'reboot', '-i', '--no-block'], env=env, capture_output=True, timeout=2)
                     if p.returncode == 0:
                         done = True
                 except Exception:
@@ -1933,50 +1933,65 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
                         pass
                 if not done:
                     try:
-                        p = subprocess.run(['loginctl', 'reboot', '-i'], env=env, capture_output=True, timeout=2)
+                        p = subprocess.run(['systemctl', 'reboot', '--no-block', '-i'], env=env, capture_output=True, timeout=2)
                         if p.returncode == 0:
                             done = True
                     except Exception:
                         pass
                 if not done:
                     try:
-                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
-                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
-                                          'org.freedesktop.login1.Manager.Reboot', 'boolean:true'], env=env)
+                        p = subprocess.run(['loginctl', 'reboot', '-i'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
                     except Exception:
                         pass
                 result['success'] = True
                 result['message'] = 'Me-restart PC Linux...'
             elif action in ('sleep', 'suspend'):
                 done = False
+                # 1. Jalankan via systemd user unit (polkit mengizinkan active session tanpa prompt password)
                 try:
-                    p = subprocess.run(['systemctl', 'suspend', '-i'], env=env, capture_output=True, timeout=2)
+                    p = subprocess.run(['systemd-run', '--user', '--no-block', 'systemctl', 'suspend', '-i', '--no-block'], env=env, capture_output=True, timeout=2)
                     if p.returncode == 0:
                         done = True
                 except Exception:
                     pass
+                # 2. Non-blocking systemctl direct fallback
                 if not done:
                     try:
-                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
-                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
-                                          'org.freedesktop.login1.Manager.Suspend', 'boolean:true'], env=env)
+                        p = subprocess.run(['systemctl', 'suspend', '--no-block', '-i'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                # 3. Popen fire-and-forget fallback (tidak dibunuh timeout Python)
+                if not done:
+                    try:
+                        subprocess.Popen(['systemctl', 'suspend', '-i'], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        done = True
                     except Exception:
                         pass
                 result['success'] = True
-                result['message'] = 'Menangguhkan PC Linux (Suspend)...'
+                result['message'] = 'Menidurkan PC Linux (Sleep / Suspend)...'
             elif action == 'hibernate':
                 done = False
                 try:
-                    p = subprocess.run(['systemctl', 'hibernate', '-i'], env=env, capture_output=True, timeout=2)
+                    p = subprocess.run(['systemd-run', '--user', '--no-block', 'systemctl', 'hibernate', '-i', '--no-block'], env=env, capture_output=True, timeout=2)
                     if p.returncode == 0:
                         done = True
                 except Exception:
                     pass
                 if not done:
                     try:
-                        subprocess.Popen(['dbus-send', '--system', '--print-reply',
-                                          '--dest=org.freedesktop.login1', '/org/freedesktop/login1',
-                                          'org.freedesktop.login1.Manager.Hibernate', 'boolean:true'], env=env)
+                        p = subprocess.run(['systemctl', 'hibernate', '--no-block', '-i'], env=env, capture_output=True, timeout=2)
+                        if p.returncode == 0:
+                            done = True
+                    except Exception:
+                        pass
+                if not done:
+                    try:
+                        subprocess.Popen(['systemctl', 'hibernate', '-i'], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        done = True
                     except Exception:
                         pass
                 result['success'] = True

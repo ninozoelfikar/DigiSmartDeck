@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.60] - 2026-11-15
+- fix: use systemd-run user unit for non-blocking suspend
+
 ### [1.21.4.59] - 2026-11-15
 - feat: add Wake Up circular button to Mode Power with instant screen wakeup and WOL support
 
@@ -541,6 +544,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.60] - 2026-11-15
+- Release v1.21.4.60 updates
 
 ### [1.21.4.59] - 2026-11-15
 - Release v1.21.4.59 updates
