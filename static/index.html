@@ -6221,24 +6221,6 @@ body:has(#splash-screen:not(.fade-out)) .update-notification-banner {
   margin: auto;
 }
 
-.power-deck-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-dim);
-  background: var(--panel-bg);
-  border: 1px solid var(--key-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  letter-spacing: 0.3px;
-}
-.power-deck-badge .svg-icon {
-  stroke: var(--accent);
-}
-
 .power-buttons-row {
   display: flex;
   align-items: center;
@@ -7692,13 +7674,13 @@ body.portrait-dismissed .orientation-guard {
         <div class="deck-chips deck-chips-layers">
           <button type="button" class="tbtn deck-chip" id="btn-fn">Fn (F1-F12)</button>
           <button type="button" class="tbtn deck-chip" id="btn-nav" data-i18n="layer_nav">Navigation</button>
-          <button type="button" class="tbtn deck-chip" id="btn-custom" title="Kustomisasi Shortcut &amp; Prompt">
-            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            <span>Custom</span>
-          </button>
           <button type="button" class="tbtn deck-chip" id="btn-sc">
             <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             <span data-i18n="layer_shortcuts">Shortcuts</span>
+          </button>
+          <button type="button" class="tbtn deck-chip" id="btn-custom" title="Kustomisasi Shortcut &amp; Prompt">
+            <svg class="svg-icon" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>Custom</span>
           </button>
         </div>
       </div>
@@ -8887,11 +8869,6 @@ body.portrait-dismissed .orientation-guard {
   <!-- POWER & SESSION CONTROLLER VIEW -->
   <section id="power-view" class="power-view hidden">
     <div class="power-deck-container">
-      <div class="power-deck-badge" id="power-os-badge">
-        <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-        <span id="power-host-name">PC Host</span>&nbsp;•&nbsp;<span id="power-os-tag">Linux</span>
-      </div>
-
       <div class="power-buttons-row">
         <!-- 1. Tombol Bulat: Shutdown -->
         <div class="power-btn-item">
@@ -8918,10 +8895,8 @@ body.portrait-dismissed .orientation-guard {
         <div class="power-btn-item">
           <button type="button" class="power-circle-btn btn-restart" id="power-btn-restart" data-action="restart" title="Restart PC">
             <svg class="svg-icon power-circle-icon" viewBox="0 0 24 24">
-              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-              <path d="M3 3v5h5"/>
-              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-              <path d="M16 21h5v-5"/>
+              <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+              <polyline points="21 3 21 8 16 8"/>
             </svg>
           </button>
           <span class="power-btn-label">Restart</span>
@@ -9813,7 +9788,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.53</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.54</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11180,8 +11155,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.53';
-const APP_CLIENT_VERSION_CODE = 1210453;
+const APP_CLIENT_VERSION = '1.21.4.54';
+const APP_CLIENT_VERSION_CODE = 1210454;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -19874,7 +19849,7 @@ function openPowerConfirmModal(action) {
     }
     if (iconWrap) {
       iconWrap.style.background = 'rgba(16, 185, 129, 0.15)';
-      iconWrap.innerHTML = '<svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" style="stroke:#10b981;"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>';
+      iconWrap.innerHTML = '<svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" style="stroke:#10b981;"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><polyline points="21 3 21 8 16 8"/></svg>';
     }
   } else if (action === 'sleep') {
     if (titleEl) titleEl.textContent = currentUiLang === 'id' ? 'Tidurkan PC (Sleep)' : 'Put PC to Sleep';

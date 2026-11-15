@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.54] - 2026-11-15
+- Perbaikan icon restart proper, eliminasi emblem OS/Jarvis, dan pertukaran urutan Shortcut & Custom
+
 ### [1.21.4.53] - 2026-11-15
 - Menambahkan Mode Power dan notifikasi pembaruan otomatis
 
@@ -523,6 +526,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.54] - 2026-11-15
+- Release v1.21.4.54 updates
 
 ### [1.21.4.53] - 2026-11-15
 - Release v1.21.4.53 updates
