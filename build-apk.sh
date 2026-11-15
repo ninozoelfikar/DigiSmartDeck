@@ -32,8 +32,12 @@ if [ -z "$JAVA_HOME" ]; then
     fi
 fi
 
-if [ -z "$ANDROID_HOME" ] && [ -d "$HOME/Android/sdk" ]; then
-    export ANDROID_HOME="$HOME/Android/sdk"
+if [ -z "$ANDROID_HOME" ]; then
+    if [ -d "$HOME/Android/Sdk" ]; then
+        export ANDROID_HOME="$HOME/Android/Sdk"
+    elif [ -d "$HOME/Android/sdk" ]; then
+        export ANDROID_HOME="$HOME/Android/sdk"
+    fi
 fi
 
 # Sinkronkan dan amankan aset antarmuka web offline ke dalam folder assets Android (Anti-Reverse Engineering)

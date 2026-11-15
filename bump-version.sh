@@ -160,11 +160,22 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 # 6. Restart server PC
-pkill -9 -f "/home/nino/digikeyboard/server.py" 2>/dev/null || true
-sleep 1
-nohup /usr/bin/python3 /home/nino/digikeyboard/server.py > /tmp/server.log 2>&1 &
-sleep 1
-echo "[OK] Layanan server PC disegarkan"
+if systemctl is-active --quiet digikeyboard.service 2>/dev/null; then
+    pkill -9 -f "/home/nino/digikeyboard/server.py" 2>/dev/null || true
+    sleep 1
+    echo "[OK] Layanan systemd digikeyboard.service disegarkan otomatis"
+else
+    pkill -9 -f "/home/nino/digikeyboard/server.py" 2>/dev/null || true
+    sleep 1
+    nohup /usr/bin/python3 /home/nino/digikeyboard/server.py > /tmp/server.log 2>&1 &
+    sleep 1
+    echo "[OK] Layanan server PC disegarkan"
+fi
+
+# 7. Siarkan notifikasi pembaruan seketika ke seluruh client aktif
+sleep 1.5
+curl -s http://127.0.0.1:8080/api/updater/trigger >/dev/null 2>&1 || true
+echo "[OK] Notifikasi pembaruan disiarkan ke seluruh client aktif"
 
 echo "============================================================"
 echo "[OK] Sukses! Versi aplikasi sekarang adalah v${NEW_VERSION}"
