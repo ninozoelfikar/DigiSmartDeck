@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.56] - 2026-11-15
+- fix: bind Linux audio session environment for volume and mute control
+
 ### [1.21.4.55] - 2026-11-15
 - feat: add sleek horizontal volume control to power mode deck
 
@@ -529,6 +532,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.56] - 2026-11-15
+- Release v1.21.4.56 updates
 
 ### [1.21.4.55] - 2026-11-15
 - Release v1.21.4.55 updates

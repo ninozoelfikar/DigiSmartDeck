@@ -643,20 +643,69 @@ def simulate_mouse_abs(rx, ry):
             print(f"[Error mouse abs]: {e}")
 
 
+def get_linux_audio_env():
+    """Environment lengkap untuk PulseAudio / PipeWire / ALSA pada sesi Linux desktop"""
+    env = dict(os.environ)
+    uid = os.getuid()
+    for candidate in [env.get('XDG_RUNTIME_DIR', ''), f'/run/user/{uid}', '/run/user/1000']:
+        if candidate and os.path.exists(candidate):
+            env['XDG_RUNTIME_DIR'] = candidate
+            pulse_sock = os.path.join(candidate, 'pulse', 'native')
+            if os.path.exists(pulse_sock):
+                env['PULSE_SERVER'] = f'unix:{pulse_sock}'
+            break
+    return env
+
+
+def get_system_volume():
+    """Mengambil persentase volume master sistem saat ini (0-100%)"""
+    try:
+        if sys.platform.startswith('linux'):
+            env = get_linux_audio_env()
+            res = subprocess.run(['pactl', 'get-sink-volume', '@DEFAULT_SINK@'], env=env, capture_output=True, text=True, timeout=1)
+            if res.returncode == 0:
+                m = re.search(r'(\d+)%', res.stdout)
+                if m:
+                    return int(m.group(1))
+            res2 = subprocess.run(['amixer', 'get', 'Master'], capture_output=True, text=True, timeout=1)
+            if res2.returncode == 0:
+                m2 = re.search(r'\[(\d+)%\]', res2.stdout)
+                if m2:
+                    return int(m2.group(1))
+        elif sys.platform == 'darwin':
+            res = subprocess.run(['osascript', '-e', 'output volume of (get volume settings)'], capture_output=True, text=True, timeout=1)
+            if res.returncode == 0 and res.stdout.strip().isdigit():
+                return int(res.stdout.strip())
+    except Exception as e:
+        print(f"[Error get volume]: {e}")
+    return 80
+
+
 def set_system_volume(percent):
     """Menyetel volume master sistem (0 - 100%)"""
     try:
         val = max(0, min(100, int(percent)))
         if sys.platform.startswith('linux'):
-            import subprocess
+            env = get_linux_audio_env()
+            # 1. Coba pactl (PulseAudio / PipeWire) dengan environment sesi aktif
             try:
-                subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', f"{val}%"], timeout=1, check=False)
-                return val
+                res = subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', f"{val}%"], env=env, timeout=1, capture_output=True, text=True)
+                if res.returncode == 0:
+                    return val
             except Exception:
                 pass
+            # 2. Coba amixer Master (ALSA Hardware Mixer langsung)
             try:
-                subprocess.run(['amixer', '-D', 'pulse', 'sset', 'Master', f"{val}%"], timeout=1, check=False)
-                return val
+                res = subprocess.run(['amixer', 'sset', 'Master', f"{val}%"], timeout=1, capture_output=True, text=True)
+                if res.returncode == 0:
+                    return val
+            except Exception:
+                pass
+            # 3. Coba amixer via pulse
+            try:
+                res = subprocess.run(['amixer', '-D', 'pulse', 'sset', 'Master', f"{val}%"], env=env, timeout=1, capture_output=True, text=True)
+                if res.returncode == 0:
+                    return val
             except Exception:
                 pass
         elif sys.platform == 'darwin':
@@ -1729,9 +1778,13 @@ def execute_power_action(action: str, host_os: str = None, value=None) -> dict:
 
     elif action == 'volume_mute':
         if sys.platform.startswith('linux'):
-            env = get_x11_env()
+            env = get_linux_audio_env()
             try:
                 subprocess.run(['pactl', 'set-sink-mute', '@DEFAULT_SINK@', 'toggle'], env=env, timeout=1, check=False)
+            except Exception:
+                pass
+            try:
+                subprocess.run(['amixer', 'sset', 'Master', 'toggle'], env=env, timeout=1, check=False)
             except Exception:
                 pass
         elif sys.platform == 'darwin':
@@ -2363,7 +2416,8 @@ async def websocket_handler(request):
             'host_name': socket.gethostname(),
             'license': license_manager.get_info(),
             'locked_win_id': LOCKED_TARGET_WIN_ID,
-            'lan_ips': get_local_ip_addresses()
+            'lan_ips': get_local_ip_addresses(),
+            'volume': get_system_volume()
         }))
         if is_client_authorized:
             lan_token = pairing_manager.get_or_create_device_token(client_ip, device_label)
@@ -2799,7 +2853,8 @@ async def websocket_handler(request):
                     try:
                         val = int(data.get('value', 50))
                         val = max(0, min(100, val))
-                        set_system_volume(val)
+                        real_val = set_system_volume(val)
+                        await ws.send_str(json.dumps({'type': 'volume_sync', 'value': real_val}))
                     except Exception:
                         pass
 

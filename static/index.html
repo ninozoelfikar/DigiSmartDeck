@@ -9900,7 +9900,7 @@ body.portrait-dismissed .orientation-guard {
 
     <!-- Line 3: Badge Versi Aplikasi -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;">
-      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.55</span>
+      <span id="about-app-version" style="display:inline-block;padding:2px 10px;background:rgba(88,166,255,0.12);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.2px;">v1.21.4.56</span>
     </div>
 
     <!-- Line 4: By Nama Studio -->
@@ -11267,8 +11267,8 @@ if (btnControlDeckEl) {
   btnControlDeckEl.addEventListener('click', handleMenuTrigger);
 }
 
-const APP_CLIENT_VERSION = '1.21.4.55';
-const APP_CLIENT_VERSION_CODE = 1210455;
+const APP_CLIENT_VERSION = '1.21.4.56';
+const APP_CLIENT_VERSION_CODE = 1210456;
 
 let updateResetTimeout = null;
 let currentUpdateData = null;
@@ -13056,6 +13056,9 @@ function processServerMessage(d) {
     if (d.locked_win_id !== undefined) {
       handleTargetLockUpdate(d.locked_win_id);
     }
+    if (typeof d.volume === 'number' && typeof updateVolumeUI === 'function') {
+      updateVolumeUI(d.volume);
+    }
   } else if (d.type === 'trigger_update_check') {
     isAutoUpdateTriggered = false;
     checkAutoUpdate(false);
@@ -13072,8 +13075,14 @@ function processServerMessage(d) {
   } else if (d.type === 'window_list') {
     renderWindowList(d.windows);
   } else if (d.type === 'power_result') {
-    if (typeof showSmartToast === 'function') {
+    if (d.action === 'volume_set' && typeof d.value === 'number' && typeof updateVolumeUI === 'function') {
+      updateVolumeUI(d.value);
+    } else if (typeof showSmartToast === 'function') {
       showSmartToast(d.message || (d.success ? 'Perintah daya berhasil dikirim.' : 'Gagal mengeksekusi perintah daya.'));
+    }
+  } else if (d.type === 'volume_sync') {
+    if (typeof d.value === 'number' && typeof updateVolumeUI === 'function') {
+      updateVolumeUI(d.value);
     }
   } else if (d.type === 'auth_status') {
     if (d.license) updateLicenseDisplay(d.license);
@@ -20165,6 +20174,14 @@ function initPowerControls() {
     try { localStorage.setItem('digi_volume', val); } catch (e) {}
   }
 
+  function sendVolumeCommand(val) {
+    if (connected && ws && ws.readyState === 1) {
+      send({ type: 'volume_set', value: val });
+    } else {
+      executePowerActionNow('volume_set', val);
+    }
+  }
+
   try {
     const savedVol = localStorage.getItem('digi_volume');
     if (savedVol) updateVolumeUI(savedVol);
@@ -20172,13 +20189,15 @@ function initPowerControls() {
 
   if (powerVolRange) {
     powerVolRange.addEventListener('input', () => {
-      updateVolumeUI(powerVolRange.value);
-      executePowerActionNow('volume_set', parseInt(powerVolRange.value, 10));
+      const val = parseInt(powerVolRange.value, 10);
+      updateVolumeUI(val);
+      sendVolumeCommand(val);
     });
     powerVolRange.addEventListener('change', () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
-      executePowerActionNow('volume_set', parseInt(powerVolRange.value, 10));
+      const val = parseInt(powerVolRange.value, 10);
+      sendVolumeCommand(val);
     });
   }
 
@@ -20190,11 +20209,11 @@ function initPowerControls() {
       if (current > 0) {
         lastNonZeroVolume = current;
         updateVolumeUI(0);
-        executePowerActionNow('volume_set', 0);
+        sendVolumeCommand(0);
       } else {
         const restoreVal = lastNonZeroVolume || 50;
         updateVolumeUI(restoreVal);
-        executePowerActionNow('volume_set', restoreVal);
+        sendVolumeCommand(restoreVal);
       }
     });
   }
@@ -20226,13 +20245,15 @@ function initPowerControls() {
 
   if (sliderVol) {
     sliderVol.addEventListener('input', () => {
-      updateVolumeUI(sliderVol.value);
-      executePowerActionNow('volume_set', parseInt(sliderVol.value, 10));
+      const val = parseInt(sliderVol.value, 10);
+      updateVolumeUI(val);
+      sendVolumeCommand(val);
     });
     sliderVol.addEventListener('change', () => {
       if (typeof playClickSound === 'function') playClickSound();
       vibe(15);
-      executePowerActionNow('volume_set', parseInt(sliderVol.value, 10));
+      const val = parseInt(sliderVol.value, 10);
+      sendVolumeCommand(val);
     });
   }
 
