@@ -9,6 +9,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 
 ## Bahasa Indonesia
 
+### [1.21.4.57] - 2026-11-15
+- feat: bidirectional 2-way real-time volume synchronization across devices and host
+
 ### [1.21.4.56] - 2026-11-15
 - fix: bind Linux audio session environment for volume and mute control
 
@@ -532,6 +535,9 @@ Format penulisan mengacu pada [Keep a Changelog](https://keepachangelog.com/id/1
 ---
 
 ## English
+
+### [1.21.4.57] - 2026-11-15
+- Release v1.21.4.57 updates
 
 ### [1.21.4.56] - 2026-11-15
 - Release v1.21.4.56 updates

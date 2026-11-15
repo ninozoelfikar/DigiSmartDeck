@@ -676,6 +676,17 @@ def get_system_volume():
             res = subprocess.run(['osascript', '-e', 'output volume of (get volume settings)'], capture_output=True, text=True, timeout=1)
             if res.returncode == 0 and res.stdout.strip().isdigit():
                 return int(res.stdout.strip())
+        elif sys.platform == 'win32':
+            try:
+                from ctypes import cast, POINTER
+                from comtypes import CLSCTX_ALL
+                from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+                devices = AudioUtilities.GetSpeakers()
+                interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                volume = cast(interface, POINTER(IAudioEndpointVolume))
+                return int(round(volume.GetMasterVolumeLevelScalar() * 100))
+            except Exception:
+                pass
     except Exception as e:
         print(f"[Error get volume]: {e}")
     return 80
@@ -711,6 +722,18 @@ def set_system_volume(percent):
         elif sys.platform == 'darwin':
             subprocess.run(['osascript', '-e', f'set volume output volume {val}'], timeout=1, check=False)
             return val
+        elif sys.platform == 'win32':
+            try:
+                from ctypes import cast, POINTER
+                from comtypes import CLSCTX_ALL
+                from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+                devices = AudioUtilities.GetSpeakers()
+                interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                volume = cast(interface, POINTER(IAudioEndpointVolume))
+                volume.SetMasterVolumeLevelScalar(val / 100.0, None)
+                return val
+            except Exception:
+                pass
     except Exception as e:
         print(f"[Error set volume]: {e}")
     return 100
@@ -2853,8 +2876,8 @@ async def websocket_handler(request):
                     try:
                         val = int(data.get('value', 50))
                         val = max(0, min(100, val))
-                        real_val = set_system_volume(val)
-                        await ws.send_str(json.dumps({'type': 'volume_sync', 'value': real_val}))
+                        real_val = await asyncio.to_thread(set_system_volume, val)
+                        await broadcast_volume_sync(real_val, exclude_ws=ws)
                     except Exception:
                         pass
 
@@ -3196,10 +3219,96 @@ async def periodic_udp_beacon_broadcaster(http_port):
         await asyncio.sleep(4.0)
 
 
+LAST_SYSTEM_VOLUME = -1
+
+async def broadcast_volume_sync(volume_val: int, exclude_ws=None):
+    """Menyiarkan sinkronisasi volume master ke seluruh client aktif."""
+    global LAST_SYSTEM_VOLUME
+    try:
+        val = int(volume_val)
+        LAST_SYSTEM_VOLUME = val
+        payload = json.dumps({
+            'type': 'volume_sync',
+            'value': val
+        })
+        for client in list(CONNECTED_CLIENTS):
+            if exclude_ws is not None and client == exclude_ws:
+                continue
+            try:
+                await client.send_str(payload)
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"[Error broadcast_volume_sync]: {e}")
+
+
+async def system_volume_sync_watcher():
+    """Background task untuk mendeteksi perubahan volume fisik/OS secara real-time dan menyiarkannya ke seluruh client."""
+    global LAST_SYSTEM_VOLUME
+    try:
+        init_v = await asyncio.to_thread(get_system_volume)
+        LAST_SYSTEM_VOLUME = init_v
+    except Exception:
+        LAST_SYSTEM_VOLUME = 80
+
+    if sys.platform.startswith('linux'):
+        # Linux PulseAudio/PipeWire Event Listener (0% CPU, latency <10ms)
+        while True:
+            proc = None
+            try:
+                env = get_linux_audio_env()
+                proc = await asyncio.create_subprocess_exec(
+                    'pactl', 'subscribe',
+                    env=env,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.DEVNULL
+                )
+                while True:
+                    line = await proc.stdout.readline()
+                    if not line:
+                        break
+                    line_str = line.decode('utf-8', 'ignore').lower()
+                    if 'sink' in line_str:
+                        new_vol = await asyncio.to_thread(get_system_volume)
+                        if new_vol != LAST_SYSTEM_VOLUME:
+                            await broadcast_volume_sync(new_vol)
+            except asyncio.CancelledError:
+                if proc:
+                    try:
+                        proc.terminate()
+                        await proc.wait()
+                    except Exception:
+                        pass
+                raise
+            except Exception:
+                await asyncio.sleep(2)
+            finally:
+                if proc:
+                    try:
+                        proc.terminate()
+                        await proc.wait()
+                    except Exception:
+                        pass
+                await asyncio.sleep(1)
+    else:
+        # Windows / macOS periodic observer (polling 400ms)
+        while True:
+            try:
+                await asyncio.sleep(0.4)
+                new_vol = await asyncio.to_thread(get_system_volume)
+                if new_vol != LAST_SYSTEM_VOLUME:
+                    await broadcast_volume_sync(new_vol)
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                await asyncio.sleep(1)
+
+
 async def start_background_tasks(app):
     ports = app.get('server_ports', [8080])
     app['adb_watcher_task'] = asyncio.create_task(adb_reverse_watcher(ports))
     app['udp_broadcaster_task'] = asyncio.create_task(periodic_udp_beacon_broadcaster(ports[0]))
+    app['volume_watcher_task'] = asyncio.create_task(system_volume_sync_watcher())
 
 
 async def cleanup_background_tasks(app):
@@ -3213,6 +3322,12 @@ async def cleanup_background_tasks(app):
         app['udp_broadcaster_task'].cancel()
         try:
             await app['udp_broadcaster_task']
+        except asyncio.CancelledError:
+            pass
+    if 'volume_watcher_task' in app:
+        app['volume_watcher_task'].cancel()
+        try:
+            await app['volume_watcher_task']
         except asyncio.CancelledError:
             pass
 
