@@ -20,3 +20,23 @@ android/build/
 data/*
 !data/.gitkeep
 RELEASE_FIX_*/
+
+# === A.L.I. ZERO-TRUST SECURITY RULES ===
+.env
+.env.*
+!.env.example
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.key
+*.pem
+*.enc
+*service-account*.json
+*sheet_sync_config*.json
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
